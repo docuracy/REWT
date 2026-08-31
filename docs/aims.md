@@ -52,11 +52,29 @@ map is worse than no medieval map, because it looks like a finding.
 
 A **short communication in [*Landscape History*](https://www.tandfonline.com/journals/rlsh20){:target="_blank"}** is proposed, in collaboration with
 Justin Colson ([Institute of Historical Research](https://www.history.ac.uk/){:target="_blank"}, University of London),
-covering both this river network and an associated dataset of medieval woodland.
+covering both this river network and a companion surface modelling **wooded country from
+woodland-indicative place-names**.
+
+**That companion is not a map of medieval woodland**, and should not be described as one.
+It is an inference from the density of name elements — *lēah*, *den*, *coed* — measured as a
+*ratio* against all names rather than counted, because a single clearing-name is evidence of
+open ground and only a concentration of them is evidence of wood. Count the raw points and
+you map settlement; take the ratio and you map woodland. What it shows is where the naming
+suggests wooded country was, which is a different claim from where woodland is recorded, and
+it is offered as the former.
 
 **It will announce the first edition** — which settles its timing: after the modern network
 is sound, and not waiting on the documentary research behind the later ones. The journal is
 published by the [Society for Landscape Studies](https://www.landscapestudies.com/journal/){:target="_blank"}.
+
+**And it is meant to bring people in.** The paper is as much a solicitation as an
+announcement. [The scale of the work](scale) sets out which strands can be finished in house
+and which cannot, and the ones that cannot — the mill channels, and the regional documentary
+research — need people who already know a region or a record class and will be faster at it
+by an order of magnitude than anyone learning it. Contribution is wanted at both ends of
+that range: a reader who can correct one stretch of river matters as much as a collaborator
+who can take on a county, and [the tooling](scale#designing-for-contribution) is built so
+that either arrives attached to a specific line rather than as a remark about a map.
 
 ## What this is not
 
