@@ -236,7 +236,10 @@ over-represented in the fault list, and that is not a coincidence.
   and say which. What you must not do is reverse canal links until the total improves.
 - **Do not trust a direction fault on flat water at face value.** On level ground both
   directions are defensible from the geometry and neither is defensible from the terrain
-  (below). These are the cases to adjudicate at the place, on a map, one at a time.
+  (below). But topology can still answer: root the component at its lowest node and orient
+  the tree toward it, and a level canal gets a direction because *toward the outlet* is
+  well defined even where the water has no slope. §6 has the evidence that the root can be
+  trusted. Where that is not available either, adjudicate at the place, one at a time.
 - **Reservoirs are the trap inside the trap.** A reservoir is a modern impoundment, so
   every link across it is a modern artefact — and a later stage will want to know that a
   valley lies underneath. Flag them now; the information is free at this point and
@@ -388,7 +391,11 @@ tributary drawn flowing away from its parent — a class that a single earlier p
 no node.
 
 **Cycles.** A closed loop with no exit strands everything above it, and is invisible in
-any total.
+any total. Detect them as components with **no sink at all** — as shipped, OS Open Rivers
+has none of 10 km or more, so any that appear later were introduced by your own repairs.
+
+**Sinks per component.** The most productive single number in this audit: a well-formed
+river system has one. Report every component with more than one, ranked.
 
 **Reachability.** The share of length from which the sea can be reached. This is the
 headline number and the one to watch.
@@ -401,6 +408,54 @@ entire finding. Rank by unreached length and work down the list.
 **Report at the place, not only in the total.** Every serious defect in the earlier work
 was invisible in the national figures — 481 km of holes arrived alongside a network that
 had grown in both link count and length. Emit a coordinate for every finding.
+
+### The component census, and what the lowest point is good for
+
+Run this first, before any attempt to link anything. Take the network's **weakly connected
+components** — sets of links connected regardless of direction — and count them. OS Open
+Rivers gives **5,617**, and it is not one giant blob: the largest holds 4,126 km, only 2.7%
+of the network, and 24 components hold a third of it. 1,065 are 10 km or more; 1,415 are
+under 1 km. That census is the map of what linking has to resolve, and it is available on
+day one.
+
+**Then the tempting test, which does not pay.** For each component, find its lowest node
+and check that the flow direction drains to it. It sounds like it should expose direction
+errors wholesale. Measured, it does not:
+
+| the component's lowest outlet sits | 1–10 km | ≥ 10 km |
+|---|---:|---:|
+| within 2 m of the component minimum | 92.2% | 90.4% |
+| more than 5 m above it | 30 of 1,787 | 7 of 729 |
+
+**Thirty-seven components nationally.** OS's flow direction is already globally consistent
+with drainage to the lowest point; whatever is wrong with it is not wrong at that scale.
+
+The reason is structural and worth understanding rather than rediscovering. Reversing one
+link in the middle of a tree does not move the component's outlet — it creates a *new*
+sink partway up, and leaves the real outlet exactly where it was. So the lowest-point test
+is blind to precisely the fault that is common. **The productive signal is not "is the
+outlet the lowest point?" but "how many sinks does this component have?"** — 158 components
+of 10 km or more have more than one, and one has 48. That is the same audit at the
+granularity where the defects actually live, and it needs no elevation at all.
+
+**What the lowest point is genuinely for.** The 90% agreement above is not a null result;
+it is a licence. It establishes that **a component's lowest node is a trustworthy root**,
+and rooting is what solves the case no gradient can. Orient a component's spanning tree
+toward its lowest node and every link gets a direction — including the level canal that
+returned 0.00 m over 3.91 km on the 1 m surface, because *which way is toward the outlet*
+is a question topology answers even where the water has no slope. Only 1,324 nodes in
+~198,000 have more than one outflow, so components are overwhelmingly tree-like and the
+rooting is well defined; treat the bifurcations as the exceptions they are, and never let
+a rooted orientation silently overrule the survey where the survey and the gradient agree.
+
+**Use Terrain 50 for this, not LiDAR.** The elevation range inside a component runs to a
+median of 115 m for the large ones and 32 m for the fragments. A 4 m error is irrelevant
+at that scale, and a national LiDAR pass would be a large expense for no gain. LiDAR earns
+its place per section, where the differences are decimetres.
+
+**One caveat on the figures.** They cover the components whose outlet could be sampled;
+where a DEM is masked over the sea the outlet sits on nodata, which is itself confirmation
+that the component reaches tidal water. Count that case, do not drop it silently.
 
 ### Calibration: what the first audit should say
 
