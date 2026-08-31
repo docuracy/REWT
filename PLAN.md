@@ -12,9 +12,13 @@ order of work is what it is. This plan assumes it.
 
 ## 1. What "traversable" means, precisely
 
-From every link, following flow direction downstream, you reach tidal water or a
-boundary of the study area. Equivalently: **no node has inflows and no outflow**, except
-at the sea or at the edge of scope.
+From every link, following flow direction downstream, you reach tidal water.
+Equivalently: **no node has inflows and no outflow**, except at the sea.
+
+Note there is no second escape clause. Because scope is whole basins (§4.1) and every
+basin drains to a coast, **an exit at the edge of the study area is not a legitimate
+terminus — it is a defect.** Anything that appears to leave sideways means the scope was
+drawn wrong, not that the water went somewhere unmodelled.
 
 OS Open Rivers ships a topology — roughly 197,000 explicit nodes, with flow direction and
 names, and it is very nearly the only open British watercourse product that does. What it
@@ -58,13 +62,17 @@ The requirements, each drawn from a specific failure:
 
 ## 3. Data model
 
-Keep it small. Stage 1 needs three tables and no more.
+Keep it small. Stage 1 needs four tables and no more.
 
 **`link`** — one row per watercourse segment. Publisher id (stable, and the reason the
 curated corrections survive a rebuild), geometry, name, length, and the two node ids.
 
 **`node`** — one row per junction, with geometry and a terminus classification (sea,
 boundary of scope, or neither).
+
+**`basin`** — one row per delineated catchment, with geometry, its outlet node, and
+whether it is in scope. This is the unit the audit reports in (§6) and the unit scope is
+decided on (§4.1); it is derived, not acquired, and it is re-derived after repair.
 
 **`correction`** — what was applied and why, one row per curated judgement, so the
 difference between the survey and the published network is inspectable rather than
@@ -83,23 +91,94 @@ omission.
 
 ## 4. Acquisition
 
-**OS Open Rivers** is declared in `conf/sources.yml` and is the only source Stage 1 needs.
-Ordnance Survey, Open Government Licence v3, attribution required: *Contains OS data
-© Crown Copyright and database rights 2026.* Fetched from the OS Downloads API; reissued
-twice a year, so record which issue was used — a result that cannot name its input cannot
-be reproduced.
+Four sources, all Ordnance Survey, all open and all redistributable — so the repository
+can go public without a licence review. Attribution for every one of them: *Contains OS
+data © Crown Copyright and database rights 2026.*
 
-Resist adding more. Every extra source is a licence to check, a checksum to keep and a
+| source | why Stage 1 needs it |
+|---|---|
+| **OS Open Rivers** | the network: geometry, topology, names, direction |
+| **OS Terrain 50** | basins (§4.1), and a weak screen on direction (§5) |
+| **OS Boundary-Line** | the England-and-Wales polygon the scope rule tests against |
+| **OS OpenMap – Local** | water-body polygons, for crossings only (§5) |
+
+OS Open Rivers is reissued twice a year, so **record which issue was used** — a result
+that cannot name its input cannot be reproduced.
+
+Resist adding a fifth. Every extra source is a licence to check, a checksum to keep and a
 reason to defer the thing that actually needs doing.
 
-**Scope**: England and Wales, plus the catchments they share with Scotland — water that
-drains through the study area must be routed even where it is not drawn. Decide the
-treatment of Scottish headwaters explicitly and record it; the earlier work routes them
-and never draws them.
+### 4.1 Scope is decided on basins, not on the border
+
+**A basin is in scope if any part of it lies in England or Wales; the whole of that basin
+then is, Scottish headwaters included.** Everything draining only to Scotland — Forth,
+Tay, Clyde, Spey — leaves the project.
+
+Clipping to the political line would replace one wrong answer with another. The Tweed
+reaches the sea at Berwick with four fifths of its basin in Scotland; the Border Esk rises
+in Cumbria and reaches the Solway in Dumfriesshire. Cut either at the border and
+everything below the cut has lost most of the water that made it.
+
+**Do not use the network's connected components as basins.** This is the cheap test, it
+looks right, and it fails instructively: OS Open Rivers models the Solway Firth as
+connected tidal water, so the Annan, the Border Esk and the Eden all land in a *single*
+component — and the test drags Dumfriesshire into an England-and-Wales project because
+three rivers share an estuary. **A shared estuary is not a shared catchment.** Only a
+topographic delineation tells them apart, which is why Terrain 50 is in the list above and
+why basins must be delineated before scope is decided.
+
+**Two rules, and the second is not a fudge.** A link is in scope if its downstream end
+falls in an in-scope basin, **or** if it falls in England or Wales. The second is needed
+because tidal water is masked out of a DEM and so sits on no basin at all; without it the
+scope silently drops the tidal Thames, the Humber, and the navigable head of every major
+estuary in the country. For calibration, the earlier work put 72,367 links and 50,851 km
+outside scope, and kept 122,104 links and 101,875 km.
+
+**Nothing is deleted.** Out-of-scope links are flagged, not dropped, so the rule can be
+changed without re-reading the source and "what was excluded, and was it right?" stays
+answerable.
+
+**Basins are recomputed after repair, not before.** Repair changes connectivity, so an
+early delineation is provisional. Use a generous provisional scope to avoid doing national
+work, and re-derive basins once the network is closed.
 
 ---
 
 ## 5. Making it traversable
+
+### Start at the sea and crawl uphill
+
+**Do not patch the network where it looks broken. Grow it from the sea, and let whatever
+fails to arrive be the report.** Seed at tidal termini; admit a link only when the node at
+its downstream end is already in the network; repeat until nothing more is admitted.
+
+The two framings sound equivalent and are not. Patching asks *is this hole closed?*, and
+answers yes for a hole whose closure leads somewhere else broken — in the earlier work a
+link-by-link check reported every gap bridged while 3,440 km of river was still draining
+into nowhere. The crawl asks the only question that matters, *can the water get out?*, and
+cannot answer yes for a reach that cannot.
+
+It also yields the audit for nothing. What the crawl did not reach **is** the defect list,
+ranked by how much water stands above each entry, and every entry has a place.
+
+**Seeds are a finding, not a parameter.** A seed is a node with no outflow standing at
+tidal water. Take them from the survey's own `form = tidalRiver`, not from a coastline: a
+coastline decides the question by distance from a modern shore, and is wrong at exactly
+the estuaries where the answer matters. Seed anywhere in an in-scope basin, **including
+Scotland** — the Border Esk's mouth is in Dumfriesshire, and a basin seeded only inside
+England and Wales would strand the whole of it. Write the seed set out and look at it.
+
+### The metadata will not tell you which links are wrong
+
+Worth knowing before you plan around the flow-direction attribute: **it carries almost no
+signal.** Of 194,471 links in Great Britain, **three** are recorded as flowing against the
+digitised line. Direction *is* digitised order. A line drawn backwards is therefore
+invisible in the attributes, and identical in every respect to one drawn correctly — which
+is why the faults in §5's table are found from the graph and not from the columns, and why
+a single earlier pass turned up 245 of one class alone.
+
+So a node with inflows and no outflow is a *symptom* with several causes, and the table
+below is how to tell them apart.
 
 This is the substance. **Almost every fault is one of three shapes, and one question
 separates them: *which end of the stranded link touches the network?***
@@ -134,6 +213,31 @@ adds nothing at all**: no geometry, no feature, no output row; the target is cut
 node merged. A connector cannot express that, because its two ends would coincide, and a
 zero-length connector once reached a published dataset as a row with no country.
 
+### Flat water: canals, lakes and reservoirs
+
+**A canal is not a drainage feature.** Water enters it from feeders and leaves through
+locks, weirs and overflows that the survey does not draw, and its surface is level by
+construction. OS assigns each canal link a direction regardless, because direction here
+means digitised order. Lakes are the same case: a mesh of links across a surface with no
+gradient at all.
+
+The scale of it, measured on the earlier network: **252 canal links totalling 812 km
+arrive at a node with no outflow** — about 30% of all canal length in England and Wales —
+along with 101 lake links. Canals are only 1,584 links out of 194,471; they are wildly
+over-represented in the fault list, and that is not a coincidence.
+
+- **Do not require a canal to reach the sea down its own channel.** It reaches it through a
+  structure. Either connect it to the receiving river where the overflow actually is and
+  record that as a curated judgement, or exclude canals from the reachability requirement
+  and say which. What you must not do is reverse canal links until the total improves.
+- **Do not trust a direction fault on flat water at face value.** On level ground both
+  directions are defensible from the geometry and neither is defensible from the terrain
+  (below). These are the cases to adjudicate at the place, on a map, one at a time.
+- **Reservoirs are the trap inside the trap.** A reservoir is a modern impoundment, so
+  every link across it is a modern artefact — and a later stage will want to know that a
+  valley lies underneath. Flag them now; the information is free at this point and
+  expensive to recover later.
+
 ### Water bodies, where the survey routes through them or not at all
 
 A fourth case, and it needs a second source. Where a watercourse meets a lake, reservoir
@@ -165,6 +269,50 @@ Three cautions, all measured:
   where the schematic line is doing real routing work. Skeletonising every water body in
   the country is a large computation in exchange for very little.
 
+### What a DEM can and cannot settle
+
+Two jobs, and it is good at one of them.
+
+**Basins: yes, and this is the real reason to acquire it.** §4.1 has the argument — without
+a topographic delineation there is no way to tell a shared estuary from a shared catchment,
+and the scope rule has nothing to test.
+
+**Direction: a screen, never an authority.** Sampling the raw 50 m surface at both ends of
+every in-scope link, against OS's stated direction:
+
+| the DEM says | links | share |
+|---|---|---|
+| falls more than 4 m — clearly agrees | 54,747 | 44.9% |
+| falls 0.5–4 m — agrees, weakly | 29,953 | 24.5% |
+| within ±0.5 m — says nothing at all | 29,639 | 24.3% |
+| rises 0.5–4 m — disagrees, weakly | 6,963 | 5.7% |
+| **rises more than 4 m — clearly disagrees** | **757** | **0.6%** |
+
+That last row is the useful one: **757 links, 589 km — a human-sized list**, worth
+generating and adjudicating one by one.
+
+But look where the DEM goes quiet. Terrain 50 posts every 50 m with an RMSE of about 4 m,
+so a fall inside ±4 m is inside its own error bar. The share of each form that falls there:
+
+| form | the DEM cannot adjudicate |
+|---|---|
+| inlandRiver | 46.6% |
+| canal | 82.3% |
+| tidalRiver | 89.1% |
+| lake | 91.8% |
+
+**It screens the uplands, where you least need it, and is silent on the levels, where you
+most do.** Use it to rank candidates for a person to look at. Never let it flip a link on
+its own, and never report a direction correction as made on terrain evidence when the
+evidence was inside the error bar.
+
+**One circularity to avoid.** Burning the network into the DEM is the standard first step
+in any hydrological conditioning, and it is correct for delineating catchments — a 50 m
+surface gives no gradient at all across embanked or levelled ground. But a burned DEM has
+had the network's own direction stamped into it, so **checking direction against it proves
+nothing**. Sample the unconditioned surface for that, and keep the two rasters distinct
+and distinctly named.
+
 **Order matters and is not obvious.** In the earlier work, corrections applied before the
 features they referenced existed reported "no such edge" and did nothing — silently
 except for a log line, and including the single largest defect in the country. Apply each
@@ -180,9 +328,11 @@ column that nothing reads — so the wrong value was invisible. Make it a test.
 
 Build this as a stage that runs with every build and fails loudly.
 
-**Dead ends.** Nodes with inflows and no outflow, classified by terminus: at the sea
-(correct), at the scope boundary (correct), or neither (a defect). Report count, length
-above each, and the largest by catchment.
+**Dead ends.** Nodes with inflows and no outflow, classified: at tidal water
+(correct) or not (a defect). Break the defects down by the form of the water arriving —
+inlandRiver, canal, lake, tidalRiver — because the classes have different causes and
+different remedies, and a single total conceals that canals are ten times
+over-represented. Report count, length above each, and the largest by catchment.
 
 **Direction faults.** Nodes with one inflow and two outflows are the signature of a
 tributary drawn flowing away from its parent — a class that a single earlier pass found
@@ -196,6 +346,11 @@ any total.
 
 **Reachability.** The share of length from which the sea can be reached. This is the
 headline number and the one to watch.
+
+**Report per basin, and rank them.** A basin is the natural unit: it has one outlet,
+so "what share of this basin can reach its own sea?" is a complete question with a number
+for an answer. A national figure of 97% hides a basin at 40%, and the basin at 40% is the
+entire finding. Rank by unreached length and work down the list.
 
 **Report at the place, not only in the total.** Every serious defect in the earlier work
 was invisible in the national figures — 481 km of holes arrived alongside a network that
@@ -251,8 +406,12 @@ accumulated assumptions behind.*
 ## 8. Definition of done
 
 - One command, empty checkout to finished network, twice, identical output.
-- The audit runs in the build and reports: reachable share, dead ends by class, direction
-  faults, unjoined touching pairs, cycles.
+- The audit runs in the build and reports, **per basin and nationally**: reachable share,
+  dead ends by class, direction faults, unjoined touching pairs, cycles.
+- Basins delineated, scope decided on them, and the in-scope set written out for
+  inspection — with the cross-border cases named individually.
+- Every basin either reaches 100% reachable, or its shortfall is named with a reason.
+  Canals excluded from the requirement is an acceptable reason; "improved a lot" is not.
 - Every curated correction you author is applied and verified, or rejected with a reason.
 - Every identifier in `data/curated/` resolves against the database, enforced by a test.
 - The audit's findings compared against the predecessor's 73 recorded corrections, and the

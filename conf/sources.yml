@@ -1,8 +1,6 @@
 # Every input is declared here before anything reads it, with its licence and the
 # attribution it requires. An unregistered source is a hard error, not a warning:
 # unattributed provenance is not provenance.
-#
-# Stage 1 needs exactly one source. Resist adding more.
 
 sources:
   - id: os_open_rivers
@@ -64,3 +62,56 @@ sources:
 
       Use for the water-body crossings only, and exclude tidal water: at estuary scale a
       "channel" is a bay and its medial axis means nothing.
+
+  # Needed for BASINS (PLAN.md §4.1), which is what scope is decided on — a network
+  # component is not a basin, because OS models the Solway Firth as connected tidal
+  # water and three separate rivers land in one component. Also a weak screen on flow
+  # direction (§5): 50 m posts, ~4 m RMSE, so it is mute on canals, lakes and tidal
+  # reaches, which is exactly where direction is ambiguous.
+  - id: os_terrain_50
+    title: "OS Terrain 50"
+    publisher: "Ordnance Survey"
+    url: "https://api.os.uk/downloads/v1/products/Terrain50"
+    api: os_downloads
+    product: Terrain50
+    download:
+      area: GB
+      format: "ASCII Grid and GML (Grid)"
+    licence: "OS OpenData licence (os.uk/opendata/licence) — OGL-equivalent, attribution required"
+    attribution: "Contains OS data © Crown Copyright and database rights 2026."
+    access: open
+    redistribution: permitted
+    format: [asc, geotiff]
+    crs: "EPSG:27700"
+    cache_path: "data/raw/os_terrain50/"
+    checksum: null
+    status: unverified
+    notes: >
+      National 50 m DTM. Condition it (burn the network, then breach rather than fill)
+      for basin delineation — but sample the UNCONDITIONED surface for any check on
+      flow direction. A burned DEM has the network's own direction stamped into it and
+      cannot be used to test that direction. Keep the two rasters distinctly named.
+
+  # The England-and-Wales polygon that PLAN.md §4.1's second scope rule tests against.
+  - id: os_boundary_line
+    title: "OS Boundary-Line"
+    publisher: "Ordnance Survey"
+    url: "https://api.os.uk/downloads/v1/products/BoundaryLine"
+    api: os_downloads
+    product: BoundaryLine
+    download:
+      area: GB
+      format: GeoPackage
+    licence: "OS OpenData licence (os.uk/opendata/licence) — OGL-equivalent, attribution required"
+    attribution: "Contains OS data © Crown Copyright and database rights 2026."
+    access: open
+    redistribution: permitted
+    format: [geopackage]
+    crs: "EPSG:27700"
+    cache_path: "data/raw/os_boundary_line/"
+    checksum: null
+    status: unverified
+    notes: >
+      Country boundaries only. Used to ask whether a basin touches England or Wales,
+      and never to clip the network: cutting at the political line strands the Tweed
+      and the Border Esk, both of which cross it.
