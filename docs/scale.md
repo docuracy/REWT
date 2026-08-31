@@ -304,18 +304,45 @@ nothing third-party stands in the way of relicensing it.
 ### How much of the tracing it covers — and why it is not most of it
 
 **A navigation network stops at the navigable head.** That is not a shortcoming; it is what
-the object is. But it has a consequence this project has to be honest about: above the limit
-of navigation lies the great majority of the drainage — and with it **the great majority of
-the mill infrastructure**. The mill channels the six-inch surveyors labelled are on brooks and
-becks that no boat ever reached, so a corpus of navigable water, however good, barely touches
-the largest single body of work on [the scale page's own list](#the-mill-channels).
+the object is. But above the limit of navigation lies the great majority of the drainage — and
+with it **the great majority of the mill infrastructure**. The mill channels the six-inch
+surveyors labelled are on brooks and becks no boat ever reached.
 
-The proportions say the same thing. **20,247 km of navigable water against some 152,000 km of
-mapped drainage** is about one part in seven, and only a fraction of that is a *pre-improvement*
-course rather than a channel that still exists. The Fens are exceptional — a landscape rebuilt
-so completely that the medieval channels had to be mapped separately to be mapped at all — and
-they are not typical of the country. **A reasonable estimate is that it covers 15–20% of the
-courses this project would want traced**, which is an estimate and is marked as one.
+That is measurable, and it was measured, with a control to prove the measurement:
+
+| GB1900 places | within 250 m of a navigable section | median distance to one |
+|---|---|---|
+| **mill channels** (4,068) | 5.5% | **5,612 m** |
+| *towing paths* (1,724), as a control | 97.8% | **32 m** |
+
+**The control is the point.** Towing paths land on the navigable network almost perfectly,
+which is what they must do if the comparison is sound — so the mill-channel figure is a real
+separation and not a coordinate error or a coverage artefact. **94.5% of the mill-channel
+places lie more than 250 m from any navigable water, and the median one is five and a half
+kilometres away.** Two orders of magnitude between the medians. The corpora describe different
+country, and the largest single item on [this page's own list](#the-mill-channels) is
+essentially untouched by the navigable one.
+
+**The proportions say the same thing from the other side.** 20,247 km of navigable water
+against some 152,000 km of mapped drainage is **13.3%**, and only part of that is a
+*pre-improvement* course rather than a channel that still runs where it is drawn. Measured
+directly — how far each section sits from the nearest modern line — **101 river-type sections,
+471 km, 2.3% of the corpus by length**, are drawn on a course the modern survey does not carry.
+Of the sections that diverge most, the majority are **abandoned canals**: lost artificial cuts,
+Georgian and Victorian, which is a different thing from a river's older course.
+
+**That 2.3% is a floor and not an estimate**, and the reason is worth stating because it cuts
+in the corpus's favour. The test can only see a course that *diverges* from the modern
+channel — and improvement generally followed the river, so an old course usually sits a few
+metres from the modern line and is indistinguishable from a modern trace by geometry alone.
+What proportion is genuinely pre-improvement cannot be settled without reading the per-section
+citations one by one. The Fens are exceptional precisely because there the two do not
+coincide: a landscape rebuilt so completely that the medieval channels had to be mapped
+separately to be mapped at all.
+
+**Set against the network this project wants traced, a reasonable estimate is 15–20%** — that
+is Stephen Gadd's judgement rather than a measurement, and it is consistent with the 13.3%
+above. It is marked as an estimate because it is one.
 
 So the honest summary is: **the hardest fifth is done, and it is done to a standard this
 project could not reach on its own.** The remaining four fifths are tracing — bounded,
