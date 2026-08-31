@@ -7,7 +7,7 @@ in detail is the handful of landscapes whose hydrography was **rebuilt rather th
 modified** — and in which, therefore, the modern channel is the *weakest* evidence of a
 premodern course.
 
-**A tenth of England lies inside an Internal Drainage District: 12,779 km of mapped
+**A tenth of England lies inside an [Internal Drainage District](https://www.ada.org.uk/){:target="_blank"}: 12,779 km of mapped
 watercourse, 13.3% of the network.** That is the measurable extent of the problem, and
 these pages divide it up.
 

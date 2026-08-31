@@ -18,7 +18,7 @@ it will hold up everything behind it.
 
 | | |
 |---|---|
-| links in OS Open Rivers (GB) | 192,865 |
+| links in [OS Open Rivers](https://www.ordnancesurvey.co.uk/products/os-open-rivers){:target="_blank"} (GB) | 192,865 |
 | mapped length | ~152,000 km |
 | separate connected components | 5,617 |
 | nodes where water arrives and cannot leave | **2,516** |
@@ -35,8 +35,8 @@ generates the queue automatically and ranks it by how much water is at stake.
 
 ### Old courses the Victorian surveyors labelled
 
-Volunteers have already transcribed **2.6 million labels** from the six-inch County Series
-second edition. Within them:
+Volunteers have already transcribed **2.6 million labels** ([GB1900](http://www.gb1900.org/){:target="_blank"}) from the
+[six-inch County Series second edition](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}. Within them:
 
 | label | count | what it is |
 |---|---|---|
@@ -85,7 +85,7 @@ identified but not dated*, which is a real contribution on its own.
 
 The [rebuilt landscapes](regions/) — the Fens, the Humber, the Somerset Levels and the
 rest — are where the modern channel is worthless and the answer is local. **A tenth of
-England lies inside an Internal Drainage District: 12,779 km, 13.3% of the mapped
+England lies inside an [Internal Drainage District](https://www.ada.org.uk/){:target="_blank"}: 12,779 km, 13.3% of the mapped
 network.** That is the measurable extent.
 
 Each region has its own literature, its own archives, and its own specialists. Nobody can
@@ -98,7 +98,7 @@ after, and it is why the third edition is defined as *never complete*.
 
 ### Courses recoverable only from another synthesis
 
-Existing scholarly GIS of pre-1348 inland navigation holds **652 records**, with a median
+[Oksanen's *Inland Navigation in England and Wales before 1348*](https://doi.org/10.5284/1057497){:target="_blank"} holds **652 records**, with a median
 continuous part of 3.6 km — and where a course is derived from a parish boundary it sits a
 median **236 m** from the modern channel.
 
@@ -141,6 +141,6 @@ scoping exercise built the parts of it that were hardest:
   substantially the same line. It records which vertices were placed by hand and which by
   the algorithm, and on which sheet — so a contributed trace carries its own provenance.
 
-**GB1900 is the proof that this scale of volunteer work succeeds**: 2.6 million labels,
+**[GB1900](http://www.gb1900.org/){:target="_blank"} is the proof that this scale of volunteer work succeeds**: 2.6 million labels,
 transcribed by the public, and the reason 380 of the assertions this project most needs are
 already findable. The same constituency exists for river courses.

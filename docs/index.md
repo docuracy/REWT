@@ -15,10 +15,10 @@ to the next, every stretch carrying a modelled flow, and the whole thing routabl
 any headwater to the tide. That distinction turns out to matter more than it sounds, and
 [the methodology](methodology) explains why.
 
-It is assembled from open, evidenced sources — the modern Ordnance Survey network,
-volunteer transcriptions of Victorian map labels, historic sheets traced by hand, and
-the documentary record of drainage and navigation works — with **every line carrying
-what it rests on**. Where the evidence runs out, the map is meant to show that it has run
+It is assembled from open, evidenced sources — the modern [Ordnance Survey](https://www.ordnancesurvey.co.uk/products/os-open-rivers){:target="_blank"}
+network, [GB1900](http://www.gb1900.org/){:target="_blank"} volunteer transcriptions of Victorian map labels, [historic sheets](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}
+traced by hand, and the documentary record of drainage and navigation works — with **every
+line carrying what it rests on**. Where the evidence runs out, the map is meant to show that it has run
 out.
 
 ## Why it is difficult

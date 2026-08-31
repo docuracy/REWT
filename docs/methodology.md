@@ -34,7 +34,7 @@ nothing at all while the pipeline reported it as applied.
 
 ## 1 · Make the modern network traversable
 
-**OS Open Rivers does ship a topology** — some 197,000 explicit nodes, with flow direction
+**[OS Open Rivers](https://www.ordnancesurvey.co.uk/products/os-open-rivers){:target="_blank"} does ship a topology** — some 197,000 explicit nodes, with flow direction
 and names — and it is very nearly the only open British watercourse product that does.
 What it does not offer, and does not claim to, is **traversability**: that from any
 stretch the water can actually be followed downstream to the tide. It is a *generalised
@@ -142,8 +142,9 @@ exception is named with a reason.
 
 Only once the modern network is sound, because a traced course must attach to something.
 
-**From the maps.** Victorian six-inch sheets label some channels outright as superseded —
-*Old Course*, *New Cut* — and volunteer transcription has made those labels searchable.
+**From the maps.** [Victorian six-inch sheets](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"} label some channels outright as
+superseded — *Old Course*, *New Cut* — and [GB1900](http://www.gb1900.org/){:target="_blank"}, a volunteer transcription of every label on
+them, has made those statements searchable.
 Each is an assertion by the surveyor, not an inference. Trace them at the resolution the
 sheet supports, snapping to the printed ink.
 
@@ -171,7 +172,7 @@ reservoir either traced from a pre-dam sheet or recorded as having none.
 
 ### Go to the sources, not to the synthesis
 
-The deeper point about this phase, and it reframes what existing scholarly GIS is *for*.
+The deeper point about this phase, and it reframes what [Oksanen's GIS of pre-1348 inland navigation](https://doi.org/10.5284/1057497){:target="_blank"} is *for*.
 
 A synthesis of medieval navigation is a **digitisation of other people's evidence** —
 documentary attestations of shipping, archaeological finds, place-name landing places, and
@@ -207,7 +208,7 @@ more finely than the synthesis needed** — not the synthesis resampled.
 ## 3 · Model the flow
 
 Last, because it is cheap to re-run and meaningless on an unsound network. A per-cell
-water balance routed over the network burned into a terrain model, validated against
+water balance routed over the network burned into a terrain model ([OS Terrain 50](https://www.ordnancesurvey.co.uk/products/os-terrain-50){:target="_blank"}), validated against
 modern gauged flow — and reported as a **relative index of channel capacity**, never as a
 reconstruction of premodern discharge.
 

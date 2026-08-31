@@ -9,7 +9,7 @@ model was silently wrong for a month.*
 
 ## Why this region is difficult
 
-The Levels are a coastal wetland reclaimed in stages from the Roman period onward, with
+The [Levels](https://en.wikipedia.org/wiki/Somerset_Levels){:target="_blank"} are a coastal wetland reclaimed in stages from the Roman period onward, with
 **medieval monastic drainage** — Glastonbury, Athelney, Muchelney — followed by piecemeal
 enclosure and then by statutory schemes.
 
@@ -33,7 +33,7 @@ error**, which is the standing lesson of this project rather than an anecdote ab
 | 12th–15th c. | **monastic drainage** by Glastonbury, Athelney, Muchelney | rhynes and river diversions, **some still in the network** |
 | c.1200s | the **River Brue diversion** to Highbridge | a medieval re-routing, not a modern one |
 | 17th–18th c. | piecemeal enclosure drainage | |
-| **1795** | **King's Sedgemoor Drain** | a major new channel |
+| **1795** | **[King's Sedgemoor Drain](https://en.wikipedia.org/wiki/King%27s_Sedgemoor_Drain){:target="_blank"}** | a major new channel |
 | 19th c. | Huntspill and Brue improvements; pumping | |
 | **1940** | **the Huntspill River** | wholly modern |
 
@@ -44,7 +44,7 @@ error**, which is the standing lesson of this project rather than an anecdote ab
 - **Rippon, *The Transformation of Coastal Wetlands* (2000)** — **verified**; the
   comparative study of wetland reclamation, and the best guide to what is medieval here.
 - **Rippon on the Brue valley**, and the Somerset Levels Project (Coles) — the wetland
-  survey tradition that produced the Sweet Track, and with it a great deal of
+  survey tradition that produced the [Sweet Track](https://en.wikipedia.org/wiki/Sweet_Track){:target="_blank"}, and with it a great deal of
   palaeoenvironmental work on where the water was.
 
 ## Cartographic and land-record

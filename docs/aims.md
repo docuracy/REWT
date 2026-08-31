@@ -50,6 +50,16 @@ be dated honestly as what it is.
 An epoch is published **when its evidence supports it and not before**. An empty medieval
 map is worse than no medieval map, because it looks like a finding.
 
+## Publication
+
+A **short communication in [*Landscape History*](https://www.tandfonline.com/journals/rlsh20){:target="_blank"}** is proposed, in collaboration with
+Justin Colson ([Institute of Historical Research](https://www.history.ac.uk/){:target="_blank"}, University of London),
+covering both this river network and an associated dataset of medieval woodland.
+
+**It will announce the first edition** — which settles its timing: after the modern network
+is sound, and not waiting on the documentary research behind the later ones. The journal is
+published by the [Society for Landscape Studies](https://www.landscapestudies.com/journal/){:target="_blank"}.
+
 ## What this is not
 
 - **Not a claim to have found the medieval rivers.** It is a reconstruction with its

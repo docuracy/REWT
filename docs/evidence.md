@@ -6,7 +6,7 @@ What each source can say, what it cannot, and whether it can be published.
 
 ## The modern network
 
-**OS Open Rivers** (Ordnance Survey, Open Government Licence) is the spine: a national
+**[OS Open Rivers](https://www.ordnancesurvey.co.uk/products/os-open-rivers){:target="_blank"}** (Ordnance Survey, Open Government Licence) is the spine: a national
 watercourse network with names and topology. It is a *cartographic* product and does not
 claim to be hydrologically routable — which is the whole of the first phase's work.
 
@@ -15,9 +15,9 @@ evidence in the places where most has changed.
 
 ## The map record
 
-**Victorian six-inch sheets** (National Library of Scotland, georeferenced) are the base
+**[Victorian six-inch sheets](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}** (National Library of Scotland, georeferenced) are the base
 for tracing. The surveyors sometimes state which of two channels is superseded —
-*Old Course*, *New Cut* — and **GB1900**, a volunteer transcription of every label on
+*Old Course*, *New Cut* — and **[GB1900](http://www.gb1900.org/){:target="_blank"}**, a volunteer transcription of every label on
 those sheets, makes those statements findable. A label is an assertion by someone who
 was there, which is worth more than an inference from the modern line.
 
@@ -68,7 +68,7 @@ plans and awards behind it can show the river *before* the work. How reliably is
 question: survival is uneven, and many plans depict only what was proposed. Worth testing
 on a sample before it is relied on.
 
-**Regional studies** — the Fenland Survey, the Humber Wetlands Project, the Somerset
+**Regional studies** — the Fenland Survey, the [Humber Wetlands Project](https://archaeologydataservice.ac.uk/){:target="_blank"}, the Somerset
 Levels literature — answer locally what no national rule can: which channels are older than
 they look, and which are engineering. National pattern rules that date a channel by its
 name — *drain*, *cut*, *sewer* — answer it crudely and should say so: in the Somerset Levels
@@ -83,8 +83,9 @@ were carried out, and the sources that record what was there before.
 
 ## Attested navigation
 
-Existing scholarly GIS of pre-1348 inland navigation is used as an **index and a check** —
-where to look, and whether a trace is corroborated — and **not** as geometry. Merging a
+[Oksanen's *Inland Navigation in England and Wales before 1348*](https://doi.org/10.5284/1057497){:target="_blank"} — the
+scholarly GIS of pre-1348 navigation, deposited with the Archaeology Data Service — is used
+as an **index and a check**: where to look, and whether a trace is corroborated — and **not** as geometry. Merging a
 national synthesis with a traced line means reconciling two orders of accuracy at every
 junction, silently, in exactly the places nobody is looking.
 
@@ -101,7 +102,9 @@ constraint in the evidence. [Escaping that is what frees the date](epochs).
 
 ## Terrain
 
-A terrain model can say whether water *can* get from one place to another, and cannot say
+A terrain model — [OS Terrain 50](https://www.ordnancesurvey.co.uk/products/os-terrain-50){:target="_blank"} nationally, and the 1 m LiDAR of the
+[Environment Agency](https://environment.data.gov.uk/survey){:target="_blank"} and [DataMapWales](https://datamap.gov.wales/maps/lidar-data-download/){:target="_blank"} for a single reach — can say whether water *can*
+get from one place to another, and cannot say
 by which line. It is admissible for repairing the modern network's connectivity, and is
 not evidence of any historical course.
 

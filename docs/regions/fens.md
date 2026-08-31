@@ -28,12 +28,12 @@ confident number carried down a channel that did not yet exist.
 
 | period | scheme | note |
 |---|---|---|
-| Roman | Car Dyke; the Fenland lodes (Reach, Burwell, Wicken) | **verified** — premodern exceptions, not to be swept up as post-medieval |
+| Roman | [Car Dyke](https://en.wikipedia.org/wiki/Car_Dyke){:target="_blank"}; the Fenland lodes (Reach, Burwell, Wicken) | **verified** — premodern exceptions, not to be swept up as post-medieval |
 | c.1490 | **Morton's Leam**, cut by Bishop Morton | **verified** — late medieval, and *within* this project's period |
 | c.1490 | Bevill's Leam | **verified** |
 | 1600s | piecemeal work under Commissions of Sewers | |
-| **1631** | **Vermuyden's Old Bedford River** — the first Great Level cut | **verified**, 31.8 km |
-| **1651** | **New Bedford / Hundred Foot River**; the Forty Foot, Sixteen Foot, Delph | **verified** — the Adventurers' works under the fourth Earl of Bedford |
+| **1631** | **[Vermuyden's Old Bedford River](https://en.wikipedia.org/wiki/Old_Bedford_River){:target="_blank"}** — the first Great Level cut | **verified**, 31.8 km |
+| **1651** | **[New Bedford / Hundred Foot River](https://en.wikipedia.org/wiki/New_Bedford_River){:target="_blank"}**; the Forty Foot, Sixteen Foot, Delph | **verified** — the [Adventurers' works](https://en.wikipedia.org/wiki/Bedford_Level_Corporation){:target="_blank"} under the fourth Earl of Bedford |
 | 18th–19th c. | steam drainage; Vernatt's, Counter, North Level Main Drain | |
 | 1964 | the Cut-off Channel and Relief Channel | **verified** — twentieth century |
 
@@ -41,17 +41,17 @@ confident number carried down a channel that did not yet exist.
 
 - **Jonas Moore, *A Mapp of ye Great Levell of ye Fenns* (1658)** — the most immediately
   actionable cartographic source in the whole project: a survey of the Level *as the works
-  were being carried out*. It survives in several forms, including sheets at The National
-  Archives and a single-sheet reproduction, and georeferencing control points for it were
+  were being carried out*. It survives in several forms, including sheets at [The National
+  Archives](https://www.nationalarchives.gov.uk/){:target="_blank"} and a single-sheet reproduction, and georeferencing control points for it were
   already curated during the scoping exercise.
-- **Dugdale, *The History of Imbanking and Drayning* (1662)** — the contemporary account
+- **[Dugdale, *The History of Imbanking and Drayning* (1662)](https://archive.org/details/bim_early-english-books-1641-1700_the-history-of-imbanking_dugdale-sir-william_1662){:target="_blank"}** — the contemporary account
   of the Adventurers' works, with maps. Shared with [the Humber](humber).
-- **Wells, *The History of the Drainage of the Great Level of the Fens* (1829)** — a
+- **[Wells, *The History of the Drainage of the Great Level of the Fens* (1829)](https://archive.org/details/historydrainage01wellgoog){:target="_blank"}** — a
   documentary history of what was cut and when. Identified and unexploited.
 
 ## Modern scholarship and survey
 
-- **Darby, *The Draining of the Fens* (1940)** and *The Changing Fenland* (1983) —
+- **[Darby, *The Draining of the Fens* (1940)](https://archive.org/details/drainingoffens0000hcda){:target="_blank"}** and *The Changing Fenland* (1983) —
   **verified**, and the authority for most of the datings above.
 - **The Fenland Survey** — Hall and Coles, *Fenland Survey: An Essay in Landscape and
   Persistence* (1994) — **verified** for the lodes, and the model for what a systematic

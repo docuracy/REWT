@@ -8,7 +8,7 @@ finding.*
 
 > **Research leads, not verified citations.**
 
-## The Norfolk Broads — and the reason they matter most
+## The [Norfolk Broads](https://en.wikipedia.org/wiki/Norfolk_Broads){:target="_blank"} — and the reason they matter most
 
 **The Broads are medieval.** They are flooded peat cuttings, dug from perhaps the twelfth
 century and inundated in the fourteenth as sea level rose — which makes them almost the
@@ -22,27 +22,27 @@ rebuild.
 
 Sources: the Broads Authority's own historical work; **Lambert and Jennings**, whose
 mid-twentieth-century research established the peat-digging origin; and the Norfolk
-Historic Environment Record.
+[Historic Environment Record](https://www.heritagegateway.org.uk/gateway/){:target="_blank"}.
 
 ## The Trent valley
 
 A wide, actively migrating floodplain with extensive palaeochannels, and the receiving
 water for the Idle, the Dove and the Derwent — three of the rivers on the scoping
 exercise's dead-end list. Alluvial geomorphology here is well studied and wholly
-unexploited. The Humber Wetlands Project's **Ancholme and Lower Trent** volume covers the
+unexploited. The Humber Wetlands [Project](https://archaeologydataservice.ac.uk/){:target="_blank"}'s **Ancholme and Lower Trent** volume covers the
 lower valley; see [the Humber](humber).
 
 ## Romney Marsh
 
 A reclaimed coastal wetland with an exceptional research literature and a well-attested
-medieval hydrography, including the **Rhee Wall** and the diversion of the Rother after the
+medieval hydrography, including the **[Rhee Wall](https://en.wikipedia.org/wiki/Rhee_Wall){:target="_blank"}** and the diversion of the Rother after the
 storms of the 1280s — **a documented medieval river re-routing of exactly the kind this
-project most wants and most lacks**. **Eddison** and the Romney Marsh Research Trust
+project most wants and most lacks**. **Eddison** and the [Romney Marsh Research Trust](https://rmrt.org.uk/){:target="_blank"}
 volumes are the way in. The caution about *sewer* names applies here as in Somerset.
 
 ## The Lancashire and Cheshire mosses
 
-Martin Mere, Chat Moss and the surrounding peat, drained from the seventeenth century and
+[Martin Mere](https://en.wikipedia.org/wiki/Martin_Mere){:target="_blank"}, [Chat Moss](https://en.wikipedia.org/wiki/Chat_Moss){:target="_blank"} and the surrounding peat, drained from the seventeenth century and
 heavily so in the eighteenth and nineteenth. This is the hinterland of the Cheshire and
 south Lancashire basin that cost the scoping exercise most of a day — the Weaver, Irwell,
 Gowy and Mersey — and where the modern channel is a drainage engineer's work.
