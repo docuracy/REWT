@@ -62,9 +62,23 @@ def con():
             "A build is probably running: a read-only DuckDB connection blocks "
             "writers, so this is a skip and not a failure."
         )
+    # The build's own helpers — `curated.resolve()` among them — reach the database
+    # through `db.get()`, which opens a connection of its own when the thread has
+    # none. DuckDB refuses a second connection to one file under a different
+    # configuration, so that call fails against the read-only one opened here.
+    #
+    # Inside `rewt check` the question does not arise: the build's connection is
+    # already installed and `db.get()` returns it. Standalone, this fixture has to
+    # install the connection it opened, and there is no public way to say so.
+    #
+    # NOTE for rewt/db.py's owner: a `db.adopt(con)` — or a context manager, which
+    # would be better — would replace this. It is deliberately narrow: read-only,
+    # restored on the way out, and never left installed for another test session.
+    db._local.con = connection
     try:
         yield connection
     finally:
+        db._local.con = None
         connection.close()
 
 
