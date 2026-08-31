@@ -745,3 +745,159 @@ def propose_reversals(
             }
         )
     return drafts, rejected
+
+
+def propose_component_outlets(
+    max_gap_m: float = 250.0,
+    min_component_km: float = 1.0,
+    limit: int = 400,
+) -> tuple[list[dict], list[tuple[str, str]]]:
+    """Connect a stranded COMPONENT to draining water at their closest approach.
+
+    Every other rule in this module proposes at a **dead end**, and that is the wrong
+    anchor for the case D-011 actually describes. *A canal reaches the sea through a
+    structure — a lock, an overflow weir, a feeder — that the survey does not draw.
+    Connect it to the receiving watercourse **where the structure actually is**.* The
+    structure is where the two waters come closest, which is generally nowhere near
+    the end of the line.
+
+    The Manchester Ship Canal is the case that found this. Its dead end is at
+    350,068 E 379,927 N; Runcorn locks, where it meets the tidal Mersey 43 m away,
+    are four kilometres from there. No rule anchored on a dead end could ever reach
+    it, and with it missing the Irwell reached tidal water over 9% of its 1,957 km.
+
+    **A zero-metre approach is refused, and that is D-016.** Where two lines cross at
+    exactly 0 m with both their ends elsewhere, the crossing is very probably an
+    aqueduct or a culvert — a structure built to keep the two waters apart — and
+    joining them would route the river down the canal. The Ship Canal crosses the
+    tidal Gowy at exactly 0.0 m near Stanlow, where the Gowy is culverted beneath it.
+    Those are reported for adjudication and never drafted.
+    """
+    import shapely
+    from shapely.ops import nearest_points
+
+    from . import graph
+
+    g = graph.load("edge")
+    labels = g.weak_components()
+    edge_component = labels[g.u]
+    reach = db.df("SELECT link_id, reaches_tidal FROM link_reach")
+    reached = set(reach.loc[reach["reaches_tidal"], "link_id"])
+
+    frame = pd.DataFrame(
+        {
+            "link_id": g.link_ids,
+            "component": edge_component.astype(int),
+            "length_m": g.length,
+            "reached": [lid in reached for lid in g.link_ids],
+        }
+    )
+    # Only components holding in-scope water. Out of scope means out of scope: a
+    # correction there would add geometry to the published network for ground the
+    # project does not claim, and nothing is deleted to correct it afterwards.
+    scope = db.df("SELECT link_id, in_scope FROM link_scope")
+    in_scope_links = set(scope.loc[scope["in_scope"], "link_id"])
+    frame["in_scope"] = [lid in in_scope_links for lid in frame["link_id"]]
+
+    per_component = frame.groupby("component").agg(
+        km=("length_m", lambda x: x.sum() / 1000.0),
+        any_reached=("reached", "any"),
+        any_in_scope=("in_scope", "any"),
+    )
+    stranded = per_component[
+        (~per_component["any_reached"])
+        & per_component["any_in_scope"]
+        & (per_component["km"] >= min_component_km)
+    ].sort_values("km", ascending=False).head(limit)
+
+    log.info(
+        f"  {len(stranded):,} stranded components of {min_component_km:g} km or more, "
+        f"holding {stranded['km'].sum():,.0f} km with no way to the sea"
+    )
+
+    drafts: list[dict] = []
+    rejected: list[tuple[str, str]] = []
+    for component, row in stranded.iterrows():
+        members = frame.loc[frame["component"] == component, "link_id"].tolist()
+        with db.registered("_comp", pd.DataFrame({"link_id": members})):
+            near = db.query(
+                f"""
+                WITH mine AS (SELECT l.link_id, l.geom, l.name, l.form
+                              FROM link l JOIN _comp USING (link_id)
+                              UNION ALL
+                              SELECT rl.link_id, rl.geom, rl.name, rl.form
+                              FROM repair_link rl JOIN _comp USING (link_id)),
+                     box AS (SELECT min(ST_XMin(geom)) AS x0, max(ST_XMax(geom)) AS x1,
+                                    min(ST_YMin(geom)) AS y0, max(ST_YMax(geom)) AS y1
+                             FROM mine),
+                     theirs AS (
+                        SELECT l.link_id, l.geom, l.name, l.form, l.publisher_id
+                        FROM link l JOIN link_reach r USING (link_id), box
+                        WHERE r.reaches_tidal
+                          AND ST_XMax(l.geom) >= box.x0 - {max_gap_m}
+                          AND ST_XMin(l.geom) <= box.x1 + {max_gap_m}
+                          AND ST_YMax(l.geom) >= box.y0 - {max_gap_m}
+                          AND ST_YMin(l.geom) <= box.y1 + {max_gap_m})
+                SELECT m.name, m.form, t.publisher_id, t.name, t.form,
+                       ST_Distance(m.geom, t.geom) AS gap_m,
+                       ST_AsWKB(m.geom), ST_AsWKB(t.geom)
+                FROM mine m JOIN theirs t
+                  ON ST_Distance(m.geom, t.geom) <= {max_gap_m}
+                ORDER BY gap_m LIMIT 1
+                """
+            )
+        if not near:
+            continue
+        my_name, my_form, their_pub, their_name, their_form, gap, mw, tw = near[0]
+        if gap <= 0.0:
+            rejected.append(
+                (
+                    f"component {component}",
+                    f"{my_name or 'an unnamed watercourse'} and "
+                    f"{their_name or 'a watercourse'} cross at exactly 0 m with their "
+                    f"ends elsewhere. That is an aqueduct or a culvert far more often "
+                    f"than a confluence (D-016); joining it would route one water down "
+                    f"the other. Adjudicate at the place",
+                )
+            )
+            continue
+
+        mine = shapely.from_wkb(bytes(mw))
+        theirs = shapely.from_wkb(bytes(tw))
+        a, b = nearest_points(mine, theirs)
+        connector = shapely.LineString([(a.x, a.y), (b.x, b.y)])
+        drafts.append(
+            {
+                "geometry": connector,
+                "name": f"{my_name or 'a stranded watercourse'} to "
+                        f"{their_name or 'draining water'} at {a.x:,.0f} {a.y:,.0f}",
+                "reason": (
+                    f"A component holding {row['km']:,.1f} km has no way to tidal "
+                    f"water at all. Its closest approach to water that does drain is "
+                    f"{gap:,.1f} m, between {my_name or 'an unnamed watercourse'} "
+                    f"({my_form}) and {their_name or 'an unnamed watercourse'} "
+                    f"({their_form}). D-011: a canal reaches the sea through a "
+                    f"structure the survey does not draw, and the structure is where "
+                    f"the two waters come closest — which is not, in general, at the "
+                    f"end of either line."
+                ),
+                "evidence": (
+                    f"Measured on OS Open Rivers issue {_issue()}: the component holds "
+                    f"{row['km']:,.1f} km and not one of its links reaches tidal "
+                    f"water; the closest approach to a link that does is {gap:,.1f} m, "
+                    f"at {a.x:,.1f} E {a.y:,.1f} N, to {their_pub}. The approach is "
+                    f"greater than zero, so this is a gap rather than a crossing — a "
+                    f"0 m crossing with both ends elsewhere is an aqueduct or culvert "
+                    f"and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, "
+                    f"NOT A SURVEYED STRUCTURE, and should be checked at the place. "
+                    f"JUDGED BY RULE: see rewt/candidates.py propose_component_outlets."
+                ),
+                "author": "rewt candidates (rule), reviewed by Claude",
+                "dated": "2026-08-31",
+                "upstream_km": round(float(row["km"]), 3),
+                "gap_m": round(float(gap), 3),
+                "sink_publisher_id": None,
+                "resumes_as": their_pub,
+            }
+        )
+    return drafts, rejected

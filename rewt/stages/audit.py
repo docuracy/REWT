@@ -336,6 +336,7 @@ def run() -> dict:
     ).df()
     basin_rows["unreached_km"] = basin_rows["km"] - basin_rows["reached_km"]
     basin_rows["share"] = basin_rows["reached_km"] / basin_rows["km"].replace(0, np.nan)
+    basin_rows = _name_the_shortfalls(basin_rows)
     con.execute("DROP TABLE IF EXISTS audit_basin")
     with db.registered("_ab_in", basin_rows):
         con.execute("CREATE TABLE audit_basin AS SELECT * FROM _ab_in ORDER BY basin_id")
@@ -417,6 +418,80 @@ def run() -> dict:
     }
 
 
+def _name_the_shortfalls(basin_rows: pd.DataFrame) -> pd.DataFrame:
+    """Give every basin that is short of 100% a reason, in words.
+
+    PLAN.md §9: *Every basin either reaches 100% reachable, or its shortfall is named
+    with a reason. "Improved a lot" is not a reason, and neither is "it is only a
+    canal" — canals are inside the requirement (D-011).*
+
+    So the reason has to say what is actually still wrong there, and the honest answer
+    for most of what remains is that the evidence does not reach a conclusion — which
+    is a reason, and a different one from "a canal, therefore excused".
+    """
+    from .. import candidates as cand
+
+    frame = basin_rows.copy()
+    frame["shortfall_reason"] = ""
+    short = frame["km"] > frame["reached_km"] + 1e-9
+    if not short.any():
+        frame.loc[~short, "shortfall_reason"] = "reaches tidal water in full"
+        return frame
+    frame.loc[~short, "shortfall_reason"] = "reaches tidal water in full"
+
+    evidence = cand.build()
+    if evidence.empty:
+        frame.loc[short, "shortfall_reason"] = (
+            "unreached length remains, and the candidate generator offers no evidence "
+            "about it — look at the place"
+        )
+        return frame
+
+    per_basin = {}
+    for basin_id, group in evidence.groupby("basin_id"):
+        biggest = group.sort_values("upstream_km", ascending=False).iloc[0]
+        forms = group.groupby("form")["upstream_km"].sum().sort_values(ascending=False)
+        dominant = forms.index[0] if len(forms) else "watercourse"
+        shapes = group["suggests"].value_counts()
+        top_shape = shapes.index[0] if len(shapes) else "none"
+        n = int(group["sink_node"].nunique())
+
+        if top_shape.startswith("none"):
+            why = (
+                f"{n} dead end(s) remain, mostly {dominant}, and none has a "
+                f"watercourse that already drains within 2 km. These are stranded "
+                f"regions rather than gaps: nothing near them can carry the water "
+                f"out, so closing them needs a judgement at the place and not a rule."
+            )
+        elif dominant == "canal":
+            why = (
+                f"{n} dead end(s) remain, mostly canal. Canals are inside the "
+                f"reachability requirement (D-011) and this is not an excuse: it "
+                f"records that the receiving structure — a lock, a weir, a feeder — "
+                f"is not drawn by the survey and is not within the {top_shape} "
+                f"evidence this build acts on."
+            )
+        else:
+            why = (
+                f"{n} dead end(s) remain, mostly {dominant}. The evidence points to "
+                f"{top_shape}, but each was refused by the rules that were applied — "
+                f"the names conflict, the reach is too long, or the line would cross "
+                f"another watercourse. The largest holds {biggest.upstream_km:,.1f} km "
+                f"above it at {biggest.sink_e:,.0f} E {biggest.sink_n:,.0f} N."
+            )
+        per_basin[basin_id] = why
+
+    frame.loc[short, "shortfall_reason"] = (
+        frame.loc[short, "basin_id"]
+        .map(per_basin)
+        .fillna(
+            "unreached length remains but no dead end inside this basin is in scope; "
+            "the water leaves it by a link whose downstream end is elsewhere"
+        )
+    )
+    return frame
+
+
 def _write_human_report(report: Report, ranked, by_form, worst) -> None:
     """The audit, human-readable as well as machine-readable (§7)."""
     lines = [
@@ -468,6 +543,20 @@ def _write_human_report(report: Report, ranked, by_form, worst) -> None:
             f"| {r.label or r.basin_id} | {r.km:,.1f} | {r.reached_km:,.1f} | "
             f"{r.unreached_km:,.1f} | {share} |"
         )
+    lines += [
+        "",
+        "## Every basin short of 100%, and why (§9)",
+        "",
+        "*\"Improved a lot\" is not a reason, and neither is \"it is only a canal\" —",
+        "canals are inside the requirement (D-011).*",
+        "",
+    ]
+    for r in ranked.head(60).itertuples():
+        reason = getattr(r, "shortfall_reason", "")
+        if not reason or reason == "reaches tidal water in full":
+            continue
+        share = "—" if pd.isna(r.share) else f"{r.share:.0%}"
+        lines.append(f"- **{r.label or r.basin_id}** ({share} reached) — {reason}")
     lines += [
         "",
         "## The largest dead ends, by the catchment standing above them",

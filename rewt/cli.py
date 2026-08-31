@@ -293,6 +293,68 @@ def validate() -> None:
     log.done(f"written up in {paths.rel(out)}")
 
 
+@app.command("propose-outlets")
+def propose_outlets_cmd(
+    max_gap: float = typer.Option(250.0, help="furthest a connector may reach, m"),
+    min_km: float = typer.Option(1.0, help="smallest component to bother with"),
+    write: bool = typer.Option(False, "--write", help="append to data/curated/"),
+) -> None:
+    """Connect a stranded COMPONENT to draining water at their closest approach.
+
+    Every other rule proposes at a dead end, which is the wrong anchor for the case
+    D-011 describes: a canal reaches the sea through a structure, and the structure is
+    where the two waters come closest, not where the line ends.
+    """
+    import json
+
+    import shapely
+
+    from . import candidates as cand
+
+    drafts, rejected = cand.propose_component_outlets(
+        max_gap_m=max_gap, min_component_km=min_km
+    )
+    path = paths.CURATED / "connectors.geojson"
+    doc = (
+        json.loads(path.read_text(encoding="utf-8"))
+        if path.exists()
+        else {"type": "FeatureCollection", "name": "connectors",
+              "crs": {"type": "name",
+                      "properties": {"name": "urn:ogc:def:crs:EPSG::27700"}},
+              "features": []}
+    )
+    seen = {
+        (round(f["geometry"]["coordinates"][0][0], 2),
+         round(f["geometry"]["coordinates"][0][1], 2))
+        for f in doc["features"]
+    }
+    fresh = [
+        d for d in drafts
+        if (round(float(shapely.get_coordinates(d["geometry"])[0][0]), 2),
+            round(float(shapely.get_coordinates(d["geometry"])[0][1]), 2)) not in seen
+    ]
+    log.info(
+        f"  {len(drafts):,} drafts, {len(fresh):,} new, "
+        f"{len(rejected):,} refused as 0 m crossings (D-016)"
+    )
+    for _, why in rejected[:5]:
+        log.detail(f"    {why[:150]}")
+    if not write or not fresh:
+        if not write:
+            log.info("  nothing written; pass --write to author these")
+        return
+    doc["features"].extend(
+        {
+            "type": "Feature",
+            "geometry": json.loads(shapely.to_geojson(d["geometry"])),
+            "properties": {k: v for k, v in d.items() if k != "geometry"},
+        }
+        for d in fresh
+    )
+    path.write_text(json.dumps(doc, indent=2, sort_keys=True), encoding="utf-8")
+    log.done(f"{len(doc['features']):,} connectors ({len(fresh):,} new)")
+
+
 @app.command("propose-reversals")
 def propose_reversals_cmd(
     write: bool = typer.Option(False, "--write", help="append to data/curated/"),
