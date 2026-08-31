@@ -116,9 +116,15 @@ organisational use, prior permission must be obtained in writing"*. Those cannot
 the same records. The passage repeats the permission requirement a second time, scoped
 explicitly to the **archive** records — the photographs, drawings and manuscripts, which are
 under the Non-Commercial Government Licence 1.0 and are not open at all — and that is the only
-reading under
-which the whole is coherent. It is probably the intended one. *Probably* is not a licence,
-and this wants asking rather than construing.
+reading under which the whole is coherent.
+
+**This project takes that reading**: the Open Government Licence governs the site data, and
+the written-permission requirement governs the archive. Three things support it — the
+permission clause is stated a second time in the same passage with the archive named
+explicitly; both operative licences are real and correctly versioned; and the open statement
+is the one attached to the download route. It is a *reading*, and is recorded as one rather
+than presented as settled. The exposure either way is small: the site data is described on
+this page and rejected on its content, so nothing downstream rests on it.
 
 Two practical points follow. The archive and the site data sit behind one search interface, so
 a link followed from a site record lands among material under the restrictive terms. And this
@@ -300,8 +306,6 @@ it is wanted:
   Testable on a single reservoir.
 - **Whether a catalogued deposited plan is the plan for the scheme** — the index finds
   records naming a place; only the document says what it draws.
-- **Which of the Welsh monuments record's two stated licences governs its site data** — an
-  open licence and a written-permission requirement are asserted over the same records.
 
 **And one deliberately deferred.** The *Victoria County History* will often date a mill or a
 reservoir where the maps only locate one, and it is noted here as a fallback rather than
