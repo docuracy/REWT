@@ -179,6 +179,16 @@ it is wanted:
 - **An open, place-located version of the Domesday mills**, which is the one source that
   could date a mill channel rather than merely attest it earlier.
 
+**And one deliberately deferred.** The *Victoria County History* will often date a mill or a
+reservoir where the maps only locate one, and it is noted here as a fallback rather than
+investigated. Two reasons, and the second is the one that generalises. Its coverage is
+England only and partial, so it cannot answer at national scale. And **being able to read a
+source is not the same as being able to republish it**: a text can support a curated
+judgement — a `reason` in words with an `evidence` string naming a volume and a page — while
+its own words may not travel into an export. Nothing on this page yet occupies that category,
+the terms have not been established for the VCH, and describing it as available would imply
+an answer to a question nobody has asked yet.
+
 ## The documentary record
 
 **Drainage and navigation legislation** records works authorised, undertakers, and land
