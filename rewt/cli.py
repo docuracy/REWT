@@ -255,6 +255,40 @@ def propose(
 
 
 @app.command()
+def validate() -> None:
+    """Compare the audit against the predecessor's 73 corrections (PLAN.md §9).
+
+    A validation set, consulted after the audit works and never as an input to it
+    (D-001). It reads a directory outside this repository, changes nothing, and writes
+    up the agreements and the disagreements.
+    """
+    from . import validate as val
+
+    if not val.PREDECESSOR.exists():
+        log.warn(
+            f"{val.PREDECESSOR} is not present. The predecessor is a private "
+            "repository; the comparison is skipped rather than faked."
+        )
+        raise typer.Exit(0)
+    frame = val.compare()
+    out = val.write_report(frame, paths.PUBLISHED / "audit" / "validation.md")
+    recoverable = frame[frame["we_found_defect"].notna()]
+    agreed = int(recoverable["we_found_defect"].astype(bool).sum())
+    log.table(
+        "the predecessor's 73 corrections, compared by place",
+        ["measure", "value"],
+        [
+            ("corrections in the validation set", len(frame)),
+            ("places recoverable in issue 2026-04", len(recoverable)),
+            ("places whose link id no longer exists", len(frame) - len(recoverable)),
+            ("defects this audit found independently", agreed),
+            ("agreement on the recoverable places", f"{agreed / max(len(recoverable), 1):.0%}"),
+        ],
+    )
+    log.done(f"written up in {paths.rel(out)}")
+
+
+@app.command()
 def check() -> None:
     """Run the build's own tests: curated identifiers, licences, determinism."""
     import pytest

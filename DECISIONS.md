@@ -566,3 +566,48 @@ content.** Nothing in the repository reads RCAHMW data, there is no entry for it
 rather than registered, there never will be. The reading is not load-bearing. A future
 reader should know it was taken cheaply, and should not cite it as a precedent for a
 source that anything actually depends on.
+
+**D-026 — The predecessor's 73 corrections corroborate the audit, and the comparison
+must be made by place rather than by identifier.** *2026-08-31*
+
+D-001 held the validation set back until the audit worked on its own. It does, so the
+comparison has been made (`published/audit/validation.md`, reproducible as
+`rewt validate`).
+
+**Comparing by identifier is not possible, and that is the first finding.** OS Open
+Rivers is reissued twice a year, and **12 of the 73 corrections reference a link that
+does not exist in issue 2026-04 at all**. Of the 25 junction targets, 13 survive; of the
+45 link ids the connectors reference, 32. Compared by id, the reissue's own churn would
+have been reported as a disagreement about rivers. This is the concrete cost that
+PLAN.md §10's stable-identifier requirement exists to avoid, and D-013's scheme is the
+answer to it.
+
+**On the 61 recoverable places, this project's audit independently finds a defect at 30
+— 49%.** A further 24 show no defect and now drain, either because this build's own
+corrections reached them or because the survey has since been amended. **Seven are
+genuine disagreements** and are named individually in the write-up.
+
+**The agreement is strongest exactly where this project has done no work.** Fourteen of
+the seventeen places the predecessor reversed a link still show a dead end here, and
+**no reversal has been authored in this repository at all** — so that agreement is
+entirely independent of anything done here, and it is a list of work outstanding rather
+than work confirmed.
+
+**And the two projects rank the same defects by different instruments.** The
+predecessor's reasons read *"37.76 m3/s arrives at the downstream end of the Well Creek
+and stops"* — it ranked by modelled flow. §8 records what that cost: a flow model
+reports a confident number over a network the water cannot leave, and months of figures
+were withdrawn. This project ranks by the length of network standing above a defect,
+which needs no model and cannot fail in that way. **The two orderings agree about which
+places matter far more often than they disagree** — which is itself worth recording,
+because it means the flow model was not buying much of the ordering it was risking so
+much to produce.
+
+*One methodological note, because it nearly became a false finding.* The predecessor's
+connectors are GeoJSON with no `crs` member, which by the specification means WGS84, and
+they are indeed in degrees. Compared as though they were National Grid metres, all 31
+landed in the ocean and the comparison reported that this project had independently
+found none of them — which reads exactly like a substantive disagreement about
+connectors, and was a unit error. It was caught only because 0 of 31 was too clean a
+result to believe. **An implausibly tidy disagreement deserves the same suspicion as an
+implausibly tidy agreement.**
