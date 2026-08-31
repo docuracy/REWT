@@ -371,6 +371,35 @@ def run() -> dict:
             "is the entire finding. This list, not the national number, is the work."
         )
 
+    # ------------------------------------- the stranded components, ranked
+    # A dead end is a place; a stranded component is a REGION with no way out, and it
+    # is the unit the remaining work actually comes in. Reporting only dead ends
+    # understates it: one missing structure can strand four hundred kilometres, and
+    # the dead ends inside that region are symptoms of the one absence.
+    stranded = _stranded_components(g, labels)
+    if len(stranded):
+        log.frame(
+            "in-scope components with NO way to tidal water, largest first — "
+            "each needs one connection, not one per dead end",
+            stranded.head(20)[["label", "km", "forms", "easting", "northing"]],
+            20,
+        )
+        for row in stranded.head(int(p("audit.report_top_n"))).itertuples():
+            findings.append(
+                Finding(
+                    kind="stranded_component",
+                    subject=str(row.label),
+                    detail=(
+                        f"{row.km:,.1f} km of {row.forms} has no way to tidal water at "
+                        f"all; the whole region needs one connection, not one per dead "
+                        f"end"
+                    ),
+                    easting=float(row.easting),
+                    northing=float(row.northing),
+                    metrics={"km": round(float(row.km), 3)},
+                )
+            )
+
     # ------------------------------------------------------------- persist
     frame = pd.DataFrame(
         [f.to_row() for f in findings],
@@ -399,6 +428,11 @@ def run() -> dict:
         "in_scope_share": round((scoped[0] or 0) / (scoped[1] or 1), 6),
     })
     report.add("basins", ranked.head(200).to_dict("records"))
+    report.add("stranded_components", {
+        "count": int(len(stranded)),
+        "km": round(float(stranded["km"].sum()), 1) if len(stranded) else 0.0,
+        "largest": stranded.head(25).to_dict("records") if len(stranded) else [],
+    })
     report.write_json(paths.PUBLISHED / "audit" / "audit.json")
     _write_human_report(report, ranked, by_form, worst)
 
@@ -416,6 +450,59 @@ def run() -> dict:
         "cycles": len(cycles),
         "reachable_share_in_scope": round((scoped[0] or 0) / (scoped[1] or 1), 4),
     }
+
+
+def _stranded_components(g, labels) -> pd.DataFrame:
+    """In-scope components from which the sea cannot be reached at all."""
+    reach = db.df("SELECT link_id, reaches_tidal FROM link_reach")
+    reached = set(reach.loc[reach["reaches_tidal"], "link_id"])
+    scope = db.df("SELECT link_id, in_scope FROM link_scope")
+    in_scope = set(scope.loc[scope["in_scope"], "link_id"])
+
+    frame = pd.DataFrame(
+        {
+            "link_id": g.link_ids,
+            "component": labels[g.u].astype(int),
+            "km": g.length / 1000.0,
+            "form": g.form,
+            "node": [str(g.nodes[i]) for i in g.u],
+            "reached": [lid in reached for lid in g.link_ids],
+            "in_scope": [lid in in_scope for lid in g.link_ids],
+        }
+    )
+    per = frame.groupby("component").agg(
+        km=("km", "sum"), any_reached=("reached", "any"), any_scope=("in_scope", "any")
+    )
+    keep = per[(~per["any_reached"]) & per["any_scope"]].sort_values(
+        "km", ascending=False
+    )
+    if keep.empty:
+        return pd.DataFrame(columns=["label", "km", "forms", "easting", "northing"])
+
+    rows = []
+    members = frame[frame["component"].isin(keep.index)]
+    names = db.df("SELECT link_id, name FROM link WHERE name IS NOT NULL")
+    name_of = dict(zip(names["link_id"], names["name"]))
+    places = db.df("SELECT node_id, easting, northing FROM node")
+    place_of = {r.node_id: (r.easting, r.northing) for r in places.itertuples()}
+    for component, group in members.groupby("component"):
+        named = [name_of.get(lid) for lid in group["link_id"] if lid in name_of]
+        label = (
+            pd.Series(named).value_counts().index[0]
+            if named
+            else f"component {int(component)}"
+        )
+        e, n = place_of.get(group["node"].iloc[0], (None, None))
+        rows.append(
+            {
+                "label": label,
+                "km": float(keep.loc[component, "km"]),
+                "forms": "/".join(sorted(set(group["form"].dropna()))),
+                "easting": e,
+                "northing": n,
+            }
+        )
+    return pd.DataFrame(rows).sort_values("km", ascending=False).reset_index(drop=True)
 
 
 def _name_the_shortfalls(basin_rows: pd.DataFrame) -> pd.DataFrame:
