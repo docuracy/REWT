@@ -153,9 +153,11 @@ Every reservoir holding water above the level of the surrounding ground is regis
 the Reservoirs Act — over 25,000 m³ in England, over 10,000 m³ in Wales — which is a *raised
 water* test, far closer to "this drowned a valley" than a storage threshold is, and which
 reaches well below the hydrological inventory. **Natural Resources Wales publishes the Welsh
-register as open data** under the Open Government Licence, with a year built for most
-entries. **The Environment Agency does not publish the English one**: it must be requested by
-letter, email or telephone. Treat a registered year as what it is — a declaration made by the
+register as open data** under the Open Government Licence — 400 reservoirs, 316 impounding,
+365 with a year built, and 366 of them smaller than the hydrological inventory's threshold,
+which is to say it holds the tail that the inventory is built to exclude. **The Environment
+Agency does not publish the English one**: it must be requested by letter, email or
+telephone. Treat a registered year as what it is — a declaration made by the
 undertaker on a regulatory form, with no source recorded — and not as the same kind of
 evidence as the inventory's flagged and referenced dates.
 

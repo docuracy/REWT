@@ -151,6 +151,37 @@ finding as the unnamed reservoirs seen from the other side. It is the problem in
 form: the network holds the water, no Ordnance Survey edition holds the valley, and nothing
 in the data says the water is a reservoir at all.
 
+**Wales is harder, and countable, because Wales publishes its register.** Natural Resources
+Wales issues the Reservoirs Act register as open data: **400 reservoirs, 316 of them
+impounding, 365 with a year built**. Its statutory threshold — 10,000 m³ held above the
+adjoining ground — reaches far below the hydrological inventory's, and it shows: **366 of the
+399 with a capacity are smaller than the inventory's own cut-off, and only 37 of the 400
+appear in it at all**. Run the same edition comparison over the 316:
+
+| what the tracer will need | Welsh impounding reservoirs |
+|---|---|
+| the second edition shows the valley | 142 |
+| second edition, surveyed while the dam was building | 9 |
+| the first edition only | 27 |
+| first edition, surveyed while the dam was building | 18 |
+| **earlier than both editions** | **87** |
+| no year built | 33 |
+
+**Eighty-seven predate both editions** — **more than a quarter** of the Welsh impoundments
+that carry a year, against about one in eight in the inventory's England-and-Wales set. The
+two counts are over different populations, the register reaching much smaller reservoirs than
+the inventory does, so it is the proportion that compares and not the totals. And the reason
+is the survey rather than the reservoirs: **the Welsh county first editions were surveyed
+late, mostly 1873–1888**, so a dam of the 1850s has no pre-flood Ordnance Survey sheet at
+all. For those the recourse is the pre-Ordnance-Survey county maps — [the same shelf](evidence#maps-that-show-the-valley-before-the-dam) the mill
+mapping was compiled from.
+
+**Treat those years as declarations, not as dates.** A registered year is what the undertaker
+wrote on a form at registration, with no source recorded, and the rounding shows it: **112 of
+the 365 end in a zero**, against roughly a tenth expected by chance. A fifth to a quarter are
+approximations. The two oldest — Llyn Frogwy at 1350 and Llyn Llwydiarth at 1500 — are claims
+on a regulatory return and should be read as claims.
+
 **Read the two middle rows as statements about counties, not about sheets.** The comparison
 is per historic county and the survey spans are long — Yorkshire 1844–1893, Lancashire
 1842–1893, and those two hold 73 of the 273 entries between them. *Surveyed while the dam was
