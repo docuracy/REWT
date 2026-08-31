@@ -155,13 +155,23 @@ gazetteer of ports does not.
   historical ports, however good, records where trade happened and not where rivers end; it is
   a sample where this needs a structural feature.
 
-**One distinction has to be kept sharp, because it decides which phase this belongs to.** A
-path optimised for *distance* is a geometric object with no year on it, and could be built
-alongside the modern network. A path optimised for a particular vessel in a particular month —
-which is what a sailing-route model actually computes, from wind, current, draught and
-visibility — is a **historical claim**, and belongs with the dated cross-sections. They are
-different objects that would look similar on a map, and building the second while calling it
-the first is exactly the kind of drift this project is arranged to prevent.
+**One distinction has to be kept sharp, because it decides which phase this belongs to — and
+the cleanest test is what each object *consumes*.** A path optimised for *distance* needs a
+coastline and a graph over the sea, and nothing else: no wind, no current, no bathymetry, and
+therefore no year. It is a geometric object and could be built alongside the modern network. A
+path optimised for a particular vessel in a particular month needs environmental fields, and
+the moment it reads them it is making a **historical claim** — so it belongs with the dated
+cross-sections. The two would look similar on a map, and building the second while calling it
+the first is exactly the drift this project is arranged to prevent. Reading what a thing was
+computed *from* separates them more reliably than reading what it says.
+
+**The coastline this needs is already in hand.** OS Boundary-Line ships a `high_water` layer —
+32,850 line features, already fetched, already declared, Open Government Licence. That matters
+because coastline geometry is the one part of a sea graph that tends to carry an encumbrance:
+the openly available global coastlines are largely OpenStreetMap-derived and share-alike, and
+a derived database of one inherits that. **The routing method is the valuable part and it
+carries no such constraint; the coastline under it is interchangeable.** Build the graph over
+the OGL coastline and the result stays publishable under this project's own rule.
 
 **Exit condition.** No node carries more than a nominal flow into nowhere; the unreached
 residue is *explained* rather than merely counted; and the audit runs clean or every

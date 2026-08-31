@@ -291,6 +291,26 @@ are the same corpus the [mill mapping](https://maps.nls.uk/projects/mills-of-bri
 digitises or georeferences that material serves the drowned valleys and the mill channels at
 once, which is worth knowing before either is costed separately.
 
+### Take the method, not the data
+
+Twice now the same answer has come out of a licence problem, and it is worth naming because it
+will come up again. A source that cannot be republished may still be **followed**: its citations
+lead to material that can be retraced independently, and its *method* is not its data.
+
+- A dated navigation corpus that cannot be redistributed names, section by section, where each
+  course came from. Follow the citation, get the map or the book, and trace it here at
+  six-inch resolution. **The finding travels; the geometry does not.**
+- A sea-routing graph built over an OpenStreetMap coastline inherits share-alike, because a
+  derived database of ODbL data is share-alike whatever anyone intends. But the *routing
+  method* carries nothing, and the coastline under it is interchangeable — [Boundary-Line's
+  `high_water`](#terrain) is Open Government Licence and already in hand.
+
+**An author's willingness is not the binding constraint when an input already imposed one**,
+which is the same lesson as the share-alike gazetteers and the safeguarded deposit, arriving
+from a third direction. The corollary is the useful part: ask what a dataset is *made of*
+before asking who owns it, because the answer often shows a way round that does not need
+anybody's permission.
+
 **The licences here are per image, not per site.** The National Library of Scotland offers
 much of its map imagery under CC-BY with the acknowledgement "Reproduced with the permission
 of the National Library of Scotland", but is explicit that terms vary by collection, with
