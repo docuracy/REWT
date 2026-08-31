@@ -398,15 +398,24 @@ it can be had are unresolved rather than closed.
 
 Two routes exist and they say different things about the same data. The **year slices**
 deposited with the UK Data Service — 1820, 1851, 1861, 1881 — are **safeguarded data under
-the End User Licence**: downloadable by registered users, and the licence does not confer a
-right to share the collections *or datasets derived from them*. That is disqualifying under
-[this project's licence rule](#licensing-and-why-this-repository-is-structured-as-it-is), and
-it applies to a derived REWT layer as much as to a copy. By the other route, CAMPOP's own
-catalogue describes those same year slices as *"freely available to other researchers"* — but
-**an access statement is not a redistribution grant**, and no licence is named. Meanwhile the
-dataset that actually carries the dates, the dynamic 1600–1948 GIS, never reached the UK Data
-Service at all, and by the catalogue's own rule — datasets with filenames listed are shareable,
-those without are not — it is among the ones not currently offered.
+the End User Licence**, downloadable by registered users, and that licence says in terms that
+*"nothing in this Agreement confers any right to share Data Collections or Dataset(s) derived
+from them"*. **Derived** is the word that matters: it catches a REWT layer built on it as
+surely as a copy, which is disqualifying under [this project's licence rule](#licensing-and-why-this-repository-is-structured-as-it-is).
+
+By the other route, CAMPOP's own catalogue describes those same year slices as *"freely
+available to other researchers"* — but **an access statement is not a redistribution grant**.
+It says who may have the data, not what they may do with it, and no licence is named anywhere
+on the page.
+
+And the dataset that actually carries the dates never reached the UK Data Service at all. The
+catalogue offers a rule for what is shareable — *"datasets with filenames specified are
+available for sharing with others, while datasets without file names are not"* — but as the
+page stands **it lists no filenames for anything**, so by its own criterion nothing is
+offered, and the four year slices are exempt only because their entries say so in words. The
+dynamic 1600–1948 GIS and the three network-analysis layers carry no such sentence. Whether
+the filenames were once there and have been stripped, or the rule describes a practice never
+implemented, it points the same way: **ask, rather than infer.**
 
 **So this is unlike every other negative on this page, because asking would settle it.**
 Domesday fails on licence *and* would not answer the question, so permission buys nothing.
