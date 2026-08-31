@@ -32,6 +32,15 @@ was read from, a terminus ante quem from cartographic attestation with no docume
 archaeological date behind it. Earlier evidence that a mill stood is earlier evidence that a
 leat existed, and that is the whole of what it offers.
 
+**The archaeological registers were checked and cannot date a leat either.** The National
+Heritage List for England is open, national and updated daily, but its published form carries
+**no monument-type field at all** — only a free-text name — so a watercourse has to be
+selected by string exactly as in GB1900, and the only structured date it holds is the date of
+*listing*, not of the asset. A few hundred names containing *mill*, and a few dozen containing
+*leat*, against some four thousand labelled mill channels. The Welsh equivalent is more
+promising and is not yet measured: the National Monuments Record of Wales does publish a
+monument-type classification, which is a structured field where England offers only prose.
+
 The **first series** matters where the second is too late: much of Victorian water supply
 predates 1888, so for a valley drowned in the 1870s the second series shows the lake and
 not the river. It is county-by-county rather than a single national mosaic, which is why it
@@ -83,6 +92,17 @@ not a substitute and was tested: 24 of 1,125 items typed as UK reservoirs carry 
 construction date, and Kielder, Rutland, Ladybower, Haweswater, Vyrnwy and Derwent are all
 among those that do not.
 
+**The statutory registers are the better instrument, and only one country publishes one.**
+Every reservoir holding water above the level of the surrounding ground is registered under
+the Reservoirs Act — over 25,000 m³ in England, over 10,000 m³ in Wales — which is a *raised
+water* test, far closer to "this drowned a valley" than a storage threshold is, and which
+reaches well below the hydrological inventory. **Natural Resources Wales publishes the Welsh
+register as open data** under the Open Government Licence, with a year built for most
+entries. **The Environment Agency does not publish the English one**: it must be requested by
+letter, email or telephone. Treat a registered year as what it is — a declaration made by the
+undertaker on a regulatory form, with no source recorded — and not as the same kind of
+evidence as the inventory's flagged and referenced dates.
+
 **What the date buys is the edition.** Compared against the County Series survey dates for
 the county, a completion year says which map shows the valley before it was flooded — and
 two in five of the impounding reservoirs in England and Wales need the first edition or
@@ -104,6 +124,60 @@ routed across rather than along.
 A third, larger population — **19,434 courses fossilised in parish boundaries** — is
 identifiable but rests on a licence-encumbered boundary set, and so cannot be published
 from. It is noted here because its absence is a real limit, not an oversight.
+
+### Maps that show the valley before the dam
+
+The six-inch is the base case and its limit is now measured rather than assumed: two in five
+of the impounding reservoirs in England and Wales need the first edition or earlier, and in
+Wales, where the county first editions were surveyed late — mostly 1873–1888 — a large
+minority of reservoirs predate **both** editions. So the question "what shows the valley
+before the dam" has to be answered below the six-inch, and this is what is on the shelf.
+
+| source | what it shows | state |
+|---|---|---|
+| **[OS six-inch County Series](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}**, 1st and 2nd editions | the channel itself, 1:10,560 | georeferenced, national — the base case, and too late for a large minority |
+| **[OS one-inch Old Series](https://maps.nls.uk/os/one-inch-england-wales/){:target="_blank"}**, 1801–1869 | the valley; rarely the channel, at 1:63,360 | georeferenced, 746 sheets — earlier than the six-inch over much of the country, and **untested for this purpose** |
+| **Pre-Ordnance-Survey county maps**, c.1729–1836 | valley and settlement at county-map scale | scattered across a dozen libraries; georeferencing is the tracer's problem |
+| **Tithe maps**, 1836–1852 | the best large-scale coverage before the six-inch | **Wales: 1,224 maps, over 95% of the country, georeferenced by volunteers.** England: no national equivalent |
+| **Enclosure maps and awards** | large scale, patchy by construction | county record offices; unassessed |
+| **Deposited plans for the waterworks Acts** | the works *and the ground taken* — the channel, not only the valley | Parliamentary Archives and county record offices; unassessed |
+
+**The deposited plans are the most promising thing on that list and the least examined.**
+Every reservoir built under a private Act left plans deposited with Parliament and with the
+clerk of the peace, showing the works and the land they would take — which is the valley
+before the dam, drawn at large scale by someone who had to be accurate because ground was
+being compulsorily purchased. That is the same argument this page already makes about
+navigation legislation, applied to a different class of work, and it is the only source here
+that would show a *channel* rather than a valley.
+
+**Two of the strands meet on the same shelf.** The pre-Ordnance-Survey county maps are the
+only cartographic evidence for the Welsh reservoirs that predate both OS editions, and they
+are the same corpus the [mill mapping](https://maps.nls.uk/projects/mills-of-britain/){:target="_blank"} was compiled from. A project that
+digitises or georeferences that material serves the drowned valleys and the mill channels at
+once, which is worth knowing before either is costed separately.
+
+**The licences here are per image, not per site.** The National Library of Scotland offers
+much of its map imagery under CC-BY with the acknowledgement "Reproduced with the permission
+of the National Library of Scotland", but is explicit that terms vary by collection, with
+some under CC-BY-NC-SA and third-party content carved out entirely. That is the same lesson
+as the GB1900 gazetteers and the mill layers: **an item's licence is not its collection's
+licence**, and this project checks the item.
+
+### What has been looked for and not yet found
+
+Named so that nobody repeats the search, and so that anyone who can close one of these knows
+it is wanted:
+
+- **An open source enumerating the English large raised reservoirs with locations.** The
+  statutory register is not published; the flood-extent dataset implies the list without
+  naming it.
+- **Licence and bulk access for the Welsh tithe maps**, which are digitised and georeferenced
+  but whose reuse terms are not established here.
+- **Whether the one-inch Old Series shows enough**, at 1:63,360, to be worth a tracer's time.
+  Testable on a single reservoir.
+- **Deposited plans**: coverage, survival, access.
+- **An open, place-located version of the Domesday mills**, which is the one source that
+  could date a mill channel rather than merely attest it earlier.
 
 ## The documentary record
 
