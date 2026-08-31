@@ -166,12 +166,10 @@ the first is exactly the drift this project is arranged to prevent. Reading what
 computed *from* separates them more reliably than reading what it says.
 
 **The coastline this needs is already in hand.** OS Boundary-Line ships a `high_water` layer —
-32,850 line features, already fetched, already declared, Open Government Licence. That matters
-because coastline geometry is the one part of a sea graph that tends to carry an encumbrance:
-the openly available global coastlines are largely OpenStreetMap-derived and share-alike, and
-a derived database of one inherits that. **The routing method is the valuable part and it
-carries no such constraint; the coastline under it is interchangeable.** Build the graph over
-the OGL coastline and the result stays publishable under this project's own rule.
+32,850 line features, already fetched, already declared, Open Government Licence. Several other
+open coastlines exist and would serve, which is the point: **the routing method is the valuable
+part, and the coastline under it is interchangeable.** So the licence question that attaches to
+any particular coastline is one this project can simply route around, and does.
 
 **Exit condition.** No node carries more than a nominal flow into nowhere; the unreached
 residue is *explained* rather than merely counted; and the audit runs clean or every

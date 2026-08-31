@@ -300,16 +300,17 @@ lead to material that can be retraced independently, and its *method* is not its
 - A dated navigation corpus that cannot be redistributed names, section by section, where each
   course came from. Follow the citation, get the map or the book, and trace it here at
   six-inch resolution. **The finding travels; the geometry does not.**
-- A sea-routing graph built over an OpenStreetMap coastline inherits share-alike, because a
-  derived database of ODbL data is share-alike whatever anyone intends. But the *routing
-  method* carries nothing, and the coastline under it is interchangeable — [Boundary-Line's
-  `high_water`](#terrain) is Open Government Licence and already in hand.
+- A sea-routing graph inherits the terms of the coastline it is built over — a derived
+  database of share-alike data is share-alike whatever anyone intends. But the *routing method*
+  carries nothing, and coastlines are interchangeable: several open ones exist, and
+  [Boundary-Line's `high_water`](#terrain) is Open Government Licence and already in hand.
 
 **An author's willingness is not the binding constraint when an input already imposed one**,
 which is the same lesson as the share-alike gazetteers and the safeguarded deposit, arriving
-from a third direction. The corollary is the useful part: ask what a dataset is *made of*
-before asking who owns it, because the answer often shows a way round that does not need
-anybody's permission.
+from a third direction. The corollary is the useful part: **ask what a dataset is made of
+before asking who owns it.** Sometimes the answer is that the constraint does not bind at all —
+a component can be swapped for an open equivalent, or the encumbered layer covers ground this
+project never enters.
 
 **The licences here are per image, not per site.** The National Library of Scotland offers
 much of its map imagery under CC-BY with the acknowledgement "Reproduced with the permission
