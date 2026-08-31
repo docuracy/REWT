@@ -59,22 +59,17 @@ map is worse than no medieval map, because it looks like a finding.
 
 ## Publication
 
-A **short communication in [*Landscape History*](https://www.tandfonline.com/journals/rlsh20){:target="_blank"}** is proposed, in collaboration with
-Justin Colson ([Institute of Historical Research](https://www.history.ac.uk/){:target="_blank"}, University of London),
-covering both this river network and a companion surface modelling **wooded country from
-woodland-indicative place-names**.
+**A paper will announce the first edition**, which settles its timing: after the modern
+network is sound, and not waiting on the documentary research behind the later ones. Venue
+and collaborators are not yet decided, and this page will name them when they are rather
+than before.
 
-**That companion is not a map of medieval woodland**, and should not be described as one.
-It is an inference from the density of name elements — *lēah*, *den*, *coed* — measured as a
-*ratio* against all names rather than counted, because a single clearing-name is evidence of
-open ground and only a concentration of them is evidence of wood. Count the raw points and
-you map settlement; take the ratio and you map woodland. What it shows is where the naming
-suggests wooded country was, which is a different claim from where woodland is recorded, and
-it is offered as the former.
-
-**It will announce the first edition** — which settles its timing: after the modern network
-is sound, and not waiting on the documentary research behind the later ones. The journal is
-published by the [Society for Landscape Studies](https://www.landscapestudies.com/journal/){:target="_blank"}.
+What the paper is *about* is decided, and it follows from [the navigation strand](evidence#navigation):
+a traced, dated, routable watercourse network is an input to the economic history of
+movement — what could be carried, from where, at what cost — and that is a literature with
+its own established datasets and its own people. The natural collaborators are the ones
+already working on transport and industrialisation, and the contribution offered to them is
+the channel rather than the question.
 
 **And it is meant to bring people in.** The paper is as much a solicitation as an
 announcement. [The scale of the work](scale) sets out which strands can be finished in house
