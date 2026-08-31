@@ -1,0 +1,40 @@
+# Pinned so an empty checkout builds the same thing twice.
+# EPSG:27700 throughout; nothing here needs an API key.
+
+# Database — one module owns the connection (AGENTS.md); spatial extension loaded at runtime.
+duckdb==1.4.3
+
+# Geometry, I/O and projection
+geopandas==1.1.2
+shapely==2.1.2
+pyogrio==0.12.1
+pyproj==3.7.1
+fiona==1.10.1
+rtree==1.4.1
+
+# Raster: Terrain 50 nationally, LiDAR per section
+rasterio==1.4.4
+numpy==1.26.4
+scipy==1.15.3
+
+# Hydrological conditioning and basin delineation
+whitebox==2.3.6
+
+# Graph work: components, crawl, spanning trees
+networkx==3.4.2
+
+# Tabular
+pandas==2.3.3
+pyarrow==22.0.0
+
+# Acquisition and configuration
+requests==2.32.3
+PyYAML==6.0.2
+
+# CLI and reporting
+typer==0.15.1
+rich==13.9.4
+tqdm==4.67.1
+
+# Tests run in the build
+pytest==8.3.4

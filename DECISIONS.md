@@ -133,3 +133,96 @@ does not apply to it. That is what the `mode: both` case exists for.
 in the modern network is not a licence to route historical water down them. A 1790s cut
 must not carry 1348 water. The predecessor made exactly this mistake with post-medieval Fen
 drains, and the fix belongs in the dating stage, not here.
+
+---
+
+*The entries below were taken while implementing Stage 1.*
+
+**D-012 — Python 3.10, DuckDB, a pinned virtualenv, and stages as a registry rather
+than a list.** *2026-08-31*
+
+D-010 recorded Python and DuckDB as defaults; both are kept, and nothing was found that
+argues against either. Three things it left open are settled here.
+
+**Dependencies are pinned in `requirements.txt` and installed into `.venv`.** "One
+command from an empty checkout, producing the same result every time" is not satisfied
+by whatever happens to be on the machine.
+
+**Stages declare what they read and what they write** (`rewt/pipeline.py`), and the run
+order is derived from those declarations. PLAN.md §2 asks for this because one stage
+once rebuilt a table another had written columns into. Declaring it is not enough on
+its own, so the registry additionally **refuses to let two stages write the same
+artefact** — that is the shape the failure actually took.
+
+**A stage is skipped only when its fingerprint matches and its outputs exist.** The
+fingerprint covers the stage's own source code, the parameters it declares it reads,
+the source declarations it reads, and the fingerprints of everything upstream. This is
+the answer to the corrected setting that sat unused for a month behind a cached raster.
+
+**D-013 — Two identifier schemes: the publisher's, and a digest of our own geometry.**
+*2026-08-31*
+
+PLAN.md §10 requires that a stretch present in two published editions carries the same
+id in both, which rules out anything derived from row order. A feature that came from
+Ordnance Survey keeps its identity as `os:link:<uuid>`. A feature this project creates
+is identified by *what it is* — `rewt:link:<digest of its own geometry>` — so rebuilding
+the database gives a connector between the same two places the same id again, and a
+reader can tell survey from correction without reading the code (§7).
+
+The line digest is direction-independent, because a reversal moves no geometry.
+
+**D-014 — No stage adds a column to another stage's table, and there is exactly one
+routing graph.** *2026-08-31*
+
+Scope, reachability and flags are narrow tables keyed on `link_id` (`link_scope`,
+`link_reach`, `link_flag`) rather than columns on `link`. `link` is written once, by the
+loader, and never altered. This is a direct answer to §2's stale-values failure: a stage
+cannot leave another stage's column behind if it has no column there.
+
+The routing graph is the table `edge`, and it is the only one. §8 records that two
+graphs over one geometry could not be reconciled after the fact, and that this is where
+the predecessor stopped. A reversal exists in `edge` and nowhere else; `link` keeps the
+geometry and the published attributes untouched, exactly as §5 requires.
+
+**D-015 — The loader's calibration tolerance is 3%, and the check is a gate.**
+*2026-08-31*
+
+PLAN.md §6 gives figures for OS Open Rivers *as shipped*, and says that if the loader
+does not match closely, nothing downstream is worth looking at. The issue in hand is
+2026-04; the plan's figures were measured on an earlier one, and the product is
+reissued twice a year.
+
+Measured: total links -0.1%, inlandRiver -0.7% / -0.0%, canal -0.5% / -0.0%, tidalRiver
+-0.4% / +0.0%, lake -1.4% / **-2.4%**, nodes 197,734 against ~198,000, and **exactly
+three** links recorded against the digitised line. Lake links are the most heavily
+generalised and move most between issues. A loader bug is structural — wrong units,
+dropped rows, misparsed forms — and would show as tens of per cent, so 3% separates the
+two cases. The check raises and stops the build; it is not a warning.
+
+**D-016 — D-011's canal band table reproduces exactly; its reading of the nearest band
+does not.** *2026-08-31*
+
+The census independently reproduces D-011's measurements on issue 2026-04: 2,721 km of
+canal against 2,706, 1,947 km already sharing a component with river, lake or tidal
+water against 1,932, **288 canal-only components against 289**, 774 km against 774, and
+the distance bands **163 / 67 / 30 / 28** against D-011's **163 / 65 / 33 / 28**. Two
+independent measurements agreeing this closely is worth having.
+
+**The interpretation is where they part.** D-011 reads the nearest band as "163 within
+10 m — touching, merely unjoined", and concludes that those are "**junctions, not
+connectors** — no geometry is invented, a node is merged". Measured on this issue, that
+does not hold. Of the 663 endpoints belonging to canal-only components, **five** lie
+within a metre of a non-canal watercourse, and fourteen within ten metres. The 151
+components sitting at exactly 0 m are therefore, in the main, canal lines **crossing**
+river lines with both their own ends elsewhere.
+
+A canal crossing a river mid-line is the signature of an aqueduct or a culvert — a
+structure built to keep the two waters apart. Merging a node there would route the river
+down the canal, which is the opposite of the intended repair. So the nearest band is not
+163 cheap junctions; it is 163 adjudications, most of which will conclude *do not join*.
+
+This does not disturb D-011's decision, which is that canals are inside the
+reachability requirement, and it does not make the work unbounded — it is still ~290
+places. It disturbs the estimate of how much of it is trivial, and it is recorded so
+that the estimate is not quoted again unexamined. **Each is still to be adjudicated at
+the place**, per D-011.

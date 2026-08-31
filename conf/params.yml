@@ -1,0 +1,137 @@
+# Thresholds and parameters. AGENTS.md: these live in configuration, not as literals
+# in a function. Every value here is quoted or justified by PLAN.md; where the plan
+# gives a measured figure the section is named, and where it does not the choice is
+# ours and is recorded in DECISIONS.md.
+
+crs:
+  working: "EPSG:27700"      # metric work throughout — buffers, distances, gradients
+  export: "EPSG:27700"       # EPSG:4326 only if a consumer asks; §7 says 27700
+
+load:
+  # OS encodes flow direction relative to the digitised line. Resolve it once, here.
+  # PLAN.md §5: three links in 194,471 are recorded against the digitised line.
+  flow_direction_field: flow_direction
+  # The values OS uses for the two senses. Anything else is a hard error.
+  direction_with_line: ["inDirection", "in direction", "true"]
+  direction_against_line: ["inOppositeDirection", "in opposite direction", "false"]
+  # Endpoint coordinates are rounded to this many metres for joining. AGENTS.md:
+  # spatial self-joins over ~120,000 links are prohibitively slow; join on rounded
+  # endpoints instead. 0.001 m is far below the survey's own precision.
+  endpoint_round_m: 0.001
+
+topology:
+  # "Touching but not joined": endpoints coincident within a metre sharing no node (§6).
+  coincidence_tolerance_m: 1.0
+  # Component size bands the census reports in (§6).
+  component_bands_km: [1.0, 10.0]
+  # Below this a component is a fragment for reporting purposes.
+  fragment_km: 1.0
+
+seeds:
+  # A seed is a node with no outflow standing at tidal water. Taken from the survey's
+  # own form, never from a coastline (§5) — a coastline decides the question by
+  # distance from a modern shore and is wrong at exactly the estuaries that matter.
+  form_field: form
+  tidal_forms: ["tidalRiver"]
+  # Seed anywhere in an in-scope basin, INCLUDING Scotland: the Border Esk's mouth is
+  # in Dumfriesshire and a basin seeded only inside England and Wales strands it.
+  restrict_to_england_and_wales: false
+
+forms:
+  # The four values of `form` the plan reports by. Any other value is a finding.
+  expected: ["inlandRiver", "lake", "tidalRiver", "canal"]
+  flat_water: ["canal", "lake"]
+
+terrain:
+  # OS Terrain 50: 50 m posts, RMSE about 4 m (§5).
+  resolution_m: 50
+  nominal_rmse_m: 4.0
+  nodata: -9999.0
+  # The screen's bands, from §5's table. A fall inside the error bar says nothing.
+  screen_bands_m:
+    clear_agree: 4.0
+    weak: 0.5
+  # Conditioning for basin delineation only. The burned raster and the raw raster are
+  # kept distinctly named because sampling the burned one to check direction is
+  # circular (§5, D-007).
+  burn_depth_m: 20.0
+  breach_max_dist_cells: 500
+  # Sea is masked out of Terrain 50; a node on nodata is confirmation of tidal water,
+  # not a missing sample (§6).
+  sea_is_nodata: true
+
+basins:
+  # Delineation is over the conditioned surface. The stream threshold decides how many
+  # basins come out; it is a reporting granularity, not a hydrological claim.
+  flow_accumulation_cells: 400        # 400 * 50 m * 50 m = 1 km^2
+  min_basin_area_km2: 1.0
+  # PLAN.md §4.1 calibration for the provisional scope: 122,104 links kept,
+  # 72,367 excluded, over a Great Britain network.
+  calibration:
+    links_in_scope: 122104
+    links_out_of_scope: 72367
+    length_in_scope_km: 101875
+    length_out_of_scope_km: 50851
+
+scope:
+  # Two rules (§4.1). A link is in scope if its downstream end falls in an in-scope
+  # basin, OR if it falls in England or Wales. The second is not a fudge: tidal water
+  # is masked out of the DEM and so sits on no basin at all.
+  countries_in_scope: ["England", "Wales"]
+  # A basin is in scope if any part of it lies in England or Wales — but a sliver of
+  # overlap from boundary generalisation is not "any part". Require this much.
+  min_overlap_area_km2: 1.0
+  # Named cross-border cases the definition of done asks to be listed individually.
+  expected_cross_border: ["Tweed", "Esk", "Eden", "Dee", "Severn", "Wye"]
+
+lidar:
+  # Per section only, never nationally (D-006). Sample a window and take a low
+  # percentile: a point sample lands on a bank, a bridge deck or a building (§5).
+  window_m: 80
+  percentile: 10
+  # Treat a fall of a few centimetres as no answer: the composite mixes flight epochs
+  # and a river's surface moves with its stage.
+  no_answer_m: 0.05
+  # The English service returns ZEROS over Wales, not nodata. Test coverage
+  # explicitly; never infer it from nodata (§5).
+  england_zero_guard: true
+  zero_guard_fraction: 0.98    # a window this flat at exactly 0.0 m is absence
+  request_timeout_s: 60
+  cache: true
+
+repair:
+  # A connector is defined by its geometry, not by a link id: each end is resolved onto
+  # the network, cutting a link where there is no node. Snapping to the nearest node
+  # left connectors attached to nothing 280 m and 377 m away (§5).
+  connector_snap_node_m: 1.0        # only this close does an end reuse an existing node
+  connector_split_link_m: 10.0      # beyond this an end resolves onto no link: an error
+  # A junction adds no geometry at all: the target is cut and the node merged.
+  junction_max_offset_m: 10.0
+  # Order matters (§5): corrections applied before their targets exist are skipped
+  # silently. Every skip is named by identifier.
+  fail_on_unresolved: true
+
+canals:
+  # §5's measured bands for canal-only components and their nearest non-canal
+  # watercourse. Reported so the shape of the work is visible before it is done.
+  nearest_bands_m: [10.0, 50.0, 200.0, 2000.0]
+
+water_bodies:
+  # Skeletonise only where it earns its place (§5): where the survey gives no route,
+  # or where a schematic line is doing real routing work.
+  min_polygon_area_m2: 10000.0
+  exclude_tidal: true              # width can measure the sea
+  medial_axis_interval_m: 25.0
+
+audit:
+  # The audit is part of the build and fails loudly (§2, §6).
+  fail_build_on_defects: false     # set true once the exit condition is met
+  # A defect this small is nominal (§1: "no node carries more than a nominal
+  # catchment draining into nowhere").
+  nominal_upstream_km: 0.5
+  report_top_n: 50
+
+determinism:
+  seed: 20260831
+  # Deterministic ordering wherever a result depends on iteration order (§2).
+  order_by: publisher_id
