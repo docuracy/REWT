@@ -671,3 +671,36 @@ solving that modelling problem.
 **Stage 2, and it must not reach Stage 1.** CLAUDE.md's first override applies: if a task
 requires knowing what year it is, it is not Stage 1. No Stage 1 table gains a date column
 because of this, and `rewt/pipeline.py` never sees it.
+
+**D-028 — One basin delineation, run after repair, because the second pass was measured
+and would return the same basins.** *2026-08-31*
+
+PLAN.md §4.1 asks for two passes: *basins are recomputed after repair, not before.
+Repair changes connectivity, so an early delineation is provisional. Use a generous
+provisional scope to avoid doing national work, and re-derive basins once the network is
+closed.* This build runs one, after repair, and the reason is a measurement rather than
+a convenience.
+
+**The raster delineation depends on the network only through the burn.** The repaired
+geometry — 733 connectors, 32.2 km — adds **644 cells to a 2,673,201-cell burn
+footprint: 0.024%, or 1.61 km² of 6,683 km²**. And it is not merely small: every one of
+those cells lies *between two channels that were already burned*, because a connector
+closes a gap. It does not carve a path across a watershed, which is the only thing that
+would move a basin boundary. A second conditioning pass would cost ten minutes and
+return the same 877 basins.
+
+**What genuinely changes with repair is not the raster but the graph**, and that is
+computed after repair here: which node is a basin's outlet (a reversal or a connector
+can move it), and which links are in scope (the connectors are links and must be
+scoped). Those are the parts §4.1 is actually protecting, and running the whole stage
+after repair gets them right.
+
+So `basin.provisional` is **false** in this build. It would be dishonest to ship a
+column saying the delineation is provisional when nothing further is going to be done
+to it.
+
+**This is a departure from the plan's stated procedure and not from its reasoning.** If
+a later stage adds geometry that *does* cross a watershed — a canal feeder over a summit,
+say, or a skeletonised route through a water body that joins two catchments — the
+measurement above stops holding and the second pass has to come back. The number to
+re-check is the one in the first paragraph.

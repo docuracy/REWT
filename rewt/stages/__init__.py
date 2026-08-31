@@ -15,6 +15,7 @@ from . import (  # noqa: F401  (imported to register)
     curated_stage,
     repair,
     screen,
+    flags,
     crawl,
     audit,
     export,

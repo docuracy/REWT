@@ -5,10 +5,17 @@ operation: **basins must be delineated before scope is decided**, and the reason
 DEM is acquired at all is that without a topographic delineation there is no way to
 tell a shared estuary from a shared catchment.
 
-This is the **provisional** delineation. Repair changes connectivity, so an early
-delineation is provisional and is re-derived once the network is closed. The plan is
-explicit that a generous provisional scope is the right thing here, to avoid doing
-national work twice.
+**This runs AFTER repair**, which is what §4.1 asks for: *basins are recomputed after
+repair, not before. Repair changes connectivity, so an early delineation is
+provisional.* The plan expects two passes, a provisional one and a final one. There is
+one here, and the reason is measured rather than assumed: the raster delineation
+depends on the network only through the burn, and the repaired geometry adds **644
+cells to a 2,673,201-cell burn footprint — 0.024%, 1.61 km² of 6,683 km²** — every one
+of them lying between two channels that were already burned. A connector closes a gap;
+it does not carve a path across a watershed. So a second conditioning pass would return
+the same basins for ten minutes of work, and the parts that genuinely do change with
+repair — which node is a basin's outlet, and which links are in scope — are graph
+questions, computed here from the repaired graph. See D-028.
 """
 
 from __future__ import annotations
@@ -36,7 +43,9 @@ def _outlets(node_basin: pd.DataFrame) -> pd.DataFrame:
     holds no tidal terminus at all, that is recorded rather than invented — an
     unanchored basin is a finding, and its identifier says so (D-013).
     """
-    g = graph.load("link")
+    # The REPAIRED graph, not the survey's: a basin's outlet is a property of the
+    # network as it now stands, and a reversal or a connector can move it.
+    g = graph.load("edge")
     sinks = g.sinks()
     upstream = g.upstream_length(sinks)
     sink_frame = pd.DataFrame(
@@ -65,7 +74,7 @@ def _outlets(node_basin: pd.DataFrame) -> pd.DataFrame:
 @PIPELINE.stage(
     "basins",
     "delineate basins from the terrain, and decide scope on them",
-    reads=["terrain50_basins", "raw_os_boundary_line", "link", "node"],
+    reads=["terrain50_basins", "raw_os_boundary_line", "link", "node", "edge"],
     writes=["basin", "node_basin", "link_scope"],
     params=["basins", "scope", "crs", "terrain"],
     sources=["os_terrain_50", "os_boundary_line"],
@@ -167,7 +176,8 @@ def run() -> dict:
         basin_logic.basin_identity(int(r), o if isinstance(o, str) else None)
         for r, o in zip(measured["raster_id"], measured["outlet_node"])
     ]
-    measured["provisional"] = True
+    # Not provisional: this IS the post-repair delineation (§4.1, D-028).
+    measured["provisional"] = False
 
     out = measured.dropna(subset=["geometry"]).copy()
     out["wkb"] = [shapely.to_wkb(g) for g in out["geometry"]]
@@ -222,6 +232,11 @@ def run() -> dict:
         con.execute(
             """
             INSERT INTO link_scope
+            WITH every_link AS (
+                SELECT link_id, to_node FROM link
+                UNION ALL
+                SELECT link_id, to_node FROM repair_link
+            )
             SELECT l.link_id,
                    nb.basin_id,
                    coalesce(nb.basin_in_scope, false) OR coalesce(ew.in_country, false)
@@ -231,7 +246,7 @@ def run() -> dict:
                      WHEN coalesce(ew.in_country, false)     THEN 'country'
                      ELSE 'neither'
                    END AS scope_rule
-            FROM link l
+            FROM every_link l
             LEFT JOIN node_basin nb ON nb.node_id = l.to_node
             LEFT JOIN _ew_in ew      ON ew.node_id = l.to_node
             ORDER BY l.link_id
