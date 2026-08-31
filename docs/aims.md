@@ -1,6 +1,6 @@
 # Aims
 
-[← REWT](index.md)
+[← REWT](index)
 
 ## What this produces
 

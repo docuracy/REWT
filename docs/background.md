@@ -1,6 +1,6 @@
 # Background
 
-[← REWT](index.md)
+[← REWT](index)
 
 ## The proof of concept
 

@@ -1,6 +1,6 @@
 # Methodology
 
-[← REWT](index.md)
+[← REWT](index)
 
 ## The finding that sets the order
 
@@ -94,6 +94,50 @@ the place. **Check at the place, never in the total.**
 > geometry and evidence to it. The alternative is to ask a cartographic product to supply
 > a topology it never had, which has been tried.
 
+> ### What an unburned terrain run actually does
+>
+> This qualification decides how far a terrain check can be trusted, and it cuts against
+> the idea above.
+>
+> Any hydrological conditioning **burns the mapped network into the surface** before
+> routing, deeply enough that the burned line wins against 50 m cells over embanked and
+> levelled ground where the true gradient is below the vertical resolution. Wherever the
+> survey draws a channel through a culvert or under a bridge, the burn cuts a trench and
+> the water follows it. **Continuity there is supplied by the survey's line, not by the
+> terrain** — which is precisely why a burned run is no use as independent evidence.
+>
+> Unburned, the two cases behave very differently on a bare-earth model:
+>
+> - **Bridges are not in it.** A deck is not ground, so a bridged valley stays continuous
+>   and routes correctly without help. This case is fine.
+> - **Embankments are ground, and they are in it.** A river culverted under a motorway or
+>   a railway meets, in the model, an unbroken dam. Flow ponds behind it — and depression
+>   *breaching* then carves a trench along the steepest descent, through the embankment at
+>   whatever point is lowest, which may be hundreds of metres from the actual culvert. The
+>   result is not a gap. It is worse: **a false continuation**, geometrically wrong and
+>   indistinguishable in the output from a real one.
+>
+> So the terrain's verdict is sound on **connectivity** — *can the water get from here to
+> the sea at all* — and unsound on **route** — *by which line*. That is still the question
+> this phase needs answered, because a dead end is a connectivity failure. But it means the
+> terrain may **flag and rank, never draw**. Any continuation it proposes is a place to
+> look, not a line to adopt.
+>
+> Three cheap things sharpen it, in rough order of value:
+>
+> 1. **Run it both ways and diff.** A discontinuity that appears in the *burned* run as
+>    well is a real gap in the survey; one that appears only unburned is an embankment
+>    artefact. That single comparison separates the two populations with no extra data.
+> 2. **Record breach depth per carve.** A trench cut several metres through ground is
+>    telling you it crossed an embankment; a shallow one is following a valley.
+> 3. **Mask the embankments** using the open road and rail networks — a culvert candidate
+>    is a road or railway crossing a modelled flow path. Most work, least certain, and it
+>    should follow the first two.
+
+**Exit condition.** No node carries more than a nominal flow into nowhere; the unreached
+residue is *explained* rather than merely counted; and the audit runs clean or every
+exception is named with a reason.
+
 ## 2 · Recover the old courses
 
 Only once the modern network is sound, because a traced course must attach to something.
@@ -120,6 +164,46 @@ the ground they replaced. The expectation is reasonable rather than established,
 first task in this strand is to test it on a sample and find out — a scheme at a time,
 recording what the record actually yields.
 
+**Exit condition.** Every *Old Course* and *New Cut* label adjudicated — traced, rejected
+with a reason, or recorded as illegible — with provenance per vertex; and every matched
+reservoir either traced from a pre-dam sheet or recorded as having none.
+[How many that is](scale).
+
+### Go to the sources, not to the synthesis
+
+The deeper point about this phase, and it reframes what existing scholarly GIS is *for*.
+
+A synthesis of medieval navigation is a **digitisation of other people's evidence** —
+documentary attestations of shipping, archaeological finds, place-name landing places, and
+courses fossilised in parish boundaries — published at the resolution a national synthesis
+needed. Where a course is boundary-derived it sits a median **236 m** from the modern
+channel.
+
+**That 236 m is not error.** It is the historical signal: the boundary remembers where the
+river was, and it is exactly the quantity a higher-resolution trace would sharpen. So the
+route to a better course is **the material behind the synthesis, retraced and georeferenced
+more finely than the synthesis needed** — not the synthesis resampled.
+
+> ### Why an existing synthesis is not spliced in
+>
+> An earlier plan had a further phase: connect the courses carrying no map label and no
+> traced replacement, so that the synthesis formed a network rather than a set of drawn
+> assertions. **It is dropped**, and the reasoning is worth keeping.
+>
+> A boundary-derived course sits a median 236 m from the modern channel. A traced course
+> sits where the ink is. Merging two geometries of different orders of accuracy means the
+> reconciliation gets made **by the pipeline, silently, at every junction** — in exactly
+> the places nobody is looking. Splicing a national synthesis into a traced network would
+> degrade it.
+>
+> The synthesis keeps its two proper roles: an **index** saying where to look, and a
+> **check** saying whether a trace is corroborated. Both are served by keeping it *beside*
+> the network as an evidence layer rather than *in* it.
+>
+> This also removes the hardest unsolved problem of the scoping exercise. Holding two
+> graphs over one geometry was entirely a consequence of keeping a synthesised line and the
+> modern network in a single table. If it is never spliced, the problem cannot arise.
+
 ## 3 · Model the flow
 
 Last, because it is cheap to re-run and meaningless on an unsound network. A per-cell
@@ -144,3 +228,14 @@ stays in the record. This is a research dataset; the audit trail is part of the 
 committed text file with its evidence, not in code.
 
 **The date is a parameter.** Nothing in the method fixes a single year.
+
+---
+
+## Where this is worked out in detail
+
+| | |
+|---|---|
+| [The rebuilt landscapes](regions/) | the regions where the modern channel is worthless, and the sources that record what was there before |
+| [The scale of the work](scale) | how much is bounded, how much is not, and who does it |
+| [Temporality](epochs) | which dates get published, and why an epoch is a build rather than a filter |
+| [Evidence](evidence) | what each source can and cannot say |
