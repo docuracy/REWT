@@ -47,5 +47,4 @@ See [Background](background.md).
 
 ---
 
-*Stephen Gadd, [Docuracy Ltd](https://docuracy.co.uk), with Justin Colson
-(University of Essex).*
+*Stephen Gadd, [Docuracy Ltd](https://docuracy.co.uk).*
