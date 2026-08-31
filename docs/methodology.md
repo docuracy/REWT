@@ -235,6 +235,37 @@ water balance routed over the network burned into a terrain model ([OS Terrain 5
 modern gauged flow — and reported as a **relative index of channel capacity**, never as a
 reconstruction of premodern discharge.
 
+### What the flow model is for, beyond drawing the river
+
+**Power available at a site is flow times fall**, and both are quantities this network will
+hold: a modelled discharge for every reach, and a drop along it taken from the terrain. So
+the same model that says how much water moved says **where water could be made to work** —
+and that is a different map from the river, with a different audience.
+
+Two questions follow, and they belong to different centuries. **Corn**: how much grinding
+capacity a district could raise, set against how many people it had to feed — the constraint
+that put a mill on nearly every workable fall in medieval England. And **power for tools**:
+the fall-and-flow that drove hammers, bellows, fulling stocks and finally machinery, which is
+where a hydrography stops being a landscape question and becomes an industrial one.
+
+**It is a potential surface, and must be published as one.** Three limits, stated here so
+they travel with it:
+
+- **Potential is not attestation.** A reach with power is not a reach with a mill. The
+  interesting output is the *disagreement* — power that was never taken up, and mills
+  standing on less fall than the model expects, which usually means a leat is doing work the
+  terrain model cannot see.
+- **The flow is a relative index** under a modern rainfall baseline, so the potential is
+  comparative and not a figure in kilowatts.
+- **A 50 m terrain model does not see a mill's head.** A weir and a leat make several metres
+  of fall over a few hundred, below what the national surface resolves. The product is a
+  **screening** layer that says where to look, not a site assessment.
+
+This is also what gives the mill channels a use even if they are never dated: **some four
+thousand labelled leats are a validation set** for a potential model, and a model that puts
+power where the surveyors found none, or none where they found a mill, has told you something
+either way.
+
 ---
 
 ## Principles

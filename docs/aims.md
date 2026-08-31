@@ -26,6 +26,11 @@ dataset being built to carry one.
   grew, where markets were sited, what could be moved and at what cost?
 - **Archaeologists and local historians**, who need to know where a river ran before it
   was straightened.
+- **Historians of industry and technology.** Flow and fall together give **water power
+  potential** — where a river could have been made to grind corn, and later to drive tools.
+  [What that is and is not](methodology#what-the-flow-model-is-for-beyond-drawing-the-river)
+  is set out with the method; the short form is that it is a screening surface, and its most
+  useful output is where it disagrees with the mills that were actually built.
 - **Anyone needing a routable hydrography of England and Wales**, historical interest or
   not. The first edition is useful on its own terms.
 

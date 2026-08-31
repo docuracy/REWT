@@ -639,6 +639,19 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
   graphs for one geometry and could not reconcile them.
 - **Corrections addressable by id.** The tooling that lets a reader report a defect
   depends on every drawn feature carrying an id they can send back.
+- **Fall per link, sampled from the UNCONDITIONED terrain.** A later stage models water
+  power potential, which is flow times head — and the flow half is already planned while the
+  head half is not. Recording the elevation of both ends of every link costs almost nothing
+  at the point where §5 already samples terrain, and cannot be recovered cheaply afterwards
+  without a second national pass.
+
+  **It must come from the unconditioned surface, for the same reason §5 gives about flow
+  direction:** a burned DEM has the network stamped into it, so a drop measured on it is
+  partly an artefact of the burn. Keep the two rasters distinctly named and sample the raw
+  one. Note also that a 50 m model does not resolve a mill's actual head — a weir and a leat
+  make metres of fall over a few hundred — so what is being stored is a screening quantity,
+  and the field should be named so that nobody later mistakes it for a site measurement.
+
 - **A reach that can be compared with a historic sheet, and a place to record the verdict.**
   Stage 2 will sweep every river course along its length against the earliest available
   six-inch edition — first edition where it exists, second where it does not — looking for
