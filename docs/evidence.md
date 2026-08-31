@@ -140,15 +140,43 @@ before the dam" has to be answered below the six-inch, and this is what is on th
 | **Pre-Ordnance-Survey county maps**, c.1729–1836 | valley and settlement at county-map scale | scattered across a dozen libraries; georeferencing is the tracer's problem |
 | **Tithe maps**, 1836–1852 | the best large-scale coverage before the six-inch | **Wales: 1,224 maps, over 95% of the country, georeferenced by volunteers.** England: no national equivalent |
 | **Enclosure maps and awards** | large scale, patchy by construction | county record offices; unassessed |
-| **Deposited plans for the waterworks Acts** | the works *and the ground taken* — the channel, not only the valley | Parliamentary Archives and county record offices; unassessed |
+| **Deposited plans for the waterworks Acts** | the works *and the ground taken* — the channel, not only the valley | indexed nationally and item by item; **nothing digitised** |
 
-**The deposited plans are the most promising thing on that list and the least examined.**
-Every reservoir built under a private Act left plans deposited with Parliament and with the
-clerk of the peace, showing the works and the land they would take — which is the valley
-before the dam, drawn at large scale by someone who had to be accurate because ground was
-being compulsorily purchased. That is the same argument this page already makes about
-navigation legislation, applied to a different class of work, and it is the only source here
-that would show a *channel* rather than a valley.
+**The deposited plans are the best-evidenced route on that list, and water schemes are what
+the series was created for.** From **1793**, Standing Orders required an application for a
+local Act to be accompanied by a detailed plan deposited with the Clerk of the Peace of every
+county affected — and the requirement covered **canals and waterworks**, railways only being
+added in 1803. Each plan came with a *book of reference* naming the owner and occupier of
+every parcel of land the scheme would take. That is the argument this page already makes
+about navigation legislation, in its strongest form: a compulsory purchase is a legal act
+over specific ground, drawn at large scale by someone who had to be accurate about it. It is
+the only source here that would show a **channel** rather than a valley.
+
+**The index exists, it is national, and it is one catalogue.** The obvious fear — that
+finding a plan means working through county record offices one at a time — is wrong. The
+National Archives' [Discovery](https://discovery.nationalarchives.gov.uk/){:target="_blank"} catalogue aggregates the county record offices
+alongside its own holdings, so a single search reaches Bolton, Derbyshire, Leicestershire and
+Kew together. The parliamentary series is catalogued item by item: the House of Lords
+deposited plans of 1794–1841, formerly listed only by box, were re-catalogued in December
+2022 to give every plan its own reference on the scheme already used for 1842 onwards.
+
+**Searched against the fifteen reservoirs with no Ordnance Survey edition behind them**,
+eleven return a catalogued record naming the place — the deposited plan and reference book
+for the 1843 Belmont Reservoir extension is at Bolton, and *Belmont Reservoirs* of the same
+session is at Kew. Two of the four misses close when the search is the *undertaking* instead
+of the reservoir: Tittesworth returns nothing under its own name and the Staffordshire
+Potteries Waterworks deposits of 1847 and 1849 are there under the company's. **That is the
+practical lesson — a nineteenth-century plan is titled for the company and the Act, because
+the reservoir frequently had no name yet.**
+
+**Four things temper it.** A catalogue hit is a *mention*, not a confirmed plan for that
+scheme. Catalogue depth is very uneven, and a good many entries are titled no more than
+"Plan" or "Book of reference", so the index makes a holding findable without saying what is
+on the sheet. **Nothing is digitised**: establishing that a plan exists is an hour at a
+keyboard, and reading one is a visit to a record office, per reservoir. And access is in
+flux — the Parliamentary Archives has closed and its collections are moving to The National
+Archives, which is why these references now carry a `Y` prefix, so the reference form should
+not be assumed stable.
 
 **Two of the strands meet on the same shelf.** The pre-Ordnance-Survey county maps are the
 only cartographic evidence for the Welsh reservoirs that predate both OS editions, and they
@@ -175,7 +203,8 @@ it is wanted:
   but whose reuse terms are not established here.
 - **Whether the one-inch Old Series shows enough**, at 1:63,360, to be worth a tracer's time.
   Testable on a single reservoir.
-- **Deposited plans**: coverage, survival, access.
+- **Whether a catalogued deposited plan is the plan for the scheme** — the index finds
+  records naming a place; only the document says what it draws.
 - **An open, place-located version of the Domesday mills**, which is the one source that
   could date a mill channel rather than merely attest it earlier.
 
