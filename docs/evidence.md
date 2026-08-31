@@ -47,8 +47,11 @@ go and ask for permission; here permission would buy nothing.
 Heritage List for England is open, national and updated daily, but its published form carries
 **no monument-type field at all** — only a free-text name — so a watercourse has to be
 selected by string exactly as in GB1900, and the only structured date it holds is the date of
-*listing*, not of the asset. A few hundred names containing *mill*, and a few dozen containing
-*leat*, against some four thousand labelled mill channels.
+*listing*, not of the asset. Names containing *mill* run into the
+thousands; those that say the mill was water-powered number a couple of hundred; those that
+mention a *leat* a few dozen — against some four thousand labelled mill channels. **The list
+is rich in mills and nearly silent on channels**, which is the distinction that defeats every
+other mill source on this page.
 
 **The Welsh equivalent has the structure and the wrong population**, which is a more
 interesting result than the English one. The National Monuments Record of Wales publishes a
