@@ -88,24 +88,63 @@ from a map made before the dam. Much of Victorian water supply predates the seco
 so a good share of these need the **first** series — county by county rather than a single
 national mosaic, and so slower.
 
-**How many there are is not yet a figure this project can quote.** The scoping exercise
+**How many there are is still not a figure this project can quote.** The scoping exercise
 reported 606 reservoirs marking 1,834 links, and did it by joining a *gazetteer* to the
 network. The network alone cannot do it: OS Open Rivers names 6,042 of its 24,146
 standing-water links, and **not one of those names contains the word "Reservoir"** — the
 name carried by a lake link is the river running through it, *River Darent*, *Mill Beck*.
-Identifying the drowned valleys therefore needs a named-places source declared alongside
-the rest, and until it is, the count is inherited rather than earned.
+The best national inventory reaches about a quarter of the inherited figure: 493 of the
+24,146 standing-water links lie within 500 m of one of its entries. The count stays
+inherited rather than earned.
 
-**Nor can the dates be looked up.** Wikidata was tested for exactly this: of 1,125 items
-typed as reservoirs in the United Kingdom, **24 carry a construction date** — two per cent —
-and not one of Kielder Water, Rutland Water, Ladybower, Haweswater, Lake Vyrnwy or Derwent
-does. The dam records are no better: 101 items, 5 dated. Anything relying on that lookup
-would be dating a handful of reservoirs and guessing at the rest.
+**The dates can be looked up, for the large ones.** The [CEH inventory of UK
+reservoirs](https://doi.org/10.5285/f5a7d56c-cea0-4f00-b159-c3788a3b2b38){:target="_blank"} holds 273 reservoirs, 233 of them in England and
+Wales, and **252 carry a completion year** — 92%, each with its own quality flag and a
+reference. Its threshold is stated rather than accidental: reservoirs over 1,600 Ml, plus
+smaller ones inside a group with historic storage information, which puts the median entry
+near 4 million m³. **The big ones are dated and the tail is not**, and the tail is where the
+small Victorian impoundments are.
 
-**The map series dates them instead, and more cheaply.** A valley shown as a river on the
-first edition and as water on the second was flooded between the two surveys, which brackets
-it to a couple of decades — and the same comparison is what tells the tracer which sheet to
-work from. The date falls out of the work rather than having to be fetched before it.
+**Wikidata is not the place to look**, and was tested so that nobody tries it again: of
+1,125 items typed as reservoirs in the United Kingdom, 24 carry a construction date, and not
+one of Kielder Water, Rutland Water, Ladybower, Haweswater, Lake Vyrnwy or Derwent does. The
+dam records are no better — 101 items, 5 dated.
+
+**The value of the date is that it picks the edition before anyone opens a sheet.** Set each
+completion year against the County Series survey dates for the county the reservoir sits in,
+and the 165 impounding reservoirs of England and Wales sort themselves:
+
+| what the tracer will need | reservoirs |
+|---|---|
+| the second edition shows the valley | 95 |
+| second edition, surveyed while the dam was building | 9 |
+| **the first edition only** | **14** |
+| **first edition, surveyed while the dam was building** | **26** |
+| **earlier than both editions** | **19** |
+| no completion date | 2 |
+
+**Two in five need the first edition or earlier** — which is the expensive half of the work,
+county by county — and **19 predate both editions entirely**: the Ouse Washes 1652, Butterley
+1794, Rudyard 1796, Chasewater 1797, Hollingworth Lake 1800, Bala 1804. Those need a
+pre-Ordnance-Survey county map, or they have no map evidence at all. Knowing which before
+the search starts is the difference between an afternoon and a week.
+
+**Fifteen of those are sitting in the network already.** Of the 19 impounding reservoirs
+predating both editions, 16 have a standing-water link within 250 m; one of the 16 is Llyn
+Tegid, which Telford's works *raised* in 1804 rather than created and where the Dee still
+runs through, so fifteen is the real figure — Butterley 1794, Rudyard 1796, Chasewater 1797,
+White Holme 1816, Killington 1819, Belmont 1826, Belvide 1833, Brent 1835, Entwistle 1838,
+Chew Magna 1850, Rhodeswood 1855, Tittesworth 1858, Torside 1864, Cropston 1870, Vale House
+1870. **Not one of those fifteen links carries a name of any kind**, which is the same
+finding as the unnamed reservoirs seen from the other side. It is the problem in its sharpest
+form: the network holds the water, no Ordnance Survey edition holds the valley, and nothing
+in the data says the water is a reservoir at all.
+
+**Read the two middle rows as statements about counties, not about sheets.** The comparison
+is per historic county and the survey spans are long — Yorkshire 1844–1893, Lancashire
+1842–1893, and those two hold 73 of the 273 entries between them. *Surveyed while the dam was
+building* means the county was being mapped across those years, not that the particular
+parish sheet was: it narrows the search to one edition and a decade, and does not settle it.
 
 **Verdict: in house, but the largest bounded item.** Several hundred hours. A candidate for
 the first thing volunteers are invited to help with, because each unit of work is
@@ -121,6 +160,33 @@ self-contained: one reservoir, one pre-dam sheet, one traced valley.
 everything above it, and each requires a judgement rather than a trace: a mill leat may be
 medieval, Victorian, or a nineteenth-century rebuild on a medieval line, and the map does
 not say which.
+
+**The obvious way to date them was tested, and it does not date them.** The pre-Ordnance
+Survey half of [Mills of Britain](https://maps.nls.uk/projects/mills-of-britain/){:target="_blank"} carries 17,120 records in
+England and Wales, 10,371 of them water-powered, read off county maps, estate maps and the
+Roy Military Survey — 60 to 170 years earlier than the six-inch sheets. But its date field
+is the final survey or publication year of *the map the mill was read from*. It is a
+terminus ante quem from cartographic attestation, and there is no documentary, Domesday or
+archaeological date anywhere in it. A mill attested in 1818 is a mill standing in 1818,
+which is what the six-inch sheets already say, later and more precisely.
+
+**What it does give is a second and earlier attestation of mills**, which is worth having
+and is not the same thing. Some 5,150 places, and 47% of its water-powered sites have
+nothing within 250 m in the mill layer filtered from the six-inch labels. Earlier evidence
+that a mill stood is earlier evidence that a leat existed; it moves the terminus without
+dating the origin.
+
+**But as a way of finding the labelled channels it reaches under a third.** Of the 4,068
+mill-channel places, **1,250 — 30.7% — have a pre-Ordnance-Survey watermill site within
+250 m**; 45.6% within 500 m, and the median distance from a place to the nearest mill site
+is 376 m. Widening the mill side to every non-wind mill in the layer moves 250 m only to
+34.9%. The mills and the labelled channels are simply not the same population, and the
+natural misreading — that the earlier mill mapping backdates the leats — is wrong twice
+over: it carries no date of origin, and it is not looking at most of them.
+
+Handle the positions with care in any case. The data is published in UTM zone 30N, the
+authors warn that locations may not coincide with the Ordnance Survey, and they carry their
+own flag for whether a mill falls within 275 m of a river at all.
 
 **Verdict: not in house.** This needs either volunteer adjudication at scale or a
 defensible sampling strategy — and the honest answer may be to publish them as *a class
@@ -164,7 +230,7 @@ boundary set, and cannot be published from.
 |---|---|---|
 | network repair | ~73 judgements over 2,516 defects | in house, days |
 | *Old Course* / *New Cut* traces | ~274 places | in house, ~6 days |
-| reservoir valleys | count not yet earned; several hundred | in house or volunteers, months |
+| reservoir valleys | count not yet earned; 165 impounding reservoirs inventoried | in house or volunteers, months |
 | mill channels | ~4,068 places | volunteers, or publish undated |
 | regional documentary research | 12,779 km of rebuilt landscape | collaborators, indefinitely |
 

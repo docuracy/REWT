@@ -19,6 +19,19 @@ for tracing. The surveyors sometimes state which of two channels is superseded �
 those sheets, makes those statements findable. A label is an assertion by someone who
 was there, which is worth more than an inference from the modern line.
 
+**Pre-Ordnance-Survey mill mapping** — county maps, estate maps and the Roy Military
+Survey of 1729–1836, gathered by [Mills of Britain](https://maps.nls.uk/projects/mills-of-britain/){:target="_blank"} (Jonell, Jones, Lucas and
+Naylor, CC BY 4.0; its companion layer is derived from GB1900 and carries that dataset's
+CC0 terms) — carries 17,120 records in England and Wales, 10,371 of them water-powered. It attests mills
+60 to 170 years before the six-inch sheets, and 47% of its water-powered sites have nothing
+within 250 m in the mill layer filtered from those sheets, so as a record of *mills* it is
+genuinely additional. As a way of finding the labelled mill *channels* it is much weaker —
+under a third of them have one of its sites within 250 m, and the two are not the same
+population. **It does not date anything either**: its year field is the final survey or publication year of the map the mill
+was read from, a terminus ante quem from cartographic attestation with no documentary or
+archaeological date behind it. Earlier evidence that a mill stood is earlier evidence that a
+leat existed, and that is the whole of what it offers.
+
 The **first series** matters where the second is too late: much of Victorian water supply
 predates 1888, so for a valley drowned in the 1870s the second series shows the lake and
 not the river. It is county-by-county rather than a single national mosaic, which is why it
@@ -61,11 +74,27 @@ it. A gazetteer of named places is needed, and has to be declared before any cou
 can be quoted; the scoping exercise's 606 reservoirs over 1,834 links was obtained that way
 and is inherited here, not earned.
 
-**Their dates cannot be looked up either.** Of 1,125 items typed as reservoirs in the United
-Kingdom on Wikidata, 24 carry a construction date, and Kielder, Rutland, Ladybower,
-Haweswater, Vyrnwy and Derwent are all among the ones that do not. The map series answers it
-instead: a valley drawn as a river on the first edition and as water on the second was
-flooded between the two surveys.
+**Their dates can be looked up, for the large ones.** The [CEH inventory of UK
+reservoirs](https://doi.org/10.5285/f5a7d56c-cea0-4f00-b159-c3788a3b2b38){:target="_blank"} (Open Government Licence) holds 273, of which 233 are
+in England and Wales and 252 carry a completion year. Its threshold is stated — over
+1,600 Ml, plus smaller ones in a group with historic storage information — so the big
+reservoirs are dated and the small Victorian impoundments are simply absent. Wikidata is
+not a substitute and was tested: 24 of 1,125 items typed as UK reservoirs carry a
+construction date, and Kielder, Rutland, Ladybower, Haweswater, Vyrnwy and Derwent are all
+among those that do not.
+
+**What the date buys is the edition.** Compared against the County Series survey dates for
+the county, a completion year says which map shows the valley before it was flooded — and
+two in five of the impounding reservoirs in England and Wales need the first edition or
+earlier, with nineteen predating both. [The scale page](scale) gives the breakdown. Where
+no date exists the map comparison still answers it, a valley drawn as a river on the first
+edition and as water on the second having been flooded between the two surveys; the
+inventory only means the tracer knows which sheet to send for.
+
+**Beware the same trap as GB1900 here.** Wikipedia's list of UK reservoirs is the identical
+content — the same 273 rows, sourced from the same inventory — under CC-BY-SA. The
+share-alike version of an open dataset is not a convenience; it is a licence this project
+cannot take. Use the original.
 
 Distinguishing a reservoir from a merely wide river is otherwise tractable: measured channel
 width is a good second signal (trunk channels run to a median 34.9 m, so anything an order of
