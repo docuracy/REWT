@@ -393,14 +393,43 @@ broad canal from narrow. A slice can be generated for any year in the range: the
 is 5,419 miles of navigable water. Versions edited specifically for network analysis exist
 for 1680, 1830 and 1911.
 
-**That is precisely the dated navigability layer this project lacks** — and it cannot be
-published from. The year slices deposited with the UK Data Service are **safeguarded data
-under the End User Licence**: available to registered users, not redistributable. The
-network-analysis versions are not listed as available for sharing at all. So it joins the
-[*Victoria County History*](#what-has-been-looked-for-and-not-yet-found) in the category this
-page had no room for until recently — **consultable, citable, not republishable**. It can
+**That is precisely the dated navigability layer this project lacks**, and the terms on which
+it can be had are unresolved rather than closed.
+
+Two routes exist and they say different things about the same data. The **year slices**
+deposited with the UK Data Service — 1820, 1851, 1861, 1881 — are **safeguarded data under
+the End User Licence**: downloadable by registered users, and the licence does not confer a
+right to share the collections *or datasets derived from them*. That is disqualifying under
+[this project's licence rule](#licensing-and-why-this-repository-is-structured-as-it-is), and
+it applies to a derived REWT layer as much as to a copy. By the other route, CAMPOP's own
+catalogue describes those same year slices as *"freely available to other researchers"* — but
+**an access statement is not a redistribution grant**, and no licence is named. Meanwhile the
+dataset that actually carries the dates, the dynamic 1600–1948 GIS, never reached the UK Data
+Service at all, and by the catalogue's own rule — datasets with filenames listed are shareable,
+those without are not — it is among the ones not currently offered.
+
+**So this is unlike every other negative on this page, because asking would settle it.**
+Domesday fails on licence *and* would not answer the question, so permission buys nothing.
+Here permission buys everything: the source matches the need better than anything else found,
+the depositor is named and contactable, and the work is publicly funded academic output. The
+honest position is **exists, matches precisely, not publishable on the deposited terms, and
+the depositor has not been approached** — with the caveat that CAMPOP records having had no
+funding since 2019 to handle enquiries or distribute data, so an approach should not be
+assumed to be cheap for them.
+
+Until that is resolved it sits with the [*Victoria County History*](#what-has-been-looked-for-and-not-yet-found) in the category this page
+had no room for until recently — **consultable, citable, not republishable**. It can
 corroborate a trace, tell a tracer which reaches were worked in which decades, and settle
 whether a channel is an improvement or a cut. Its lines cannot travel into an export.
+
+**And the framing this project brings to it is not novel, which is worth admitting.** The
+waterways GIS is one item in a corpus built for exactly the commerce-and-industrialisation
+question: multi-modal transport models integrating road, water and coastal routes with
+transhipment costs for c.1680, c.1830 and 1911; the canal returns of 1838; port tonnages and
+flows; a railway GIS. The economic reading of river improvement is an established research
+programme with published GIS behind it. This project's contribution is not the question but
+the **channel**: a traced, dated, routable watercourse network that such work has had to
+approximate.
 
 The distinction it draws between improved river and artificial cut is worth dwelling on: it
 is the same distinction the six-inch surveyors were making with *Old Course* and *New Cut*,
