@@ -102,7 +102,8 @@ passage, that to use information derived from it *"to compile resources for comm
 organisational use, prior permission must be obtained in writing"*. Those cannot both govern
 the same records. The passage repeats the permission requirement a second time, scoped
 explicitly to the **archive** records — the photographs, drawings and manuscripts, which are
-under a non-commercial licence and are not open at all — and that is the only reading under
+under the Non-Commercial Government Licence 1.0 and are not open at all — and that is the only
+reading under
 which the whole is coherent. It is probably the intended one. *Probably* is not a licence,
 and this wants asking rather than construing.
 
