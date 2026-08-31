@@ -98,14 +98,18 @@ data © Crown Copyright and database rights 2026.*
 | source | why Stage 1 needs it |
 |---|---|
 | **OS Open Rivers** | the network: geometry, topology, names, direction |
-| **OS Terrain 50** | basins (§4.1), and a weak screen on direction (§5) |
+| **OS Terrain 50** | basins (§4.1), and a weak national screen on direction (§5) |
 | **OS Boundary-Line** | the England-and-Wales polygon the scope rule tests against |
 | **OS OpenMap – Local** | water-body polygons, for crossings only (§5) |
+
+Plus two fetched **per section, never nationally**, for adjudicating a single link:
+**EA LiDAR Composite DTM 1 m** (England, WCS) and **Welsh Government / NRW LiDAR DTM 1 m**
+(Wales, tile catalogue). Both OGL. §5 has the endpoints and the traps.
 
 OS Open Rivers is reissued twice a year, so **record which issue was used** — a result
 that cannot name its input cannot be reproduced.
 
-Resist adding a fifth. Every extra source is a licence to check, a checksum to keep and a
+Resist adding more. Every extra source is a licence to check, a checksum to keep and a
 reason to defer the thing that actually needs doing.
 
 ### 4.1 Scope is decided on basins, not on the border
@@ -305,6 +309,48 @@ so a fall inside ±4 m is inside its own error bar. The share of each form that 
 most do.** Use it to rank candidates for a person to look at. Never let it flip a link on
 its own, and never report a direction correction as made on terrain evidence when the
 evidence was inside the error bar.
+
+### A better DEM, per section, when you need to adjudicate one
+
+Terrain 50 is the wrong instrument for the last mile. It is the right one for basins —
+national, seamless, small enough to condition in one pass — but for settling *this* link
+you want the best surface available at *that* place, fetched on demand. Both exist, both
+are OGL, and both were tested against a live endpoint while this plan was written.
+
+**England: EA LiDAR Composite DTM 1 m**, with a national WCS. Verified live: WCS 2.0.1,
+axis labels `E`/`N`, EPSG:27700, GeoTIFF, covering 80000,4000–656000,665000. Ask it for an
+80 m window at each end of a link and it answers in a second. Vertical error is around
+±0.15 m against Terrain 50's ~4 m — confirm the current published figure when you write
+the acquisition note.
+
+It works. On six links where Terrain 50 was **completely mute** (|fall| ≤ 0.5 m over 1.5–4
+km), the 1 m surface resolved four — including one canal falling 2.29 m *against* its
+recorded direction, which Terrain 50 had scored as +0.30 m. There are 730 such links in
+England in that length band alone: a real, worked, human-sized list.
+
+**Wales: Welsh Government / NRW 1 m LiDAR (2020–23)**, OGL, but by a different route. There
+is a WCS at DataMapWales and **it does not carry the DTM** — only noise-mapping coverages.
+Use the tile catalogue instead: a WFS query by bounding box returns per-kilometre-square
+features carrying a `dtm_link` to a GeoTIFF. Verified end to end — a 400 m box returned
+square SH6055, and its tile is 1000×1000 at 1 m, 2.7 MB.
+
+**Two traps, both hit while testing.**
+
+- **The English service returns ZEROS over Wales, not nodata.** Asked for Snowdonia it
+  answers 0.0 m across a full grid of valid-looking cells; the Welsh tile for the same
+  point reads 579–1055 m. Nothing in the response says the data is absent. A sampler
+  without a guard will compute confident nonsense for the whole of Wales and along the
+  border, and it will not look like an error. **Test coverage explicitly; never infer it
+  from nodata.**
+- **A level canal is level at any resolution.** The Monmouthshire and Brecon fell 0.00 m
+  over 3.91 km on the 1 m surface. Resolution is not the constraint there — the water
+  genuinely has no gradient, and no DEM will ever settle it. Those links need a different
+  kind of evidence, or an explicit exclusion.
+
+**Sample a window, not a point.** A single cell lands on a bank, a bridge deck or a
+building. Take a low percentile — the 10th worked — of an 80 m box, and treat a fall of a
+few centimetres as no answer: the composite mixes flight epochs, and a river's surface
+moves with its stage.
 
 **One circularity to avoid.** Burning the network into the DEM is the standard first step
 in any hydrological conditioning, and it is correct for delineating catchments — a 50 m

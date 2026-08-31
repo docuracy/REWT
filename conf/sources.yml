@@ -115,3 +115,65 @@ sources:
       Country boundaries only. Used to ask whether a basin touches England or Wales,
       and never to clip the network: cutting at the political line strands the Tweed
       and the Border Esk, both of which cross it.
+
+  # PER-SECTION adjudication of flow direction (PLAN.md §5). Not a national layer and
+  # not a substitute for os_terrain_50, which is what gets conditioned for basins.
+  # Fetch only the window you are adjudicating. Endpoint verified live 2026-08-31.
+  - id: ea_lidar_composite_dtm_1m
+    title: "LIDAR Composite DTM 2022 - 1m"
+    publisher: "Environment Agency / Defra"
+    url: "https://environment.data.gov.uk/survey"
+    licence: "Open Government Licence v3"
+    attribution: "© Environment Agency copyright and/or database right 2026"
+    access: open
+    redistribution: permitted
+    format: [geotiff]
+    crs: "EPSG:27700"
+    cache_path: "data/raw/ea_lidar_1m/"
+    checksum: null
+    status: unverified
+    wcs:
+      base: "https://environment.data.gov.uk/spatialdata/lidar-composite-digital-terrain-model-dtm-1m-2022/wcs"
+      version: "2.0.1"
+      coverage: "13787b9a-26a4-4775-8523-806d13af58fc__Lidar_Composite_Elevation_DTM_1m"
+      axis_labels: [E, N]
+      extent: [80000, 4000, 656000, 665000]
+      format: "image/tiff"
+    notes: >
+      ENGLAND ONLY, and the extent above is a bounding box, not a coverage mask: asked
+      for a point in Wales the service returns a full grid of 0.0 m rather than nodata.
+      Snowdonia reads 0.0 m here and 579-1055 m in the Welsh tile. Test coverage
+      explicitly — never infer absence from nodata.
+
+      Sample a window and take a low percentile, not a single cell: a point sample lands
+      on a bank, a bridge deck or a building. Treat a few centimetres as no answer; the
+      composite mixes flight epochs and a river surface moves with its stage.
+
+  # Wales, for the same job. There IS a WCS at DataMapWales and it does NOT carry the
+  # DTM (only noise-mapping coverages) — go via the tile catalogue. Verified 2026-08-31.
+  - id: nrw_lidar_dtm_1m
+    title: "Welsh Government / NRW LiDAR DTM 1m (2020-23)"
+    publisher: "Welsh Government / Natural Resources Wales"
+    url: "https://datamap.gov.wales/maps/lidar-data-download/"
+    licence: "Open Government Licence v3, with NRW copyright acknowledged"
+    attribution: >
+      © CNC/NRW. Contains Natural Resources Wales information © Natural Resources Wales
+      and database right. All rights reserved.
+    access: open
+    redistribution: permitted
+    format: [geotiff]
+    crs: "EPSG:27700"
+    cache_path: "data/raw/nrw_lidar_1m/"
+    checksum: null
+    status: unverified
+    tile_index:
+      wfs: "https://datamap.gov.wales/geoserver/ows"
+      version: "2.0.0"
+      type_name: "geonode:welsh_government_lidar_tile_catalogue_2020_2023"
+      url_field: dtm_link          # relative; prefix https://
+      srs: "EPSG:27700"
+    notes: >
+      Query the WFS by bounding box, read `dtm_link` from the returned feature, prefix
+      https:// and fetch. Tiles are one kilometre square, 1000x1000 at 1 m, about 2.7 MB,
+      with no overviews — so fetch whole tiles and cache them; there is no range-request
+      shortcut as there is for a COG.
