@@ -32,6 +32,17 @@ was read from, a terminus ante quem from cartographic attestation with no docume
 archaeological date behind it. Earlier evidence that a mill stood is earlier evidence that a
 leat existed, and that is the whole of what it offers.
 
+**Domesday cannot be pressed into service either, and fails twice over.** It is the source
+that could in principle date a mill rather than merely attest it earlier, so it is worth
+saying why it does not. The open transcription's raw data carries a licence that is **both
+non-commercial and share-alike**, either of which alone would bar it from a project that must
+stay redistributable, and the folio images are share-alike too. But the objection survives the
+licence, which is the part worth keeping: **Domesday counts mills per manor and does not place
+them.** A manor is an estate of some square miles, so a record of two mills locates them to a
+parish at best and to a leat not at all. It is the mills-are-not-channels problem one step
+further back and an order of magnitude coarser. The usual answer to a licence objection is to
+go and ask for permission; here permission would buy nothing.
+
 **The archaeological registers were checked and cannot date a leat either.** The National
 Heritage List for England is open, national and updated daily, but its published form carries
 **no monument-type field at all** — only a free-text name — so a watercourse has to be
@@ -84,10 +95,22 @@ the choice did not matter.
 One structural limit applies throughout: a linear site is recorded as a **point**, at a grid
 reference taken somewhere along it, so nothing in this source can be traced from.
 
-**And its terms are asserted by a re-publisher.** The Open Government Licence statement
-carried for it comes from the platform hosting the data rather than from the body that made
-it. That is the same distinction this page keeps insisting on — the item, not the collection —
-one step further out, and it wants tracing to the originator before anything is built on it.
+**And its own terms contradict themselves.** Traced past the hosting platform to the body
+that made the data, the statement says its digital site data may be used under the Open
+Government Licence v2.0, *"which allows the commercial reuse of the data"* — and, in the same
+passage, that to use information derived from it *"to compile resources for commercial or
+organisational use, prior permission must be obtained in writing"*. Those cannot both govern
+the same records. The passage repeats the permission requirement a second time, scoped
+explicitly to the **archive** records — the photographs, drawings and manuscripts, which are
+under a non-commercial licence and are not open at all — and that is the only reading under
+which the whole is coherent. It is probably the intended one. *Probably* is not a licence,
+and this wants asking rather than construing.
+
+Two practical points follow. The archive and the site data sit behind one search interface, so
+a link followed from a site record lands among material under the restrictive terms. And this
+is the fifth time on this page that a licence has had to be traced past whoever was
+re-publishing it — but the first where the **owner's own** statement is the one that
+disagrees with itself, which is a different problem from a re-publisher being careless.
 
 The **first series** matters where the second is too late: much of Victorian water supply
 predates 1888, so for a valley drowned in the 1870s the second series shows the lake and
@@ -263,8 +286,8 @@ it is wanted:
   Testable on a single reservoir.
 - **Whether a catalogued deposited plan is the plan for the scheme** — the index finds
   records naming a place; only the document says what it draws.
-- **An open, place-located version of the Domesday mills**, which is the one source that
-  could date a mill channel rather than merely attest it earlier.
+- **Which of the Welsh monuments record's two stated licences governs its site data** — an
+  open licence and a written-permission requirement are asserted over the same records.
 
 **And one deliberately deferred.** The *Victoria County History* will often date a mill or a
 reservoir where the maps only locate one, and it is noted here as a fallback rather than
