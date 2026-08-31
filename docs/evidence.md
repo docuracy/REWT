@@ -65,6 +65,16 @@ that shares a word. **A structured field is not the same as the right content**,
 lesson generalises: the temptation with a well-modelled dataset is to trust the schema and
 skip reading the rows.
 
+**One failure runs through all four of them.** The pre-Ordnance-Survey mill mapping, the
+six-inch labels, the two national heritage registers and Domesday were compiled centuries
+apart, are structured differently, and are licensed differently — and they fail in the same
+way. **Each records mills. This project needs channels.** A mill is a point: well attested,
+often named, sometimes dated. The leat that fed it is a line, seldom named, drawn on a map as
+a watercourse like any other, and not dated by anything the record of the mill contains. That
+is no defect in any of them; it is what they were made for. But it means the mill channels
+will not be dated by finding a *better mill source*, and anyone tempted to look for one should
+know that four have been tried.
+
 **It does not, in the end, check the register.** The hope was that an archaeologically
 recorded locator for Welsh impoundments — owing nothing to the undertaker's declaration on a
 registration form — could test those declared dates. It cannot. The two sources barely
