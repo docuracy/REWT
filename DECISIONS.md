@@ -704,3 +704,49 @@ a later stage adds geometry that *does* cross a watershed — a canal feeder ove
 say, or a skeletonised route through a water body that joins two catchments — the
 measurement above stops holding and the second pass has to come back. The number to
 re-check is the one in the first paragraph.
+
+**D-029 — If a coastline is ever needed, it is Boundary-Line's `high_water`, never
+OpenStreetMap. And Stage 1's seeds are not one of the things it may be used for.**
+*2026-09-01*
+
+*Found by rewt-86 while checking a licence; verified here.*
+
+**The licence half.** OS Boundary-Line — already declared, already fetched — carries a
+`high_water` layer: 32,850 MultiLineString features of High Water Mark, EPSG:27700,
+covering Great Britain. So the project already owns a coastline and needs no new source
+to have one.
+
+The reason to write that down is what the obvious alternative would cost. The nearest
+ready-made coastal graph is built on **OpenStreetMap land polygons, which are ODbL** —
+share-alike on derivative databases. A coastal network derived from those would be a
+derivative database, and the share-alike would propagate into everything this project
+publishes. That is precisely the situation D-004 exists to prevent, and it would be
+discovered late, by someone doing a licence review of a finished product. The same
+applies to Viabundus Water 1500, which is CC BY-SA. **Two encumbered coastlines are
+easy to reach for and one unencumbered one is already in `data/raw`.**
+
+Two properties to carry: `high_water` is the mean-high-water line, so it is a coastline
+rather than a navigable-water boundary; and it is British, so it needs the same country
+filter §4.1 already applies to everything else.
+
+**The Stage 1 half, which is a prohibition.** Nothing above licenses using it for
+seeding, and PLAN.md §5 forbids exactly that:
+
+> **Seeds are a finding, not a parameter.** A seed is a node with no outflow standing at
+> tidal water. Take them from the survey's own `form = tidalRiver`, **not from a
+> coastline**: a coastline decides the question by distance from a modern shore, and is
+> wrong at exactly the estuaries where the answer matters.
+
+A coastline is the most natural wrong tool for the job this project spends most of its
+effort on, and now that one is known to be in the acquisition it is *more* likely to be
+reached for, not less. This build takes its 2,246 seeds from `form = tidalRiver` and
+will go on doing so. `high_water` is registered here as available for a later stage's
+coastal work and for nothing in Stage 1.
+
+*Also confirmed, and it changes nothing:* the terrain data behind that same coastal tool
+is the Environment Agency's own, attributed *"United Kingdom terrain data © Environment
+Agency copyright and/or database right 2015"*, resampled to roughly 20–30 m. It is the
+same provenance as `ea_lidar_composite_dtm_1m` at a fortieth of the resolution, so it is
+not a substitute for per-section LiDAR (D-006). Its one advantage is that it is seamless
+and so has no coverage-boundary trap — no equivalent of the 0.0-m-over-Wales behaviour
+that entry warns about. Worth knowing; not worth switching to.
