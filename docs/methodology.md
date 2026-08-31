@@ -132,6 +132,37 @@ the place. **Check at the place, never in the total.**
 >    is a road or railway crossing a modelled flow path. Most work, least certain, and it
 >    should follow the first two.
 
+### The sea is currently an abstraction, and it should be an object
+
+Every rule in this phase ends at the same place — *and then it reaches the tide* — and the
+tide is not modelled at all. A river mouth terminates in a patch of nowhere, each basin in its
+own separate patch, and "reaches the sea" is true by definition rather than by test. That is
+also why an estuary is the hardest thing here: the survey draws a river mouth as an **area**
+and offers the network no line to end on.
+
+The proposal is to give the sea a geometry: **a single path around the coast of England and
+Wales at optimum sailing distance, with branches connecting it to each river — and the loop
+is the terminus.** Three things follow, and the third is why it works where an attested
+gazetteer of ports does not.
+
+- **The audit gets an object to test against.** *No node has inflows and no outflow, except at
+  the sea* becomes *except where it joins the loop*, which is checkable rather than
+  definitional. A river that fails to reach the loop is a finding; today it is an assumption.
+- **Port to port becomes computable** — down one river, along the coast, up another. That is
+  the journey the [navigation evidence](evidence#navigation) is actually about, and no purely
+  fluvial network can express it.
+- **It is generated rather than attested**, so it exists at *every* river mouth. A corpus of
+  historical ports, however good, records where trade happened and not where rivers end; it is
+  a sample where this needs a structural feature.
+
+**One distinction has to be kept sharp, because it decides which phase this belongs to.** A
+path optimised for *distance* is a geometric object with no year on it, and could be built
+alongside the modern network. A path optimised for a particular vessel in a particular month —
+which is what a sailing-route model actually computes, from wind, current, draught and
+visibility — is a **historical claim**, and belongs with the dated cross-sections. They are
+different objects that would look similar on a map, and building the second while calling it
+the first is exactly the kind of drift this project is arranged to prevent.
+
 **Exit condition.** No node carries more than a nominal flow into nowhere; the unreached
 residue is *explained* rather than merely counted; and the audit runs clean or every
 exception is named with a reason.

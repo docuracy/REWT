@@ -122,9 +122,12 @@ reading under which the whole is coherent.
 the written-permission requirement governs the archive. Three things support it — the
 permission clause is stated a second time in the same passage with the archive named
 explicitly; both operative licences are real and correctly versioned; and the open statement
-is the one attached to the download route. It is a *reading*, and is recorded as one rather
-than presented as settled. The exposure either way is small: the site data is described on
-this page and rejected on its content, so nothing downstream rests on it.
+is the one attached to the download route. **The ambiguity is in the publisher's text, not in
+this project's position**: the reading is settled here and recorded as a reading, so that
+anyone who goes to the source and finds the contradiction knows it was seen rather than
+missed. Anything derived from the site data must acknowledge it as *"Derived from information
+compiled by RCAHMW and/or Crown copyright."* The exposure either way is small: the site data
+is described on this page and rejected on its content, so nothing downstream rests on it.
 
 Two practical points follow. The archive and the site data sit behind one search interface, so
 a link followed from a site record lands among material under the restrictive terms. And this

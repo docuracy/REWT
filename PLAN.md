@@ -639,6 +639,18 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
   graphs for one geometry and could not reconcile them.
 - **Corrections addressable by id.** The tooling that lets a reader report a defect
   depends on every drawn feature carrying an id they can send back.
+- **A tidal terminus that can later attach to something.** The sea is an abstraction in this
+  stage: §1's traversability test ends at tidal water, and "reaches the sea" is true by
+  definition rather than by test. A later stage proposes to give the sea a geometry — a single
+  coastal path at optimum sailing distance, with branches to each river, the loop being the
+  terminus — at which point the test becomes *reaches the loop*, and is checkable.
+
+  Nothing to build now. What is wanted now is that **every tidal terminus is identified and
+  kept as a first-class thing** rather than being implied by the absence of an outflow, so
+  that attaching them later is a join and not a re-derivation. Note also that a
+  distance-optimal loop carries no date, while a path optimised for a vessel and a season is a
+  historical claim — the first could sit beside this stage, the second could not.
+
 - **Fall per link, sampled from the UNCONDITIONED terrain.** A later stage models water
   power potential, which is flow times head — and the flow half is already planned while the
   head half is not. Recording the elevation of both ends of every link costs almost nothing
