@@ -1,0 +1,12 @@
+# Nothing acquired, derived or built is committed. Inputs are declared and fetched;
+# outputs are reproducible from them. See the README on reproducibility.
+data/raw/
+data/interim/
+db/
+*.ddb
+*.pmtiles
+*.gpkg
+__pycache__/
+.venv/
+.env
+.DS_Store
