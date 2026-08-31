@@ -350,8 +350,10 @@ thing to put both variables on the same lines.
 
 ## Principles
 
-**Every line carries what it rests on.** Source, date bounds, date precision, and a
-confidence grade — never free text, never an unattributed assertion.
+**Every line carries what it rests on.** Source, [date bounds and their
+certainty](epochs#how-a-date-is-recorded) — never free text, never an unattributed assertion,
+and never a single confidence figure mixing how sure we are of a date with how sure we are of
+a modelled flow.
 
 **Absence is drawn, not hidden.** Where the evidence runs out the map shows that it has
 run out. A channel missing from the picture must never be readable as *no river here*.

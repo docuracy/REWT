@@ -15,9 +15,9 @@ and the pipeline can be run at any year — that capability is real. What does n
 should not be implied, is slicing an already-built network to an arbitrary date without
 rebuilding it. Promising "a model at any date" should mean the first of those, and say so.
 
-The cost per epoch, measured: roughly half an hour of pipeline, **29 MB of vector tiles**
-and an **89 MB dataset**. Seven epochs is around 200 MB of tiles in a repository served as
-static pages. That is the constraint, and it is why the answer is **a curated set of dates,
+The cost per epoch, as measured in the [scoping exercise](background) and not yet re-earned
+here: roughly half an hour of pipeline, **29 MB of vector tiles** and an **89 MB dataset**.
+Seven epochs is around 200 MB of tiles in a repository served as static pages. That is the constraint, and it is why the answer is **a curated set of dates,
 not a slider**.
 
 ## The phases of change
@@ -48,6 +48,12 @@ rather than a moment mid-transformation.
 | **1700** | after Vermuyden and Hatfield, before the canals | the great drainage schemes |
 | **1830** | after canal mania and enclosure drainage, before the railways displace both | the canal age |
 | **1900** | the survey datum — the map the courses are traced *from* | Victorian reservoirs |
+
+**And one that is not in the list.** The **modern network** is the datum the whole series is
+worked back from, and it is published as the first edition. It is not an epoch in the sense
+used here — it draws no historical claim and needs no evidence beyond the survey — but it is
+the cross-section every other one is measured against, and it is dated by the issue of the
+Ordnance Survey product it repairs rather than by a year in the past.
 
 **If fewer are wanted, 1540 goes first.** It is the least distinct: little changed
 hydrographically between 1500 and 1600 outside the navigations.
@@ -88,16 +94,18 @@ date, or publishing seven dates of a network that is not yet sound.
 
 | edition | what it adds | epochs it supports |
 |---|---|---|
-| **First** | the modern survey repaired into a working drainage network. No historical claim. | 1900 |
-| **Second** | old courses from map evidence: the labelled channels, the drowned valleys. [Bounded and countable](scale). | + 1830, 1700 |
+| **First** | the modern survey repaired into a working drainage network. No historical claim. | the modern network itself |
+| **Second** | old courses from map evidence: the labelled channels, the drowned valleys. [Bounded and countable](scale). | 1900, then 1830 and 1700 |
 | **Third and after** | documentary and cartographic research, released a course at a time. **Never completes.** | + 1600, then 1300 and 1086 |
 
 **An epoch is published when its evidence supports it and not before.** An empty medieval
 map is worse than no medieval map, because it looks like a finding.
 
-**1900 rather than a medieval date for the first edition**, because that edition makes no
-historical claim and should not appear to. It is the modern survey repaired, and the honest
-year for it is the one the survey describes.
+**The first edition is not a historical epoch at all**, and labelling it as one would be the
+first misreading to invite. It is the modern survey repaired, so the honest date for it is the
+survey's own issue and not a year in the past. 1900 is the earliest date the *map* record
+reaches and the first cross-section that has to be reconstructed — which makes it second-edition
+work, not first.
 
 ## What varies between epochs, and what must not
 

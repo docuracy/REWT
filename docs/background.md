@@ -44,4 +44,5 @@ of work rather than an afterthought.
 
 The earlier work is cited as *Premodern Rivers*; its releases keep their identifiers and
 remain valid. REWT is the name of the undertaking that follows it, and covers a wider
-span — from Domesday to 1900 — than *premodern* honestly describes.
+span — from Domesday to the present-day channel it is built on — than *premodern* honestly
+describes.

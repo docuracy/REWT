@@ -22,6 +22,13 @@ to the next, every stretch carrying a modelled flow, and the whole thing routabl
 any headwater to the tide. That distinction turns out to matter more than it sounds, and
 [the methodology](methodology) explains why.
 
+A network rather than a set of lines is what makes the interesting questions askable at
+all. Because every reach carries a modelled flow, a fall and — where the evidence allows — a
+[dated navigability](evidence#navigation), the same dataset answers *where could water be made
+to work* and *what could be carried, from where, at what cost*. Those are questions about
+milling, settlement and industrialisation rather than about rivers, and no open dataset has
+been able to put them on the same lines.
+
 It is assembled from open, evidenced sources — the modern [Ordnance Survey](https://www.ordnancesurvey.co.uk/products/os-open-rivers){:target="_blank"}
 network, [GB1900](http://www.gb1900.org/){:target="_blank"} volunteer transcriptions of Victorian map labels, [historic sheets](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}
 traced by hand, and the documentary record of drainage and navigation works — with **every

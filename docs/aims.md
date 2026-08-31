@@ -80,8 +80,8 @@ chosen to sit *between* phases of change rather than mid-transformation:
 **1086 · 1300 · 1540 · 1600 · 1700 · 1830 · 1900**
 
 1600 is the one that matters most — the last state before the Fens and Humberhead were
-rebuilt. 1900 is where the first edition starts, because a repaired modern survey should
-be dated honestly as what it is.
+rebuilt. **The first edition draws none of them**: it is the repaired modern survey, dated
+as what it is, and the historic cross-sections are worked back from it.
 
 An epoch is published **when its evidence supports it and not before**. An empty medieval
 map is worse than no medieval map, because it looks like a finding.
