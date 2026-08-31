@@ -124,50 +124,61 @@ edition rather than discovered later:
 ## How a date is recorded
 
 An epoch is a year the project *draws*. It is not the same thing as what the project *knows*
-about a stretch, and conflating the two is how the old 1348 datum came about. So dates on
-evidence are recorded separately from the dates that get built, in a form modelled on the
-**[Linked Places Format](https://github.com/LinkedPasts/linked-places-format){:target="_blank"}** timespan: an optional **`start`** and an optional
-**`end`**, each of which may be qualified as **`before`**, **`in`** or **`after`**.
+about a stretch, and conflating the two is how the old 1348 datum came about. Dates on
+evidence are therefore recorded separately from the dates that get built, in the
+**[Linked Places Format](https://github.com/LinkedPasts/linked-places-format){:target="_blank"}** `when` object: a set of `timespans`, each with an optional
+`start` and an optional `end`, each of those being either `in` a year or bounded by
+`earliest` and `latest`, with a `certainty` on the whole.
 
-**Both halves are optional, and that is the point.** Almost every source this project uses
-knows one bound and not the other:
+**Both bounds are optional, and that is the point.** Almost every source this project uses
+knows one and not the other:
 
 | what a source actually says | recorded as |
 |---|---|
-| a mill on a map surveyed in 1824 | `start: {before: 1824}` |
-| a channel labelled on a sheet surveyed in 1899 | `start: {before: 1899}`, `end: {after: 1899}` |
+| a mill on a map surveyed in 1824 | `start: {latest: 1824}` |
+| a channel labelled on a sheet surveyed in 1899 | `start: {latest: 1899}`, `end: {earliest: 1899}` |
 | a reservoir completed in 1869 | `start: {in: 1869}` — and the drowned channel's `end: {in: 1869}` |
-| a valley drawn as river on the 1st edition and water on the 2nd | `end: {after: 1854, before: 1894}` |
-| a declared year built that is visibly rounded | `start: {after: 1870, before: 1880}` |
-| a waterway already navigable when a survey window opens in 1600 | `start: {before: 1600}` |
-| navigable at some point, no year given at all | `start: {before: 1600}` — *the same encoding, honestly* |
+| a valley drawn as river on the 1st edition and water on the 2nd | `end: {earliest: 1854, latest: 1894}` |
+| a declared year built that is visibly rounded | `start: {earliest: 1870, latest: 1880}`, `certainty: less-certain` |
+| a waterway already navigable when a survey window opens in 1600 | `start: {latest: 1600}` |
+| navigable at some point, no year given at all | `start: {latest: 1600}` — *the same encoding, honestly* |
 | an attestation with no start date at all | `end` only, **`start` absent** |
 
-The last two rows are the argument for the whole scheme. **A model that requires a start
-date forces every source to invent the half it does not have** — which is precisely how a
-datum can come to be fixed by the weakest constraint in the evidence. An absent `start` says
+The last two rows are the argument for the whole scheme. **A model that requires a start date
+forces every source to invent the half it does not have** — which is precisely how a datum
+can come to be fixed by the weakest constraint in the evidence. An absent `start` says
 *nobody knows when this began*, which is true and is a publishable fact. And where a source
 records "already open at the start of my window" and "known to have been navigable once, no
-year", those two carry **identical information**, and a plain year column would make one look
-like a date and the other like a hole in the data.
+year", those two carry **identical information**: a plain year column would make one look like
+a date and the other like a hole in the data.
 
 **It also puts a finding into the data instead of a footnote.** The whole point about the
 pre-Ordnance-Survey mill mapping is that its year is the *map's* year and not the mill's — a
-terminus ante quem. `start: {before: 1824}` says that structurally. A `date` column says the
+terminus ante quem. `start: {latest: 1824}` says that structurally. A `date` column says the
 opposite and needs a paragraph to undo it.
 
-**Two things it must not become.** It is not a licence to interpolate: a bound is a bound,
-and a stretch with `start: {before: 1600}` and nothing else must not be drawn at 1540 because
-the arithmetic permits it. And documentary uncertainty must not be blended with model
-uncertainty — how confident we are that a channel existed in 1700 is a different quantity
-from how confident we are in a modelled flow along it, and a single "confidence" number that
-mixes them is worse than neither.
+**Unknown is not the same as unbounded.** A missing `start` because nobody knows is a
+different statement from a channel deliberately modelled as having no beginning, and the two
+must not be allowed to collapse into the same empty field. Where that distinction has to be
+drawn, it is drawn explicitly.
 
-> **Terminology.** The Linked Places Format's own timespans use `earliest` / `latest`;
-> `before` / `in` / `after` is this project's phrasing for the same idea, chosen because our
-> evidence is overwhelmingly **termini** — a map proves *by* a date, not *not before* one. It
-> is a convention modelled on LPF rather than a claim to emit LPF, which also keeps a route
-> open to aligning this data with gazetteer work that does.
+**Two things this must not become.** It is not a licence to interpolate: a bound is a bound,
+and a stretch with `start: {latest: 1600}` and nothing else must not be drawn at 1540 because
+the arithmetic permits it. And **documentary uncertainty must not be blended with model
+uncertainty** — how confident we are that a channel existed in 1700 is a different quantity
+from how confident we are in a modelled flow along it, and one "confidence" number over both
+is worse than neither.
+
+> **On convergence.** The choice is deliberate rather than convenient. Linked Places is the
+> interchange format for historical gazetteer work, and its current draft both relaxes the
+> requirement for a `start` and carries `certainty` on the timespan — which is exactly what
+> evidence of this kind needs. The [PLATO](https://github.com/docuracy/place-attestation-ontology){:target="_blank"} attestation ontology expresses the same
+> information as a four-date model, `startEarliest` / `startLatest` / `endEarliest` /
+> `endLatest`, aligned with PeriodO, and adds a precision term and an explicit flag for a
+> bound that is *deliberately* open rather than unknown. The two are inter-convertible, and
+> this project's aim is to be expressible in either rather than to invent a third thing. That
+> matters more here than it might elsewhere, because a river reach carrying its own evidence
+> **is** an attestation, and the modelling problem is one other people are already solving.
 
 ## One consequence worth accepting
 
