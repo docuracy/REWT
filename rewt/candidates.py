@@ -411,6 +411,7 @@ def inspect(sink_publisher_id: str, radius_m: float = 1500.0) -> dict:
 def propose_connectors(
     max_gap_m: float = 100.0,
     name_rule: str = "same",
+    only_forms: tuple[str, ...] | None = None,
 ) -> tuple[list[dict], list[tuple[str, str]]]:
     """Draft connectors for the strongest evidence class, and say why each is drawn.
 
@@ -444,6 +445,13 @@ def propose_connectors(
     wanted = frame[frame["drain_gap_m"].notna() & (frame["drain_gap_m"] <= max_gap_m)]
     if name_rule == "same":
         wanted = wanted[wanted["drain_same_name"]]
+    elif name_rule == "any":
+        # Permitted for canals alone, and D-011 is the reason: **a canal reaches the
+        # sea through a structure — a lock, an overflow weir, a feeder — that the
+        # survey does not draw**, and that structure discharges into a watercourse
+        # with a different name by definition. Requiring the names to match would
+        # refuse the whole class on the strength of the very fact that defines it.
+        pass
     elif name_rule == "compatible":
         conflicting = (
             wanted["name"].notna()
@@ -453,6 +461,8 @@ def propose_connectors(
         wanted = wanted[~conflicting]
     else:
         raise ValueError(f"no name rule {name_rule!r}; use 'same' or 'compatible'")
+    if only_forms:
+        wanted = wanted[wanted["form"].isin(only_forms)]
     wanted = wanted.sort_values("upstream_km", ascending=False).drop_duplicates("sink_node")
 
     drafts: list[dict] = []
@@ -520,6 +530,18 @@ def propose_connectors(
                     )
                     if row.drain_same_name
                     else (
+                        f"{name} is a canal, and it arrives at a node with no outflow "
+                        f"and stops. {gap:,.1f} m away is "
+                        f"{row.drain_name or 'a watercourse'} ({row.drain_form}), "
+                        f"which does reach tidal "
+                        f"water. D-011: a canal does not reach the sea down its own "
+                        f"channel — it reaches it through a lock, an overflow weir or "
+                        f"a feeder that the survey does not draw — so it is attached "
+                        f"to the receiving watercourse rather than being reversed "
+                        f"until the total improves."
+                    )
+                    if row.form == "canal"
+                    else (
                         f"{name} arrives at a node with no outflow and stops "
                         f"{gap:,.1f} m short of a watercourse that does reach tidal "
                         f"water, and nothing lies between them. At this distance, on "
@@ -540,7 +562,16 @@ def propose_connectors(
                         else "carrying no name that contradicts it"
                     )
                     + "; the line between them crosses no other watercourse. "
-                    "JUDGED BY RULE, not by a person looking at the place: see "
+                    + (
+                        "THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED "
+                        "STRUCTURE. D-011 asks for the connection to be made where the "
+                        "lock or weir actually is; no open dataset of canal structures "
+                        "is registered here, so the nearest approach stands in for it. "
+                        "That is the weakest evidence in this file and each of these "
+                        "should be checked at the place. "
+                        if row.form == "canal" else ""
+                    )
+                    + "JUDGED BY RULE, not by a person looking at the place: see "
                     "rewt/candidates.py propose_connectors."
                 ),
                 "author": "rewt candidates (rule), reviewed by Claude",

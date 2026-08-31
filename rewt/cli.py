@@ -164,8 +164,9 @@ def candidates(
 def propose(
     max_gap: float = typer.Option(100.0, help="furthest a connector may reach, m"),
     name_rule: str = typer.Option(
-        "same", help="'same' watercourse name, or merely 'compatible' names"
+        "same", help="'same' watercourse name, 'compatible' names, or 'any' (canals)"
     ),
+    forms: str = typer.Option("", help="restrict to these forms, comma-separated"),
     write: bool = typer.Option(False, "--write", help="append to data/curated/"),
 ) -> None:
     """Draft connectors for the strongest evidence class and, with --write, author them.
@@ -185,7 +186,11 @@ def propose(
 
     from . import candidates as cand
 
-    drafts, rejected = cand.propose_connectors(max_gap_m=max_gap, name_rule=name_rule)
+    drafts, rejected = cand.propose_connectors(
+        max_gap_m=max_gap,
+        name_rule=name_rule,
+        only_forms=tuple(f.strip() for f in forms.split(",") if f.strip()) or None,
+    )
     path = paths.CURATED / "connectors.geojson"
 
     existing_ends: set[tuple] = set()
@@ -286,6 +291,57 @@ def validate() -> None:
         ],
     )
     log.done(f"written up in {paths.rel(out)}")
+
+
+@app.command("propose-reversals")
+def propose_reversals_cmd(
+    write: bool = typer.Option(False, "--write", help="append to data/curated/"),
+    flat_water: bool = typer.Option(
+        False, "--flat-water", help="also propose canals and lakes (§5 says do not)"
+    ),
+) -> None:
+    """Draft reversals: links whose OTHER end already drains to the sea.
+
+    Like `propose`, this is worth running again after a repair, because the set of
+    ends that already drain grows every time a gap is closed.
+    """
+    import csv
+
+    from . import candidates as cand
+
+    drafts, rejected = cand.propose_reversals(allow_flat_water=flat_water)
+    path = paths.CURATED / "reversals.csv"
+    fields = ["publisher_id", "reason", "evidence", "author", "dated"]
+
+    existing: list[dict] = []
+    seen: set[str] = set()
+    if path.exists():
+        with path.open(newline="", encoding="utf-8") as fh:
+            existing = [r for r in csv.DictReader(fh) if r.get("publisher_id")]
+        seen = {r["publisher_id"] for r in existing}
+
+    fresh = [d for d in drafts if d["publisher_id"] not in seen]
+    log.info(
+        f"  {len(drafts):,} drafts, {len(fresh):,} of them new, "
+        f"{len(rejected):,} refused"
+    )
+    for pub, why in rejected[:6]:
+        log.detail(f"    refused {pub}: {why}")
+    if not write:
+        log.info("  nothing written; pass --write to author these")
+        return
+    if not fresh:
+        log.info("  nothing new to author")
+        return
+    with path.open("w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=fields)
+        w.writeheader()
+        for row in existing:
+            w.writerow({k: row.get(k, "") for k in fields})
+        for d in sorted(fresh, key=lambda x: -x["upstream_km"]):
+            w.writerow({k: d[k] for k in fields})
+    log.done(f"{len(existing) + len(fresh):,} reversals in {paths.rel(path)} "
+             f"({len(fresh):,} new)")
 
 
 @app.command()
