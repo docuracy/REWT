@@ -592,3 +592,125 @@ def write_connectors(drafts: list[dict], path) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(doc, indent=2, sort_keys=True), encoding="utf-8")
     return len(features)
+
+
+def propose_reversals(
+    allow_flat_water: bool = False,
+) -> tuple[list[dict], list[tuple[str, str]]]:
+    """Draft reversals, under the strictest rule in this module.
+
+    §5 is emphatic about the danger, and the rule is built around it:
+
+    > Ask it **of every inflow separately**, not of the first that answers. Three
+    > channels arrive at a sink; reversing the wrong one gives the node an outflow
+    > pointing deeper into the same stranded region, and the total improves while the
+    > place stays broken.
+
+    So the test is not "does this link look backwards" but **"does its other end
+    already drain to the sea?"** A link whose upstream end is a node the crawl has
+    reached is a link that, turned round, carries the stranded water out. A link whose
+    upstream end is *also* stranded is the trap, and it fails this test by
+    construction — which is why the crawl has to run before this can be asked at all.
+
+    Three further guards:
+
+    * **The terrain may corroborate and may never decide** (D-007). A reversal is
+      refused if Terrain 50 clearly contradicts it, recorded as corroborated if the
+      DEM clearly agrees, and recorded as *unsupported by terrain* where the fall is
+      inside the error bar — which it will be, often, and saying so is the point. No
+      link is flipped on terrain evidence alone and none is reported as
+      terrain-evidenced when the evidence was inside the error bar.
+    * **Flat water is excluded by default.** *Do not trust a direction fault on flat
+      water at face value*: on level ground both directions are defensible from the
+      geometry and neither from the terrain. Canals and lakes need the rooting
+      argument of §6 or a person, not this rule.
+    * **A reversal moves no geometry and changes no published attribute.** It is a row
+      in `edge` and nothing else, so it is the cheapest correction to withdraw if it
+      turns out to be wrong.
+    """
+    import numpy as np
+
+    frame = build()
+    if frame.empty:
+        return [], []
+    wanted = frame[frame["upstream_end_drains"]].copy()
+    drafts: list[dict] = []
+    rejected: list[tuple[str, str]] = []
+
+    flat = set(config.param("forms.flat_water"))
+    weak = float(config.param("terrain.screen_bands_m.weak"))
+    clear = float(config.param("terrain.screen_bands_m.clear_agree"))
+
+    gradient = db.df(
+        "SELECT link_id, fall_m, verdict FROM link_gradient"
+    ).set_index("link_id")
+
+    for row in wanted.sort_values("upstream_km", ascending=False).itertuples():
+        if row.form in flat and not allow_flat_water:
+            rejected.append(
+                (row.publisher_id,
+                 f"{row.form} is flat water: on level ground both directions are "
+                 "defensible from the geometry and neither from the terrain, so this "
+                 "rule does not apply to it (§5)")
+            )
+            continue
+
+        # `fall_m` is upstream minus downstream AS THE SURVEY HAS IT. Reversing is
+        # right if the ground falls the OTHER way, so a NEGATIVE fall corroborates.
+        fall = gradient["fall_m"].get(row.link_id, np.nan)
+        if pd.notna(fall) and fall > clear:
+            rejected.append(
+                (row.publisher_id,
+                 f"Terrain 50 says the ground falls {fall:,.1f} m in the direction the "
+                 "survey states, well outside its error bar. The topology says the "
+                 "other end drains; the terrain says this one does. Adjudicate at the "
+                 "place — do not reverse on the topology alone")
+            )
+            continue
+        if pd.isna(fall):
+            terrain = ("Terrain 50 gives no reading here — the sea is masked out of "
+                       "it — so the terrain neither supports nor contradicts this")
+        elif fall < -clear:
+            terrain = (f"Terrain 50 corroborates: the ground falls {-fall:,.1f} m "
+                       f"towards the end this reversal drains to, outside the ~4 m "
+                       f"error bar")
+        elif fall < -weak:
+            terrain = (f"Terrain 50 weakly corroborates: {-fall:,.1f} m towards the "
+                       f"end this drains to, inside the ~4 m error bar and therefore "
+                       f"not evidence on its own")
+        else:
+            terrain = (f"Terrain 50 says nothing: {fall:,.1f} m over "
+                       f"{row.length_m:,.0f} m is inside its own error bar. This "
+                       f"reversal rests on topology alone")
+
+        name = row.name if isinstance(row.name, str) else "an unnamed watercourse"
+        drafts.append(
+            {
+                "publisher_id": row.publisher_id,
+                "reason": (
+                    f"{name} arrives at a node with no outflow, so the water stops. "
+                    f"Its OTHER end is at a node the crawl has already reached, which "
+                    f"means that end drains to the sea. A link drawn from a place the "
+                    f"water can leave towards a place it cannot is drawn backwards; "
+                    f"turned round, it carries {row.upstream_km:,.1f} km of stranded "
+                    f"catchment out."
+                ),
+                "evidence": (
+                    f"Measured on OS Open Rivers issue {_issue()}: the dead end is at "
+                    f"{row.sink_e:,.1f} E {row.sink_n:,.1f} N with {row.upstream_km:,.1f} "
+                    f"km above it and no outflow; the link's upstream node at "
+                    f"{row.up_e:,.1f} E {row.up_n:,.1f} N is in the set the crawl "
+                    f"reaches, so it drains. {terrain}. Asked of THIS inflow and not of "
+                    f"the node, so that reversing one of several inflows cannot point "
+                    f"the water deeper into the same stranded region (§5). JUDGED BY "
+                    f"RULE, not by a person looking at the place: see "
+                    f"rewt/candidates.py propose_reversals."
+                ),
+                "author": "rewt candidates (rule), reviewed by Claude",
+                "dated": "2026-08-31",
+                "upstream_km": round(float(row.upstream_km), 3),
+                "form": row.form,
+                "name": name,
+            }
+        )
+    return drafts, rejected

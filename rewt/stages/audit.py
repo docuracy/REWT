@@ -231,7 +231,30 @@ def run() -> dict:
         )
 
     # --------------------------------------------------------------- cycles
-    cycles = g.cycles()
+    # §6 defines the defect precisely: *A closed loop with no exit strands everything
+    # above it... Detect them as components with **no sink at all**.* A loop that DOES
+    # have an exit is a braided channel, which is a real feature of a river and not a
+    # fault. Counting both together reported thirteen cycles where five were braids,
+    # three of which this project had just created by joining a channel to itself —
+    # correctly, as it turns out, because the water leaves.
+    all_loops = g.cycles()
+    reached_links = set(
+        db.df("SELECT link_id FROM link_reach WHERE reaches_tidal")["link_id"]
+    )
+    cycles, braids = [], []
+    for nodes_in_cycle in all_loops:
+        member = np.isin(g.u, nodes_in_cycle) & np.isin(g.v, nodes_in_cycle)
+        drains = any(lid in reached_links for lid in g.link_ids[member])
+        (braids if drains else cycles).append(nodes_in_cycle)
+    if braids:
+        braid_km = sum(
+            float(g.length[np.isin(g.u, b) & np.isin(g.v, b)].sum()) / 1000.0
+            for b in braids
+        )
+        log.detail(
+            f"    {len(braids)} closed loops totalling {braid_km:,.1f} km DO have an "
+            "exit — braided channels, not faults, and not counted as cycles"
+        )
     cycle_km = 0.0
     for nodes_in_cycle in cycles:
         member = np.isin(g.u, nodes_in_cycle) & np.isin(g.v, nodes_in_cycle)
@@ -251,10 +274,14 @@ def run() -> dict:
             )
         )
     if cycles:
+        largest = max(
+            float(g.length[np.isin(g.u, c) & np.isin(g.v, c)].sum()) / 1000.0
+            for c in cycles
+        )
         log.warn(
-            f"{len(cycles)} cycles, {cycle_km:,.1f} km. §6: as shipped OS Open Rivers "
-            "has none of 10 km or more, so a large one here was introduced by our own "
-            "repairs and is a defect in them."
+            f"{len(cycles)} closed loops with NO exit, {cycle_km:,.1f} km, the largest "
+            f"{largest:,.2f} km. §6: as shipped OS Open Rivers has none of 10 km or "
+            "more, so a large one here would have been introduced by our own repairs."
         )
     else:
         log.detail("    no cycles")

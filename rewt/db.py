@@ -37,6 +37,8 @@ def _prepare(con: duckdb.DuckDBPyConnection) -> duckdb.DuckDBPyConnection:
     # Deterministic ordering wherever a result depends on iteration order (PLAN.md §2).
     con.execute("SET preserve_insertion_order = true")
     con.execute("SET threads TO 8")
+    # A progress bar on a query run inside a report is noise in a log file.
+    con.execute("SET enable_progress_bar = false")
     return con
 
 
