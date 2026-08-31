@@ -571,17 +571,11 @@ path you will not use.
 
 ## 8. What the predecessor learned
 
-A scoping exercise built this once, under the name *Premodern Rivers*. Its reasoning is
-public and worth reading before starting; its code is not the model to follow.
-
-**Public, and the place to start:**
-
-- [Methodology](https://docuracy.github.io/premodern-rivers/guide/methodology.html) — how
-  the network was assembled, and the order of operations that turned out to matter.
-- [Status](https://docuracy.github.io/premodern-rivers/guide/status.html) — what worked,
-  what did not, and the measured limits. Candid by design.
-- [Next steps](https://docuracy.github.io/premodern-rivers/guide/next-steps.html) — the
-  analysis this plan implements, including why the modern survey's topology comes first.
+A scoping exercise built this once, under the name *Premodern Rivers*. **That repository is
+private and will stay private**, so nothing here may link to it or depend on reading it —
+which is why the lessons below are stated in full rather than cited. Its code is not the
+model to follow in any case; its reasoning is, and it is reproduced where it bears on this
+stage.
 
 **The lessons that bear on Stage 1**, stated here so they need no access to anything:
 
@@ -645,3 +639,17 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
   graphs for one geometry and could not reconcile them.
 - **Corrections addressable by id.** The tooling that lets a reader report a defect
   depends on every drawn feature carrying an id they can send back.
+- **A reach that can be compared with a historic sheet, and a place to record the verdict.**
+  Stage 2 will sweep every river course along its length against the earliest available
+  six-inch edition — first edition where it exists, second where it does not — looking for
+  departures of the printed channel from the modern line that no GB1900 label announces.
+  The labels are a lower bound on what those sheets hold, so the sweep, not the labels, is
+  the larger part of that stage.
+
+  Two consequences for Stage 1, and neither is work to do now. The unit of that comparison is
+  a **reach** rather than a link, so whatever aggregates links into named or traceable runs
+  should be stable enough to hang a verdict on. And the comparison needs a threshold set
+  **above OS Open Rivers' own generalisation** — so the audit should record what that
+  generalisation actually is, since it is measurable here and nowhere else in the programme:
+  a sweep tuned finer than the product's own smoothing reports the difference between two
+  drawing conventions and calls it a change in the river.

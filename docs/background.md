@@ -3,19 +3,11 @@
 ## The proof of concept
 
 REWT follows a scoping exercise carried out in 2026 under the name **Premodern Rivers**,
-which produced a working reconstruction, two delivered datasets, and a published map.
+which produced a working reconstruction, two delivered datasets, and a map.
 
-Its site remains available and is worth reading for the detail behind the summaries here:
-
-> **[Premodern Rivers — the proof-of-concept map and documentation](https://docuracy.github.io/premodern-rivers/)**
->
-> and its [methodology and status pages](https://docuracy.github.io/premodern-rivers/guide/),
-> including a [next-steps analysis](https://docuracy.github.io/premodern-rivers/guide/next-steps.html)
-> and regional source surveys for the
-> [Fens](https://docuracy.github.io/premodern-rivers/guide/regions/fens.html),
-> the [Humber](https://docuracy.github.io/premodern-rivers/guide/regions/humber.html),
-> the [Somerset Levels](https://docuracy.github.io/premodern-rivers/guide/regions/somerset.html)
-> and [elsewhere](https://docuracy.github.io/premodern-rivers/guide/regions/other.html).
+**That work is not public**, and this page is the account of it. What it established, and
+what was and was not carried forward, is set out below; the regional source surveys it
+produced have been rewritten for this project and are [the rebuilt landscapes](regions/).
 
 ## What it established
 

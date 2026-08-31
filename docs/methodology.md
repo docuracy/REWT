@@ -146,6 +146,30 @@ them, has made those statements searchable.
 Each is an assertion by the surveyor, not an inference. Trace them at the resolution the
 sheet supports, snapping to the printed ink.
 
+**From the sheets themselves, and not only from their labels.** A caption is the surveyor
+volunteering an observation. Most abandoned courses never got one: *Old Course* is written
+where somebody thought the fact worth recording, not wherever a river has moved. **The labels
+are a lower bound on what the six-inch record holds** — the cheapest findings in it, not the
+complete set.
+
+So the sheets should also be read *systematically*: **every river course inspected along its
+whole length against the printed channel**, on the **first edition** where it exists and the
+second where it does not, flagging every significant departure of the historic channel from
+the modern line. That finds the courses no volunteer transcribed because no surveyor
+captioned them, which is most of them.
+
+Two things keep this bounded rather than open-ended. The first pass is **mechanisable**: the
+modern network can be overlaid on the georeferenced sheet and the divergence measured, so a
+person judges only the places where it exceeds a threshold. And **the threshold has to sit
+above the modern product's own generalisation** — OS Open Rivers is a cartographic
+derivative, and a sweep tuned finer than its own smoothing will report the difference between
+two drawing conventions and call it a change in the river.
+
+It is work that scales with the **length of the network** rather than with the number of
+labels, which puts it in a different class of cost from the labelled assertions above. It
+also divides cleanly — one reach, or one sheet, at a time — which makes it the most natural
+thing in the whole programme to invite help with.
+
 **From under the reservoirs.** Channels drowned since the mid-nineteenth century are
 recoverable from sheets made before the dam — which often means the *first* series, not
 the second, because much of Victorian water supply predates it.
@@ -164,9 +188,10 @@ first task in this strand is to test it on a sample and find out — a scheme at
 recording what the record actually yields.
 
 **Exit condition.** Every *Old Course* and *New Cut* label adjudicated — traced, rejected
-with a reason, or recorded as illegible — with provenance per vertex; and every matched
-reservoir either traced from a pre-dam sheet or recorded as having none.
-[How many that is](scale).
+with a reason, or recorded as illegible — with provenance per vertex; every matched reservoir
+either traced from a pre-dam sheet or recorded as having none; and every reach swept against
+the earliest available edition, with each flagged departure traced, dismissed as
+generalisation, or recorded as illegible. [How many that is](scale).
 
 ### Go to the sources, not to the synthesis
 

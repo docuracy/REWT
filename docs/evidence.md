@@ -59,13 +59,27 @@ they do meet, the monument record's *period* is a category spanning centuries an
 contradict a year. A test that cannot distinguish a disagreement from a coarse category is
 not a test, and the declared years remain untested.
 
-**What it holds instead is the population every other source excludes.** Most of its reservoir
-and dam records have no counterpart in the statutory register at all — impoundments below the
-statutory threshold, or disused, abandoned, or known only archaeologically. That is precisely
-the tail the hydrological inventory omits by capacity and the register omits by statute, and
-it is where the small drowned valleys are. Each record carries a period, a note of how the
-site is known, and a permanent link to its entry. **Untested against the network**, and the
-most promising unexamined thing on this page.
+**What it holds instead is a slice of the population every other source excludes.** A majority
+of its reservoir and dam records have no counterpart in the statutory register or the
+hydrological inventory — impoundments below the statutory threshold, or disused, abandoned, or
+known only archaeologically. Each carries a period, a note of how the site is known, and a
+permanent link to its entry.
+
+**It is a real addition and a modest one**, and the qualifier matters more than the count.
+Barely a fifth of those records sit on standing water in the modern network at all: most are
+drained, silted, or too small to have been mapped as water, so they are records of *where an
+impoundment was* rather than of a lake to route around. About half sit on a modern
+watercourse, roughly a quarter carry industrial names — collieries, quarries, ironworks, the
+same population problem as the leats in a milder form — and only a handful carry a period
+earlier than the nineteenth century.
+
+**And how many of them are additional depends on a choice nobody can make principledly.**
+Whether a monument record and a register entry describe the same reservoir is decided by how
+far apart they are allowed to be, and for a large reservoir the two sources point at different
+things — the archaeological record marks the *dam*, the register the body of water. Move the
+radius across the range a reasonable person would accept and the answer moves by more than
+half. That sensitivity is the honest finding, and a single number here would be a claim that
+the choice did not matter.
 
 One structural limit applies throughout: a linear site is recorded as a **point**, at a grid
 reference taken somewhere along it, so nothing in this source can be traced from.
@@ -107,6 +121,14 @@ scope. [The scale page](scale) gives the method.
 counted by place, which is a small enough number to work through completely, against some
 4,068 judgements, which is not. That difference drives the [release plan](epochs), and
 [the scale page](scale) sets out what follows from it.
+
+**And the labels are a lower bound on the sheets.** A surveyor captioned a superseded
+channel where the fact seemed worth recording, which is nowhere near everywhere a river has
+moved — so the transcription finds the assertions and misses the silent majority. The sheets
+themselves record the course *everywhere they cover*, and reading them systematically along
+each river, rather than only where a label points, is a different and much larger body of
+evidence from the same paper. [The methodology](methodology) sets out how that sweep is meant
+to work and why its threshold has to be set above OS Open Rivers' own generalisation.
 
 A **second population is not labelled at all: channels drowned by reservoirs.** A drowned
 valley is not a channel that ceased to exist — it is one that is under water, and its course

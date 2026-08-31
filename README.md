@@ -33,9 +33,8 @@ written to be picked up cold.
 
 **Nothing is published yet.** Stage 1 — the traversable modern network — is under
 construction; nothing else has been started. The repository is being built
-from a clean sheet following a scoping exercise
-([Premodern Rivers](https://docuracy.github.io/premodern-rivers/)) which established the
-approach and, more usefully, what goes wrong.
+from a clean sheet following a private scoping exercise (*Premodern Rivers*) which
+established the approach and, more usefully, what goes wrong.
 
 Material is carried across **selectively and deliberately**, so that this repository can
 be made public without any licence-encumbered data having to be removed first.
