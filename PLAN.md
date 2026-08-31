@@ -230,10 +230,37 @@ arrive at a node with no outflow** — about 30% of all canal length in England 
 along with 101 lake links. Canals are only 1,584 links out of 194,471; they are wildly
 over-represented in the fault list, and that is not a coincidence.
 
-- **Do not require a canal to reach the sea down its own channel.** It reaches it through a
-  structure. Either connect it to the receiving river where the overflow actually is and
-  record that as a curated judgement, or exclude canals from the reachability requirement
-  and say which. What you must not do is reverse canal links until the total improves.
+**Canals are in.** They are subject to the reachability requirement like everything else
+(D-011). Excluding them would be easier and it is the wrong call: many links OS types as
+`canal` are canalised rivers — the Aire and Calder, the Calder and Hebble, the Wey, the
+Itchen, the Fossdyke — which *are* the drainage and cannot be set aside without leaving a
+hole where a river should be. Canals also cross watersheds and join basins, so a network
+that omits them cannot be reconciled at the places where they are the only continuous line.
+
+- **Do not require a canal to reach the sea down its own channel.** It reaches it through
+  a structure — a lock, an overflow weir, a feeder — that the survey does not draw.
+  Connect it to the receiving watercourse **where the structure actually is**, and record
+  that as a curated judgement like any other. What you must not do is reverse canal links
+  until the total improves.
+- **This is cheaper than it sounds, and the shape of the work is known.** 2,706 km of
+  canal sits in 538 components. 1,932 km is already in a component holding river, lake or
+  tidal water and needs no new geometry at all. The other 774 km is in 289 canal-only
+  components — and **every one of them has a non-canal watercourse within 2 km**:
+
+  | nearest non-canal watercourse | components |
+  |---|---:|
+  | within 10 m — touching, merely unjoined | 163 |
+  | 10–50 m | 65 |
+  | 50–200 m | 33 |
+  | 200 m – 2 km | 28 |
+
+  So 163 are **junctions, not connectors** — no geometry is invented, a node is merged.
+  Fewer than 30 need a link long enough to be worth arguing about. This is a bounded piece
+  of work, not an open commitment.
+- **A canal may legitimately have two outlets, and the one-sink rule does not apply to
+  it.** Water leaves a summit pound in *both* directions, so a canal crossing a watershed
+  drains two ways by design. That is the `mode: both` row of the table above, and it is the
+  case it exists for. Do not "fix" a two-outlet canal into a one-outlet one.
 - **Do not trust a direction fault on flat water at face value.** On level ground both
   directions are defensible from the geometry and neither is defensible from the terrain
   (below). But topology can still answer: root the component at its lowest node and orient
@@ -597,7 +624,8 @@ accumulated assumptions behind.*
 - Basins delineated, scope decided on them, and the in-scope set written out for
   inspection — with the cross-border cases named individually.
 - Every basin either reaches 100% reachable, or its shortfall is named with a reason.
-  Canals excluded from the requirement is an acceptable reason; "improved a lot" is not.
+  "Improved a lot" is not a reason, and neither is "it is only a canal" — canals are
+  inside the requirement (D-011).
 - Every curated correction you author is applied and verified, or rejected with a reason.
 - Every identifier in `data/curated/` resolves against the database, enforced by a test.
 - The audit's findings compared against the predecessor's 73 recorded corrections, and the

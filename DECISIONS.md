@@ -100,3 +100,36 @@ Recorded as **defaults, not commandments**. DuckDB proved a good fit in the pred
 one module owning the connection keeps a move to PostGIS cheap. Language, layout and the
 runner are the implementing agent's call; overturn any of this with a reason recorded here.
 Nothing in `PLAN.md` §1–§6 depends on the choice.
+
+**D-011 — Canals are inside the reachability requirement.** *2026-08-31*
+
+Stephen's call, and the plan previously left it open. Excluding canals would have been
+easier and is wrong on three counts.
+
+**Many links OS types as `canal` are canalised rivers.** The Aire and Calder, the Calder
+and Hebble, the Wey, the Itchen, the Fossdyke, the Sheffield and South Yorkshire. Those
+*are* the drainage; setting them aside leaves a hole where a river should be, and the
+`form` attribute is not a reliable way to tell a canalised river from an artificial cut.
+
+**Canals cross watersheds and join basins**, so a network that omits them cannot be
+reconciled where a canal is the only continuous line between two river sections. This was
+Stephen's stated reason and it is the decisive one.
+
+**And it is a bounded piece of work.** Measured: 2,706 km of canal in 538 components, of
+which 1,932 km already sits in a component holding river, lake or tidal water and needs no
+new geometry. The remaining 774 km is in 289 canal-only components, and **every one has a
+non-canal watercourse within 2 km** — 163 within 10 m (junctions, not connectors: a node
+is merged, nothing is invented), 65 within 50 m, and only 28 beyond 200 m. Roughly 290
+adjudications, most of them trivial.
+
+Two consequences to carry. A canal reaches the sea **through a structure** — lock,
+overflow weir, feeder — that the survey does not draw, so it is attached to the receiving
+watercourse where the structure actually is, as a curated judgement, and never by reversing
+canal links until the total improves. And **a canal may legitimately have two outlets**:
+water leaves a summit pound in both directions, so the one-sink-per-component expectation
+does not apply to it. That is what the `mode: both` case exists for.
+
+*Forward note for a later stage, recorded here so it is not rediscovered:* including canals
+in the modern network is not a licence to route historical water down them. A 1790s cut
+must not carry 1348 water. The predecessor made exactly this mistake with post-medieval Fen
+drains, and the fix belongs in the dating stage, not here.
