@@ -134,6 +134,37 @@ adds nothing at all**: no geometry, no feature, no output row; the target is cut
 node merged. A connector cannot express that, because its two ends would coincide, and a
 zero-length connector once reached a published dataset as a row with no country.
 
+### Water bodies, where the survey routes through them or not at all
+
+A fourth case, and it needs a second source. Where a watercourse meets a lake, reservoir
+or broad, OS Open Rivers either draws a **schematic straight line** across it — some
+2,300 km of the network is routed this way — or draws nothing, and the network is severed.
+
+**A straight line through standing water is not a river course.** It is a routing device,
+and where the water body is a modern impoundment the line runs where a valley used to be.
+For Stage 1 that distinction does not matter — no historical claim is being made — but the
+line must be **flagged as what it is**, so a later stage cannot mistake it for a channel.
+
+Where no route exists at all, the defensible answer is the polygon's **medial axis**.
+**OS OpenMap – Local** (Ordnance Survey, OGL) draws a watercourse as an *area* once it is
+wide enough to show, and those polygons are the only open source of channel width in
+Britain; their skeleton follows the channel more closely than OS Open Rivers, which is
+generalised from larger-scale data. Width falls out as a by-product, which Stage 1 does
+not need and later stages do.
+
+Three cautions, all measured:
+
+- **It is not a base network and must not be made one.** Its water has no topology
+  whatever: 1.36 million lines in 892,000 components, only 4% of endpoints shared with
+  another line, and **0.7% of its length in a component that reaches tidal water**. It
+  supplies geometry; OS Open Rivers keeps supplying topology.
+- **Width can measure the sea.** At estuary scale a "channel" is a bay, and a medial axis
+  through one is meaningless. Exclude tidal water rather than discovering this in the
+  output.
+- **Skeletonise only where it earns its place** — where the survey gives no route, or
+  where the schematic line is doing real routing work. Skeletonising every water body in
+  the country is a large computation in exchange for very little.
+
 **Order matters and is not obvious.** In the earlier work, corrections applied before the
 features they referenced existed reported "no such edge" and did nothing — silently
 except for a log line, and including the single largest defect in the country. Apply each
@@ -172,34 +203,50 @@ had grown in both link count and length. Emit a coordinate for every finding.
 
 ---
 
-## 7. Reference code, and how to use it
+## 7. What the predecessor learned
 
-The predecessor is at `~/PycharmProjects/premodern-rivers` (private). **Do not copy from
-it.** It carries assumptions from a pipeline that grew to 23 stages, and the point of
-starting again is to leave those behind. Read it to avoid rediscovering a problem, then
-write something cleaner.
+A scoping exercise built this once, under the name *Premodern Rivers*. Its reasoning is
+public and worth reading before starting; its code is not the model to follow.
 
-| where to look | what for | what to avoid |
-|---|---|---|
-| `rivers/acquire.py`, `conf/sources.yml` | the declarative source model, and licence/attribution per source. Sound; the pattern is worth keeping | — |
-| `rivers/network.py` | loading OS Open Rivers, node orientation, scope | it does a great deal besides |
-| `rivers/repair.py` | the topology repair vocabulary, and the split-a-link-to-attach construction | grew case by case |
-| `rivers/closure.py` | how connectors, reversals and junctions are actually applied; the "attach by cutting" logic | ~1,600 lines, rewritten in place five times, and its own handover says split it before adding more. **Read it; do not imitate its shape** |
-| `rivers/db.py` | one module owns the database connection. Small and right | — |
-| `tests/test_curated_ids_resolve.py` | the id-validation test. Port the *idea* | — |
-| `data/curated/connectors/` | **the validation set** — 73 corrections with their reasons. Consult only after the audit works | do not import |
-| `DECISIONS.md` D-065, D-124, D-133, D-136 – D-144 | why each correction class exists, and four measured failures | very long |
+**Public, and the place to start:**
 
-**On efficiency.** Two things dominated runtime and both have cheap answers. Spatial
-self-joins over 120,000 links are slow: join on rounded endpoint coordinates instead, and
-a query that ran for ten minutes runs in seconds. And per-row inserts with per-row geometry
-parsing took ten minutes for 122,000 rows where one bulk insert took moments.
+- [Methodology](https://docuracy.github.io/premodern-rivers/guide/methodology.html) — how
+  the network was assembled, and the order of operations that turned out to matter.
+- [Status](https://docuracy.github.io/premodern-rivers/guide/status.html) — what worked,
+  what did not, and the measured limits. Candid by design.
+- [Next steps](https://docuracy.github.io/premodern-rivers/guide/next-steps.html) — the
+  analysis this plan implements, including why the modern survey's topology comes first.
 
-**On the database.** The earlier work uses DuckDB with a spatial extension, single-writer,
-which is a good fit and worth keeping. Note that a read-only connection blocks writers, so
-any long-running viewer must be stopped before a build.
+**The lessons that bear on Stage 1**, stated here so they need no access to anything:
 
----
+| lesson | what it cost |
+|---|---|
+| A cartographic product will not supply a topology it never had | four attempts to give one to an area-based water layer, all abandoned |
+| A correction that references a feature by id does nothing, silently, when the id is wrong — while the stage reports it applied | twice in one day, once through a column nothing reads, so the error was invisible |
+| Corrections applied before their targets exist are skipped silently | 11 of 25 did nothing, including the single largest defect in the country |
+| Ask *which end touches the network* of **every** inflow, not the first that answers | a sink given an outflow pointing deeper into the same stranded region |
+| A defect is invisible in national totals and obvious at the place | 481 km of holes arrived alongside a network that had grown in both count and length |
+| A flow model reports a confident number over a network the water cannot leave | months of figures that had to be withdrawn |
+| Two graphs over one geometry cannot be reconciled after the fact | the reason that pass stopped where it did |
+
+**One architectural warning.** The predecessor's routing module reached ~1,600 lines and
+was rewritten in place five times; its own handover records that it should be split before
+anything more is added. Whatever you build here, keep the trace, the curated inputs and
+the reporting as three separable things.
+
+**Two performance findings**, each of which cost a day. Spatial self-joins over ~120,000
+links are prohibitively slow — join on **rounded endpoint coordinates** instead and a
+ten-minute query becomes seconds. And per-row inserts that parse geometry per row took ten
+minutes for 122,000 rows where a single bulk insert took moments.
+
+**On the database.** DuckDB with a spatial extension proved a good fit and is worth
+keeping: one module owning the connection, and the option of moving to PostGIS left open.
+Note that a read-only connection blocks writers, so any long-running viewer must be
+stopped before a build.
+
+*The predecessor repository is private. Its source is available on request, and should be
+read for context rather than copied — the point of starting again is to leave its
+accumulated assumptions behind.*
 
 ## 8. Definition of done
 

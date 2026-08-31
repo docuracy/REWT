@@ -34,3 +34,33 @@ sources:
 
       Reissued twice a year. Record which issue was fetched: the network changes between
       them, and a result that cannot name its input cannot be reproduced.
+
+  # Needed only for the water-body case in PLAN.md §5: where OS Open Rivers gives no
+  # route through a lake or reservoir, the polygon's medial axis is the defensible one.
+  # NOT a base network — its water has no topology at all (4% of endpoints shared,
+  # 0.7% of length in a component reaching tidal water). Geometry and width only.
+  - id: os_open_map_local
+    title: "OS OpenMap - Local"
+    publisher: "Ordnance Survey"
+    url: "https://api.os.uk/downloads/v1/products/OpenMapLocal"
+    api: os_downloads
+    product: OpenMapLocal
+    download:
+      area: GB
+      format: GeoPackage
+    licence: "Open Government Licence v3 — attribution required"
+    attribution: "Contains OS data © Crown Copyright and database rights 2026."
+    access: open
+    redistribution: permitted
+    format: [geopackage]
+    crs: "EPSG:27700"
+    cache_path: "data/raw/os_open_map_local/"
+    checksum: null
+    status: unverified
+    notes: >
+      Surface water AREAS. A watercourse is drawn as a polygon once it is wide enough to
+      show, and these are the only open source of channel width in Britain. Their medial
+      axis follows the channel more closely than OS Open Rivers, which is generalised.
+
+      Use for the water-body crossings only, and exclude tidal water: at estuary scale a
+      "channel" is a bay and its medial axis means nothing.
