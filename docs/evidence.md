@@ -51,11 +51,24 @@ that shares a word. **A structured field is not the same as the right content**,
 lesson generalises: the temptation with a well-modelled dataset is to trust the schema and
 skip reading the rows.
 
-Its *mills*, and its reservoirs and dams, are the more useful part and are untested here — an
-archaeologically recorded locator for Welsh impoundments would be worth having, because it
-owes nothing to the undertaker's declaration on a registration form and could therefore test
-it. One structural limit applies throughout: a linear site is recorded as a **point**, at a
-grid reference taken somewhere along it, so nothing in this source can be traced from.
+**It does not, in the end, check the register.** The hope was that an archaeologically
+recorded locator for Welsh impoundments — owing nothing to the undertaker's declaration on a
+registration form — could test those declared dates. It cannot. The two sources barely
+overlap, most registered reservoirs having no monument record anywhere near them; and where
+they do meet, the monument record's *period* is a category spanning centuries and cannot
+contradict a year. A test that cannot distinguish a disagreement from a coarse category is
+not a test, and the declared years remain untested.
+
+**What it holds instead is the population every other source excludes.** Most of its reservoir
+and dam records have no counterpart in the statutory register at all — impoundments below the
+statutory threshold, or disused, abandoned, or known only archaeologically. That is precisely
+the tail the hydrological inventory omits by capacity and the register omits by statute, and
+it is where the small drowned valleys are. Each record carries a period, a note of how the
+site is known, and a permanent link to its entry. **Untested against the network**, and the
+most promising unexamined thing on this page.
+
+One structural limit applies throughout: a linear site is recorded as a **point**, at a grid
+reference taken somewhere along it, so nothing in this source can be traced from.
 
 **And its terms are asserted by a re-publisher.** The Open Government Licence statement
 carried for it comes from the platform hosting the data rather than from the body that made
