@@ -97,6 +97,17 @@ The best national inventory reaches about a quarter of the inherited figure: 493
 24,146 standing-water links lie within 500 m of one of its entries. The count stays
 inherited rather than earned.
 
+**The list that would close that gap exists and is not published.** Every reservoir holding
+more than 25,000 m³ above the surrounding land is on a statutory register kept by the
+Environment Agency — which is exactly the tail a storage-weighted inventory omits, and which
+is compiled on a *raised water* test far closer to "drowned a valley" than a volume threshold
+is. It is not open data. The [guidance](https://www.gov.uk/guidance/reservoirs-owner-and-operator-requirements){:target="_blank"} says that to see it "you'll need to write, email
+or call the Environment Agency and ask for a copy of the register". A copy released under
+freedom of information in 2020 is republished by a third party with fields withheld for data
+protection, and a five-year-old extract of a live statutory register is not something this
+project will build on. **The gap is not that no such list exists; it is that this one is not
+published**, and that is a thing a reader can act on where an unexplained absence is not.
+
 **The dates can be looked up, for the large ones.** The [CEH inventory of UK
 reservoirs](https://doi.org/10.5285/f5a7d56c-cea0-4f00-b159-c3788a3b2b38){:target="_blank"} holds 273 reservoirs, 233 of them in England and
 Wales, and **252 carry a completion year** — 92%, each with its own quality flag and a
