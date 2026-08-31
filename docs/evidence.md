@@ -309,6 +309,9 @@ it is wanted:
   Testable on a single reservoir.
 - **Whether a catalogued deposited plan is the plan for the scheme** — the index finds
   records naming a place; only the document says what it draws.
+- **An openly redistributable dated navigability layer.** The best one that exists is
+  safeguarded, so the project can consult it and cannot publish from it; the towing-path
+  labels are open but undated. Nothing yet fills the gap between them.
 
 **And one deliberately deferred.** The *Victoria County History* will often date a mill or a
 reservoir where the maps only locate one, and it is noted here as a fallback rather than
@@ -347,7 +350,21 @@ rebuilt rather than modified. [The rebuilt landscapes](regions/) divides it into
 that have to be worked out one at a time, with the schemes that reshaped each, when they
 were carried out, and the sources that record what was there before.
 
-## Attested navigation
+## Navigation
+
+**This is a strand, not an attribute.** The project's name is a pun on *route*, and that is
+not decoration: a great deal of what the modern network looks like was done to make water
+carry things. River improvement in the late seventeenth century was driven above all by the
+need to get **coal** to towns where hauling it overland made it dear — so where a river ran,
+and from when it could be worked, is an input to questions about commerce and
+industrialisation as much as to questions about landscape. A dated navigable network is a
+different object from a dated hydrography, and it is one this project is unusually well
+placed to produce, because navigability is a property of a **route** and this is the only
+open historical river dataset built to be routable at all.
+
+Three bodies of evidence bear on it, and they fail in complementary ways.
+
+### Before 1348
 
 [Oksanen's *Inland Navigation in England and Wales before 1348*](https://doi.org/10.5284/1057497){:target="_blank"} — the
 scholarly GIS of pre-1348 navigation, deposited with the Archaeology Data Service — is used
@@ -365,6 +382,45 @@ One further limitation shapes the whole project's temporality: the corpus carrie
 date on any of its 652 records**. A reconstruction leaning on it can only honestly be drawn
 at its terminus, which is how an earlier datum of 1348 came to be fixed by the weakest
 constraint in the evidence. [Escaping that is what frees the date](epochs).
+
+### 1600 to 1948, and the problem with it
+
+Max Satchell and Leigh Shaw-Taylor's **dynamic GIS of the navigable waterways of England and
+Wales, 1600–1948** ([CAMPOP](https://www.campop.geog.cam.ac.uk/research/occupations/datasets/catalogues/transport/){:target="_blank"}, Cambridge) is the source that does what Oksanen cannot. It
+carries, per waterway, **the range of years for which it is known to be navigable or in
+commercial use**, and it distinguishes **natural river from improved river from canal**, and
+broad canal from narrow. A slice can be generated for any year in the range: the 1820 slice
+is 5,419 miles of navigable water. Versions edited specifically for network analysis exist
+for 1680, 1830 and 1911.
+
+**That is precisely the dated navigability layer this project lacks** — and it cannot be
+published from. The year slices deposited with the UK Data Service are **safeguarded data
+under the End User Licence**: available to registered users, not redistributable. The
+network-analysis versions are not listed as available for sharing at all. So it joins the
+[*Victoria County History*](#what-has-been-looked-for-and-not-yet-found) in the category this
+page had no room for until recently — **consultable, citable, not republishable**. It can
+corroborate a trace, tell a tracer which reaches were worked in which decades, and settle
+whether a channel is an improvement or a cut. Its lines cannot travel into an export.
+
+The distinction it draws between improved river and artificial cut is worth dwelling on: it
+is the same distinction the six-inch surveyors were making with *Old Course* and *New Cut*,
+recorded two centuries earlier and from the legal and commercial record rather than from the
+ground.
+
+### c.1900, and the one that can be published
+
+The **towing-path labels** in GB1900 are the navigability evidence this project can actually
+redistribute, and this page has until now undersold them by treating them only as a
+tie-breaker between an old course and a new cut. They are more than that. **2,169 labels at
+some 1,724 distinct places in England and Wales** are a direct statement, made on the ground
+by a surveyor, that *this* channel carried traffic — positional, traceable, CC0, and
+attaching to a specific bank of a specific reach.
+
+They date nothing on their own: a towpath in 1900 says a channel was worked in 1900 and
+nothing about 1600. What they do is anchor the other two. A reach with a towing path, an
+Oksanen attestation and a Satchell navigability range is corroborated three ways from three
+independent kinds of record — and a reach with a towpath and nothing else is a question worth
+asking.
 
 ## Terrain
 

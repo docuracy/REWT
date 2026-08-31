@@ -10,6 +10,15 @@ Routable means what it says: from any stretch you can follow the water downstrea
 reach tidal water. That is not true of the modern published network, and making it true
 is most of the work.
 
+**The name is a pun on *route*, and it is meant seriously.** A river network that cannot be
+traversed cannot answer the questions rivers were used for, and those questions are largely
+economic: what could be moved, from where, and at what cost. River improvement in the late
+seventeenth century was undertaken above all to get **coal** to towns where hauling it
+overland made it ruinously dear. So [where a river ran and when it could be worked](evidence#navigation)
+is an input to the history of commerce and industrialisation, and not only to the history of
+landscape. Navigability is a property of a *route*; this is the only open historical river
+dataset being built to carry one.
+
 ## Who it is for
 
 - **Landscape and economic historians**, for whom river access is a variable that has

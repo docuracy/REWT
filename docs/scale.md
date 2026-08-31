@@ -45,7 +45,7 @@ Wales:
 |---|---|---|---|
 | **Old Course** | 139 | **126** | the surveyor stating which of two channels is superseded |
 | **New Cut** | 224 | **209** | the same statement from the other side |
-| Towing path | 2,169 | 1,724 | the navigable channel c.1900; ambiguous alone |
+| Towing path | 2,169 | 1,724 | direct evidence that *this* channel carried traffic — see [navigation](evidence#navigation) |
 | Mill channels — *Mill Race*, *Mill Leat*, *Mill Pond* | 4,996 | **4,068** | frequently medieval, and belonging *in* the reconstruction |
 
 **Two columns, because a caption is not a channel.** The Ordnance Survey repeated a name
