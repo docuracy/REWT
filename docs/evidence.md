@@ -156,9 +156,12 @@ counts are counts of places, and are labelled as such.
 
 Two figures need saying plainly. The labels come from the **CC0 raw dump**, never from the
 published gazetteers, which are CC-BY-SA and would carry share-alike into this project's
-exports. And the extent is **England and Wales**: 1,888 of the 6,884 mill-channel labels in
-Great Britain are Scottish, *lade* and *lead* being Scots, and Scotland is outside the
-scope. [The scale page](scale) gives the method.
+exports. And the extent measured is **England and Wales by country polygon**: 1,888 of the 6,884
+mill-channel labels in Great Britain fall in Scotland, *lade* and *lead* being Scots. That is
+a proxy rather than the project's rule — scope is decided on **basins**, and a basin with any
+part in England or Wales is in scope entire, Scottish headwaters and all, so the counts
+undercount by whatever sits in the Scottish parts of the Tweed and the Border Esk.
+[The scale page](scale) gives the method.
 
 **Some 274 outright assertions** where *Old Course* and *New Cut* are taken together and
 counted by place, which is a small enough number to work through completely, against some

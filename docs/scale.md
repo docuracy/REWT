@@ -73,10 +73,17 @@ sheet and trace the channel, that is **about six working days**.
 > from the published gazetteers, which are CC-BY-SA: share-alike would propagate into this
 > project's own exports, and the abridgement drops every string occurring 300 or more times
 > nationally, which is exactly the mill and towing-path vocabulary. A pin's text is the
-> reading most volunteers gave it. Extent is England and Wales by OS Boundary-Line, which
-> matters more than it sounds: **1,888 of the 6,884 mill-channel labels in Great Britain are
-> in Scotland** and outside this project's scope — *lade* and *lead* are Scots, and they are
-> two of the four commonest terms. Earlier drafts of this page gave 161, 219, 2,214 and
+> reading most volunteers gave it. Extent is England and Wales by OS Boundary-Line country
+> polygon, which matters more than it sounds: **1,888 of the 6,884 mill-channel labels in
+> Great Britain fall in Scotland** — *lade* and *lead* are Scots, and they are two of the four
+> commonest terms.
+>
+> That country split is a **proxy for the scope rule and not the rule itself**. Scope is
+> decided on basins: a basin with any part in England or Wales is in scope entire, Scottish
+> headwaters included, and only ground draining *solely* to Scotland is out. So these counts
+> are a slight undercount, by whatever labels sit in the Scottish parts of the Tweed and
+> Border Esk. The direction is known and the magnitude is not, because the basins are not yet
+> delineated. Earlier drafts of this page gave 161, 219, 2,214 and
 > 10,738 for the four classes. Two of those reproduce exactly; the mill-channel figure does
 > not reproduce at all from the source, at any extent, and has been replaced by the measured
 > one.
