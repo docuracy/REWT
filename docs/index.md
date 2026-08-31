@@ -47,6 +47,5 @@ See [Background](background.md).
 
 ---
 
-*Stephen Gadd, [Docuracy Ltd](https://docuracy.co.uk). Developed with Justin Colson
-(University of Essex) and in connection with the Cambridge Group for the History of
-Population and Social Structure.*
+*Stephen Gadd, [Docuracy Ltd](https://docuracy.co.uk), with Justin Colson
+(University of Essex).*
