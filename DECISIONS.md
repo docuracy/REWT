@@ -482,3 +482,87 @@ site, which is the first disguise in the list above. The four Ordnance Survey pr
 are covered by published product licences and are not in doubt. Tracing the Environment
 Agency entry is outstanding work, recorded here so it is not forgotten rather than
 because it is thought to be wrong.
+
+**D-024 — Burn only inland rivers and lakes into the DEM. Burning tidal water destroys
+the delineation the DEM exists to provide.** *2026-08-31*
+
+PLAN.md §4.1 warns that OS Open Rivers models the Solway Firth as connected tidal water,
+so the Annan, the Border Esk and the Eden fall into a single *network component*, and
+that using components as basins would therefore pull in the Annan and the Nith — rivers
+that share the Solway **estuary** with the Eden and the Esk while sharing no catchment
+with them. **The same trap exists in raster form and the plan does not name it there.**
+
+*To be unambiguous, because the wording here first read as though it were about the
+border:* this is an argument about method, not about nationality. **Ground outside
+England and Wales that the network needs in order to be coherent is in, and the border
+is no bar to it.** A basin with any part in England or Wales is in scope entire,
+Scottish headwaters included — the Tweed, four fifths of it Scottish, and the Border
+Esk, which rises in Cumbria and reaches the sea in Dumfriesshire. Seeds are taken from
+anywhere in such a basin including Scotland, and the crawl stage refuses to run if
+configured otherwise. What §4.1 leaves out is only what drains *solely* to Scotland.
+
+Burning the network into the terrain incises a channel wherever a link runs. The 5,738 km
+of `tidalRiver` links run up estuaries and along coasts, so burning them carves a
+continuous trench that joins one river mouth to the next. Measured, with tidal links in
+the burn: **one basin held 181,672 km², 88% of the land area, spanning 110,000–659,950 E
+and 10,050–700,000 N** — the whole country — while the median basin was 0.1 km² and only
+four exceeded 1,000 km². Every stage reported success.
+
+That is not a delineation with a bug in it. It is the DEM being told, by us, that a
+shared estuary *is* a shared catchment — which is precisely the proposition §4.1 acquires
+Terrain 50 in order to refute. Burning tidal water spends the one instrument that can
+tell the two apart on asserting the thing it was meant to test.
+
+`canal` is excluded for the same reason from the other side. Canals cross watersheds by
+design — that is D-011's second and decisive argument for keeping them — so a burned
+summit pound joins two basins the terrain separates.
+
+**This narrows the burn and nothing else.** Excluding canals and tidal links from the
+burn does not exclude them from the network, from the routing graph, or from the
+reachability requirement: D-011 stands unchanged, and canals remain inside it. The
+decision says only that the terrain is not carved along an artificial cut, or along
+water whose surface is the sea, when asking where water would naturally go.
+
+*How it was found is worth recording too.* The delineation reported 1,123 basins, which
+is a plausible number for a coastline, and a conditioned surface that was 44.6% plausible
+with a sensible elevation range — every aggregate looked right. It failed on the first
+question asked of the distribution rather than the total: a median basin of 0.1 km²
+against a largest of 181,672. AGENTS.md's *report at the place, not only in the total*
+applies to a project's own intermediate artefacts and not only to its findings.
+
+**D-025 — Where a publisher contradicts itself, the project may choose a reading — but
+it records that it chose, and how much rides on it.** *2026-08-31*
+
+*Stephen's ruling on the RCAHMW case; recorded because it is a different act from
+D-023's, not an instance of it.*
+
+D-023 is about establishing **what a publisher said**, when the answer is scattered
+across a site footer, a collection label, an article label and a hosting platform. Every
+one of those cases is resolved by finding the narrowest statement about the actual
+dataset. **This is the case that rule does not reach: a publisher saying two
+incompatible things at the same level, about the same records.** RCAHMW's Coflein terms
+place the digital site data under Open Government Licence v2.0, which permits commercial
+re-use without permission, and two sentences later require prior written permission to
+compile the same data for commercial or organisational use. There is no narrower
+statement to prefer, because both are the owner's, about the same thing.
+
+**The ruling is to take the more permissive statement as governing the site data**, on
+three grounds: the permission clause is restated in the same passage with the *archive*
+records named explicitly, so it most likely governs those; both named licences are real
+and correctly versioned (OGL 2.0 and Non-Commercial Government Licence 1.0) whereas a
+"Commercial Government Licence 2.0" the same passage mentions is not a licence that
+exists, which tells you how carefully the passage was drafted; and the open statement is
+the one attached to the download route.
+
+**Two things this entry must not be read as.**
+
+It is not a general licence to resolve ambiguity in the project's favour. The default
+where an owner contradicts itself is still to ask a person, and that is what happened
+here — this is a recorded human ruling, not a rule an agent may apply on its own.
+
+And **the exposure here is small precisely because the source was rejected on its
+content.** Nothing in the repository reads RCAHMW data, there is no entry for it in
+`conf/sources.yml`, and under the ruling that unusable sources are described in prose
+rather than registered, there never will be. The reading is not load-bearing. A future
+reader should know it was taken cheaply, and should not cite it as a precedent for a
+source that anything actually depends on.
