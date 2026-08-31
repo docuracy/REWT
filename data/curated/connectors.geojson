@@ -19796,6 +19796,3111 @@
         "upstream_km": 2.455
       },
       "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            473064.68,
+            211595.21
+          ],
+          [
+            472846.83,
+            211424.81
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 473,064.7 E 211,595.2 N with 131.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is 8C75ED21-F24D-4886-A5D3-084CAA83E36A (River Thame), 276.6 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 276.577,
+        "name": "River Thame at 473,065 211,595",
+        "reason": "River Thame arrives at a node with no outflow and stops. 276.6 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "8C75ED21-F24D-4886-A5D3-084CAA83E36A",
+        "sink_publisher_id": "542B4617-8541-484B-83AA-3F8ADF3AB4E8",
+        "upstream_km": 131.535
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            277146.33,
+            188881.27
+          ],
+          [
+            276927.92,
+            189025.72
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 277,146.3 E 188,881.3 N with 21.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is 41AD5FBA-86FD-4950-BE15-DC74D7D06506 (Ffrwd Wyllt), 261.9 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 261.856,
+        "name": "Ffrwd Wyllt at 277,146 188,881",
+        "reason": "Ffrwd Wyllt arrives at a node with no outflow and stops. 261.9 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "41AD5FBA-86FD-4950-BE15-DC74D7D06506",
+        "sink_publisher_id": "8FE3B520-5974-412B-B467-DE92782C1623",
+        "upstream_km": 21.451
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            356911.26,
+            161504.78
+          ],
+          [
+            357076.98,
+            161693.25
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 356,911.3 E 161,504.8 N with 16.7 km of catchment above it and no outflow; the nearest link that reaches tidal water is 70388E70-9EF4-4BA0-9C96-F113C0A73146 (River Chew), 251.0 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 250.966,
+        "name": "River Chew at 356,911 161,505",
+        "reason": "River Chew arrives at a node with no outflow and stops. 251.0 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "70388E70-9EF4-4BA0-9C96-F113C0A73146",
+        "sink_publisher_id": "7F242CB5-372A-4181-9016-C6559C11004F",
+        "upstream_km": 16.689
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            603104.5,
+            141298.17
+          ],
+          [
+            602800.02,
+            141369.71
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 603,104.5 E 141,298.2 N with 9.7 km of catchment above it and no outflow; the nearest link that reaches tidal water is 910A49A7-EB7E-40D7-A4E7-BB1A0585688D (Aylesford Stream), 312.8 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 312.772,
+        "name": "Aylesford Stream at 603,104 141,298",
+        "reason": "Aylesford Stream arrives at a node with no outflow and stops. 312.8 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "910A49A7-EB7E-40D7-A4E7-BB1A0585688D",
+        "sink_publisher_id": "8E1B4D03-9564-46F1-B11B-A6875044611E",
+        "upstream_km": 9.701
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            487438.13,
+            106098.23
+          ],
+          [
+            487589.39,
+            105838.57
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 487,438.1 E 106,098.2 N with 8.1 km of catchment above it and no outflow; the nearest link that reaches tidal water is 57ABC3A5-65FD-4022-A2EA-93B160EC285B (River Lavant), 300.5 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 300.504,
+        "name": "River Lavant at 487,438 106,098",
+        "reason": "River Lavant arrives at a node with no outflow and stops. 300.5 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "57ABC3A5-65FD-4022-A2EA-93B160EC285B",
+        "sink_publisher_id": "F5FCC984-848B-419F-8C1D-F45C9E4EBED7",
+        "upstream_km": 8.128
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            385404.47,
+            254658.06
+          ],
+          [
+            385244.0,
+            254401.69
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 385,404.5 E 254,658.1 N with 4.4 km of catchment above it and no outflow; the nearest link that reaches tidal water is 41401C46-A26B-4073-96D9-520D0E43F71D (Worcester and Birmingham Canal), 302.5 m away, carrying the same watercourse name; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE. D-011 asks for the connection to be made where the lock or weir actually is; no open dataset of canal structures is registered here, so the nearest approach stands in for it. That is the weakest evidence in this file and each of these should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 302.45,
+        "name": "Worcester and Birmingham Canal at 385,404 254,658",
+        "reason": "Worcester and Birmingham Canal arrives at a node with no outflow and stops. 302.5 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "41401C46-A26B-4073-96D9-520D0E43F71D",
+        "sink_publisher_id": "3771E151-F6CD-47BD-974E-22F1DFF8564B",
+        "upstream_km": 4.405
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            569309.99,
+            177816.51
+          ],
+          [
+            569710.01,
+            177707.07
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 569,310.0 E 177,816.5 N with 3.8 km of catchment above it and no outflow; the nearest link that reaches tidal water is 7F5F865F-D6AA-42A5-A68E-28DB3C39D539 (St Clares Sewer), 414.7 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 414.721,
+        "name": "St Clares Sewer at 569,310 177,817",
+        "reason": "St Clares Sewer arrives at a node with no outflow and stops. 414.7 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "7F5F865F-D6AA-42A5-A68E-28DB3C39D539",
+        "sink_publisher_id": "2F69D7C1-7CDF-4E55-8C96-7F270F8BB5BB",
+        "upstream_km": 3.77
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            362292.39,
+            355186.13
+          ],
+          [
+            362566.0,
+            355310.84
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 362,292.4 E 355,186.1 N with 3.1 km of catchment above it and no outflow; the nearest link that reaches tidal water is F7A0BEC2-60BE-40D1-8688-8BA1FB08D61A (Llangollen Canal), 300.7 m away, carrying the same watercourse name; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE. D-011 asks for the connection to be made where the lock or weir actually is; no open dataset of canal structures is registered here, so the nearest approach stands in for it. That is the weakest evidence in this file and each of these should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 300.691,
+        "name": "Llangollen Canal at 362,292 355,186",
+        "reason": "Llangollen Canal arrives at a node with no outflow and stops. 300.7 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "F7A0BEC2-60BE-40D1-8688-8BA1FB08D61A",
+        "sink_publisher_id": "CB71FE1B-13AB-45CE-942E-4095C5C36480",
+        "upstream_km": 3.051
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            333635.2,
+            447575.5
+          ],
+          [
+            333947.21,
+            447531.89
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 333,635.2 E 447,575.5 N with 2.7 km of catchment above it and no outflow; the nearest link that reaches tidal water is D3ECE32A-435F-4C54-AA6C-3CC4A5433E39 (Copse Brook), 315.0 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 315.043,
+        "name": "Copse Brook at 333,635 447,576",
+        "reason": "Copse Brook arrives at a node with no outflow and stops. 315.0 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "D3ECE32A-435F-4C54-AA6C-3CC4A5433E39",
+        "sink_publisher_id": "4A1E640A-5A6F-46D0-A4A5-9BBC215DFBA2",
+        "upstream_km": 2.715
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            427458.41,
+            416923.82
+          ],
+          [
+            427729.08,
+            417168.8
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 427,458.4 E 416,923.8 N with 2.6 km of catchment above it and no outflow; the nearest link that reaches tidal water is D98C5E12-8679-4A02-BC03-D36FD556216E (Coxley Beck), 365.1 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 365.072,
+        "name": "Coxley Beck at 427,458 416,924",
+        "reason": "Coxley Beck arrives at a node with no outflow and stops. 365.1 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "D98C5E12-8679-4A02-BC03-D36FD556216E",
+        "sink_publisher_id": "46E1A159-0CC4-4C79-967C-03544F6BE457",
+        "upstream_km": 2.594
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            399471.7,
+            288662.65
+          ],
+          [
+            399442.53,
+            289101.01
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 399,471.7 E 288,662.7 N with 1.4 km of catchment above it and no outflow; the nearest link that reaches tidal water is C164C1E7-1F71-4AF1-A742-EC2CFC392C2D (Titford Canal), 439.3 m away, carrying the same watercourse name; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE. D-011 asks for the connection to be made where the lock or weir actually is; no open dataset of canal structures is registered here, so the nearest approach stands in for it. That is the weakest evidence in this file and each of these should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 439.329,
+        "name": "Titford Canal at 399,472 288,663",
+        "reason": "Titford Canal arrives at a node with no outflow and stops. 439.3 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "C164C1E7-1F71-4AF1-A742-EC2CFC392C2D",
+        "sink_publisher_id": "F498EBBB-2B32-440A-A088-6C709146C9B2",
+        "upstream_km": 1.367
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            389603.83,
+            334353.19
+          ],
+          [
+            389824.3,
+            334127.55
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 389,603.8 E 334,353.2 N with 1.1 km of catchment above it and no outflow; the nearest link that reaches tidal water is 376E89EB-D28D-427C-8ADD-C6AE2E565C78 (Trent and Mersey Canal), 315.5 m away, carrying the same watercourse name; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE. D-011 asks for the connection to be made where the lock or weir actually is; no open dataset of canal structures is registered here, so the nearest approach stands in for it. That is the weakest evidence in this file and each of these should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 315.469,
+        "name": "Trent and Mersey Canal at 389,604 334,353",
+        "reason": "Trent and Mersey Canal arrives at a node with no outflow and stops. 315.5 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "376E89EB-D28D-427C-8ADD-C6AE2E565C78",
+        "sink_publisher_id": "5CD3F92A-1D02-495A-8637-DF66BBD6BF41",
+        "upstream_km": 1.06
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            505358.03,
+            159197.16
+          ],
+          [
+            504947.98,
+            159434.68
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 505,358.0 E 159,197.2 N with 0.9 km of catchment above it and no outflow; the nearest link that reaches tidal water is D1FBE1C5-DC53-450B-8FDB-FEF70464D5E5 (River Wey Navigation), 473.9 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 473.874,
+        "name": "River Wey Navigation at 505,358 159,197",
+        "reason": "River Wey Navigation arrives at a node with no outflow and stops. 473.9 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "D1FBE1C5-DC53-450B-8FDB-FEF70464D5E5",
+        "sink_publisher_id": "26D31305-59B3-4ADD-B604-6538FBBB7628",
+        "upstream_km": 0.881
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            326505.12,
+            345376.05
+          ],
+          [
+            326921.48,
+            345364.34
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 326,505.1 E 345,376.0 N with 0.8 km of catchment above it and no outflow; the nearest link that reaches tidal water is 36912F78-DC3F-4789-BDE6-C74656270FB1 (Trefechan Brook), 416.5 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 416.525,
+        "name": "Trefechan Brook at 326,505 345,376",
+        "reason": "Trefechan Brook arrives at a node with no outflow and stops. 416.5 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "36912F78-DC3F-4789-BDE6-C74656270FB1",
+        "sink_publisher_id": "7E7B6446-075B-4B26-80CE-C0C1120D1628",
+        "upstream_km": 0.778
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            419754.72,
+            295858.46
+          ],
+          [
+            419805.54,
+            296120.23
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 419,754.7 E 295,858.5 N with 0.7 km of catchment above it and no outflow; the nearest link that reaches tidal water is 19EF07EC-872A-45CE-89A0-5EE96D27671A (Birmingham and Fazeley Canal), 266.7 m away, carrying the same watercourse name; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE. D-011 asks for the connection to be made where the lock or weir actually is; no open dataset of canal structures is registered here, so the nearest approach stands in for it. That is the weakest evidence in this file and each of these should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 266.657,
+        "name": "Birmingham and Fazeley Canal at 419,755 295,858",
+        "reason": "Birmingham and Fazeley Canal arrives at a node with no outflow and stops. 266.7 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "19EF07EC-872A-45CE-89A0-5EE96D27671A",
+        "sink_publisher_id": "172A7791-C5D0-4396-94D4-4BD29F12B024",
+        "upstream_km": 0.695
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            298034.2,
+            101019.7
+          ],
+          [
+            297824.61,
+            101318.4
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 212.7 km and not one of its links reaches tidal water; the closest approach to a link that does is 364.9 m, at 298,034.2 E 101,019.7 N, to 3C0E5178-45AB-4942-BC45-A6ECE5EDF22A. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 364.897,
+        "name": "River Culm to draining water at 298,034 101,020",
+        "reason": "A component holding 212.7 km has no way to tidal water at all. Its closest approach to water that does drain is 364.9 m, between River Culm (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "3C0E5178-45AB-4942-BC45-A6ECE5EDF22A",
+        "sink_publisher_id": null,
+        "upstream_km": 212.653
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            370696.19,
+            588214.53
+          ],
+          [
+            370980.6,
+            587985.71
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 158.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 365.0 m, at 370,696.2 E 588,214.5 N, to 84B15700-3C1D-4289-BF87-3442B06F158E. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 365.031,
+        "name": "a stranded watercourse to River North Tyne at 370,696 588,215",
+        "reason": "A component holding 158.2 km has no way to tidal water at all. Its closest approach to water that does drain is 365.0 m, between an unnamed watercourse (lake) and River North Tyne (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "84B15700-3C1D-4289-BF87-3442B06F158E",
+        "sink_publisher_id": null,
+        "upstream_km": 158.242
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            455777.98,
+            314851.55
+          ],
+          [
+            455555.3364434913,
+            315015.895214443
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 25.6 km and not one of its links reaches tidal water; the closest approach to a link that does is 276.7 m, at 455,778.0 E 314,851.5 N, to EA6CD58A-A8D5-4CD7-87C1-57E45FAA95AC. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 276.73,
+        "name": "a stranded watercourse to draining water at 455,778 314,852",
+        "reason": "A component holding 25.6 km has no way to tidal water at all. Its closest approach to water that does drain is 276.7 m, between an unnamed watercourse (lake) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "EA6CD58A-A8D5-4CD7-87C1-57E45FAA95AC",
+        "sink_publisher_id": null,
+        "upstream_km": 25.593
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            601651.31,
+            132500.57
+          ],
+          [
+            601462.679708771,
+            132905.7475723145
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 20.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 446.9 m, at 601,651.3 E 132,500.6 N, to 24AF52D2-5C59-4370-94BC-4110CF15E28D. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 446.934,
+        "name": "Sedbrook Sewer to Fourth Government Drain at 601,651 132,501",
+        "reason": "A component holding 20.4 km has no way to tidal water at all. Its closest approach to water that does drain is 446.9 m, between Sedbrook Sewer (inlandRiver) and Fourth Government Drain (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "24AF52D2-5C59-4370-94BC-4110CF15E28D",
+        "sink_publisher_id": null,
+        "upstream_km": 20.393
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            602808.86,
+            202295.08
+          ],
+          [
+            602770.13,
+            201889.81
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 18.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 407.1 m, at 602,808.9 E 202,295.1 N, to B340BBC2-32A0-431F-8C65-2F61DDE604F5. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 407.116,
+        "name": "Howe Ditch to Asheldham Brook at 602,809 202,295",
+        "reason": "A component holding 18.9 km has no way to tidal water at all. Its closest approach to water that does drain is 407.1 m, between Howe Ditch (inlandRiver) and Asheldham Brook (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "B340BBC2-32A0-431F-8C65-2F61DDE604F5",
+        "sink_publisher_id": null,
+        "upstream_km": 18.885
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            401458.62,
+            377691.8
+          ],
+          [
+            401309.65,
+            377926.96
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 18.5 km and not one of its links reaches tidal water; the closest approach to a link that does is 278.4 m, at 401,458.6 E 377,691.8 N, to A80B6A00-D09E-4877-832A-809459FBB055. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 278.374,
+        "name": "a stranded watercourse to River Goyt at 401,459 377,692",
+        "reason": "A component holding 18.5 km has no way to tidal water at all. Its closest approach to water that does drain is 278.4 m, between an unnamed watercourse (lake) and River Goyt (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "A80B6A00-D09E-4877-832A-809459FBB055",
+        "sink_publisher_id": null,
+        "upstream_km": 18.527
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            239135.89,
+            542755.17
+          ],
+          [
+            239448.32,
+            543109.52
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 17.6 km and not one of its links reaches tidal water; the closest approach to a link that does is 472.4 m, at 239,135.9 E 542,755.2 N, to 0BAC483F-5283-4CB4-84CE-01EC2685FA5E. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 472.416,
+        "name": "a stranded watercourse to draining water at 239,136 542,755",
+        "reason": "A component holding 17.6 km has no way to tidal water at all. Its closest approach to water that does drain is 472.4 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "0BAC483F-5283-4CB4-84CE-01EC2685FA5E",
+        "sink_publisher_id": null,
+        "upstream_km": 17.628
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            252430.81146044988,
+            341274.2294894111
+          ],
+          [
+            252092.74,
+            341574.86
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 12.5 km and not one of its links reaches tidal water; the closest approach to a link that does is 452.4 m, at 252,430.8 E 341,274.2 N, to 1A6BD3C4-C89C-4A8B-A68B-CEB1DF9CDF12. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 452.406,
+        "name": "Afon Cedron to draining water at 252,431 341,274",
+        "reason": "A component holding 12.5 km has no way to tidal water at all. Its closest approach to water that does drain is 452.4 m, between Afon Cedron (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "1A6BD3C4-C89C-4A8B-A68B-CEB1DF9CDF12",
+        "sink_publisher_id": null,
+        "upstream_km": 12.489
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            623213.59,
+            164584.51
+          ],
+          [
+            623332.4212601176,
+            164353.5055599161
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 12.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 259.8 m, at 623,213.6 E 164,584.5 N, to 98C5CFAC-3E52-474C-BD55-AD1E3FC8632A. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 259.777,
+        "name": "a stranded watercourse to Sarre Penn at 623,214 164,585",
+        "reason": "A component holding 12.2 km has no way to tidal water at all. Its closest approach to water that does drain is 259.8 m, between an unnamed watercourse (inlandRiver) and Sarre Penn (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "98C5CFAC-3E52-474C-BD55-AD1E3FC8632A",
+        "sink_publisher_id": null,
+        "upstream_km": 12.181
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            203273.75797867237,
+            52584.36529329687
+          ],
+          [
+            203180.38,
+            52325.55
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 10.5 km and not one of its links reaches tidal water; the closest approach to a link that does is 275.1 m, at 203,273.8 E 52,584.4 N, to F066206A-952D-4026-B079-491CEC9C489F. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 275.145,
+        "name": "Sandy River to draining water at 203,274 52,584",
+        "reason": "A component holding 10.5 km has no way to tidal water at all. Its closest approach to water that does drain is 275.1 m, between Sandy River (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "F066206A-952D-4026-B079-491CEC9C489F",
+        "sink_publisher_id": null,
+        "upstream_km": 10.518
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            546844.43,
+            350900.86
+          ],
+          [
+            547201.41,
+            350628.29
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 10.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 449.1 m, at 546,844.4 E 350,900.9 N, to EBBFDAC3-A201-4F71-A623-D0F87F14110B. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 449.143,
+        "name": "The Delph to draining water at 546,844 350,901",
+        "reason": "A component holding 10.3 km has no way to tidal water at all. Its closest approach to water that does drain is 449.1 m, between The Delph (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "EBBFDAC3-A201-4F71-A623-D0F87F14110B",
+        "sink_publisher_id": null,
+        "upstream_km": 10.303
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            568735.94,
+            174483.95
+          ],
+          [
+            568674.59,
+            174735.89
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 10.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 259.3 m, at 568,735.9 E 174,484.0 N, to 3A93C691-BBCD-4D2E-BC62-6BD80F1CF6A7. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 259.302,
+        "name": "a stranded watercourse to draining water at 568,736 174,484",
+        "reason": "A component holding 10.0 km has no way to tidal water at all. Its closest approach to water that does drain is 259.3 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "3A93C691-BBCD-4D2E-BC62-6BD80F1CF6A7",
+        "sink_publisher_id": null,
+        "upstream_km": 10.016
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            385703.8,
+            277929.49
+          ],
+          [
+            385433.65,
+            277929.96
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 9.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 270.2 m, at 385,703.8 E 277,929.5 N, to E88C33DD-5041-4AB8-9893-1269C89BA8F8. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 270.15,
+        "name": "Blakedown Brook to draining water at 385,704 277,929",
+        "reason": "A component holding 9.8 km has no way to tidal water at all. Its closest approach to water that does drain is 270.2 m, between Blakedown Brook (inlandRiver) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "E88C33DD-5041-4AB8-9893-1269C89BA8F8",
+        "sink_publisher_id": null,
+        "upstream_km": 9.81
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            494595.89,
+            503027.47
+          ],
+          [
+            494859.36,
+            502899.04
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 9.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 293.1 m, at 494,595.9 E 503,027.5 N, to F466B2D2-DB8C-4531-9E2E-BB40AB382D83. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 293.105,
+        "name": "a stranded watercourse to Stoupe Beck at 494,596 503,027",
+        "reason": "A component holding 9.4 km has no way to tidal water at all. Its closest approach to water that does drain is 293.1 m, between an unnamed watercourse (inlandRiver) and Stoupe Beck (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "F466B2D2-DB8C-4531-9E2E-BB40AB382D83",
+        "sink_publisher_id": null,
+        "upstream_km": 9.444
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            309618.66,
+            384561.09
+          ],
+          [
+            309897.6,
+            384171.62
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 8.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 479.1 m, at 309,618.7 E 384,561.1 N, to 1AC98D3D-A658-4C89-92B9-B436682BCD22. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 479.056,
+        "name": "Prestatyn Gutter to draining water at 309,619 384,561",
+        "reason": "A component holding 8.4 km has no way to tidal water at all. Its closest approach to water that does drain is 479.1 m, between Prestatyn Gutter (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "1AC98D3D-A658-4C89-92B9-B436682BCD22",
+        "sink_publisher_id": null,
+        "upstream_km": 8.417
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            624903.57,
+            167473.11
+          ],
+          [
+            624847.19,
+            167773.27
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 8.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 305.4 m, at 624,903.6 E 167,473.1 N, to DF624E61-653A-4BA2-95BA-CDFCCF7A1EDD. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 305.409,
+        "name": "Wade Marsh Stream to River Wantsum at 624,904 167,473",
+        "reason": "A component holding 8.3 km has no way to tidal water at all. Its closest approach to water that does drain is 305.4 m, between Wade Marsh Stream (inlandRiver) and River Wantsum (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "DF624E61-653A-4BA2-95BA-CDFCCF7A1EDD",
+        "sink_publisher_id": null,
+        "upstream_km": 8.271
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            397791.59,
+            321940.55
+          ],
+          [
+            398004.66,
+            322249.23
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 7.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 375.1 m, at 397,791.6 E 321,940.5 N, to 0B4F9AC3-7F10-4701-9215-C609F7DEF5A3. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 375.076,
+        "name": "Staffordshire and Worcestershire Canal to draining water at 397,792 321,941",
+        "reason": "A component holding 7.8 km has no way to tidal water at all. Its closest approach to water that does drain is 375.1 m, between Staffordshire and Worcestershire Canal (canal) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "0B4F9AC3-7F10-4701-9215-C609F7DEF5A3",
+        "sink_publisher_id": null,
+        "upstream_km": 7.757
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            541827.58,
+            344451.73
+          ],
+          [
+            541850.3510739271,
+            344059.6563840629
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 6.6 km and not one of its links reaches tidal water; the closest approach to a link that does is 392.7 m, at 541,827.6 E 344,451.7 N, to 6FF21471-CE38-4142-ACDA-AB25B480B895. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 392.734,
+        "name": "a stranded watercourse to draining water at 541,828 344,452",
+        "reason": "A component holding 6.6 km has no way to tidal water at all. Its closest approach to water that does drain is 392.7 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "6FF21471-CE38-4142-ACDA-AB25B480B895",
+        "sink_publisher_id": null,
+        "upstream_km": 6.555
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            546347.51,
+            388351.5
+          ],
+          [
+            545971.73,
+            388577.11
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 6.1 km and not one of its links reaches tidal water; the closest approach to a link that does is 438.3 m, at 546,347.5 E 388,351.5 N, to 0ECF87B0-6E3E-4F91-BCF6-6A39E49C14AD. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 438.304,
+        "name": "The Cut to Great Eau at 546,348 388,352",
+        "reason": "A component holding 6.1 km has no way to tidal water at all. Its closest approach to water that does drain is 438.3 m, between The Cut (inlandRiver) and Great Eau (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "0ECF87B0-6E3E-4F91-BCF6-6A39E49C14AD",
+        "sink_publisher_id": null,
+        "upstream_km": 6.118
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            513993.51,
+            336236.76
+          ],
+          [
+            514086.68193848367,
+            336479.03843457066
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 5.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 259.6 m, at 513,993.5 E 336,236.8 N, to FED6653B-1217-474E-9028-E09D349CDDD1. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 259.576,
+        "name": "Town Beck to Swaton Eau at 513,994 336,237",
+        "reason": "A component holding 5.8 km has no way to tidal water at all. Its closest approach to water that does drain is 259.6 m, between Town Beck (inlandRiver) and Swaton Eau (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "FED6653B-1217-474E-9028-E09D349CDDD1",
+        "sink_publisher_id": null,
+        "upstream_km": 5.8
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            567421.2287237418,
+            173978.2594075581
+          ],
+          [
+            567481.84,
+            174388.31
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 5.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 414.5 m, at 567,421.2 E 173,978.3 N, to F1F2392D-1ABA-4BB2-9BDE-6104067580F5. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 414.506,
+        "name": "Thames and Medway Canal to draining water at 567,421 173,978",
+        "reason": "A component holding 5.8 km has no way to tidal water at all. Its closest approach to water that does drain is 414.5 m, between Thames and Medway Canal (canal) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "F1F2392D-1ABA-4BB2-9BDE-6104067580F5",
+        "sink_publisher_id": null,
+        "upstream_km": 5.787
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            599750.02,
+            208725.22
+          ],
+          [
+            599484.07,
+            208559.83
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 5.7 km and not one of its links reaches tidal water; the closest approach to a link that does is 313.2 m, at 599,750.0 E 208,725.2 N, to 864188EC-7BFE-4A10-99E4-5968E7C1B5E0. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 313.182,
+        "name": "a stranded watercourse to draining water at 599,750 208,725",
+        "reason": "A component holding 5.7 km has no way to tidal water at all. Its closest approach to water that does drain is 313.2 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "864188EC-7BFE-4A10-99E4-5968E7C1B5E0",
+        "sink_publisher_id": null,
+        "upstream_km": 5.746
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            602890.3,
+            198981.37
+          ],
+          [
+            602870.5203362801,
+            199306.52874268443
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 5.7 km and not one of its links reaches tidal water; the closest approach to a link that does is 325.8 m, at 602,890.3 E 198,981.4 N, to B547AF7E-991F-43D3-88C1-D7B389A9AA31. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 325.76,
+        "name": "a stranded watercourse to Coate Ditch at 602,890 198,981",
+        "reason": "A component holding 5.7 km has no way to tidal water at all. Its closest approach to water that does drain is 325.8 m, between an unnamed watercourse (inlandRiver) and Coate Ditch (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "B547AF7E-991F-43D3-88C1-D7B389A9AA31",
+        "sink_publisher_id": null,
+        "upstream_km": 5.703
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            616138.58,
+            235898.51
+          ],
+          [
+            616447.31,
+            235795.6
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 5.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 325.4 m, at 616,138.6 E 235,898.5 N, to 4EB0D816-07B7-4204-B5D5-5210A5678E92. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 325.43,
+        "name": "a stranded watercourse to Holbrook Stream at 616,139 235,899",
+        "reason": "A component holding 5.4 km has no way to tidal water at all. Its closest approach to water that does drain is 325.4 m, between an unnamed watercourse (lake) and Holbrook Stream (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "4EB0D816-07B7-4204-B5D5-5210A5678E92",
+        "sink_publisher_id": null,
+        "upstream_km": 5.438
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            584991.67,
+            344674.1
+          ],
+          [
+            584702.4741015609,
+            344677.46965748677
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 5.1 km and not one of its links reaches tidal water; the closest approach to a link that does is 289.2 m, at 584,991.7 E 344,674.1 N, to CF1765ED-67D9-4F2B-95CE-AEB7549F7FCE. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 289.216,
+        "name": "a stranded watercourse to Overy Creek at 584,992 344,674",
+        "reason": "A component holding 5.1 km has no way to tidal water at all. Its closest approach to water that does drain is 289.2 m, between an unnamed watercourse (inlandRiver) and Overy Creek (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "CF1765ED-67D9-4F2B-95CE-AEB7549F7FCE",
+        "sink_publisher_id": null,
+        "upstream_km": 5.076
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            246009.84,
+            356549.59
+          ],
+          [
+            245904.99,
+            356858.23
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 5.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 326.0 m, at 246,009.8 E 356,549.6 N, to 0A43D35D-A4EE-4CA4-99B1-F4822C306F29. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 325.963,
+        "name": "a stranded watercourse to Afon Carrog at 246,010 356,550",
+        "reason": "A component holding 5.0 km has no way to tidal water at all. Its closest approach to water that does drain is 326.0 m, between an unnamed watercourse (inlandRiver) and Afon Carrog (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "0A43D35D-A4EE-4CA4-99B1-F4822C306F29",
+        "sink_publisher_id": null,
+        "upstream_km": 5.021
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            595054.33,
+            170245.73
+          ],
+          [
+            594648.98,
+            170164.61
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 4.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 413.4 m, at 595,054.3 E 170,245.7 N, to 4F9250DE-941E-46F6-8C50-0EA2D060CCD1. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 413.387,
+        "name": "The Dray to draining water at 595,054 170,246",
+        "reason": "A component holding 4.9 km has no way to tidal water at all. Its closest approach to water that does drain is 413.4 m, between The Dray (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "4F9250DE-941E-46F6-8C50-0EA2D060CCD1",
+        "sink_publisher_id": null,
+        "upstream_km": 4.865
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            409241.3508894775,
+            181602.26442128952
+          ],
+          [
+            409110.38,
+            181333.46
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 4.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 299.0 m, at 409,241.4 E 181,602.3 N, to 83CDA98F-0695-4588-AF8B-A896995CA52C. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 299.014,
+        "name": "Wilts & Berks Canal to draining water at 409,241 181,602",
+        "reason": "A component holding 4.2 km has no way to tidal water at all. Its closest approach to water that does drain is 299.0 m, between Wilts & Berks Canal (canal) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "83CDA98F-0695-4588-AF8B-A896995CA52C",
+        "sink_publisher_id": null,
+        "upstream_km": 4.25
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            259201.27,
+            308031.63
+          ],
+          [
+            259421.4,
+            307639.5
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 4.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 449.7 m, at 259,201.3 E 308,031.6 N, to D363CB63-2EB2-4D7C-8F85-8DD48A269D51. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 449.692,
+        "name": "a stranded watercourse to draining water at 259,201 308,032",
+        "reason": "A component holding 4.0 km has no way to tidal water at all. Its closest approach to water that does drain is 449.7 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "D363CB63-2EB2-4D7C-8F85-8DD48A269D51",
+        "sink_publisher_id": null,
+        "upstream_km": 4.019
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            408294.43458034104,
+            410716.3038198387
+          ],
+          [
+            408524.35,
+            410615.14
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 3.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 251.2 m, at 408,294.4 E 410,716.3 N, to 76BE2276-F82B-43F3-BDA7-EE833EC21293. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 251.188,
+        "name": "Catchwater Drain to Brow Grains Dike at 408,294 410,716",
+        "reason": "A component holding 3.9 km has no way to tidal water at all. Its closest approach to water that does drain is 251.2 m, between Catchwater Drain (inlandRiver) and Brow Grains Dike (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "76BE2276-F82B-43F3-BDA7-EE833EC21293",
+        "sink_publisher_id": null,
+        "upstream_km": 3.871
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            310830.2846886094,
+            549130.8176502119
+          ],
+          [
+            310882.8,
+            549507.71
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 3.6 km and not one of its links reaches tidal water; the closest approach to a link that does is 380.5 m, at 310,830.3 E 549,130.8 N, to 739FDACD-D232-4E33-AEDE-2AF6C7BF30B7. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 380.533,
+        "name": "a stranded watercourse to draining water at 310,830 549,131",
+        "reason": "A component holding 3.6 km has no way to tidal water at all. Its closest approach to water that does drain is 380.5 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "739FDACD-D232-4E33-AEDE-2AF6C7BF30B7",
+        "sink_publisher_id": null,
+        "upstream_km": 3.561
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            359752.38,
+            538640.77
+          ],
+          [
+            359450.79,
+            538769.76
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 3.5 km and not one of its links reaches tidal water; the closest approach to a link that does is 328.0 m, at 359,752.4 E 538,640.8 N, to 806544C8-5876-4642-BF5E-63FD32779415. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 328.017,
+        "name": "Gill Beck to Sandwath Beck at 359,752 538,641",
+        "reason": "A component holding 3.5 km has no way to tidal water at all. Its closest approach to water that does drain is 328.0 m, between Gill Beck (inlandRiver) and Sandwath Beck (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "806544C8-5876-4642-BF5E-63FD32779415",
+        "sink_publisher_id": null,
+        "upstream_km": 3.532
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            205201.02,
+            86400.91
+          ],
+          [
+            205199.38,
+            85939.38
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 3.5 km and not one of its links reaches tidal water; the closest approach to a link that does is 461.5 m, at 205,201.0 E 86,400.9 N, to 52B3C281-0AD4-4E32-B705-678C1A13BD95. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 461.533,
+        "name": "a stranded watercourse to draining water at 205,201 86,401",
+        "reason": "A component holding 3.5 km has no way to tidal water at all. Its closest approach to water that does drain is 461.5 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "52B3C281-0AD4-4E32-B705-678C1A13BD95",
+        "sink_publisher_id": null,
+        "upstream_km": 3.47
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            456009.79954908753,
+            412715.2126920455
+          ],
+          [
+            456113.64,
+            412407.75
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 3.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 324.5 m, at 456,009.8 E 412,715.2 N, to 9B40C053-7B26-4BFE-9D74-808D79393D2A. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 324.524,
+        "name": "Stream Dike to draining water at 456,010 412,715",
+        "reason": "A component holding 3.4 km has no way to tidal water at all. Its closest approach to water that does drain is 324.5 m, between Stream Dike (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "9B40C053-7B26-4BFE-9D74-808D79393D2A",
+        "sink_publisher_id": null,
+        "upstream_km": 3.388
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            458190.6,
+            522932.9
+          ],
+          [
+            458423.0346762524,
+            523088.87772899057
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 3.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 279.9 m, at 458,190.6 E 522,932.9 N, to D272D979-6AEA-43D8-9650-5C4FFD67A0AE. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 279.92,
+        "name": "Mains Dike to Ash Gill at 458,191 522,933",
+        "reason": "A component holding 3.3 km has no way to tidal water at all. Its closest approach to water that does drain is 279.9 m, between Mains Dike (inlandRiver) and Ash Gill (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "D272D979-6AEA-43D8-9650-5C4FFD67A0AE",
+        "sink_publisher_id": null,
+        "upstream_km": 3.308
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            246523.9,
+            393217.4
+          ],
+          [
+            246079.8,
+            393430.9
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 3.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 492.8 m, at 246,523.9 E 393,217.4 N, to D699041A-5273-4F17-8D9C-0FC6A90AC9B0. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 492.755,
+        "name": "a stranded watercourse to Afon Bryngwyn at 246,524 393,217",
+        "reason": "A component holding 3.2 km has no way to tidal water at all. Its closest approach to water that does drain is 492.8 m, between an unnamed watercourse (inlandRiver) and Afon Bryngwyn (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "D699041A-5273-4F17-8D9C-0FC6A90AC9B0",
+        "sink_publisher_id": null,
+        "upstream_km": 3.16
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            540778.85,
+            187229.08
+          ],
+          [
+            541153.4,
+            187213.55
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 3.1 km and not one of its links reaches tidal water; the closest approach to a link that does is 374.9 m, at 540,778.8 E 187,229.1 N, to D3B3A440-1EE1-4728-9F0D-F1E7A9DCD66A. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 374.872,
+        "name": "a stranded watercourse to draining water at 540,779 187,229",
+        "reason": "A component holding 3.1 km has no way to tidal water at all. Its closest approach to water that does drain is 374.9 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "D3B3A440-1EE1-4728-9F0D-F1E7A9DCD66A",
+        "sink_publisher_id": null,
+        "upstream_km": 3.081
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            267910.13949520607,
+            41932.2952962121
+          ],
+          [
+            267654.45,
+            42333.84
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 3.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 476.0 m, at 267,910.1 E 41,932.3 N, to 51C5EF99-7D12-4D24-8CAA-87BF2FB0A2BD. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 476.041,
+        "name": "a stranded watercourse to draining water at 267,910 41,932",
+        "reason": "A component holding 3.0 km has no way to tidal water at all. Its closest approach to water that does drain is 476.0 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "51C5EF99-7D12-4D24-8CAA-87BF2FB0A2BD",
+        "sink_publisher_id": null,
+        "upstream_km": 2.99
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            614101.8,
+            167710.7
+          ],
+          [
+            613837.43,
+            167682.15
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 265.9 m, at 614,101.8 E 167,710.7 N, to 13BABE24-BEC0-4BC0-A86E-B8D454CCA5EC. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 265.907,
+        "name": "Kite Farm Ditch to Swalecliffe Brook at 614,102 167,711",
+        "reason": "A component holding 2.8 km has no way to tidal water at all. Its closest approach to water that does drain is 265.9 m, between Kite Farm Ditch (inlandRiver) and Swalecliffe Brook (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "13BABE24-BEC0-4BC0-A86E-B8D454CCA5EC",
+        "sink_publisher_id": null,
+        "upstream_km": 2.784
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            338441.25,
+            474746.79
+          ],
+          [
+            338317.18,
+            475093.24
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.7 km and not one of its links reaches tidal water; the closest approach to a link that does is 368.0 m, at 338,441.2 E 474,746.8 N, to C005EB81-0B94-498A-9B2D-074FFB4A71BA. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 367.996,
+        "name": "a stranded watercourse to Windermoor Main Drain at 338,441 474,747",
+        "reason": "A component holding 2.7 km has no way to tidal water at all. Its closest approach to water that does drain is 368.0 m, between an unnamed watercourse (inlandRiver) and Windermoor Main Drain (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "C005EB81-0B94-498A-9B2D-074FFB4A71BA",
+        "sink_publisher_id": null,
+        "upstream_km": 2.709
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            220265.11,
+            107134.22
+          ],
+          [
+            220045.65,
+            106715.44
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.7 km and not one of its links reaches tidal water; the closest approach to a link that does is 472.8 m, at 220,265.1 E 107,134.2 N, to E1B2AC73-A409-46D7-A1E3-9DCDC3B7E411. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 472.8,
+        "name": "Crooklets Stream to River Neet at 220,265 107,134",
+        "reason": "A component holding 2.7 km has no way to tidal water at all. Its closest approach to water that does drain is 472.8 m, between Crooklets Stream (inlandRiver) and River Neet (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "E1B2AC73-A409-46D7-A1E3-9DCDC3B7E411",
+        "sink_publisher_id": null,
+        "upstream_km": 2.706
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            373646.57,
+            332419.44
+          ],
+          [
+            373189.14,
+            332423.07
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.6 km and not one of its links reaches tidal water; the closest approach to a link that does is 457.4 m, at 373,646.6 E 332,419.4 N, to 7C30E0BA-C45E-4E65-BDDE-5441A70451BD. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 457.444,
+        "name": "a stranded watercourse to Coal Brook at 373,647 332,419",
+        "reason": "A component holding 2.6 km has no way to tidal water at all. Its closest approach to water that does drain is 457.4 m, between an unnamed watercourse (lake) and Coal Brook (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "7C30E0BA-C45E-4E65-BDDE-5441A70451BD",
+        "sink_publisher_id": null,
+        "upstream_km": 2.645
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            582915.82,
+            344344.83
+          ],
+          [
+            583223.4,
+            344000.99
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.6 km and not one of its links reaches tidal water; the closest approach to a link that does is 461.3 m, at 582,915.8 E 344,344.8 N, to B8C74974-9A75-4B3A-B52D-4C7E9BFA336E. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 461.337,
+        "name": "a stranded watercourse to draining water at 582,916 344,345",
+        "reason": "A component holding 2.6 km has no way to tidal water at all. Its closest approach to water that does drain is 461.3 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "B8C74974-9A75-4B3A-B52D-4C7E9BFA336E",
+        "sink_publisher_id": null,
+        "upstream_km": 2.6
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            380203.74,
+            430562.93
+          ],
+          [
+            380368.67,
+            431030.35
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.6 km and not one of its links reaches tidal water; the closest approach to a link that does is 495.7 m, at 380,203.7 E 430,562.9 N, to 987882A8-8664-4F7A-B9C5-1FD1355DA796. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 495.665,
+        "name": "a stranded watercourse to draining water at 380,204 430,563",
+        "reason": "A component holding 2.6 km has no way to tidal water at all. Its closest approach to water that does drain is 495.7 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "987882A8-8664-4F7A-B9C5-1FD1355DA796",
+        "sink_publisher_id": null,
+        "upstream_km": 2.565
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            586651.7,
+            135111.85
+          ],
+          [
+            586798.28,
+            134890.58
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.5 km and not one of its links reaches tidal water; the closest approach to a link that does is 265.4 m, at 586,651.7 E 135,111.9 N, to D6C088CA-A118-4E62-A420-8CEEFD943E79. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 265.417,
+        "name": "a stranded watercourse to draining water at 586,652 135,112",
+        "reason": "A component holding 2.5 km has no way to tidal water at all. Its closest approach to water that does drain is 265.4 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "D6C088CA-A118-4E62-A420-8CEEFD943E79",
+        "sink_publisher_id": null,
+        "upstream_km": 2.506
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            299786.95,
+            182094.19
+          ],
+          [
+            299953.36,
+            182393.09
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.5 km and not one of its links reaches tidal water; the closest approach to a link that does is 342.1 m, at 299,787.0 E 182,094.2 N, to 06B4048E-C24C-40C6-8210-FFEBB8052B64. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 342.102,
+        "name": "a stranded watercourse to draining water at 299,787 182,094",
+        "reason": "A component holding 2.5 km has no way to tidal water at all. Its closest approach to water that does drain is 342.1 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "06B4048E-C24C-40C6-8210-FFEBB8052B64",
+        "sink_publisher_id": null,
+        "upstream_km": 2.497
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            517780.731504116,
+            176595.00517671683
+          ],
+          [
+            517742.0,
+            176617.69
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 44.9 m, at 517,780.7 E 176,595.0 N, to 8327A9C3-9310-45FB-ACC5-4CBE094B6E56. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 44.886,
+        "name": "a stranded watercourse to River Thames at 517,781 176,595",
+        "reason": "A component holding 2.4 km has no way to tidal water at all. Its closest approach to water that does drain is 44.9 m, between an unnamed watercourse (inlandRiver) and River Thames (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "8327A9C3-9310-45FB-ACC5-4CBE094B6E56",
+        "sink_publisher_id": null,
+        "upstream_km": 2.443
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            397800.73,
+            321962.76
+          ],
+          [
+            397791.59,
+            321940.55
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 397,800.7 E 321,962.8 N with 2.2 km of catchment above it and no outflow; the nearest link that reaches tidal water is 0A4F53ED-B6F7-4759-9176-895CED2D0398 (Staffordshire and Worcestershire Canal), 24.0 m away, carrying the same watercourse name; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE. D-011 asks for the connection to be made where the lock or weir actually is; no open dataset of canal structures is registered here, so the nearest approach stands in for it. That is the weakest evidence in this file and each of these should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 24.017,
+        "name": "Staffordshire and Worcestershire Canal at 397,801 321,963",
+        "reason": "Staffordshire and Worcestershire Canal arrives at a node with no outflow and stops. 24.0 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "0A4F53ED-B6F7-4759-9176-895CED2D0398",
+        "sink_publisher_id": "40C46A52-D2DB-4AF2-B4E0-494B6C6D72B3",
+        "upstream_km": 2.217
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            482690.25,
+            213796.09
+          ],
+          [
+            482667.14,
+            213786.16
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 482,690.2 E 213,796.1 N with 0.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is 0FDBD47D-3782-4216-8552-3F6DB7461C92 (Grand Union Canal), 25.2 m away, carrying the same watercourse name; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE. D-011 asks for the connection to be made where the lock or weir actually is; no open dataset of canal structures is registered here, so the nearest approach stands in for it. That is the weakest evidence in this file and each of these should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 25.153,
+        "name": "Grand Union Canal at 482,690 213,796",
+        "reason": "Grand Union Canal arrives at a node with no outflow and stops. 25.2 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "0FDBD47D-3782-4216-8552-3F6DB7461C92",
+        "sink_publisher_id": "E7ADE8C6-9DDF-457B-BE15-BB25C9711981",
+        "upstream_km": 0.536
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            357154.2,
+            158129.72
+          ],
+          [
+            357142.85,
+            158144.25
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 17.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 18.4 m, at 357,154.2 E 158,129.7 N, to 88B5CCD0-9BA3-4599-A8C1-5E9078451070. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 18.438,
+        "name": "a stranded watercourse to draining water at 357,154 158,130",
+        "reason": "A component holding 17.0 km has no way to tidal water at all. Its closest approach to water that does drain is 18.4 m, between an unnamed watercourse (lake) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "88B5CCD0-9BA3-4599-A8C1-5E9078451070",
+        "sink_publisher_id": null,
+        "upstream_km": 17.029
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            302390.65,
+            106458.04
+          ],
+          [
+            302402.72,
+            106432.57
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 4.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 28.2 m, at 302,390.7 E 106,458.0 N, to E1FFF4F0-7C8E-48B2-B4D5-713842ADA815. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 28.185,
+        "name": "a stranded watercourse to River Culm at 302,391 106,458",
+        "reason": "A component holding 4.3 km has no way to tidal water at all. Its closest approach to water that does drain is 28.2 m, between an unnamed watercourse (inlandRiver) and River Culm (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "E1FFF4F0-7C8E-48B2-B4D5-713842ADA815",
+        "sink_publisher_id": null,
+        "upstream_km": 4.286
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            204300.01634156678,
+            54314.41786794142
+          ],
+          [
+            204249.84,
+            54332.23
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 4.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 53.2 m, at 204,300.0 E 54,314.4 N, to 579D0D6C-8C3C-40DF-86CD-56798817C8C4. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 53.244,
+        "name": "a stranded watercourse to draining water at 204,300 54,314",
+        "reason": "A component holding 4.2 km has no way to tidal water at all. Its closest approach to water that does drain is 53.2 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "579D0D6C-8C3C-40DF-86CD-56798817C8C4",
+        "sink_publisher_id": null,
+        "upstream_km": 4.2
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            361750.22,
+            352617.05
+          ],
+          [
+            361752.79,
+            352656.25
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 39.3 m, at 361,750.2 E 352,617.0 N, to 7D971253-1422-4983-9CF7-6BB65C879FB5. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 39.284,
+        "name": "Llangollen Canal to Llangollen Canal at 361,750 352,617",
+        "reason": "A component holding 2.9 km has no way to tidal water at all. Its closest approach to water that does drain is 39.3 m, between Llangollen Canal (canal) and Llangollen Canal (canal). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "7D971253-1422-4983-9CF7-6BB65C879FB5",
+        "sink_publisher_id": null,
+        "upstream_km": 2.852
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            370999.49,
+            335591.78
+          ],
+          [
+            370941.74,
+            335619.22
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 63.9 m, at 370,999.5 E 335,591.8 N, to 8ADF2DB7-23DE-4AA9-A868-8E820B9AC548. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 63.938,
+        "name": "Hempmill Brook to draining water at 370,999 335,592",
+        "reason": "A component holding 2.4 km has no way to tidal water at all. Its closest approach to water that does drain is 63.9 m, between Hempmill Brook (inlandRiver) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "8ADF2DB7-23DE-4AA9-A868-8E820B9AC548",
+        "sink_publisher_id": null,
+        "upstream_km": 2.44
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            399262.13,
+            92141.99
+          ],
+          [
+            399341.11,
+            92249.09
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 133.1 m, at 399,262.1 E 92,142.0 N, to 5820DF5C-DF45-418F-8396-441BDC21FFAA. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 133.072,
+        "name": "a stranded watercourse to Upton Lake at 399,262 92,142",
+        "reason": "A component holding 2.4 km has no way to tidal water at all. Its closest approach to water that does drain is 133.1 m, between an unnamed watercourse (inlandRiver) and Upton Lake (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "5820DF5C-DF45-418F-8396-441BDC21FFAA",
+        "sink_publisher_id": null,
+        "upstream_km": 2.44
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            391205.0141180173,
+            422927.33275587286
+          ],
+          [
+            391203.48,
+            423040.07
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 112.7 m, at 391,205.0 E 422,927.3 N, to EAC3735F-7BCF-4866-A953-E84563CF41D5. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 112.748,
+        "name": "a stranded watercourse to draining water at 391,205 422,927",
+        "reason": "A component holding 2.4 km has no way to tidal water at all. Its closest approach to water that does drain is 112.7 m, between an unnamed watercourse (lake) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "EAC3735F-7BCF-4866-A953-E84563CF41D5",
+        "sink_publisher_id": null,
+        "upstream_km": 2.429
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            366263.39,
+            305854.98
+          ],
+          [
+            366270.69,
+            305845.42
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 12.0 m, at 366,263.4 E 305,855.0 N, to DC7BD48C-B5F8-40AF-AC35-A278960B9E69. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 12.028,
+        "name": "Lyde Brook to Loamhole Brook at 366,263 305,855",
+        "reason": "A component holding 2.4 km has no way to tidal water at all. Its closest approach to water that does drain is 12.0 m, between Lyde Brook (lake) and Loamhole Brook (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "DC7BD48C-B5F8-40AF-AC35-A278960B9E69",
+        "sink_publisher_id": null,
+        "upstream_km": 2.417
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            621524.39,
+            226879.05
+          ],
+          [
+            621550.98,
+            226979.5
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 103.9 m, at 621,524.4 E 226,879.0 N, to 1735A884-428B-468E-8BD6-C169CFB1F2B2. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 103.91,
+        "name": "a stranded watercourse to Oakley Creek at 621,524 226,879",
+        "reason": "A component holding 2.4 km has no way to tidal water at all. Its closest approach to water that does drain is 103.9 m, between an unnamed watercourse (inlandRiver) and Oakley Creek (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "1735A884-428B-468E-8BD6-C169CFB1F2B2",
+        "sink_publisher_id": null,
+        "upstream_km": 2.376
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            401818.9300297059,
+            434516.02057284553
+          ],
+          [
+            401840.25,
+            434474.14
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 47.0 m, at 401,818.9 E 434,516.0 N, to B1EA2F6C-8301-4EF3-AD47-9AEEFC563489. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 46.995,
+        "name": "Deep Dyke to Rag Clough Beck at 401,819 434,516",
+        "reason": "A component holding 2.4 km has no way to tidal water at all. Its closest approach to water that does drain is 47.0 m, between Deep Dyke (inlandRiver) and Rag Clough Beck (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "B1EA2F6C-8301-4EF3-AD47-9AEEFC563489",
+        "sink_publisher_id": null,
+        "upstream_km": 2.361
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            493096.6,
+            426780.8
+          ],
+          [
+            493183.06181424804,
+            426869.72838435037
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.4 km and not one of its links reaches tidal water; the closest approach to a link that does is 124.0 m, at 493,096.6 E 426,780.8 N, to B641889D-8E75-42AE-9788-1B2AC3175665. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 124.032,
+        "name": "a stranded watercourse to Ellerker Drain at 493,097 426,781",
+        "reason": "A component holding 2.4 km has no way to tidal water at all. Its closest approach to water that does drain is 124.0 m, between an unnamed watercourse (inlandRiver) and Ellerker Drain (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "B641889D-8E75-42AE-9788-1B2AC3175665",
+        "sink_publisher_id": null,
+        "upstream_km": 2.359
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            394165.6480858095,
+            88303.68301923558
+          ],
+          [
+            394130.01,
+            88294.53
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 36.8 m, at 394,165.6 E 88,303.7 N, to CBD6A231-E5F7-430D-B9B9-5E725A7E34F8. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 36.795,
+        "name": "a stranded watercourse to River Piddle at 394,166 88,304",
+        "reason": "A component holding 2.3 km has no way to tidal water at all. Its closest approach to water that does drain is 36.8 m, between an unnamed watercourse (inlandRiver) and River Piddle (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "CBD6A231-E5F7-430D-B9B9-5E725A7E34F8",
+        "sink_publisher_id": null,
+        "upstream_km": 2.346
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            324489.98,
+            353082.26
+          ],
+          [
+            324384.6660559406,
+            353165.69379329355
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 134.4 m, at 324,490.0 E 353,082.3 N, to 8F527A3B-B992-43E2-813D-476D7B47F0DA. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 134.359,
+        "name": "a stranded watercourse to draining water at 324,490 353,082",
+        "reason": "A component holding 2.3 km has no way to tidal water at all. Its closest approach to water that does drain is 134.4 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "8F527A3B-B992-43E2-813D-476D7B47F0DA",
+        "sink_publisher_id": null,
+        "upstream_km": 2.34
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            508348.11,
+            331452.82
+          ],
+          [
+            508429.63,
+            331742.82
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 301.2 m, at 508,348.1 E 331,452.8 N, to 48C3DBC3-0E89-4F2C-B66A-303E29C1F14D. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 301.24,
+        "name": "a stranded watercourse to Marse Dike at 508,348 331,453",
+        "reason": "A component holding 2.3 km has no way to tidal water at all. Its closest approach to water that does drain is 301.2 m, between an unnamed watercourse (inlandRiver) and Marse Dike (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "48C3DBC3-0E89-4F2C-B66A-303E29C1F14D",
+        "sink_publisher_id": null,
+        "upstream_km": 2.319
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            445738.2,
+            108036.4
+          ],
+          [
+            445625.63,
+            107938.51
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 149.2 m, at 445,738.2 E 108,036.4 N, to 272B091B-21D2-4B7B-B99D-3D2D0AD0CDCE. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 149.179,
+        "name": "Spear Pond Gully to draining water at 445,738 108,036",
+        "reason": "A component holding 2.3 km has no way to tidal water at all. Its closest approach to water that does drain is 149.2 m, between Spear Pond Gully (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "272B091B-21D2-4B7B-B99D-3D2D0AD0CDCE",
+        "sink_publisher_id": null,
+        "upstream_km": 2.317
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            611851.46,
+            133946.9
+          ],
+          [
+            611845.4541377879,
+            134045.20370665277
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 98.5 m, at 611,851.5 E 133,946.9 N, to E2D3DD59-937E-4AA0-8D83-E34F09CB198C. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 98.487,
+        "name": "Canal Cutting to Royal Military Canal at 611,851 133,947",
+        "reason": "A component holding 2.3 km has no way to tidal water at all. Its closest approach to water that does drain is 98.5 m, between Canal Cutting (canal) and Royal Military Canal (canal). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "E2D3DD59-937E-4AA0-8D83-E34F09CB198C",
+        "sink_publisher_id": null,
+        "upstream_km": 2.296
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            337835.4,
+            385520.63
+          ],
+          [
+            337751.3,
+            385500.0
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 86.6 m, at 337,835.4 E 385,520.6 N, to 89ABA5B2-EE51-4BF4-9EE8-A9DEC3B401DE. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 86.593,
+        "name": "a stranded watercourse to draining water at 337,835 385,521",
+        "reason": "A component holding 2.3 km has no way to tidal water at all. Its closest approach to water that does drain is 86.6 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "89ABA5B2-EE51-4BF4-9EE8-A9DEC3B401DE",
+        "sink_publisher_id": null,
+        "upstream_km": 2.282
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            393678.97,
+            432712.52
+          ],
+          [
+            393717.0,
+            432679.0
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 50.7 m, at 393,679.0 E 432,712.5 N, to 8EC58224-1574-41AB-A6ED-8E6111AF7FA2. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 50.694,
+        "name": "a stranded watercourse to Graining Water at 393,679 432,713",
+        "reason": "A component holding 2.3 km has no way to tidal water at all. Its closest approach to water that does drain is 50.7 m, between an unnamed watercourse (inlandRiver) and Graining Water (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "8EC58224-1574-41AB-A6ED-8E6111AF7FA2",
+        "sink_publisher_id": null,
+        "upstream_km": 2.279
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            603301.66,
+            162936.13
+          ],
+          [
+            603230.0,
+            162941.47
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.3 km and not one of its links reaches tidal water; the closest approach to a link that does is 71.9 m, at 603,301.7 E 162,936.1 N, to ED16DA4D-A45B-4D28-89FE-DA0ED0BC7B0A. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 71.859,
+        "name": "a stranded watercourse to draining water at 603,302 162,936",
+        "reason": "A component holding 2.3 km has no way to tidal water at all. Its closest approach to water that does drain is 71.9 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "ED16DA4D-A45B-4D28-89FE-DA0ED0BC7B0A",
+        "sink_publisher_id": null,
+        "upstream_km": 2.251
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            202076.46923868402,
+            47110.344319097276
+          ],
+          [
+            202072.65,
+            47074.18
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 36.4 m, at 202,076.5 E 47,110.3 N, to 3A8786F5-9020-419B-BBB6-45F1C863F005. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 36.365,
+        "name": "a stranded watercourse to White River at 202,076 47,110",
+        "reason": "A component holding 2.2 km has no way to tidal water at all. Its closest approach to water that does drain is 36.4 m, between an unnamed watercourse (inlandRiver) and White River (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "3A8786F5-9020-419B-BBB6-45F1C863F005",
+        "sink_publisher_id": null,
+        "upstream_km": 2.237
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            638968.91,
+            303192.39
+          ],
+          [
+            638781.7953194292,
+            303053.94631473185
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 232.8 m, at 638,968.9 E 303,192.4 N, to A16A1696-D378-4C88-9106-5370F5E5F89C. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 232.763,
+        "name": "a stranded watercourse to River Yare at 638,969 303,192",
+        "reason": "A component holding 2.2 km has no way to tidal water at all. Its closest approach to water that does drain is 232.8 m, between an unnamed watercourse (inlandRiver) and River Yare (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "A16A1696-D378-4C88-9106-5370F5E5F89C",
+        "sink_publisher_id": null,
+        "upstream_km": 2.236
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            372031.84,
+            423562.21
+          ],
+          [
+            371981.31,
+            423564.31
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 50.6 m, at 372,031.8 E 423,562.2 N, to 8B5EB757-696F-4930-BB3A-16DF2A57F837. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 50.574,
+        "name": "a stranded watercourse to draining water at 372,032 423,562",
+        "reason": "A component holding 2.2 km has no way to tidal water at all. Its closest approach to water that does drain is 50.6 m, between an unnamed watercourse (lake) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "8B5EB757-696F-4930-BB3A-16DF2A57F837",
+        "sink_publisher_id": null,
+        "upstream_km": 2.215
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            402662.8796357826,
+            432475.59859779925
+          ],
+          [
+            402598.52,
+            432072.36
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 408.3 m, at 402,662.9 E 432,475.6 N, to A492E48F-F226-41B7-9E13-FEF7E500A235. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 408.342,
+        "name": "a stranded watercourse to draining water at 402,663 432,476",
+        "reason": "A component holding 2.2 km has no way to tidal water at all. Its closest approach to water that does drain is 408.3 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "A492E48F-F226-41B7-9E13-FEF7E500A235",
+        "sink_publisher_id": null,
+        "upstream_km": 2.198
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            281529.82,
+            55455.19
+          ],
+          [
+            281476.25,
+            55473.01
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 56.5 m, at 281,529.8 E 55,455.2 N, to 0D309507-E187-433F-907A-84B8B5190AA0. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 56.456,
+        "name": "a stranded watercourse to River Wash at 281,530 55,455",
+        "reason": "A component holding 2.2 km has no way to tidal water at all. Its closest approach to water that does drain is 56.5 m, between an unnamed watercourse (inlandRiver) and River Wash (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "0D309507-E187-433F-907A-84B8B5190AA0",
+        "sink_publisher_id": null,
+        "upstream_km": 2.193
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            580738.85,
+            171789.8
+          ],
+          [
+            580737.91,
+            171731.19
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 58.6 m, at 580,738.8 E 171,789.8 N, to 01D3B947-BD81-4825-A941-7AFC97BD6383. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 58.618,
+        "name": "a stranded watercourse to draining water at 580,739 171,790",
+        "reason": "A component holding 2.2 km has no way to tidal water at all. Its closest approach to water that does drain is 58.6 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "01D3B947-BD81-4825-A941-7AFC97BD6383",
+        "sink_publisher_id": null,
+        "upstream_km": 2.183
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            261819.55,
+            337929.5
+          ],
+          [
+            261730.30299625042,
+            337986.1740693373
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 105.7 m, at 261,819.5 E 337,929.5 N, to 31451888-9069-421C-9736-4031CCE5913B. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 105.721,
+        "name": "Nant yr Efail to Afon Dwyryd at 261,820 337,930",
+        "reason": "A component holding 2.2 km has no way to tidal water at all. Its closest approach to water that does drain is 105.7 m, between Nant yr Efail (inlandRiver) and Afon Dwyryd (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "31451888-9069-421C-9736-4031CCE5913B",
+        "sink_publisher_id": null,
+        "upstream_km": 2.16
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            396910.0,
+            433737.5
+          ],
+          [
+            396763.23,
+            433775.87
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.2 km and not one of its links reaches tidal water; the closest approach to a link that does is 151.7 m, at 396,910.0 E 433,737.5 N, to 4D2AB019-011C-45A1-B24A-2D24F10BF397. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 151.703,
+        "name": "Walshaw Dike to draining water at 396,910 433,738",
+        "reason": "A component holding 2.2 km has no way to tidal water at all. Its closest approach to water that does drain is 151.7 m, between Walshaw Dike (inlandRiver) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "4D2AB019-011C-45A1-B24A-2D24F10BF397",
+        "sink_publisher_id": null,
+        "upstream_km": 2.159
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            398411.75731268094,
+            423122.9544616905
+          ],
+          [
+            398606.97,
+            423149.07
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.1 km and not one of its links reaches tidal water; the closest approach to a link that does is 197.0 m, at 398,411.8 E 423,123.0 N, to D5D59C36-2E14-49DE-9436-57D1E2186F53. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 196.952,
+        "name": "a stranded watercourse to draining water at 398,412 423,123",
+        "reason": "A component holding 2.1 km has no way to tidal water at all. Its closest approach to water that does drain is 197.0 m, between an unnamed watercourse (lake) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "D5D59C36-2E14-49DE-9436-57D1E2186F53",
+        "sink_publisher_id": null,
+        "upstream_km": 2.147
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            459853.42533796706,
+            410516.87499183655
+          ],
+          [
+            459893.79,
+            410515.9
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.1 km and not one of its links reaches tidal water; the closest approach to a link that does is 40.4 m, at 459,853.4 E 410,516.9 N, to DF4C02D4-27B3-4D71-843F-B39DC365EFE1. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 40.376,
+        "name": "Side Cutting Drain to Thorpe Marsh Drain at 459,853 410,517",
+        "reason": "A component holding 2.1 km has no way to tidal water at all. Its closest approach to water that does drain is 40.4 m, between Side Cutting Drain (inlandRiver) and Thorpe Marsh Drain (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "DF4C02D4-27B3-4D71-843F-B39DC365EFE1",
+        "sink_publisher_id": null,
+        "upstream_km": 2.139
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            365686.57,
+            306855.7
+          ],
+          [
+            365773.27,
+            306735.11
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 365,686.6 E 306,855.7 N with 1.3 km of catchment above it and no outflow; the nearest link that reaches tidal water is C03B1FD5-2CBF-410D-9EF4-C6CFD57D7A9B (Lyde Brook), 148.5 m away, carrying the same watercourse name; the line between them crosses no other watercourse. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 148.522,
+        "name": "Lyde Brook at 365,687 306,856",
+        "reason": "Lyde Brook arrives at a node with no outflow and stops. 148.5 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "C03B1FD5-2CBF-410D-9EF4-C6CFD57D7A9B",
+        "sink_publisher_id": "172485DF-8B7F-446B-8D6C-5C20C97862D1",
+        "upstream_km": 1.272
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            483149.98146617215,
+            265194.4055282597
+          ],
+          [
+            483388.7,
+            264969.99
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.1 km and not one of its links reaches tidal water; the closest approach to a link that does is 327.6 m, at 483,150.0 E 265,194.4 N, to D931E733-D76A-4D17-8B1C-6417E1BEB216. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 327.641,
+        "name": "a stranded watercourse to draining water at 483,150 265,194",
+        "reason": "A component holding 2.1 km has no way to tidal water at all. Its closest approach to water that does drain is 327.6 m, between an unnamed watercourse (lake) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "D931E733-D76A-4D17-8B1C-6417E1BEB216",
+        "sink_publisher_id": null,
+        "upstream_km": 2.075
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            316532.39,
+            212934.67
+          ],
+          [
+            316471.0,
+            212847.83
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.1 km and not one of its links reaches tidal water; the closest approach to a link that does is 106.3 m, at 316,532.4 E 212,934.7 N, to 1DEA96B9-D317-46EE-95FA-DE745C911984. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 106.348,
+        "name": "a stranded watercourse to Ebbw River at 316,532 212,935",
+        "reason": "A component holding 2.1 km has no way to tidal water at all. Its closest approach to water that does drain is 106.3 m, between an unnamed watercourse (lake) and Ebbw River (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "1DEA96B9-D317-46EE-95FA-DE745C911984",
+        "sink_publisher_id": null,
+        "upstream_km": 2.06
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            206009.44,
+            239569.81
+          ],
+          [
+            206039.4981578181,
+            239582.40830452906
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.1 km and not one of its links reaches tidal water; the closest approach to a link that does is 32.6 m, at 206,009.4 E 239,569.8 N, to AE40B33E-4904-4ACD-BDC1-47EF603DCDB1. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 32.592,
+        "name": "Afon Ysgolheigion to Afon Nyfer at 206,009 239,570",
+        "reason": "A component holding 2.1 km has no way to tidal water at all. Its closest approach to water that does drain is 32.6 m, between Afon Ysgolheigion (inlandRiver) and Afon Nyfer (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "AE40B33E-4904-4ACD-BDC1-47EF603DCDB1",
+        "sink_publisher_id": null,
+        "upstream_km": 2.06
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            248387.77,
+            337454.91
+          ],
+          [
+            248104.33,
+            337172.27
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 400.3 m, at 248,387.8 E 337,454.9 N, to CA0873A5-D1F5-4FCD-9C76-629DB724DBB0. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 400.279,
+        "name": "a stranded watercourse to Afon Dwyfor at 248,388 337,455",
+        "reason": "A component holding 2.0 km has no way to tidal water at all. Its closest approach to water that does drain is 400.3 m, between an unnamed watercourse (inlandRiver) and Afon Dwyfor (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "CA0873A5-D1F5-4FCD-9C76-629DB724DBB0",
+        "sink_publisher_id": null,
+        "upstream_km": 2.044
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            478097.66,
+            104501.37
+          ],
+          [
+            477751.03,
+            104691.37
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 395.3 m, at 478,097.7 E 104,501.4 N, to 53AA7264-3BFA-4ABF-BF5F-841A5CCCDE37. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 395.288,
+        "name": "a stranded watercourse to Nutbourne Channel at 478,098 104,501",
+        "reason": "A component holding 2.0 km has no way to tidal water at all. Its closest approach to water that does drain is 395.3 m, between an unnamed watercourse (inlandRiver) and Nutbourne Channel (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "53AA7264-3BFA-4ABF-BF5F-841A5CCCDE37",
+        "sink_publisher_id": null,
+        "upstream_km": 2.039
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            430739.95,
+            122288.69
+          ],
+          [
+            430795.43,
+            122167.55
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 133.2 m, at 430,740.0 E 122,288.7 N, to B3283C4B-6DE2-4050-9379-2E688C977EC5. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 133.24,
+        "name": "a stranded watercourse to draining water at 430,740 122,289",
+        "reason": "A component holding 2.0 km has no way to tidal water at all. Its closest approach to water that does drain is 133.2 m, between an unnamed watercourse (lake) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "B3283C4B-6DE2-4050-9379-2E688C977EC5",
+        "sink_publisher_id": null,
+        "upstream_km": 2.035
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            483963.11093926325,
+            425270.72021529276
+          ],
+          [
+            483806.54,
+            425236.19
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 160.3 m, at 483,963.1 E 425,270.7 N, to 44EC9D9D-F697-4E8D-B0F8-A9FA122B80EF. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 160.333,
+        "name": "Anserdam Drain to Blacktoft Warping Drain at 483,963 425,271",
+        "reason": "A component holding 2.0 km has no way to tidal water at all. Its closest approach to water that does drain is 160.3 m, between Anserdam Drain (inlandRiver) and Blacktoft Warping Drain (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "44EC9D9D-F697-4E8D-B0F8-A9FA122B80EF",
+        "sink_publisher_id": null,
+        "upstream_km": 1.998
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            360152.5323398549,
+            401843.47941961605
+          ],
+          [
+            360243.34,
+            401864.31
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 93.2 m, at 360,152.5 E 401,843.5 N, to CF1B1253-F54A-4EA0-9A4A-A4587550E604. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 93.166,
+        "name": "a stranded watercourse to Hey Brook at 360,153 401,843",
+        "reason": "A component holding 2.0 km has no way to tidal water at all. Its closest approach to water that does drain is 93.2 m, between an unnamed watercourse (inlandRiver) and Hey Brook (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "CF1B1253-F54A-4EA0-9A4A-A4587550E604",
+        "sink_publisher_id": null,
+        "upstream_km": 1.993
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            485497.86,
+            123512.77
+          ],
+          [
+            485525.19,
+            123121.26
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 392.5 m, at 485,497.9 E 123,512.8 N, to 067ABEC5-CAF6-4322-968F-52E6E256F548. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 392.463,
+        "name": "a stranded watercourse to River Rother at 485,498 123,513",
+        "reason": "A component holding 2.0 km has no way to tidal water at all. Its closest approach to water that does drain is 392.5 m, between an unnamed watercourse (inlandRiver) and River Rother (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "067ABEC5-CAF6-4322-968F-52E6E256F548",
+        "sink_publisher_id": null,
+        "upstream_km": 1.993
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            398686.91,
+            622982.54
+          ],
+          [
+            398565.0,
+            623196.5
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 246.3 m, at 398,686.9 E 622,982.5 N, to 70B1AE87-4141-491E-901C-EE0BE18C1726. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 246.254,
+        "name": "a stranded watercourse to draining water at 398,687 622,983",
+        "reason": "A component holding 2.0 km has no way to tidal water at all. Its closest approach to water that does drain is 246.3 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "70B1AE87-4141-491E-901C-EE0BE18C1726",
+        "sink_publisher_id": null,
+        "upstream_km": 1.979
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            303556.23,
+            112160.99
+          ],
+          [
+            303521.43702036166,
+            112136.89643184675
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 42.3 m, at 303,556.2 E 112,161.0 N, to 559CA323-DB66-4DFE-BC74-4C4C7F4C8C25. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 42.321,
+        "name": "a stranded watercourse to Spratford Stream at 303,556 112,161",
+        "reason": "A component holding 2.0 km has no way to tidal water at all. Its closest approach to water that does drain is 42.3 m, between an unnamed watercourse (inlandRiver) and Spratford Stream (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "559CA323-DB66-4DFE-BC74-4C4C7F4C8C25",
+        "sink_publisher_id": null,
+        "upstream_km": 1.976
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            364981.14,
+            193598.92
+          ],
+          [
+            365045.67778096517,
+            193643.21915738576
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.0 km and not one of its links reaches tidal water; the closest approach to a link that does is 78.3 m, at 364,981.1 E 193,598.9 N, to CC3012B4-DB0A-4CF4-A782-2DE88A577CD2. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 78.279,
+        "name": "a stranded watercourse to Rockhampton Rhine at 364,981 193,599",
+        "reason": "A component holding 2.0 km has no way to tidal water at all. Its closest approach to water that does drain is 78.3 m, between an unnamed watercourse (inlandRiver) and Rockhampton Rhine (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "CC3012B4-DB0A-4CF4-A782-2DE88A577CD2",
+        "sink_publisher_id": null,
+        "upstream_km": 1.975
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            315451.35,
+            214106.66
+          ],
+          [
+            315514.71,
+            213986.66
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 2.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 135.7 m, at 315,451.3 E 214,106.7 N, to FDD70F88-6EFB-46D9-AAB8-A12BB771C9F6. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 135.7,
+        "name": "a stranded watercourse to Ebbw River at 315,451 214,107",
+        "reason": "A component holding 2.9 km has no way to tidal water at all. Its closest approach to water that does drain is 135.7 m, between an unnamed watercourse (lake) and Ebbw River (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "FDD70F88-6EFB-46D9-AAB8-A12BB771C9F6",
+        "sink_publisher_id": null,
+        "upstream_km": 2.91
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            466905.96,
+            514025.3
+          ],
+          [
+            466896.9328106264,
+            514060.8449505632
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 36.7 m, at 466,906.0 E 514,025.3 N, to 21759195-1B46-47E5-AC1B-BAD2FB8E5107. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 36.673,
+        "name": "a stranded watercourse to Lockwood Beck at 466,906 514,025",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 36.7 m, between an unnamed watercourse (lake) and Lockwood Beck (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "21759195-1B46-47E5-AC1B-BAD2FB8E5107",
+        "sink_publisher_id": null,
+        "upstream_km": 1.947
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            462658.59,
+            163306.35
+          ],
+          [
+            462731.53,
+            163297.21
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 73.5 m, at 462,658.6 E 163,306.4 N, to 2BADF1A7-C7F6-4C23-A1B0-6FE3D17740BB. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 73.51,
+        "name": "West End Brook to draining water at 462,659 163,306",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 73.5 m, between West End Brook (inlandRiver) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "2BADF1A7-C7F6-4C23-A1B0-6FE3D17740BB",
+        "sink_publisher_id": null,
+        "upstream_km": 1.947
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            334264.13,
+            403166.19
+          ],
+          [
+            334233.7460832976,
+            403189.47009754676
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 38.3 m, at 334,264.1 E 403,166.2 N, to AE695BF3-2F46-4D56-87AD-4F2993F667B7. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 38.277,
+        "name": "a stranded watercourse to Hunt's Brook at 334,264 403,166",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 38.3 m, between an unnamed watercourse (inlandRiver) and Hunt's Brook (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "AE695BF3-2F46-4D56-87AD-4F2993F667B7",
+        "sink_publisher_id": null,
+        "upstream_km": 1.941
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            223866.19,
+            576971.42
+          ],
+          [
+            223840.86536224655,
+            577021.5945198429
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 56.2 m, at 223,866.2 E 576,971.4 N, to 6FEFE327-6E0A-41EC-966B-E5C86FCFC122. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 56.203,
+        "name": "a stranded watercourse to draining water at 223,866 576,971",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 56.2 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "6FEFE327-6E0A-41EC-966B-E5C86FCFC122",
+        "sink_publisher_id": null,
+        "upstream_km": 1.929
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            324403.84,
+            145065.04
+          ],
+          [
+            324529.66,
+            144807.68
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 286.5 m, at 324,403.8 E 145,065.0 N, to DA65F4DA-CBF3-4CF0-84E1-6631F86EFD04. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 286.47,
+        "name": "a stranded watercourse to North Brook at 324,404 145,065",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 286.5 m, between an unnamed watercourse (inlandRiver) and North Brook (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "DA65F4DA-CBF3-4CF0-84E1-6631F86EFD04",
+        "sink_publisher_id": null,
+        "upstream_km": 1.918
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            333038.29,
+            478039.23
+          ],
+          [
+            333162.05,
+            478271.91
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 263.5 m, at 333,038.3 E 478,039.2 N, to 5EB56B25-47D6-4FB8-B1C1-E6827366242F. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 263.546,
+        "name": "a stranded watercourse to draining water at 333,038 478,039",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 263.5 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "5EB56B25-47D6-4FB8-B1C1-E6827366242F",
+        "sink_publisher_id": null,
+        "upstream_km": 1.916
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            560119.44,
+            176091.48
+          ],
+          [
+            560103.6,
+            176119.05
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 31.8 m, at 560,119.4 E 176,091.5 N, to 2AE8DA23-2A50-40F0-A21B-E93BE16C369F. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 31.796,
+        "name": "a stranded watercourse to draining water at 560,119 176,091",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 31.8 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "2AE8DA23-2A50-40F0-A21B-E93BE16C369F",
+        "sink_publisher_id": null,
+        "upstream_km": 1.915
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            458533.29,
+            469473.72
+          ],
+          [
+            458502.91,
+            469459.7
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 33.5 m, at 458,533.3 E 469,473.7 N, to 5776CC02-F26A-4E90-A0C8-1D7199FD67B9. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 33.459,
+        "name": "a stranded watercourse to draining water at 458,533 469,474",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 33.5 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "5776CC02-F26A-4E90-A0C8-1D7199FD67B9",
+        "sink_publisher_id": null,
+        "upstream_km": 1.912
+      },
+      "type": "Feature"
     }
   ],
   "name": "connectors",
