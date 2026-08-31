@@ -45,8 +45,11 @@ its absence cost something.
 
 ## Licence
 
-Documentation and code: to be confirmed before the repository is made public.
-Data sources carry their own licences and attributions; see
+**Code: [MIT](LICENSE).**
+
+Data is a separate question. Every source carries its own licence and attribution, some
+of them incompatible with redistribution, and the MIT grant covers this repository's code
+and nothing that flows through it. See
 [Evidence](https://docuracy.github.io/REWT/evidence).
 
 ## Contact

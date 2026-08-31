@@ -32,7 +32,10 @@ taken — but authorisation is not execution, and several such powers were never
 exercised. Nothing here may be read as *the river was navigable from this year*.
 
 Their under-used value is different: a compulsory purchase is a legal act over **specific
-ground**, and the plans and awards behind it commonly show the river *before* the work.
+ground**, and a new cut had to be located relative to the channel it replaced — so the
+plans and awards behind it can show the river *before* the work. How reliably is an open
+question: survival is uneven, and many plans depict only what was proposed. Worth testing
+on a sample before it is relied on.
 
 **Regional studies** — the Fenland Survey, the Humber Wetlands Project, the Somerset
 Levels literature — answer locally what no national rule can: which channels are older

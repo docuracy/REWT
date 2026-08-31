@@ -32,12 +32,20 @@ were mundane and expensive: stages that silently overwrote each other, a cached
 intermediate preferred to a corrected setting for a month, a mistyped identifier that did
 nothing at all while the pipeline reported it as applied.
 
-## 1 · Make the modern network work
+## 1 · Make the modern network traversable
 
-Repair the Ordnance Survey network into one where water can reach the sea — as faithfully
-to the survey as the evidence allows. **This phase reconstructs nothing.** Its product is
-a functioning drainage network, and keeping that boundary sharp is what lets it use
-anything that helps.
+**OS Open Rivers does ship a topology** — some 197,000 explicit nodes, with flow direction
+and names — and it is very nearly the only open British watercourse product that does.
+What it does not offer, and does not claim to, is **traversability**: that from any
+stretch the water can actually be followed downstream to the tide. It is a *generalised
+cartographic* derivative with a node structure attached, not a hydrological model, and
+nothing in it guarantees that a chain of links is unbroken or that every direction is
+right.
+
+Making it traversable is the first phase's work — as faithfully to the survey as the
+evidence allows. **This phase reconstructs nothing.** Its product is a functioning
+drainage network, and keeping that boundary sharp is what lets it use anything that
+helps.
 
 Three shapes of fault account for nearly all of it, and one question separates them:
 *which end of the stranded channel touches the network?*
@@ -51,6 +59,40 @@ Three shapes of fault account for nearly all of it, and one question separates t
 
 Getting that question wrong produces a fix that looks right nationally and is wrong at
 the place. **Check at the place, never in the total.**
+
+> ### Why start from OS Open Rivers at all?
+>
+> Because the alternatives are worse, and for instructive reasons. The choice was made
+> on a comparison rather than by default.
+>
+> **CEH's 1:50 000 Digital River Network** — no topology, *by its publisher's own
+> statement*, and available for educational use only. Neither problem is fixable.
+>
+> **OS OpenMap Local (water)** — open, and far better geometry: real polygons from which
+> a true medial axis and channel width can be derived. But it is cartography with no
+> topology whatever; measured, only about **4% of its endpoints are shared** between
+> adjacent features. Four separate attempts to give it one failed. Its proper role is to
+> contribute *attributes* — width, better centrelines — to a structure that comes from
+> elsewhere.
+>
+> **The un-generalised OS water network** (Features API) — the same data before
+> generalisation, and the obvious answer but for its licence: Premium, and not
+> redistributable. Nothing derived from it could ever be published, which disqualifies
+> it for an open dataset however good it is.
+>
+> **A network derived from a terrain model** — flow-routing over a digital elevation
+> model produces a network that *cannot* have these defects: routing over a filled
+> surface yields a directed forest, with no sinks and no cycles, by construction. It is
+> genuinely tempting. But at 50 m resolution a cell spans roughly an eighth of a lowland
+> meander wavelength, so the geometry is poorest exactly where this project cares most —
+> the Fens, the Levels, the Humberhead — and it carries no names, so nothing in it joins
+> to a documentary attestation. It is admissible as a **check on connectivity** and not
+> as the network itself: it can say whether water can get from one place to another, and
+> cannot say by which line.
+>
+> So: OS Open Rivers supplies the topology and the names; other products contribute
+> geometry and evidence to it. The alternative is to ask a cartographic product to supply
+> a topology it never had, which has been tried.
 
 ## 2 · Recover the old courses
 
@@ -66,9 +108,17 @@ recoverable from sheets made before the dam — which often means the *first* se
 the second, because much of Victorian water supply predates it.
 
 **From the documentary record.** Drainage and navigation works were legal acts over
-specific ground, and the records behind them — deposited plans, awards, estate and
-enclosure maps — routinely depict the river *as it was before the work*. Often the only
-such map, and drawn for a purpose that required accuracy.
+specific ground, and a scheme had to be described against what was already there: land
+taken had to be identified, and a new cut located relative to the old channel. So the
+records behind such works — deposited plans, awards, estate and enclosure maps —
+**sometimes** show the river as it ran before the work, and were drawn for a purpose that
+required them to be accurate about it.
+
+How often is not known, and should not be guessed. Survival is uneven, coverage is
+patchy before the nineteenth century, and many plans show only the works proposed and not
+the ground they replaced. The expectation is reasonable rather than established, and the
+first task in this strand is to test it on a sample and find out — a scheme at a time,
+recording what the record actually yields.
 
 ## 3 · Model the flow
 
