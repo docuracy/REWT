@@ -1,9 +1,19 @@
+<img src="docs/assets/rewt-mark.svg" alt="" width="72" align="left" hspace="16">
+
 # REWT
 
 **Rivers of England and Wales, Temporally.**
 
-A routable reconstruction of the river network of England and Wales at a series of dated
-cross-sections between Domesday and 1900, built so that the water in it can reach the sea.
+A routable reconstruction of the river network of England and Wales, built so that the
+water in it can reach the sea, and worked backwards from the present-day channel to a
+series of dated cross-sections between Domesday and 1900.
+
+**The baseline is modern, not Victorian.** Everything rests on OS Open Rivers, which is
+reissued twice a year and describes the network as it is now — the build in this
+repository is running against the **April 2026 issue**. The first deliverable is that
+modern network made traversable, and it makes no historical claim at all; the dated
+cross-sections are reconstructed backwards from it, and 1900 is the earliest date the
+*map* record reaches, not the latest date the dataset covers.
 
 ### → **[Read the introduction](https://docuracy.github.io/REWT/)**
 
@@ -21,7 +31,8 @@ written to be picked up cold.
 
 ## Status
 
-**Nothing is published yet, and there is no code here.** The repository is being built
+**Nothing is published yet.** Stage 1 — the traversable modern network — is under
+construction; nothing else has been started. The repository is being built
 from a clean sheet following a scoping exercise
 ([Premodern Rivers](https://docuracy.github.io/premodern-rivers/)) which established the
 approach and, more usefully, what goes wrong.

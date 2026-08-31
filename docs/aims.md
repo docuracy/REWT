@@ -1,7 +1,5 @@
 # Aims
 
-[← REWT](index)
-
 ## What this produces
 
 A **routable river network for England and Wales**, published as a series of dated

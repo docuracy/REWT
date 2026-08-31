@@ -1,7 +1,5 @@
 # The Fens
 
-[← The rebuilt landscapes](index)
-
 *The landscape this project exists for, and the one where the standard method fails on
 first principles.*
 

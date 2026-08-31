@@ -1,7 +1,5 @@
 # Methodology
 
-[← REWT](index)
-
 ## The finding that sets the order
 
 A scoping exercise built this the obvious way: take the modern survey, filter out

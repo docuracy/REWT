@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'en-GB' }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page.title and page.title != site.title %}{{ page.title }} · {{ site.title }}{% else %}{{ site.title }} — {{ site.description }}{% endif %}</title>
+    <meta name="description" content="{{ page.description | default: site.description }}">
+    <link rel="icon" href="{{ '/assets/rewt-mark.svg' | relative_url }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+
+      <header class="site-head">
+        <a class="site-brand" href="{{ '/' | relative_url }}">
+          <img src="{{ '/assets/rewt-mark.svg' | relative_url }}" alt="" width="44" height="44">
+          <span>
+            <strong>REWT</strong>
+            <em>Rivers of England and Wales, Temporally</em>
+          </span>
+        </a>
+
+        <!-- Navigation, in both of the senses this project uses the word. -->
+        <nav class="site-nav" aria-label="Navigation">
+          {%- assign here = page.url | remove: 'index.html' | remove: '.html' -%}
+          {%- for item in site.nav -%}
+            {%- assign target = item.url -%}
+            {%- if here == target -%}
+              <a href="{{ target | relative_url }}" aria-current="page">{{ item.title }}</a>
+            {%- else -%}
+              <a href="{{ target | relative_url }}">{{ item.title }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </nav>
+      </header>
+
+      {{ content }}
+
+      <footer class="site-foot">
+        <p><a href="https://github.com/docuracy/REWT">REWT on GitHub</a> ·
+           Stephen Gadd, <a href="https://docuracy.co.uk">Docuracy Ltd</a></p>
+        <p class="pun"><em>Navigation</em>, on this site, does double duty.</p>
+      </footer>
+
+    </div>
+  </body>
+</html>

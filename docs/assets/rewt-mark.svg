@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="REWT">
+  <title>REWT</title>
+  <!-- An R drawn as two watercourses. They leave one head at an acute fork; the left
+       runs on down, the right sweeps the bowl and turns smoothly into the leg without
+       rejoining. A divergence, which is most of what this project is about. -->
+  <rect width="64" height="64" rx="12" fill="#F3EFE6"/>
+  <g fill="none" stroke="#14608A" stroke-linecap="round">
+    <path d="M19 7 C19 18 24 28 19 38 C14 48 21 52 19 58" stroke-width="7"/>
+    <path d="M19 7 C28 13.3 47 15 45 26 C43 34 33 33 29 38 C26 42 30 46 34 50 C38 54 41 55 46 58"
+          stroke-width="6.5"/>
+  </g>
+</svg>

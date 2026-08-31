@@ -1,3 +1,37 @@
 title: REWT
 description: Rivers of England and Wales, Temporally
 theme: jekyll-theme-primer
+
+# Project pages are served under /REWT/, and `relative_url` needs to be told so —
+# without it the stylesheet and the favicon resolve to the wrong host root.
+url: "https://docuracy.github.io"
+baseurl: "/REWT"
+
+# Every page gets the navigation without having to say so in its front matter.
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+# The navigation, in one place. `url` is relative to baseurl.
+nav:
+  - title: Introduction
+    url: /
+  - title: Aims
+    url: /aims
+  - title: Methodology
+    url: /methodology
+  - title: Evidence
+    url: /evidence
+  - title: Landscapes
+    url: /regions/
+  - title: Temporality
+    url: /epochs
+  - title: Scale
+    url: /scale
+  - title: Background
+    url: /background
+
+exclude:
+  - README.md

@@ -1,7 +1,5 @@
 # The rebuilt landscapes
 
-[← REWT](../index)
-
 The source programme in [Evidence](../evidence) is general. Where it has to be worked out
 in detail is the handful of landscapes whose hydrography was **rebuilt rather than
 modified** — and in which, therefore, the modern channel is the *weakest* evidence of a
@@ -13,7 +11,7 @@ these pages divide it up.
 
 | | |
 |---|---|
-| [The Fens](fens) | the landscape this project exists for, and where the standard method fails on first principles |
+| [The Fens](fens) | where the standard method fails on first principles, and the modern channel says least |
 | [The Humber](humber) | densely dated, legally documented, and a river sent an entirely different way in 1626 |
 | [The Somerset Levels](somerset) | where medieval work survives *in* the network, and generic rules are weakest |
 | [Other regions](other) | the Broads, the Trent, Romney Marsh, the mosses, and the rest |

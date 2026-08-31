@@ -6,6 +6,13 @@ A reconstruction of the river network of England and Wales as it stood at a seri
 dated cross-sections between Domesday and 1900 — built so that the water in it can
 actually get to the sea.
 
+It starts from the river as it is **today**. The base network is the current Ordnance
+Survey product, reissued twice a year, and the first thing built from it is a modern
+network in which water can be followed from any stretch to the tide. That carries no
+historical claim whatever. The historic cross-sections are then worked *backwards* from
+it against dated evidence — so 1900 is where the map record begins, not where the
+dataset stops.
+
 ---
 
 ## What this is

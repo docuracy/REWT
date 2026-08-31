@@ -1,7 +1,5 @@
 # Background
 
-[← REWT](index)
-
 ## The proof of concept
 
 REWT follows a scoping exercise carried out in 2026 under the name **Premodern Rivers**,

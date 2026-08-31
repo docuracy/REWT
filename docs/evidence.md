@@ -1,7 +1,5 @@
 # Evidence
 
-[← REWT](index)
-
 What each source can say, what it cannot, and whether it can be published.
 
 ## The modern network
@@ -28,27 +26,51 @@ is more work — and it is georeferenced less consistently, which is why a trace
 *which sheet* each vertex came from.
 
 **What the labels actually offer**, measured against the transcription of 2.6 million of
-them:
+them, in England and Wales:
 
-| label | count | what it is |
-|---|---|---|
-| **Old Course** | **161** | the surveyor stating which of two channels is superseded |
-| **New Cut** | **219** | the same statement from the other side |
-| Mill channels — *Mill Race*, *Mill Lade*, *Mill Leat* | **10,738** | frequently medieval, and belonging *in* the reconstruction rather than subtracted from it |
-| Towing path | 2,214 | the channel carrying traffic c.1900 — ambiguous alone, disambiguated by the two above |
+| label | labels | distinct places | what it is |
+|---|---|---|---|
+| **Old Course** | 139 | **126** | the surveyor stating which of two channels is superseded |
+| **New Cut** | 224 | **209** | the same statement from the other side |
+| Mill channels — *Mill Race*, *Mill Leat*, *Mill Pond* | 4,996 | **4,068** | frequently medieval, and belonging *in* the reconstruction rather than subtracted from it |
+| Towing path | 2,169 | 1,724 | the channel carrying traffic c.1900 — ambiguous alone, disambiguated by the two above |
 
-**380 outright assertions**, which is a small enough number to work through completely, and
-10,738 judgements, which is not. That difference drives the [release plan](epochs), and
+**A label is not a channel.** The Ordnance Survey repeated a name along the feature it
+named, so the second column collapses labels reading the same thing within a kilometre of
+each other into one place. The correction is smaller than it sounds — repeated captions are
+set 1.7 km apart on average, and no two *Old Course* labels lie within 300 m — but the
+counts are counts of places, and are labelled as such.
+
+Two figures need saying plainly. The labels come from the **CC0 raw dump**, never from the
+published gazetteers, which are CC-BY-SA and would carry share-alike into this project's
+exports. And the extent is **England and Wales**: 1,888 of the 6,884 mill-channel labels in
+Great Britain are Scottish, *lade* and *lead* being Scots, and Scotland is outside the
+scope. [The scale page](scale) gives the method.
+
+**Some 274 outright assertions** where *Old Course* and *New Cut* are taken together and
+counted by place, which is a small enough number to work through completely, against some
+4,068 judgements, which is not. That difference drives the [release plan](epochs), and
 [the scale page](scale) sets out what follows from it.
 
 A **second population is not labelled at all: channels drowned by reservoirs.** A drowned
 valley is not a channel that ceased to exist — it is one that is under water, and its course
-is recoverable from a map made before the dam. Matching named reservoirs against the network
-identifies **606 of them, marking 1,834 links** as standing water that was once a valley.
-Distinguishing a reservoir from a merely wide river is tractable: the name match is the
-strongest signal, measured channel width the second (trunk channels run to a median 34.9 m,
-so anything an order of magnitude wider is not a widening), and a reservoir is a *polygon*
-the network has to be routed across rather than along.
+is recoverable from a map made before the dam. **The network cannot find them by itself**:
+OS Open Rivers names 6,042 of its 24,146 standing-water links and not one of those names
+contains the word *Reservoir* — a lake link carries the name of the river running through
+it. A gazetteer of named places is needed, and has to be declared before any count from it
+can be quoted; the scoping exercise's 606 reservoirs over 1,834 links was obtained that way
+and is inherited here, not earned.
+
+**Their dates cannot be looked up either.** Of 1,125 items typed as reservoirs in the United
+Kingdom on Wikidata, 24 carry a construction date, and Kielder, Rutland, Ladybower,
+Haweswater, Vyrnwy and Derwent are all among the ones that do not. The map series answers it
+instead: a valley drawn as a river on the first edition and as water on the second was
+flooded between the two surveys.
+
+Distinguishing a reservoir from a merely wide river is otherwise tractable: measured channel
+width is a good second signal (trunk channels run to a median 34.9 m, so anything an order of
+magnitude wider is not a widening), and a reservoir is a *polygon* the network has to be
+routed across rather than along.
 
 A third, larger population — **19,434 courses fossilised in parish boundaries** — is
 identifiable but rests on a licence-encumbered boundary set, and so cannot be published

@@ -1,7 +1,5 @@
 # The Somerset Levels
 
-[← The rebuilt landscapes](index)
-
 *The other landscape rebuilt wholesale, and the one where the scoping exercise's terrain
 model was silently wrong for a month.*
 

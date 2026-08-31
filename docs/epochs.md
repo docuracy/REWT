@@ -1,7 +1,5 @@
 # Temporality: which dates get published
 
-[← REWT](index)
-
 A reconstruction "between Domesday and 1900" has to say which years it actually draws, and
 why not all of them. This page is that decision and its reasoning.
 

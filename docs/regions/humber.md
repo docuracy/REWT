@@ -1,7 +1,5 @@
 # The Humber
 
-[← The rebuilt landscapes](index)
-
 *The region where the reconstruction is weakest after the Fens, and where the scoping
 exercise repeatedly found the network breaking. Humberhead went from 14% unreached to 21%
 and back to 3% in a single afternoon's work.*

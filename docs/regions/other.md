@@ -1,7 +1,5 @@
 # Other regions
 
-[← The rebuilt landscapes](index)
-
 *Landscapes substantially altered, ordered roughly by how much of the network is affected.
 Shorter than the three preceding pages because less is known here — which is itself the
 finding.*

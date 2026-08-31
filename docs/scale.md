@@ -1,7 +1,5 @@
 # The scale of the work
 
-[← REWT](index)
-
 **How much of this can be done in house, and where volunteer or collaborator effort
 becomes unavoidable.** The counts below are measured, not estimated; the hours are
 illustrative and meant only to separate *bounded* work from *open-ended* work.
@@ -33,35 +31,81 @@ each checked at the place by one person in a few minutes.
 **Verdict: in house.** Days of adjudication, not months, and the crawl-from-the-sea method
 generates the queue automatically and ranks it by how much water is at stake.
 
+> These six figures are measurements of *OS Open Rivers as shipped*, carried over from the
+> scoping exercise. They are legitimate to check a rebuild against and are not results of
+> this repository; the issue they were taken from is not the issue now being built from.
+
 ### Old courses the Victorian surveyors labelled
 
 Volunteers have already transcribed **2.6 million labels** ([GB1900](http://www.gb1900.org/){:target="_blank"}) from the
-[six-inch County Series second edition](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}. Within them:
+[six-inch County Series second edition](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}. Within them, in England and
+Wales:
 
-| label | count | what it is |
-|---|---|---|
-| **Old Course** | **161** | the surveyor stating which of two channels is superseded |
-| **New Cut** | **219** | the same statement from the other side |
-| Towing path | 2,214 | the navigable channel c.1900; ambiguous alone |
-| Mill channels — *Mill Race, Mill Lade, Mill Leat* | **10,738** | frequently medieval, and belonging *in* the reconstruction |
+| label | labels | distinct places | what it is |
+|---|---|---|---|
+| **Old Course** | 139 | **126** | the surveyor stating which of two channels is superseded |
+| **New Cut** | 224 | **209** | the same statement from the other side |
+| Towing path | 2,169 | 1,724 | the navigable channel c.1900; ambiguous alone |
+| Mill channels — *Mill Race*, *Mill Leat*, *Mill Pond* | 4,996 | **4,068** | frequently medieval, and belonging *in* the reconstruction |
 
-**380 assertions** for *Old Course* and *New Cut* together. Each is a statement by someone
-who was there, not an inference from the modern line. At ten minutes to find the sheet and
-trace the channel, that is **under two working weeks**.
+**Two columns, because a caption is not a channel.** The Ordnance Survey repeated a name
+along the feature it named, so one stretch of abandoned river can carry *Old Course* three
+or four times and a transcription of the labels counts the type, not the river. The second
+column collapses labels reading the same thing into one place where they are within a
+kilometre of each other.
+
+**The correction turns out to be small**, and that is worth stating because the opposite
+was expected. Repeated captions are set far apart: no two *Old Course* labels in England
+and Wales are within 300 m of each other, and the median distance from one to the nearest
+other label reading the same thing is 1.7 km. Collapsing at a kilometre takes 139 labels to
+126 places — nine per cent, not a factor. **What the labels count and what the work counts
+are nearly the same number.**
+
+**361 labels at some 274 distinct places** for *Old Course* and *New Cut* together, taking
+the two classes as one and clustering on position alone — the two captions describe the
+same event from either side, and often sit on the same reach. Each is a statement by
+someone who was there, not an inference from the modern line. At ten minutes to find the
+sheet and trace the channel, that is **about six working days**.
 
 **Verdict: in house, comfortably.** This is the second edition's core, and it is finishable.
 
-### Valleys drowned by reservoirs
+> **How these were counted.** From the **CC0 raw dump** of the GB1900 transcriptions, never
+> from the published gazetteers, which are CC-BY-SA: share-alike would propagate into this
+> project's own exports, and the abridgement drops every string occurring 300 or more times
+> nationally, which is exactly the mill and towing-path vocabulary. A pin's text is the
+> reading most volunteers gave it. Extent is England and Wales by OS Boundary-Line, which
+> matters more than it sounds: **1,888 of the 6,884 mill-channel labels in Great Britain are
+> in Scotland** and outside this project's scope — *lade* and *lead* are Scots, and they are
+> two of the four commonest terms. Earlier drafts of this page gave 161, 219, 2,214 and
+> 10,738 for the four classes. Two of those reproduce exactly; the mill-channel figure does
+> not reproduce at all from the source, at any extent, and has been replaced by the measured
+> one.
 
-| | |
-|---|---|
-| named reservoirs matched against the network | **606** |
-| network links marked as standing water that was once a valley | 1,834 |
+### Valleys drowned by reservoirs
 
 A drowned channel has not ceased to exist; it is under water, and its course is recoverable
 from a map made before the dam. Much of Victorian water supply predates the second series,
 so a good share of these need the **first** series — county by county rather than a single
 national mosaic, and so slower.
+
+**How many there are is not yet a figure this project can quote.** The scoping exercise
+reported 606 reservoirs marking 1,834 links, and did it by joining a *gazetteer* to the
+network. The network alone cannot do it: OS Open Rivers names 6,042 of its 24,146
+standing-water links, and **not one of those names contains the word "Reservoir"** — the
+name carried by a lake link is the river running through it, *River Darent*, *Mill Beck*.
+Identifying the drowned valleys therefore needs a named-places source declared alongside
+the rest, and until it is, the count is inherited rather than earned.
+
+**Nor can the dates be looked up.** Wikidata was tested for exactly this: of 1,125 items
+typed as reservoirs in the United Kingdom, **24 carry a construction date** — two per cent —
+and not one of Kielder Water, Rutland Water, Ladybower, Haweswater, Lake Vyrnwy or Derwent
+does. The dam records are no better: 101 items, 5 dated. Anything relying on that lookup
+would be dating a handful of reservoirs and guessing at the rest.
+
+**The map series dates them instead, and more cheaply.** A valley shown as a river on the
+first edition and as water on the second was flooded between the two surveys, which brackets
+it to a couple of decades — and the same comparison is what tells the tracer which sheet to
+work from. The date falls out of the work rather than having to be fetched before it.
 
 **Verdict: in house, but the largest bounded item.** Several hundred hours. A candidate for
 the first thing volunteers are invited to help with, because each unit of work is
@@ -73,9 +117,10 @@ self-contained: one reservoir, one pre-dam sheet, one traced valley.
 
 ### The mill channels
 
-**10,738.** An order of magnitude larger than everything above it combined, and each
-requires a judgement rather than a trace: a mill leat may be medieval, Victorian, or a
-nineteenth-century rebuild on a medieval line, and the map does not say which.
+**Some 4,068 places in England and Wales.** Still an order of magnitude larger than
+everything above it, and each requires a judgement rather than a trace: a mill leat may be
+medieval, Victorian, or a nineteenth-century rebuild on a medieval line, and the map does
+not say which.
 
 **Verdict: not in house.** This needs either volunteer adjudication at scale or a
 defensible sampling strategy — and the honest answer may be to publish them as *a class
@@ -118,12 +163,12 @@ boundary set, and cannot be published from.
 | strand | count | who |
 |---|---|---|
 | network repair | ~73 judgements over 2,516 defects | in house, days |
-| *Old Course* / *New Cut* traces | 380 | in house, ~2 weeks |
-| reservoir valleys | 606 | in house or volunteers, months |
-| mill channels | 10,738 | volunteers, or publish undated |
+| *Old Course* / *New Cut* traces | ~274 places | in house, ~6 days |
+| reservoir valleys | count not yet earned; several hundred | in house or volunteers, months |
+| mill channels | ~4,068 places | volunteers, or publish undated |
 | regional documentary research | 12,779 km of rebuilt landscape | collaborators, indefinitely |
 
-**The first two columns are a publishable dataset.** That is the argument for releasing in
+**The first two rows are a publishable dataset.** That is the argument for releasing in
 editions rather than waiting: the bounded work produces something useful and complete on
 its own terms, and the unbounded work is added to it a course at a time without disturbing
 what is already there.
@@ -142,5 +187,5 @@ scoping exercise built the parts of it that were hardest:
   the algorithm, and on which sheet — so a contributed trace carries its own provenance.
 
 **[GB1900](http://www.gb1900.org/){:target="_blank"} is the proof that this scale of volunteer work succeeds**: 2.6 million labels,
-transcribed by the public, and the reason 380 of the assertions this project most needs are
+transcribed by the public, and the reason the assertions this project most needs are
 already findable. The same constituency exists for river courses.

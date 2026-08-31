@@ -1,0 +1,66 @@
+---
+# Front matter, empty and required: it is what makes Jekyll process this file.
+---
+
+@import "{{ site.theme }}";
+
+/* The masthead and the navigation bar the theme does not provide. Colours are the
+   two in the logo: the present channel and the course it replaced. */
+
+$rewt-present: #14608a;
+$rewt-former: #a9762f;
+$rewt-rule: #d8d2c4;
+
+.site-head {
+  border-bottom: 1px solid $rewt-rule;
+  margin-bottom: 2rem;
+  padding-bottom: 0.75rem;
+}
+
+.site-brand {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  gap: 0.75rem;
+  text-decoration: none;
+
+  img { flex: none; }
+  strong { display: block; font-size: 1.5rem; letter-spacing: 0.02em; }
+  em { color: #6a6257; font-size: 0.85rem; font-style: normal; }
+
+  &:hover strong { color: $rewt-present; }
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  gap: 0.25rem 1.1rem;
+  margin-top: 0.9rem;
+
+  a {
+    border-bottom: 2px solid transparent;
+    color: #4a453d;
+    padding-bottom: 2px;
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover { border-bottom-color: $rewt-former; color: $rewt-present; }
+    &[aria-current="page"] {
+      border-bottom-color: $rewt-present;
+      color: $rewt-present;
+      font-weight: 600;
+    }
+  }
+}
+
+.site-foot {
+  border-top: 1px solid $rewt-rule;
+  color: #6a6257;
+  font-size: 0.85rem;
+  margin-top: 3rem;
+  padding-top: 1rem;
+
+  p { margin: 0 0 0.25rem; }
+  .pun { color: #8a8276; }
+}
