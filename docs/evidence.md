@@ -37,9 +37,30 @@ Heritage List for England is open, national and updated daily, but its published
 **no monument-type field at all** — only a free-text name — so a watercourse has to be
 selected by string exactly as in GB1900, and the only structured date it holds is the date of
 *listing*, not of the asset. A few hundred names containing *mill*, and a few dozen containing
-*leat*, against some four thousand labelled mill channels. The Welsh equivalent is more
-promising and is not yet measured: the National Monuments Record of Wales does publish a
-monument-type classification, which is a structured field where England offers only prose.
+*leat*, against some four thousand labelled mill channels.
+
+**The Welsh equivalent has the structure and the wrong population**, which is a more
+interesting result than the English one. The National Monuments Record of Wales publishes a
+controlled site type, a period, and — unusually — *how the site is known*, whether from an
+earthwork, a document, an excavation or a standing building: three structured fields the
+English list lacks entirely, and it records leats in their hundreds where England's free text
+yields dozens. But read the records and the leats are named for collieries, lead mines and
+quarries. They are **upland industrial water supply** — channels feeding mines and ironworks
+— and not the valley-bottom mill channels this project reconstructs. A different population
+that shares a word. **A structured field is not the same as the right content**, and the
+lesson generalises: the temptation with a well-modelled dataset is to trust the schema and
+skip reading the rows.
+
+Its *mills*, and its reservoirs and dams, are the more useful part and are untested here — an
+archaeologically recorded locator for Welsh impoundments would be worth having, because it
+owes nothing to the undertaker's declaration on a registration form and could therefore test
+it. One structural limit applies throughout: a linear site is recorded as a **point**, at a
+grid reference taken somewhere along it, so nothing in this source can be traced from.
+
+**And its terms are asserted by a re-publisher.** The Open Government Licence statement
+carried for it comes from the platform hosting the data rather than from the body that made
+it. That is the same distinction this page keeps insisting on — the item, not the collection —
+one step further out, and it wants tracing to the originator before anything is built on it.
 
 The **first series** matters where the second is too late: much of Victorian water supply
 predates 1888, so for a valley drowned in the 1870s the second series shows the lake and
