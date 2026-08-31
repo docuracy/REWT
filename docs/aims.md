@@ -32,7 +32,28 @@ dataset being built to carry one.
   is set out with the method; the short form is that it is a screening surface, and its most
   useful output is where it disagrees with the mills that were actually built.
 - **Anyone needing a routable hydrography of England and Wales**, historical interest or
-  not. The first edition is useful on its own terms.
+  not. The first edition is useful on its own terms — and there is currently nothing open
+  that does the job.
+
+**On that last point, because it is the reason the first edition is worth publishing at
+all.** The open national product, [OS Open Rivers](https://www.ordnancesurvey.co.uk/products/os-open-rivers){:target="_blank"}, ships a topologically structured
+link-and-node network and is the base this project builds on — but Ordnance Survey's own
+documentation says detailed analysis is *not supported* in it and directs anyone wanting that
+to a licensed product. This project's measurements agree: the topology is there and the
+traversability is not. The open datasets that *are* routable at national scale are global and
+**derived from elevation** — [HydroRIVERS](https://www.hydrosheds.org/products/hydrorivers){:target="_blank"} is extracted from a 15-arc-second gridded
+surface — which is a hydrological model of where water would run, not a record of the
+channels that are there.
+
+**The closed products are the other way round, and this is worth stating precisely because
+the opposite is often assumed.** The Environment Agency's Detailed River Network, its
+successor the OS MasterMap Water Network Layer, and the [UKCEH Digital River Network](https://www.ceh.ac.uk/data/15000-watercourse-network){:target="_blank"} are
+all **derived from survey**, not from a terrain model: the EA network was captured from OS
+MasterMap and built into a topologically correct network with automated rules and field
+survey, and the UKCEH network was digitised from OS 1:50,000 mapping and then used to *define
+the flow paths in* CEH's terrain model rather than being derived from it. So the gap this
+project fills is not methodological. **Good routable survey-based hydrographies of England
+and Wales exist; they are licensed, and none of them is dated.**
 
 ## Two axes of publication
 
