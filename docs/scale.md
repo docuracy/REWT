@@ -306,9 +306,37 @@ Set out plainly, because the case for collaboration is an exchange and not a req
 | | |
 |---|---|
 | **What the waterways GIS has** | dated navigability over 349 years, cited per section; pre-drainage courses in the Fens, traced; vessel capacity as evidence; the navigation literature systematically encoded |
-| **What it does not have** | flow direction, a connected traversable network, a flow model, an open licence, or a temporal model that can say *known by 1600, unknown before* without inventing a date |
-| **What this project has** | a directed and traversable modern network to attach courses to; modelled flow and [water power potential](methodology#what-the-flow-model-is-for-beyond-drawing-the-river); an [evidence-first date model](epochs#how-a-date-is-recorded) built on an interchange standard; an exporter that refuses to write anything not openly licensed; tooling for contribution and correction |
+| **What it does not have** | the headwaters — it is a navigation network, and navigation stops where boats stop; flow direction, and any modelled flow; an open licence; and a way to record a **bound as a bound** — its window opens at 1600, and a year column cannot distinguish *already open by then* from *no date known* |
+| **What this project has** | a directed, traversable drainage network covering the whole catchment; modelled flow and [water power potential](methodology#what-the-flow-model-is-for-beyond-drawing-the-river); a [date model](epochs#how-a-date-is-recorded) that carries bounds instead of forcing years; the [river improvement legislation and proclamations](evidence#the-documentary-record) — what was *authorised*, which is not evidence of what was built or used, but is dated and is a place to look; an exporter that refuses to write anything not openly licensed; tooling for contribution and correction |
 | **What it does not have** | any of the first row |
+
+### What the method would actually be
+
+Not two maps overlaid. Three steps, each of which needs the other side:
+
+1. **Splice the navigable courses into the modern network.** The modern network supplies
+   precisely what a navigation network does not have: the headwaters, the tributaries, the
+   whole drainage above the limit of navigation. That matters because **the flow at a
+   navigable reach is made upstream of it**, in country no boat ever went.
+2. **Flood the spliced network with this project's hydrology.** A per-cell water balance routed
+   over the combined network gives every dated section a modelled discharge — and, because an
+   epoch is a rebuild rather than a filter, gives it one **per time slice** rather than once.
+   A reach navigable in 1700 and disused by 1830 can then be asked what was flowing down it in
+   each of those years, over the network as it then stood.
+3. **Push the slicing back before 1600.** His window is censored at its start; the
+   [date model](epochs#how-a-date-is-recorded) is built to carry that honestly rather than
+   paper over it, and the documentary record of drainage and improvement works — including the
+   authorising legislation and proclamations — gives dated bounds to work back with. Not
+   certainty, and not interpolation: bounds, recorded as bounds.
+
+**This is not the splicing this project refuses elsewhere**, and the distinction matters
+because the refusal is on the record. What is [ruled out](methodology#go-to-the-sources-not-to-the-synthesis)
+is merging a *national synthesis* — courses derived at a synthesis's own resolution, sitting a
+median 236 m from the modern channel — into a traced network, because the reconciliation then
+happens silently at every junction. That objection does not apply here: this geometry was
+traced from Ordnance Survey first-edition and Old Series sheets at a vertex spacing close to
+the modern product's own, and each section carries its citation. **The rule was never "never
+splice"; it was "never splice two different orders of accuracy".**
 
 **Why this project is a vehicle rather than a competitor.** Its lines are not merely
 attributed — every line carries what it rests on, so a citation per section survives into the

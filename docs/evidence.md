@@ -329,10 +329,19 @@ an answer to a question nobody has asked yet.
 ## The documentary record
 
 **Drainage and navigation legislation** records works authorised, undertakers, and land
-taken — but authorisation is not execution, and several such powers were never exercised.
-Nothing here may be read as *the river was navigable from this year*. Compilations of river
-legislation and patents covering **1539–1720** exist and record the Act, the undertakers,
-the tenure taken and a citation per row.
+taken — but **authorisation is not execution**, and several such powers were never
+exercised. Nothing here may be read as *the river was navigable from this year*; what it
+gives is a dated statement that somebody intended to make it so, and where. Two compilations
+covering **1539–1720** are open (CC BY) and already declared to this project — the
+[compulsory purchase of land for transport infrastructure](https://doi.org/10.6084/m9.figshare.6467798){:target="_blank"} and the
+[seventeenth-century patents for river improvement](https://doi.org/10.6084/m9.figshare.6509855){:target="_blank"} — each recording the Act or patent,
+the undertakers, the tenure taken and a citation per row.
+
+That is the half of the navigation record that is **dated at its start**, which is exactly
+what the attested corpora are not: [Oksanen's records carry no start date and Satchell's
+window is censored at 1600](#navigation). A grant of powers in 1662 is a firm bound on when
+work *could* have begun, and a firm bound is what the [date model](epochs#how-a-date-is-recorded)
+is built to carry.
 
 Their under-used value is different: a compulsory purchase is a legal act over **specific
 ground**, and a new cut had to be located relative to the channel it replaced — so the
