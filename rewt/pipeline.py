@@ -122,6 +122,17 @@ class Pipeline:
     def add(self, stage: Stage) -> Stage:
         if stage.name in self._stages:
             raise StageError(f"stage {stage.name!r} registered twice")
+        for source_id in stage.sources:
+            declared_stage = config.source(source_id).get("stage", default=1)
+            if declared_stage != 1:
+                raise StageError(
+                    f"stage {stage.name!r} declares source {source_id!r}, which "
+                    f"conf/sources.yml marks as stage {declared_stage}. **Stage 1 and "
+                    "nothing else** (AGENTS.md): the failure mode is not refusing this "
+                    "outright, it is drifting into it a little at a time because a "
+                    "field looked easy to add. A source may be registered for a later "
+                    "stage or for the documentation; it may not be read by this build."
+                )
         for art in stage.writes:
             producer = self.producer_of(art)
             if producer is not None:

@@ -226,3 +226,197 @@ reachability requirement, and it does not make the work unbounded — it is stil
 places. It disturbs the estimate of how much of it is trivial, and it is recorded so
 that the estimate is not quoted again unexamined. **Each is still to be adjudicated at
 the place**, per D-011.
+
+**D-017 — Write no raster a downstream tool cannot read, and check the artefact rather
+than the return code.** *2026-08-31*
+
+The interim Terrain 50 mosaic is written as DEFLATE **without a predictor**, and every
+raster this project derives is checked for a plausible value before anything reads it.
+
+WhiteboxTools reads GeoTIFF with its own decoder rather than GDAL's, and it cannot
+decode DEFLATE with a horizontal predictor. Handed such a file, `FillBurn` **returns
+success and writes a raster of NaN and 3.3e38**, with one 512-column stripe of
+plausible values at the left edge. `BreachDepressionsLeastCost` then consumed that and
+produced a surface which was **finite everywhere and meaningless everywhere** — so a
+guard testing only for NaN would have passed it. Forty-one million "basins" were
+delineated from the result, and every stage reported success.
+
+Three builds and two wrong diagnoses went into finding this, and both wrong turns are
+worth recording because they are the general lesson.
+
+**The first wrong diagnosis was a size limit.** A windowed test of the same size
+succeeded, so the difference looked like grid extent, and a clip was written into
+`conf/params.yml` as if it were the fix. **The second was stream geometry outside the
+raster** — plausible, and also wrong. Both survived because the test that "passed" had
+read its raster window and its streams through the same bounding box, which quietly
+removed the variable actually under test. *A control that changes two things at once
+proves nothing, and reads exactly like a control that changed one.*
+
+What found it was neither theory but a difference nobody had thought to look at: two
+DEMs identical cell for cell, of different file sizes, one of which worked.
+
+Hence the rule, which generalises past this tool: **a return code is not evidence that
+a tool did anything.** `rewt/raster.py:assert_usable` takes a plausible range rather
+than testing finiteness, and is called after burning, after breaching and after
+delineation. The clip at `terrain.northing_max_m` is kept, but on its own merits — D-003
+puts Scotland outside the project — and its note now says so instead of claiming a fix
+it never made.
+
+**D-018 — GB1900 is registered from the CC0 raw dump, never from the gazetteers.**
+*2026-08-31*
+
+*Recorded from the documentation work (rewt-1d); the reasoning is theirs.*
+
+Vision of Britain publishes the GB1900 transcriptions three ways. The abridged and
+complete *gazetteers* are CC-BY-SA; the *raw dump* is CC0. Share-alike on an input would
+reach every export this project makes, which is the one thing D-004 exists to prevent,
+so the gazetteers are excluded on licence grounds alone. They are also the wrong file:
+the abridgement drops every string occurring 300 or more times nationally, and *Mill
+Race*, *Mill Pond* and *Towing Path* are all well above that cut. The cost of the raw
+dump is that it holds individual volunteer readings rather than an agreed text, so a
+consensus step is ours — the reading most volunteers gave each pin. Copies of the
+abridged file exist elsewhere on the development machine and must not be substituted.
+
+**It is registered as a stage 2 source, and the build cannot read it.** A dated
+historical source in Stage 1's own input registry is exactly what CLAUDE.md's first
+override exists to catch, and marking it `used_by: docs` in a comment would rely on
+care. So `conf/sources.yml` carries `stage: 2`, and `rewt/pipeline.py` **refuses to
+register a stage that declares a source whose stage is not 1**. The drift AGENTS.md
+warns about — "not refusing this outright, but drifting into it a little at a time
+because a field looked easy to add" — now fails at import.
+
+**D-019 — GB1900 label counts are published per place, and for England and Wales only.**
+*2026-08-31*
+
+*Recorded from the documentation work (rewt-1d); the reasoning is theirs.*
+
+The Ordnance Survey repeated a name along the feature it named, so a count of labels is
+a count of type rather than of rivers. Published counts therefore collapse labels
+reading the same thing within a kilometre of each other. The correction proves small —
+139 *Old Course* labels become 126 places, and no two are within 300 m of each other —
+and it is reported anyway, because the reader cannot tell which was meant otherwise.
+The extent correction is the large one: 1,888 of 6,884 mill-channel labels in Great
+Britain are Scottish, *lade* and *lead* being Scots, and D-003 puts Scotland outside the
+project. The predecessor's figure of 10,738 mill channels does not reproduce from the
+source at any extent and is superseded by 4,996 labels at some 4,068 places in England
+and Wales.
+
+**D-020 — Reservoir construction dates come from the map series, not from Wikidata.**
+*2026-08-31*
+
+*Recorded from the documentation work (rewt-1d); the reasoning is theirs.*
+
+Wikidata was tested for this directly and fails: of 1,125 items typed as reservoirs in
+the United Kingdom, 24 carry a construction date, and Kielder, Rutland, Ladybower,
+Haweswater, Vyrnwy and Derwent are all among those that do not. The dam records are no
+better — 101 items, 5 dated. A valley drawn as a river on the OS first edition and as
+water on the second was flooded between the two surveys, which brackets it to a couple
+of decades and falls out of work the project has to do anyway.
+
+Related and separate, and it bears on Stage 1's own reservoir flag (§5, D-008): **the
+network cannot find the reservoirs by itself.** OS Open Rivers names 6,042 of its 24,146
+`lake` links and not one of those names contains the word "Reservoir" — a lake link
+carries the name of the river running through it. So the reservoir flag D-008 asks for
+cannot come from the network's own attributes, and a gazetteer would have to be declared
+before it can be earned. It is not earned in this build, and is not claimed.
+
+**D-021 — The EIDC reservoir inventory is registered, and it is what tells a tracer
+which OS edition to open.** *2026-08-31*
+
+*Researched by rewt-86; measurements are reproducible from the script named below.*
+
+D-020 established that reservoir construction dates cannot be looked up on Wikidata
+(24 dated of 1,125) and that the map series must date them instead: a valley drawn as a
+river on the first edition and as water on the second was flooded between the two
+surveys. That remains true and is not reversed here. What D-020 missed is that the
+comparison is only cheap once you know which two sheets to compare. Choosing the
+edition is the expensive part, and a construction date chooses it in advance.
+
+`Inventory of reservoirs amounting to 90% of total UK storage` (Durant and Counsell,
+2018, NERC EIDC) carries a completion year for 252 of its 273 reservoirs and a planning
+year for 240, each with a data-quality flag, 355 references and a per-reservoir note.
+233 of the 273 are in England and Wales.
+
+Compared per reservoir against the National Library of Scotland's County Series survey
+dates for the historic county each one sits in, the 233 divide:
+
+| verdict | all | impounding only |
+|---|---|---|
+| the 2nd edition shows the valley | 130 | 95 |
+| 2nd edition, but surveyed while it was being built | 9 | 9 |
+| 1st edition only | 15 | 14 |
+| 1st edition, but surveyed while it was being built | 36 | 26 |
+| earlier than both editions | 23 | 19 |
+| no completion date | 20 | 2 |
+
+So for the impounding reservoirs — the ones that actually drowned a valley — **40% need
+the first edition or earlier**, and nineteen predate both editions entirely and will
+need a pre-Ordnance-Survey county map or nothing. That is knowable before anyone opens
+a sheet, per reservoir, by name.
+
+**Two things it is not.** It is not a national gazetteer of reservoirs: coverage is by
+storage volume, the stated rule is over 1,600 Ml, and only 25 of the 273 hold less than
+1,000 thousand m3. The small Victorian impoundments are absent by design. And it does
+not earn the drowned-valley count: 493 of the 24,146 `lake` links in OS Open Rivers lie
+within 500 m of an entry, against the 1,834 links over 606 reservoirs the scoping
+exercise inherited. It earns about a quarter of that count. The rest stays inherited.
+
+**Its licence had to be established from the DOI, not from the page.** The CEH catalogue
+record and the DOI both return HTTP 500, and the download bundle's own `readme.html`
+reads "Unable to retrieve citation and licence information for: f5a7d56c-..." — a server
+fault, not a statement. data.gov.uk asserts OGL v3.0 in a site-wide footer, which is not
+evidence about a particular dataset. The DataCite record for
+`10.5285/f5a7d56c-cea0-4f00-b159-c3788a3b2b38` carries `rightsIdentifier: ogl-uk-3.0`
+and the required citation, and that is what the entry records.
+
+**Registered `stage: 2`.** Construction dates are the clearest possible case of
+CLAUDE.md's first override, and `rewt/pipeline.py` refuses to register a Stage 1 stage
+that declares it.
+
+---
+
+**D-022 — Mills of Britain is registered for two layers, and it dates maps, not mills.**
+*2026-08-31*
+
+*Researched by rewt-86.*
+
+The question asked of it was whether it records the earliest date at which a mill is
+known to have existed at each site. **It does not.** Its `Year` field is documented as
+"Final year of survey; or, if not specified, year of final publication" — of the map the
+mill was read from. It is a terminus ante quem from cartographic attestation. There is
+no documentary, Domesday or archaeological earliest date anywhere in it, and nothing
+derived from it may be phrased as "a mill was built in this year".
+
+What it does give is attestation 60 to 170 years earlier than the GB1900 sheets.
+`MillsofBritain_17291836_v2` holds 23,621 mill records read from pre-Ordnance-Survey
+county maps, estate maps and the Roy Military Survey, dated 1729-1836 with a median of
+1818. 17,120 are in England and Wales; 10,371 of those are watermill-class, at some
+5,150 places when collapsed at 1 km by the D-019 rule.
+
+**It is genuinely additional to GB1900, and measurably so.** 7,874 of the 10,371 have no
+record in the project's own GB1900-derived layer within 100 m, and 4,930 have none
+within 250 m. Roughly half the pre-OS watermill sites are not where the Victorian
+sheets put a mill.
+
+**It indicates a leat; it does not locate one.** The authors attach `W275?` and `W425?`
+flags — whether the mill falls within 275 m or 425 m of a river — which is itself an
+admission of positional accuracy, and they warn that locations "may not exactly
+coincide" with the Ordnance Survey. Measured against OS Open Rivers, 80.5% of the
+England-and-Wales watermill-class records lie within 50 m of an inlandRiver or canal
+link and 94.1% within 250 m. The authors also state that drainage mills (47 records),
+threshing mills and animal-powered mills are heavily under-recorded. Absence is not
+evidence of absence.
+
+**Only two of the article's layers are registered, and the reason is D-018's reason.**
+The figshare article is labelled CC BY 4.0, but the authors' documentation says "This
+license does not apply to the founding datasets integral to the production of our
+original data", and the collection adds "No claim to datasets from which data in this
+study were derived: OS data under (c)Crown Copyright 2007, License number 100017572;
+... data under (c)The Canal & River Trust copyright [database right] (2015)".
+`GB_Barriers`, `RawPower` and the basin and county power layers rest on those. The two
+mill point layers are the authors' own original data. An article-level licence is not a
+file-level licence, which is exactly what D-018 records about GB1900.
+
+**`MillsofBritain_18931914_v2` is not independent evidence.** It is 12,860 records
+filtered from GB1900 itself, so it overlaps whatever D-019 counts and must not be added
+to it. Its authors also require that GB1900-derived records be redistributed under CC0.

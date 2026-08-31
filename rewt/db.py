@@ -59,6 +59,17 @@ def get() -> duckdb.DuckDBPyConnection:
     return con
 
 
+def current() -> duckdb.DuckDBPyConnection | None:
+    """The connection this thread already has, or None — never opening one.
+
+    `get()` opens a connection if there is not one, which is right for a stage and
+    wrong for anything that only wants to join an existing build: a read-only DuckDB
+    connection blocks writers, so a caller that opens one speculatively can deadlock
+    the build it meant to inspect. Tests and inspection tools ask here first.
+    """
+    return getattr(_local, "con", None)
+
+
 def close() -> None:
     con = getattr(_local, "con", None)
     if con is not None:

@@ -90,6 +90,7 @@ def run() -> dict:
 
     # ----------------------------------------------------------- the scope rule
     measured = basin_logic.decide_scope(measured)
+    _check_northern_edge(band, measured)
     outlets = _outlets(node_basin)
     measured = measured.merge(outlets, on="raster_id", how="left")
 
@@ -313,3 +314,45 @@ def _label_for(raster_id: int, node_basin: pd.DataFrame) -> str | None:
             """
         )
     return row[0][0] if row else None
+
+
+def _check_northern_edge(band, measured) -> None:
+    """No in-scope basin may touch the clipped edge of the grid.
+
+    PLAN.md §1: *because scope is whole basins and every basin drains to a coast, an
+    exit at the edge of the study area is not a legitimate terminus — it is a defect.
+    Anything that appears to leave sideways means the scope was drawn wrong, not that
+    the water went somewhere unmodelled.*
+
+    The grid is clipped in the north (conf/params.yml `terrain.northing_max_m`), which
+    draws exactly such an edge. A clip drawn by hand is an assumption; this turns it
+    into an invariant the build enforces. If an in-scope basin reaches the edge, the
+    clip is wrong and the answer is to move it north, not to accept the basin.
+    """
+    top_row = band[0, :]
+    touching = set(int(v) for v in np.unique(top_row) if v > basin_logic.NO_BASIN)
+    if not touching:
+        log.detail("    no basin at all reaches the clipped northern edge")
+        return
+    in_scope_ids = set(
+        int(r) for r in measured.loc[measured["in_scope"], "raster_id"].tolist()
+    )
+    offenders = sorted(touching & in_scope_ids)
+    log.detail(
+        f"    {len(touching):,} basins touch the clipped northern edge; none of them "
+        "may be in scope"
+    )
+    if offenders:
+        detail = measured[measured["raster_id"].isin(offenders)]
+        rows = "\n  ".join(
+            f"basin {int(r.raster_id)}: {r.area_km2:,.0f} km2, "
+            f"{r.england_wales_area_km2:,.0f} km2 of it in England or Wales"
+            for r in detail.itertuples()
+        )
+        raise StageError(
+            f"{len(offenders)} in-scope basin(s) reach the northern edge of the "
+            "clipped grid, which means the clip was drawn wrong. PLAN.md §1: an exit "
+            "at the edge of the study area is not a terminus but a defect. Raise "
+            "conf/params.yml terrain.northing_max_m until this passes; do not accept "
+            f"the basins.\n  {rows}"
+        )

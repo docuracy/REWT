@@ -88,6 +88,17 @@ def _mosaic() -> dict:
             "declares. A changed posting changes every figure downstream."
         )
 
+    # Clip the north (see conf/params.yml terrain.northing_max_m for why, and for
+    # why the basins stage then checks that nothing in scope touches the edge).
+    clip_top = float(config.param("terrain.northing_max_m"))
+    if clip_top < top:
+        log.detail(
+            f"    clipping the grid at {clip_top:,.0f} N: everything above drains "
+            "only to Scotland, which is out of scope (D-003), and delineating it "
+            "would be work with no consumer"
+        )
+        top = clip_top
+
     width = int(round((right - left) / cell))
     height = int(round((top - bottom) / cell))
     nodata = float(config.param("terrain.nodata"))
@@ -97,15 +108,26 @@ def _mosaic() -> dict:
     )
 
     grid = np.full((height, width), nodata, dtype=np.float32)
+    placed = 0
     for z, m, l, b, r, t in bounds:
+        if b >= top:
+            continue          # wholly above the clip
         with rasterio.open(f"/vsizip/{z}/{m}") as ds:
             tile = ds.read(1)
             tile_nodata = ds.nodata
-        row0 = int(round((top - t) / cell))
-        col0 = int(round((l - left) / cell))
         if tile_nodata is not None:
             tile = np.where(np.isclose(tile, tile_nodata), nodata, tile)
+        row0 = int(round((top - t) / cell))
+        col0 = int(round((l - left) / cell))
+        # A tile straddling the clip contributes only its part below it.
+        if row0 < 0:
+            tile = tile[-row0:, :]
+            row0 = 0
+        if row0 >= height:
+            continue
+        tile = tile[: height - row0, :]
         grid[row0 : row0 + tile.shape[0], col0 : col0 + tile.shape[1]] = tile
+        placed += 1
 
     transform = from_origin(left, top, cell, cell)
     profile = {
@@ -118,7 +140,15 @@ def _mosaic() -> dict:
         "transform": transform,
         "nodata": nodata,
         "compress": "deflate",
-        "predictor": 2,
+        # NO PREDICTOR, and this is not a tuning choice. WhiteboxTools reads GeoTIFF
+        # with its own decoder rather than GDAL's, and it cannot decode DEFLATE with
+        # a horizontal predictor. Handed such a file it does not fail: it returns
+        # success and writes an output of NaN and 3.3e38, with one 512-column stripe
+        # of plausible values at the left edge. Three builds and two wrong diagnoses
+        # went into finding that, because the corruption is deterministic and
+        # depends only on how the INPUT was compressed — so it survives changing the
+        # streams, the extent and the tool's parameters. `assert_usable` below is the
+        # guard that turns the next occurrence of this class into a loud failure.
         "tiled": True,
         "blockxsize": 512,
         "blockysize": 512,
@@ -136,7 +166,9 @@ def _mosaic() -> dict:
         "the rest is sea, which the product masks out"
     )
     return {
-        "tiles": len(members),
+        "tiles": placed,
+        "tiles_available": len(members),
+        "clipped_at_northing": top,
         "width": width,
         "height": height,
         "cell_m": cell,
@@ -150,22 +182,49 @@ def _write_stream_vector() -> Path:
 
     Shapefile because that is what WhiteboxTools reads; it is an interim artefact and
     never published, so its limitations do not reach anything a consumer sees.
+
+    **Clipped to the raster's own extent, and this is not tidiness.** Handed stream
+    geometry that lies outside the DEM, WhiteboxTools' `FillBurn` returns success and
+    writes a raster of NaN and 3.3e38 — 185 million cells of it, with not one valid
+    value, and nothing in the return code or the log to say so. It cost two builds to
+    find, and the give-away was that the same call over a bbox-read subset of the same
+    streams was exact. Links outside the extent are counted and named here rather than
+    dropped quietly, because a link with no terrain under it is itself a finding.
     """
     import geopandas as gpd
+    import shapely
+
+    with rasterio.open(raster.UNCONDITIONED) as ds:
+        b = ds.bounds
+    box = shapely.box(b.left, b.bottom, b.right, b.top)
 
     frame = db.df(
         "SELECT link_id, ST_AsWKB(geom) AS wkb FROM link ORDER BY link_id"
     )
-    import shapely
+    geoms = [shapely.from_wkb(bytes(w)) for w in frame["wkb"]]
+    inside = shapely.intersects(box, geoms)
+    dropped = int((~inside).sum())
 
+    kept = [g for g, keep in zip(geoms, inside) if keep]
+    # A link that straddles the edge is cut at it, so nothing outside reaches the tool.
+    clipped = [
+        g if shapely.contains(box, g) else shapely.intersection(box, g) for g in kept
+    ]
     gdf = gpd.GeoDataFrame(
-        {"link_id": frame["link_id"]},
-        geometry=[shapely.from_wkb(bytes(w)) for w in frame["wkb"]],
+        {"link_id": frame.loc[inside, "link_id"].to_numpy()},
+        geometry=clipped,
         crs=config.param("crs.working"),
     )
+    gdf = gdf[~gdf.geometry.is_empty]
+
     out = paths.INTERIM / "network_streams.shp"
+    for suffix in (".shp", ".shx", ".dbf", ".prj", ".cpg"):
+        out.with_suffix(suffix).unlink(missing_ok=True)
     gdf.to_file(out)
-    log.detail(f"    {len(gdf):,} links written for burning")
+    log.detail(
+        f"    {len(gdf):,} links written for burning; {dropped:,} lie wholly outside "
+        "the terrain extent and are not burned"
+    )
     return out
 
 
@@ -192,6 +251,9 @@ def _burn(streams: Path) -> None:
     )
     if rc != 0:
         raise StageError(f"WhiteboxTools fill_burn returned {rc}")
+    # A burned surface is the terrain minus a burn depth, so the plausible range is
+    # the terrain's own, slack at the bottom. Britain's highest ground is 1,345 m.
+    raster.assert_usable(raster.BURNED, "WhiteboxTools fill_burn", (-500.0, 1400.0))
 
 
 def _whitebox():
@@ -241,6 +303,11 @@ def run() -> dict:
     )
     if rc != 0:
         raise StageError(f"WhiteboxTools breach_depressions_least_cost returned {rc}")
+    raster.assert_usable(
+        raster.CONDITIONED,
+        "WhiteboxTools breach_depressions_least_cost",
+        (-500.0, 1400.0),
+    )
 
     # Check the conditioning rather than assume it. A cell with no downslope
     # neighbour is a place the water cannot leave, and a surface still full of them
@@ -251,10 +318,15 @@ def run() -> dict:
     rc = wbt.find_no_flow_cells(dem=raster.CONDITIONED.name, output=no_flow.name)
     if rc != 0:
         raise StageError(f"WhiteboxTools find_no_flow_cells returned {rc}")
+    # Count only over land. The sea is masked out of Terrain 50 and every sea cell
+    # trivially has no downslope neighbour; counting those gave 204% of the land
+    # area, which is the kind of number that should stop a person rather than be
+    # written down.
     with rasterio.open(no_flow) as ds:
-        band = ds.read(1)
-        nd = ds.nodata
-        stuck = int(np.count_nonzero((band != (nd if nd is not None else -32768)) & (band > 0)))
+        flags = ds.read(1)
+    with rasterio.open(raster.UNCONDITIONED) as ds:
+        land = ds.read(1) != ds.nodata
+    stuck = int(np.count_nonzero(np.isfinite(flags) & (flags > 0) & land))
     land_cells = detail["land_cells"]
     log.detail(
         f"    {stuck:,} cells have no downslope neighbour after breaching "
@@ -287,6 +359,9 @@ def run() -> dict:
     rc = wbt.basins(d8_pntr=raster.D8_POINTER.name, output=raster.BASINS.name)
     if rc != 0:
         raise StageError(f"WhiteboxTools basins returned {rc}")
+    # A basin id is a small positive integer. Forty million of them means the pointer
+    # it was delineated from was noise.
+    raster.assert_usable(raster.BASINS, "WhiteboxTools basins", (1.0, 5e6))
 
     with rasterio.open(raster.BASINS) as ds:
         band = ds.read(1)

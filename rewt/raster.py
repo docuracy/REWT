@@ -55,9 +55,49 @@ def open_conditioned():
     return rasterio.open(CONDITIONED)
 
 
+def assert_usable(
+    path: Path,
+    what: str = "",
+    plausible: tuple[float, float] | None = None,
+) -> None:
+    """Fail loudly if a derived raster holds no usable value.
+
+    A tool that returns success and writes a raster of NaN is the worst kind of
+    failure, because everything downstream of it computes confidently on nothing —
+    and this one really happens (see the mosaic profile in rewt/stages/terrain.py).
+    Every raster this project derives is checked before anything reads it.
+    """
+    with rasterio.open(path) as ds:
+        band = ds.read(1)
+        nodata = ds.nodata
+    finite = np.isfinite(band)
+    lo, hi = plausible if plausible else (-1e6, 1e6)
+    usable = finite & (band >= lo) & (band <= hi)
+    if nodata is not None:
+        usable &= ~np.isclose(band, nodata)
+    if not usable.any():
+        raise RuntimeError(
+            f"{Path(path).name} holds no value in [{lo:g}, {hi:g}]: "
+            f"{int((~finite).sum()):,} cells are NaN or infinite and "
+            f"{int((finite & ((band < lo) | (band > hi))).sum()):,} are out of range, "
+            f"of {band.size:,}. {what or 'The tool that wrote it'} reported success "
+            "and wrote nothing meaningful. Nothing downstream may read this.\n"
+            "Note that a finite value is not enough to test for: a corrupt surface "
+            "passed through breaching once came back finite everywhere and "
+            "meaningless everywhere. The range is the test."
+        )
+
+
 def assert_unconditioned(path: Path) -> None:
-    """Refuse a raster whose own name says the network has been stamped into it."""
+    """Refuse a raster whose own name says the network has been stamped into it.
+
+    The exemption is not a special case: "unconditioned" contains "conditioned", so a
+    plain substring test refuses the single raster this guard exists to permit. It did
+    exactly that, and the failure read like a correct D-007 catch.
+    """
     name = Path(path).name.lower()
+    if "unconditioned" in name:
+        return
     if any(m in name for m in _CONDITIONED_MARKERS):
         raise ConditioningError(
             f"{Path(path).name} is a conditioned surface. Checking flow direction "

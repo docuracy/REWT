@@ -177,3 +177,201 @@ sources:
       https:// and fetch. Tiles are one kilometre square, 1000x1000 at 1 m, about 2.7 MB,
       with no overviews — so fetch whole tiles and cache them; there is no range-request
       shortcut as there is for a COG.
+
+  # NOT A STAGE 1 INPUT. Read by the documentation only — docs/scale.md and
+  # docs/evidence.md quote counts measured from it. Nothing in the build reads it, and
+  # nothing in Stage 1 may: it is a dated historical source and Stage 1 makes no
+  # historical claim. rewt/pipeline.py enforces this: a stage that declares a source
+  # whose `stage` is not 1 fails at registration, so this cannot drift into the build
+  # by anyone's oversight.
+  - id: gb1900_raw_dump
+    title: "GB1900 Gazetteer — final raw dump"
+    author: "Southall, Humphrey; Aucott, Paula; and the GB1900 volunteers"
+    publisher: "Great Britain Historical GIS Project, University of Portsmouth"
+    year: 2018
+    url: "https://www.visionofbritain.org.uk/downloads/GB1900_final_raw_dump_july_2018.zip"
+    licence: "CC0 1.0 Universal (public domain dedication)"
+    attribution: "GB1900 Gazetteer, Great Britain Historical GIS Project (University of
+      Portsmouth), the GB1900 partners and volunteers. CC0."
+    access: open
+    redistribution: permitted
+    used_by: docs
+    stage: 2
+    format: [csv]
+    crs: "EPSG:4326"
+    cache_path: "data/raw/gb1900/"
+    checksum: "526bc157def49e5ae9240ba029e9e53b9888b7bcc8443108e137765f5a430292"
+    status: verified
+    notes: >
+      THE RAW DUMP, NOT EITHER GAZETTEER. Vision of Britain publishes three GB1900 files
+      under two different licences. The "abridged" and "complete" GAZETTEERS are
+      CC-BY-SA, whose share-alike would propagate into this project's own exports. The
+      RAW DUMP is CC0 and carries no such obligation. Only the raw dump is registered
+      here, and that is the whole reason. Copies of the abridged file exist on this
+      machine under ~/PycharmProjects/markets and ~/Downloads; they must not be used.
+
+      THE ABRIDGEMENT ALSO REMOVES WHAT IS WANTED. The gazetteers drop every string
+      occurring 300 or more times nationally, with an exception list that is entirely
+      settlement names. "Mill Race", "Mill Pond" and "Towing Path" are all far above that
+      cut, so abridgement is not a size trade-off here — it is loss of the signal.
+
+      WHAT THE RAW DUMP COSTS. It holds the individual volunteer transcriptions rather
+      than a reconciled "agreed" text, so a consensus step is ours: take the reading most
+      volunteers gave each pin. 8,043,297 transcriptions over 2,666,341 pins.
+
+      NAMING: the gazetteer licence forbids calling a derived work "GB1900" or "Great
+      Britain 1900". The raw dump is CC0 and carries no such term, but do not name a
+      derived layer GB1900 regardless — the courtesy costs nothing.
+
+      TLS: the server sends an incomplete certificate chain. Integrity is pinned by the
+      checksum above, not by the chain. Do not disable verification globally.
+
+  # NOT A STAGE 1 INPUT. Dated construction evidence, so stage 2 by
+  # CLAUDE.md's first override. Its one possible Stage 1 use — earning the
+  # reservoir flag of PLAN.md §5 / D-008 — is NOT claimed here, because it
+  # reaches only 493 of the 24,146 `lake` links (see notes).
+  - id: eidc_uk_reservoir_inventory
+    title: "Inventory of reservoirs amounting to 90% of total UK storage"
+    author: "Durant, M.J.; Counsell, C.J."
+    publisher: "NERC Environmental Information Data Centre"
+    year: 2018
+    doi: "10.5285/f5a7d56c-cea0-4f00-b159-c3788a3b2b38"
+    url: "https://catalogue.ceh.ac.uk/id/f5a7d56c-cea0-4f00-b159-c3788a3b2b38"
+    download:
+      data: "https://data-package.ceh.ac.uk/data/f5a7d56c-cea0-4f00-b159-c3788a3b2b38.zip"
+      supporting: "https://data-package.ceh.ac.uk/sd/f5a7d56c-cea0-4f00-b159-c3788a3b2b38.zip"
+    licence: "Open Government Licence v3.0 (SPDX ogl-uk-3.0)"
+    attribution: >
+      Durant, M.J.; Counsell, C.J. (2018). Inventory of reservoirs amounting to 90% of
+      total UK storage. NERC Environmental Information Data Centre.
+      https://doi.org/10.5285/f5a7d56c-cea0-4f00-b159-c3788a3b2b38
+    access: open
+    redistribution: permitted
+    used_by: docs
+    stage: 2
+    format: [csv]
+    crs: "EPSG:27700"
+    cache_path: "data/raw/eidc_reservoirs/"
+    checksum: null
+    status: unverified
+    notes: >
+      LICENCE, RESOLVED THE HARD WAY. The CEH catalogue page and the DOI both return
+      HTTP 500, and the download bundle's own readme.html says "Unable to retrieve
+      citation and licence information for: f5a7d56c-..." — a server fault, not a
+      licence. The authoritative statement is the DataCite record for the DOI, which
+      carries rightsIdentifier `ogl-uk-3.0` and the citation above. data.gov.uk's
+      blanket "All content is available under the Open Government Licence v3.0, except
+      where otherwise stated" agrees with it but is a site footer and is not evidence
+      about a particular dataset. Do not rely on the footer alone.
+
+      WHAT IT CARRIES. 273 reservoirs; Easting/Northing on the National Grid, populated
+      for all 273. Completion year for 252 (92.3%) and planning year for 240 (87.9%),
+      each with its own data-quality flag column, 355 numbered references and a
+      per-reservoir notes field. Set that against D-020's finding that Wikidata dates
+      24 of 1,125 UK reservoirs.
+
+      COVERAGE IS BY VOLUME, NOT BY COUNT, and the rule is explicit in the metadata:
+      reservoirs over 1,600 Ml, plus smaller ones inside a group with historic storage
+      information. Median entry 3,974 thousand m3; only 25 of 273 below 1,000. The small
+      Victorian impoundments are therefore absent by design. 493 of the 24,146
+      `lake` links in OS Open Rivers lie within 500 m of an entry, against the
+      1,834 links over 606 reservoirs the scoping exercise inherited — so this earns
+      roughly a quarter of that count and must never be presented as all of it.
+
+      ENGLAND AND WALES: 233 of the 273, by Boundary-Line country polygons (England 197,
+      Wales 36; Scotland 38, and 2 outside GB). Do not classify by northing — 700000 N
+      lies deep inside Scotland and overcounts by 16.
+
+      IT CONFIRMS D-020's OTHER HALF INDEPENDENTLY: none of the 6,042 named `lake`
+      links contains the word "Reservoir", measured again here.
+
+  # NOT A STAGE 1 INPUT. Mill sites attested on maps of 1729-1836, so stage 2.
+  # Registered for TWO named layers only — see the licence note.
+  - id: mills_of_britain
+    title: "Mills of Britain (Historic Waterpower Britain, Data S1)"
+    author: "Jonell, Tara N.; Jones, Peter; Lucas, Adam; Naylor, Simon"
+    publisher: "figshare, for the University of Glasgow / University of Wollongong /
+      National Library of Scotland"
+    year: 2024
+    doi: "10.6084/m9.figshare.24042087"
+    url: "https://figshare.com/collections/Historic_Waterpower_Britain/6806952"
+    viewer: "https://maps.nls.uk/projects/mills-of-britain/"
+    download:
+      # The ONLY two layers registered. Everything else in article 24042087 is
+      # excluded on licence grounds; see notes.
+      mills_pre_os_shp: "https://ndownloader.figshare.com/files/47299759"
+      mills_pre_os_dbf: "https://ndownloader.figshare.com/files/47299762"
+      mills_pre_os_shx: "https://ndownloader.figshare.com/files/47299765"
+      mills_pre_os_prj: "https://ndownloader.figshare.com/files/47299750"
+      mills_pre_os_cpg: "https://ndownloader.figshare.com/files/47299747"
+      mills_1893_1914_shp: "https://ndownloader.figshare.com/files/47299738"
+      mills_1893_1914_dbf: "https://ndownloader.figshare.com/files/47299732"
+      mills_1893_1914_shx: "https://ndownloader.figshare.com/files/47299741"
+      mills_1893_1914_prj: "https://ndownloader.figshare.com/files/47299726"
+      mills_1893_1914_cpg: "https://ndownloader.figshare.com/files/47299723"
+      documentation: "https://ndownloader.figshare.com/files/47299660"
+    licence: "CC BY 4.0 for the mill point layers; the 1893-1914 layer is
+      GB1900-derived and its authors require redistribution under CC0 1.0"
+    attribution: >
+      Jonell, T.N., Jones, P., Lucas, A., Naylor, S. (2024). Limited waterpower
+      contributed to rise of steam power in British 'Cottonopolis'. PNAS Nexus.
+      https://doi.org/10.1093/pnasnexus/pgae251 — data CC BY 4.0. Records in the
+      1893-1914 layer derive from the GB1900 Gazetteer (Great Britain Historical GIS
+      Project, University of Portsmouth, the GB1900 partners and volunteers, CC0).
+    access: open
+    redistribution: permitted
+    used_by: docs
+    stage: 2
+    format: [shapefile]
+    crs: "EPSG:32630"          # as published, UTM 30N; reproject to 27700 on load
+    cache_path: "data/raw/mills_of_britain/"
+    checksum: null
+    status: unverified
+    notes: >
+      TWO LAYERS ONLY, AND THE REST OF THE ARTICLE IS EXCLUDED. figshare article
+      24042087 is labelled CC BY 4.0, but the authors' own documentation says "This
+      license does not apply to the founding datasets integral to the production of our
+      original data", and the collection adds "No claim to datasets from which data in
+      this study were derived: OS data under (c)Crown Copyright 2007, License number
+      100017572; ... data under (c)The Canal & River Trust copyright [database right]
+      (2015)". GB_Barriers and the RawPower / basin / county power layers are built on
+      those. The two mill point layers are the authors' own original data and are the
+      only ones registered. This is the D-018 shape again: an article-level licence is
+      not a file-level licence.
+
+      AND THE EXPORTER CANNOT CATCH THIS FOR YOU. Its gate is per SOURCE — it refuses a
+      feature whose source_id is not openly licensed — so it cannot see that two layers
+      of one registered source carry different terms. Registering only the layers that
+      are ours is what makes that gate sufficient here. The excluded layers, named so a
+      later reader does not quietly add them back: GB_Barriers, RawPower, AllBasinPower,
+      AllCountyPower, MillLine_peat_moor, and the four Phm*.tif rasters. If a later
+      stage ever needs a source whose layers carry different terms, the gate has to move
+      down a level, and that is a decision to record, not a detail to work around.
+
+      IT DOES NOT DATE A MILL. `Year` is documented as "Final year of survey; or, if not
+      specified, year of final publication" — of the MAP the mill was read from. It is a
+      terminus ante quem from cartographic attestation, not an earliest known date, and
+      there is no documentary, Domesday or archaeological field. Nothing here may be
+      read as "a mill was built in this year".
+
+      WHAT IT ADDS OVER GB1900. MillsofBritain_17291836_v2 holds 23,621 records from
+      pre-Ordnance-Survey county maps, estate maps and the Roy Military Survey, Year
+      1729-1836 (median 1818). England 16,242 and Wales 878, so 17,120 in scope and
+      6,496 Scottish. Of those, 10,371 in England and Wales are watermill-class
+      (watermill, tide mill, horizontal mill) at some 5,150 places at 1 km, plus 2,051
+      more typed only "mill". That is 60 to 170 years earlier than the GB1900 sheets.
+
+      MillsofBritain_18931914_v2 is NOT independent evidence: 12,860 records filtered
+      from GB1900 itself, and it overlaps whatever D-019 counts.
+
+      POSITIONAL ACCURACY IS THE LIMIT. Georeferenced early county maps; the authors
+      warn locations "may not exactly coincide" with the OS, and their own W275?/W425?
+      fields flag whether a mill falls within 275 m or 425 m of a river — an admission
+      of the scale. Measured here against OS Open Rivers, 80.5% of the England-and-Wales
+      watermill-class records lie within 50 m of an inlandRiver or canal link and 94.1%
+      within 250 m. A mill point indicates that a leat was probably nearby. It does not
+      locate one.
+
+      KNOWN OMISSIONS, stated by the authors: drainage mills (47 records), threshing
+      mills and animal-powered mills are all heavily under-recorded, because county-map
+      surveyors rarely distinguished them. Absence is not evidence of absence.
