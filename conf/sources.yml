@@ -375,3 +375,79 @@ sources:
       KNOWN OMISSIONS, stated by the authors: drainage mills (47 records), threshing
       mills and animal-powered mills are all heavily under-recorded, because county-map
       surveyors rarely distinguished them. Absence is not evidence of absence.
+
+  # NOT A STAGE 1 INPUT. Construction dates, so stage 2 by CLAUDE.md's first
+  # override. WALES ONLY, and that is a half of the scope, not a fringe of it.
+  # ONE of NRW's two reservoir layers — the other is restricted, see notes.
+  - id: nrw_large_raised_reservoirs
+    title: "Large Raised Reservoir (Registered information)"
+    publisher: "Natural Resources Wales"
+    url: "https://datamap.gov.wales/layers/geonode:nrw_large_raised_reservoirs_registered_information"
+    metadata_record: "https://metadata.naturalresources.wales/geonetwork/srv/api/records/NRW_DS125216"
+    licence: "Open Government Licence v3, with NRW copyright acknowledged"
+    attribution: >
+      © CNC/NRW. Contains Natural Resources Wales information © Natural Resources Wales
+      and Database Right. All rights Reserved.
+    access: open
+    redistribution: permitted
+    used_by: docs
+    stage: 2
+    format: [geojson, shapefile, csv, geopackage]
+    crs: "EPSG:27700"
+    cache_path: "data/raw/nrw_reservoirs/"
+    checksum: null
+    status: unverified
+    wfs:
+      base: "https://datamap.gov.wales/geoserver/ows"
+      version: "2.0.0"
+      type_name: "geonode:nrw_large_raised_reservoirs_registered_information"
+      output_format: "application/json"
+      srs: "EPSG:27700"
+    notes: >
+      TAKE THIS LAYER AND NOT ITS SIBLING. NRW publishes the Reservoirs Act public
+      register as TWO layers and they carry DIFFERENT licences. This one —
+      `..._registered_information`, catalogue record NRW_DS125216 — is OGL: "There are
+      no access restrictions on this data. NRW may release, publish or disseminate it
+      freely." The other — `..._location_and_undertakers`, record NRW_DS125215 — is NOT:
+      "Access to this data may be restricted under relevant legislation. NRW may NOT
+      publish or disseminate the data freely", re-usable only "in line with the terms of
+      a NRW licence". It carries named engineers and their addresses, which is why.
+
+      AND DO NOT TAKE THE LICENCE FROM THE PLATFORM. DataMapWales's layer pages show OGL
+      for BOTH layers, which agrees with the catalogue for this one and contradicts it
+      for the restricted one. The authoritative statement is the publisher's own
+      catalogue XML, which the GeoNetwork API returns to a plain fetch even though the
+      HTML page is JavaScript-rendered:
+        https://metadata.naturalresources.wales/geonetwork/srv/api/records/NRW_DS125216/formatters/xml
+      Read gmd:resourceConstraints. NRW licenses PER DATASET; there is no publisher-wide
+      policy to appeal to. Verified 2026-08-31.
+
+      WHAT IT IS. The statutory register under the Reservoirs Act 1975: 400 point
+      features, every one with a grid reference. The threshold is over 10,000 m3 held
+      ABOVE the natural level of adjoining land — a raised-water test, which is much
+      closer to "drowned a valley" than a storage threshold is. 316 impounding, 84 not.
+      Fields include reservoir_category, construction_type, raisedcapacity_m3,
+      maxdamheight_m, surfacearea_m2, reservoir_status and yearbuilt.
+
+      IT IS THE TAIL THE CEH INVENTORY MISSES, and that is the reason to hold both.
+      366 of the 399 entries with a capacity are BELOW the 1,600 Ml threshold
+      eidc_uk_reservoir_inventory states, and only 37 of the 400 match a CEH entry
+      within 1 km — so it adds 363 Welsh reservoirs that inventory does not hold. It
+      reaches 286 of the 24,146 `lake` links in OS Open Rivers within 250 m, and 368
+      within 500 m, IN WALES ALONE, against CEH's 493 for the whole United Kingdom.
+
+      `yearbuilt` IS A SELF-DECLARATION, NOT A RESEARCHED DATE. Present for 365 of 400
+      (91.2%), 1350 to 2024, and supplied by the undertaker on a regulatory form with no
+      documented source. 112 of the 365 end in a zero, against the ~10% chance would
+      give, so a fifth to a quarter are rounded. This is NOT the same kind of evidence
+      as the CEH inventory's dates, which carry a per-reservoir quality flag and 355
+      numbered references, and the two must not be pooled without saying so. The two
+      oldest — Llyn Frogwy, Anglesey, 1350, and Llyn Llwydiarth, Montgomeryshire, 1500 —
+      are claims on a form and should be carried as claims until someone checks them.
+
+      WHY IT MATTERS TO THE MAP WORK. Of the 316 impounding entries, 87 were built
+      before the first edition of the six-inch was surveyed in their county — Welsh
+      county first editions run late, mostly 1873-1888 — so no Ordnance Survey edition
+      shows their valley at all. For those the pre-Ordnance-Survey county maps are the
+      primary cartographic recourse rather than a fallback, and they are the same corpus
+      `mills_of_britain` was compiled from.

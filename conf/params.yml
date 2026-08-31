@@ -45,6 +45,24 @@ forms:
 terrain:
   # OS Terrain 50: 50 m posts, RMSE about 4 m (§5).
   resolution_m: 50
+  # The national grid is clipped at this northing. Two reasons, and the second is
+  # not the important one.
+  #
+  # D-003 puts everything draining only to Scotland — Forth, Tay, Clyde, Spey —
+  # outside the project, so delineating the Highlands is work with no consumer. The
+  # most northerly basin that reaches England or Wales is the Tweed, whose head is
+  # around 665000 N; England's own northern limit is about 655000 N. This leaves
+  # roughly 35 km of margin above either.
+  #
+  # It also halves the delineation's cost, which is worth having and is all it is.
+  # (An earlier note here blamed the clip for fixing a FillBurn failure. That was
+  # wrong: the failure was stream geometry outside the raster extent, and the fix
+  # is in rewt/stages/terrain.py where the streams are clipped to it.)
+  #
+  # A clip drawn by hand is an assumption, and PLAN.md §1 is explicit that an exit
+  # at the edge of the study area is a defect and not a terminus. So the basins
+  # stage CHECKS that no in-scope basin touches this edge, and fails if one does.
+  northing_max_m: 700000
   nominal_rmse_m: 4.0
   nodata: -9999.0
   # The screen's bands, from §5's table. A fall inside the error bar says nothing.
@@ -55,7 +73,27 @@ terrain:
   # kept distinctly named because sampling the burned one to check direction is
   # circular (§5, D-007).
   burn_depth_m: 20.0
-  breach_max_dist_cells: 500
+  # The least-cost breach's search radius, in cells. 10 cells at 50 m is 500 m, and
+  # the cost of this parameter is quadratic and steep. Measured on the burned national
+  # surface, single-threaded:
+  #
+  #   dist=10   431 s,  99.86% of land cells at a plausible elevation
+  #   dist=20   still running at 6 minutes of CPU
+  #   dist=100  ABANDONED, unfinished after 70 minutes of CPU
+  #   dist=500  ABANDONED, unfinished after 20 minutes of CPU (the first value tried)
+  #
+  # `fill: true` in the stage floods whatever cannot be carved within the radius, so a
+  # small radius costs completeness nothing: it changes which depressions are carved
+  # and which are flooded, not whether they are resolved. PLAN.md §5 asks to carve
+  # first, and this carves first out to 500 m.
+  #
+  # Two alternatives were measured and both are unusable, which is why this stays a
+  # least-cost breach rather than something faster. Complete breaching
+  # (`breach_depressions`, unbounded) takes 81 s and carves to -19,747 m, cutting 13%
+  # of land by more than a metre. Bounded breaching (max_depth 50 m, max_length 200,
+  # fill_pits) takes 380 s and returns a median land elevation of 2,272 m, which is
+  # nonsense for a country whose highest ground is 1,345 m.
+  breach_max_dist_cells: 10
   # Sea is masked out of Terrain 50; a node on nodata is confirmation of tidal water,
   # not a missing sample (§6).
   sea_is_nodata: true

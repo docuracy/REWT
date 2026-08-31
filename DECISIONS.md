@@ -420,3 +420,65 @@ file-level licence, which is exactly what D-018 records about GB1900.
 **`MillsofBritain_18931914_v2` is not independent evidence.** It is 12,860 records
 filtered from GB1900 itself, so it overlaps whatever D-019 counts and must not be added
 to it. Its authors also require that GB1900-derived records be redistributed under CC0.
+
+**D-023 — A licence is a claim about a specific dataset, and must be traced to a
+statement about that dataset.** *2026-08-31*
+
+*Researched by rewt-86; the rule generalises D-018, which rewt-1d recorded.*
+
+AGENTS.md requires a source's licence and required attribution to be recorded before
+the source is added. It does not say where to look, and in one afternoon of vetting
+three sources the same error appeared in four different disguises. Each one would have
+produced a defensible-sounding entry, and two of them would have been wrong.
+
+**A site-wide footer is not a licence.** data.gov.uk carries "All content is available
+under the Open Government Licence v3.0, except where otherwise stated" on every page.
+That is a statement about the site. It happened to be right for the EIDC reservoir
+inventory, and it would have been right for the wrong reason.
+
+**A collection-level label is not a licence for the items in it.** The figshare
+collection *Historic Waterpower Britain* adds "No claim to datasets from which data in
+this study were derived: OS data under ©Crown Copyright 2007, License number 100017572;
+... data under ©The Canal & River Trust copyright [database right] (2015)".
+
+**An article-level label is not a licence for the files in it.** The same project's
+figshare article is labelled CC BY 4.0, while its own documentation says "This license
+does not apply to the founding datasets integral to the production of our original
+data". `GB_Barriers`, `RawPower` and the derived power layers rest on those. Only the
+two mill point layers are the authors' to license, and only those are registered.
+
+**A publishing platform is not the publisher.** DataMapWales shows OGL for both of
+Natural Resources Wales's Reservoirs Act layers. NRW's own catalogue agrees for
+`Registered information` (NRW_DS125216) and contradicts it for `Locations and
+undertakers` (NRW_DS125215), which says "NRW may NOT publish or disseminate the data
+freely" and re-usable only "in line with the terms of a NRW licence" — it carries named
+engineers and their addresses. Two official statements, one wrong.
+
+And **D-018 is the fifth instance one level up**: the GB1900 gazetteers are CC-BY-SA and
+the raw dump is CC0, in the same place, from the same publisher.
+
+**The rule.** Trace the licence to a statement about the dataset, layer or file being
+registered. Where a source is published at more than one granularity, the narrowest
+statement governs, and where two official statements conflict, neither is taken on
+preference — the publisher's own catalogue is preferred over a platform hosting the
+data, and if that is not decisive the source is registered as unresolved or not at all.
+
+**Two routes for when the publisher's own pages fail**, both used here:
+
+- **DataCite, by DOI.** CEH's catalogue record and the DOI landing page both returned
+  HTTP 500 and the download bundle's own `readme.html` read "Unable to retrieve citation
+  and licence information for: f5a7d56c-...". `api.datacite.org/dois/<doi>` returned
+  `rightsIdentifier: ogl-uk-3.0` and the required citation.
+- **A GeoNetwork catalogue's XML formatter.** `metadata.naturalresources.wales`'s HTML
+  is JavaScript-rendered and yields nothing to a plain fetch, but
+  `/geonetwork/srv/api/records/<id>/formatters/xml` returns ISO 19139 with the licence
+  in `gmd:resourceConstraints`.
+
+**This is retrospective.** The six sources registered before this entry were vetted
+against the older, looser standard. `nrw_lidar_dtm_1m` has since been traced to
+NRW_DS116814 and is confirmed OGL. `ea_lidar_composite_dtm_1m` has NOT been traced to a
+per-dataset statement and its OGL v3 claim currently rests on the Environment Agency's
+site, which is the first disguise in the list above. The four Ordnance Survey products
+are covered by published product licences and are not in doubt. Tracing the Environment
+Agency entry is outstanding work, recorded here so it is not forgotten rather than
+because it is thought to be wrong.
