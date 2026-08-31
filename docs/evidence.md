@@ -427,7 +427,9 @@ funding since 2019 to handle enquiries or distribute data, so an approach should
 assumed to be cheap for them.
 
 Until that is resolved it sits with the [*Victoria County History*](#what-has-been-looked-for-and-not-yet-found) in the category this page
-had no room for until recently — **consultable, citable, not republishable**. It can
+had no room for until recently — **consultable, citable, not republishable**. Consultable in
+fact and not merely in principle: it can be read, measured and allowed to inform a judgement,
+which is why this page can describe what is in it. It can
 corroborate a trace, tell a tracer which reaches were worked in which decades, and settle
 whether a channel is an improvement or a cut. Its lines cannot travel into an export.
 
@@ -444,6 +446,25 @@ The distinction it draws between improved river and artificial cut is worth dwel
 is the same distinction the six-inch surveyors were making with *Old Course* and *New Cut*,
 recorded two centuries earlier and from the legal and commercial record rather than from the
 ground.
+
+### The hole between them
+
+**Neither corpus reaches the sixteenth century, and the gap is structural rather than
+accidental.** Oksanen stops at 1348. The waterways GIS opens its window at 1600 and is
+**left-censored** there: a reach recorded as open in 1600 was *already* open, and the dataset
+says nothing about when. Its flag for reaches known to have been navigable at some earlier
+point carries no year at all.
+
+So **1350 to 1600 is unattested by either**, which covers the late-medieval retreat, the
+Dissolution, and the beginning of the statutory record — three of this project's seven
+epochs. The temporal model must **expose that hole rather than interpolate across it**, which
+is what an absent start date is for: a stretch known to be navigable in 1600 and attested in
+1348 has not thereby been shown to be navigable in 1500.
+
+Filling it is a documentary problem rather than a cartographic one, and the open material
+that speaks to it — customs and port records with years on them — fixes **tidal termini and
+navigation heads** rather than inland courses. That is a real and unmet need, and it is not
+the same as reconstructing sixteenth-century inland navigation.
 
 ### c.1900, and the one that can be published
 

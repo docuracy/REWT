@@ -121,6 +121,54 @@ edition rather than discovered later:
   in the release notes of every edition, so improvement is visible and regression is caught
   by the reader as well as by the pipeline.
 
+## How a date is recorded
+
+An epoch is a year the project *draws*. It is not the same thing as what the project *knows*
+about a stretch, and conflating the two is how the old 1348 datum came about. So dates on
+evidence are recorded separately from the dates that get built, in a form modelled on the
+**[Linked Places Format](https://github.com/LinkedPasts/linked-places-format){:target="_blank"}** timespan: an optional **`start`** and an optional
+**`end`**, each of which may be qualified as **`before`**, **`in`** or **`after`**.
+
+**Both halves are optional, and that is the point.** Almost every source this project uses
+knows one bound and not the other:
+
+| what a source actually says | recorded as |
+|---|---|
+| a mill on a map surveyed in 1824 | `start: {before: 1824}` |
+| a channel labelled on a sheet surveyed in 1899 | `start: {before: 1899}`, `end: {after: 1899}` |
+| a reservoir completed in 1869 | `start: {in: 1869}` — and the drowned channel's `end: {in: 1869}` |
+| a valley drawn as river on the 1st edition and water on the 2nd | `end: {after: 1854, before: 1894}` |
+| a declared year built that is visibly rounded | `start: {after: 1870, before: 1880}` |
+| a waterway already navigable when a survey window opens in 1600 | `start: {before: 1600}` |
+| navigable at some point, no year given at all | `start: {before: 1600}` — *the same encoding, honestly* |
+| an attestation with no start date at all | `end` only, **`start` absent** |
+
+The last two rows are the argument for the whole scheme. **A model that requires a start
+date forces every source to invent the half it does not have** — which is precisely how a
+datum can come to be fixed by the weakest constraint in the evidence. An absent `start` says
+*nobody knows when this began*, which is true and is a publishable fact. And where a source
+records "already open at the start of my window" and "known to have been navigable once, no
+year", those two carry **identical information**, and a plain year column would make one look
+like a date and the other like a hole in the data.
+
+**It also puts a finding into the data instead of a footnote.** The whole point about the
+pre-Ordnance-Survey mill mapping is that its year is the *map's* year and not the mill's — a
+terminus ante quem. `start: {before: 1824}` says that structurally. A `date` column says the
+opposite and needs a paragraph to undo it.
+
+**Two things it must not become.** It is not a licence to interpolate: a bound is a bound,
+and a stretch with `start: {before: 1600}` and nothing else must not be drawn at 1540 because
+the arithmetic permits it. And documentary uncertainty must not be blended with model
+uncertainty — how confident we are that a channel existed in 1700 is a different quantity
+from how confident we are in a modelled flow along it, and a single "confidence" number that
+mixes them is worse than neither.
+
+> **Terminology.** The Linked Places Format's own timespans use `earliest` / `latest`;
+> `before` / `in` / `after` is this project's phrasing for the same idea, chosen because our
+> evidence is overwhelmingly **termini** — a map proves *by* a date, not *not before* one. It
+> is a convention modelled on LPF rather than a claim to emit LPF, which also keeps a route
+> open to aligning this data with gazetteer work that does.
+
 ## One consequence worth accepting
 
 The first edition will be a **modern** network, and some readers will take it for a
