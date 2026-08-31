@@ -402,9 +402,92 @@ entire finding. Rank by unreached length and work down the list.
 was invisible in the national figures — 481 km of holes arrived alongside a network that
 had grown in both link count and length. Emit a coordinate for every finding.
 
+### Calibration: what the first audit should say
+
+Check the loader against known figures before trusting anything downstream. OS Open
+Rivers **as shipped**, whole of Great Britain, before any repair:
+
+| | links | length |
+|---|---:|---:|
+| inlandRiver | 156,808 | 138,402 km |
+| lake | 24,490 | 5,864 km |
+| tidalRiver | 11,589 | 5,738 km |
+| canal | 1,584 | 2,722 km |
+| **total** | **192,865** | |
+
+with about 198,000 explicit nodes, and **three** links recorded as flowing against the
+digitised line.
+
+And the defect list Stage 1 exists to clear, on the orientation OS ships:
+
+| | nodes |
+|---|---:|
+| inflow and no outflow, Great Britain | 6,197 |
+| the same, in scope | 2,985 |
+| of those, at tidal water — correct | 469 |
+| **not at tidal water — the work** | **2,516** |
+
+By the form arriving there: inlandRiver 2,323 links and 2,861 km, canal 635 and 1,535 km,
+lake 261 and 94 km. **That canal figure is 56% of all canal length in Britain**, and it
+corroborates §5 — read it as one structural fact about canals, not as 635 bugs.
+
+The GB figures should match closely; if they do not, the loader is wrong and nothing
+downstream is worth looking at. The in-scope figures depend on your own basin
+delineation, so expect them to differ by a few per cent — and if they differ by more than
+that, question the delineation before questioning the network.
+
 ---
 
-## 7. What the predecessor learned
+## 7. The deliverable, and the conventions around it
+
+Stage 1 is finished not when the network is good but when someone else can pick it up.
+Four things the sections above leave implicit.
+
+**What comes out.** A published directory, rebuilt from scratch by the same one command:
+
+- **the network**, GeoPackage, EPSG:27700, links and nodes as separate layers. Every link
+  carries the publisher id, the oriented `from_node`/`to_node`, name, length, form, its
+  basin, whether it reaches tidal water, and an `origin` saying whether it is survey,
+  connector or skeleton. A consumer must be able to tell what came from Ordnance Survey
+  and what this project added, without reading the code.
+- **the corrections**, as their own layer or file, so the difference between the survey and
+  the published network is a thing you can open.
+- **the audit**, machine-readable and human-readable, per basin and national.
+- **the attribution**, carrying every source's required statement in full.
+
+**Curated files are the human judgements, and they are the product.** One diffable file
+per correction class under `data/curated/`, one row per judgement. Every row carries a
+stable identifier for what it acts on, a `reason` in words, and **evidence** — a place, a
+source, or a person and the date they looked. A correction without evidence is
+indistinguishable from a guess a year later. Connectors are defined by their geometry so
+they are GeoJSON; reversals, junctions and exclusions are CSV keyed on publisher ids.
+Every identifier in every one of them is validated against the database by a test that
+runs in the build, not by hand.
+
+**Keep an append-only decision log.** Dated, numbered, one entry per design decision, with
+the reasoning and not just the outcome — and never silently reverse one. It is the single
+most useful artefact the predecessor produced, and the cheapest to keep.
+
+**Provenance travels with the data.** Wherever a short attribution appears, it may never
+attribute less than `conf/sources.yml` does.
+
+### What this plan deliberately does not decide
+
+Yours to choose: language and packaging, module layout, and how stages are invoked.
+Nothing in §1–§6 depends on any of it.
+
+The defaults assumed here, to be overturned only with a recorded reason: **Python**;
+**DuckDB with its spatial extension**, with exactly one module owning the connection so
+that moving to PostGIS stays cheap; and stages as subcommands of a single entry point.
+Note that a read-only DuckDB connection blocks writers, so anything long-running that
+holds one — a viewer, a served map — must be stopped before a build.
+
+The four OS products are **open, and need no API key**. Do not build an authentication
+path you will not use.
+
+---
+
+## 8. What the predecessor learned
 
 A scoping exercise built this once, under the name *Premodern Rivers*. Its reasoning is
 public and worth reading before starting; its code is not the model to follow.
@@ -449,9 +532,11 @@ stopped before a build.
 read for context rather than copied — the point of starting again is to leave its
 accumulated assumptions behind.*
 
-## 8. Definition of done
+## 9. Definition of done
 
 - One command, empty checkout to finished network, twice, identical output.
+- The loader reproduces §6's calibration figures for Great Britain.
+- The deliverable of §7 exists, and a stranger can tell survey from correction in it.
 - The audit runs in the build and reports, **per basin and nationally**: reachable share,
   dead ends by class, direction faults, unjoined touching pairs, cycles.
 - Basins delineated, scope decided on them, and the in-scope set written out for
@@ -466,7 +551,7 @@ accumulated assumptions behind.*
 
 ---
 
-## 9. What Stage 2 will need from you
+## 10. What Stage 2 will need from you
 
 Not to be built now, but cheap to allow for and expensive to retrofit:
 
