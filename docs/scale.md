@@ -273,10 +273,12 @@ boundary set, and cannot be published from.
 
 ---
 
-## Much of this has been done already
+## Part of this has been done already — and it is the hard part, not the bulk
 
 The counts above describe work as though it were all ahead of us. For one of the hardest
 regions it is not, and a scale page that does not say so is misleading about its own subject.
+It would be equally misleading to imply the problem is mostly solved, so both figures are
+given below.
 
 **The pre-drainage courses of the Great Level have been traced and dated.** Not sketched, not
 inferred from the modern line: the medieval channels are carried as separate features on their
@@ -298,6 +300,35 @@ scholarship rather than a pipeline stage.
 made at deposit rather than a constraint on its authors, who can license their own work as
 they wish. The geometry was traced from Ordnance Survey mapping now out of copyright, so
 nothing third-party stands in the way of relicensing it.
+
+### How much of the tracing it covers — and why it is not most of it
+
+**A navigation network stops at the navigable head.** That is not a shortcoming; it is what
+the object is. But it has a consequence this project has to be honest about: above the limit
+of navigation lies the great majority of the drainage — and with it **the great majority of
+the mill infrastructure**. The mill channels the six-inch surveyors labelled are on brooks and
+becks that no boat ever reached, so a corpus of navigable water, however good, barely touches
+the largest single body of work on [the scale page's own list](#the-mill-channels).
+
+The proportions say the same thing. **20,247 km of navigable water against some 152,000 km of
+mapped drainage** is about one part in seven, and only a fraction of that is a *pre-improvement*
+course rather than a channel that still exists. The Fens are exceptional — a landscape rebuilt
+so completely that the medieval channels had to be mapped separately to be mapped at all — and
+they are not typical of the country. **A reasonable estimate is that it covers 15–20% of the
+courses this project would want traced**, which is an estimate and is marked as one.
+
+So the honest summary is: **the hardest fifth is done, and it is done to a standard this
+project could not reach on its own.** The remaining four fifths are tracing — bounded,
+repetitive, and needing many hands rather than one specialist.
+
+**Which is the other half of the argument, and the reason the two fit.** The [tooling for
+contribution](#designing-for-contribution) exists because that remainder was always going to be
+the problem: a snap-to-ink tracer that fits a segment to the printed ink of a historic sheet,
+so two people tracing the same channel produce substantially the same line and every vertex
+records which sheet it came from and whether a hand or an algorithm placed it; and a
+correction tool that returns a report against a *specific line* with the identifiers needed to
+act on it. **That is what makes the other four fifths feasible at all** — not a promise of
+effort, but the machinery for distributing it, already built and already tested at scale.
 
 ### What each side actually has
 
