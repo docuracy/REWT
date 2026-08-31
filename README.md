@@ -14,6 +14,11 @@ and the [proof-of-concept work this follows](https://docuracy.github.io/REWT/bac
 
 ---
 
+## Where to start
+
+**[PLAN.md](PLAN.md) — Stage 1: a traversable modern network.** Scoped to one thing and
+written to be picked up cold.
+
 ## Status
 
 **Nothing is published yet, and there is no code here.** The repository is being built

@@ -1,0 +1,36 @@
+# Every input is declared here before anything reads it, with its licence and the
+# attribution it requires. An unregistered source is a hard error, not a warning:
+# unattributed provenance is not provenance.
+#
+# Stage 1 needs exactly one source. Resist adding more.
+
+sources:
+  - id: os_open_rivers
+    title: "OS Open Rivers"
+    publisher: "Ordnance Survey"
+    url: "https://api.os.uk/downloads/v1/products/OpenRivers"
+    api: os_downloads
+    product: OpenRivers
+    download:
+      area: GB
+      format: GeoPackage
+    licence: "Open Government Licence v3 — attribution required"
+    attribution: "Contains OS data © Crown Copyright and database rights 2026."
+    access: open
+    redistribution: permitted
+    format: [geopackage]
+    crs: "EPSG:27700"
+    cache_path: "data/raw/os_open_rivers/"
+    checksum: null
+    status: unverified          # set at first acquisition, then verified on every use
+    notes: >
+      THE BASE NETWORK. WatercourseLink + HydroNode: roughly 144,000 km with flow
+      direction, names, and ~197,000 explicit nodes — very nearly the only open British
+      watercourse product carrying a topology at all.
+
+      It is a GENERALISED cartographic derivative. It ships a network structure; it does
+      not claim, and does not deliver, traversability — that the water can be followed
+      from any stretch to the tide. Supplying that is Stage 1.
+
+      Reissued twice a year. Record which issue was fetched: the network changes between
+      them, and a result that cannot name its input cannot be reproduced.
