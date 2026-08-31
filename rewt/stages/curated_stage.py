@@ -89,7 +89,7 @@ def run() -> dict:
             SELECT correction_id, kind, subject, resolved_to, applied, skip_reason,
                    reason, evidence, detail, author, dated, source_file, source_row,
                    easting, northing,
-                   CASE WHEN wkb IS NULL THEN NULL ELSE ST_GeomFromWKB(wkb) END
+                   CASE WHEN wkb IS NULL THEN NULL ELSE ST_GeomFromWKB(CAST(wkb AS BLOB)) END
             FROM _corr_in ORDER BY kind, source_file, source_row
             """
         )

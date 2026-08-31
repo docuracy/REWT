@@ -25,6 +25,9 @@ from . import config, paths
 
 UNCONDITIONED = paths.INTERIM / "terrain50_unconditioned.tif"
 BURNED = paths.INTERIM / "terrain50_burned_filled.tif"
+# The delineation surface: the burned DEM with the sea written in below every land
+# cell, so that water can leave the land. Not terrain, and never sampled as terrain.
+HYDRO = paths.INTERIM / "terrain50_hydro_conditioned_sea.tif"
 CONDITIONED = paths.INTERIM / "terrain50_conditioned_breached.tif"
 D8_POINTER = paths.INTERIM / "terrain50_d8_pointer.tif"
 FLOW_ACC = paths.INTERIM / "terrain50_flow_accumulation.tif"
@@ -169,8 +172,10 @@ def sample_points(dataset, eastings: np.ndarray, northings: np.ndarray) -> np.nd
     rows, cols = rasterio.transform.rowcol(
         dataset.transform, eastings, northings, op=np.floor
     )
-    rows = np.asarray(rows)
-    cols = np.asarray(cols)
+    # rowcol returns floats when handed arrays; an index must be an integer, and a
+    # node north of the clipped grid produces a negative row that the mask below drops.
+    rows = np.asarray(rows).astype(np.int64)
+    cols = np.asarray(cols).astype(np.int64)
     out = np.full(len(eastings), np.nan)
     inside = (rows >= 0) & (rows < dataset.height) & (cols >= 0) & (cols < dataset.width)
     if not inside.any():
@@ -188,4 +193,4 @@ def grid_indices(dataset, eastings: np.ndarray, northings: np.ndarray) -> tuple[
     rows, cols = rasterio.transform.rowcol(
         dataset.transform, eastings, northings, op=np.floor
     )
-    return np.asarray(rows), np.asarray(cols)
+    return np.asarray(rows).astype(np.int64), np.asarray(cols).astype(np.int64)

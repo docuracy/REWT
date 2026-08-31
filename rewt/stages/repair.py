@@ -319,16 +319,21 @@ def run() -> dict:
     _build_edge(reversed_by, mode_by, merged_nodes, excluded, new_links)
 
     # Record what was applied and what was skipped, by identifier. Never silently.
-    with db.registered(
-        "_applied_in",
-        pd.DataFrame(
-            {
-                "correction_id": list(applied) + list(skipped),
-                "was_applied": [True] * len(applied) + [False] * len(skipped),
-                "why": [None] * len(applied) + list(skipped.values()),
-            }
-        ),
-    ):
+    # Declared dtypes again, for the same reason: with no corrections yet there is
+    # nothing for pandas to infer from, and an untyped empty column reaches DuckDB as
+    # DOUBLE.
+    applied_frame = pd.DataFrame(
+        {
+            "correction_id": pd.Series(list(applied) + list(skipped), dtype="string"),
+            "was_applied": pd.Series(
+                [True] * len(applied) + [False] * len(skipped), dtype="boolean"
+            ),
+            "why": pd.Series(
+                [None] * len(applied) + list(skipped.values()), dtype="string"
+            ),
+        }
+    )
+    with db.registered("_applied_in", applied_frame):
         con.execute(
             """
             UPDATE correction SET
@@ -459,17 +464,25 @@ def _build_edge(reversed_by, mode_by, merged_nodes, excluded, new_links) -> None
     con = db.get()
     schema.create("edge")
 
+    # Every column is declared as a string, including when it is empty. An empty
+    # pandas column has no dtype to infer, DuckDB reads it as DOUBLE, and joining it
+    # to a VARCHAR key fails with a type error that says nothing about the real
+    # situation — which is that there are no corrections yet, the correct state before
+    # the audit has been adjudicated.
+    def strings(**columns) -> pd.DataFrame:
+        return pd.DataFrame(
+            {k: pd.Series(v, dtype="string") for k, v in columns.items()}
+        )
+
     frames = {
-        "_rev_in": pd.DataFrame(
-            {"link_id": list(reversed_by), "correction_id": list(reversed_by.values())}
+        "_rev_in": strings(
+            link_id=list(reversed_by), correction_id=list(reversed_by.values())
         ),
-        "_mode_in": pd.DataFrame(
-            {"link_id": list(mode_by), "mode": list(mode_by.values())}
+        "_mode_in": strings(link_id=list(mode_by), mode=list(mode_by.values())),
+        "_merge_in": strings(
+            from_node_id=list(merged_nodes), to_node_id=list(merged_nodes.values())
         ),
-        "_merge_in": pd.DataFrame(
-            {"from_node_id": list(merged_nodes), "to_node_id": list(merged_nodes.values())}
-        ),
-        "_excl_in": pd.DataFrame({"link_id": sorted(excluded)}),
+        "_excl_in": strings(link_id=sorted(excluded)),
     }
     for name, frame in frames.items():
         db.register(name, frame)

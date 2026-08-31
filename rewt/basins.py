@@ -38,29 +38,37 @@ from .report import log
 NO_BASIN = 0        # a cell on no basin at all: sea, or outside the data
 
 
+def country_polygon(names: list[str]) -> shapely.Geometry:
+    """The union of Boundary-Line country polygons for the named countries.
+
+    Country boundaries only, and never used to clip the network — only to ask which
+    ground a basin covers.
+    """
+    import pyogrio
+
+    gpkg = acquire.one("os_boundary_line", "bdline_gb.gpkg")
+    frame = pyogrio.read_dataframe(
+        gpkg,
+        layer="country_region",
+        where=" OR ".join(f"\"Name\" = '{c}'" for c in names),
+    )
+    if frame.empty:
+        raise RuntimeError(
+            f"Boundary-Line country_region holds no polygon named any of {names}"
+        )
+    working = config.param("crs.working")
+    if str(frame.crs) != working:
+        frame = frame.to_crs(working)
+    return shapely.union_all(list(frame.geometry.values))
+
+
 def england_and_wales() -> shapely.Geometry:
     """The England-and-Wales polygon the scope rule tests against.
 
     Boundary-Line's `country_region` layer, and country boundaries only. It is never
     used to clip the network — only to ask whether a basin touches the two countries.
     """
-    import pyogrio
-
-    countries = config.param("scope.countries_in_scope")
-    gpkg = acquire.one("os_boundary_line", "bdline_gb.gpkg")
-    frame = pyogrio.read_dataframe(
-        gpkg,
-        layer="country_region",
-        where=" OR ".join(f"\"Name\" = '{c}'" for c in countries),
-    )
-    if frame.empty:
-        raise RuntimeError(
-            f"Boundary-Line country_region holds no polygon named any of {countries}"
-        )
-    working = config.param("crs.working")
-    if str(frame.crs) != working:
-        frame = frame.to_crs(working)
-    return shapely.union_all(list(frame.geometry.values))
+    return country_polygon(config.param("scope.countries_in_scope"))
 
 
 def measure(basin_band: np.ndarray, transform, cell_m: float) -> pd.DataFrame:
@@ -70,15 +78,24 @@ def measure(basin_band: np.ndarray, transform, cell_m: float) -> pd.DataFrame:
     an area question would be an afternoon's computation in exchange for the same
     number.
     """
-    ew = england_and_wales()
-    ew_mask = rasterize(
-        [(ew, 1)],
-        out_shape=basin_band.shape,
-        transform=transform,
-        fill=0,
-        dtype="uint8",
-        all_touched=False,
-    ).astype(bool)
+    def mask_for(geom) -> np.ndarray:
+        return rasterize(
+            [(geom, 1)],
+            out_shape=basin_band.shape,
+            transform=transform,
+            fill=0,
+            dtype="uint8",
+            all_touched=False,
+        ).astype(bool)
+
+    ew_mask = mask_for(england_and_wales())
+    # Scotland is measured, not inferred as "everything that is not England or Wales".
+    # Boundary-Line's country polygons stop at Mean High Water, so a coastal basin's
+    # estuary and foreshore lie outside *every* country — and taking the complement as
+    # Scottish reported the Nedd, the Hull, the Great Ouse and the Ystwyth as
+    # cross-border cases, which is nonsense. Ground in no country polygon is a real
+    # third category and is reported as one.
+    scotland_mask = mask_for(country_polygon(["Scotland"]))
 
     flat = basin_band.ravel()
     valid = flat > NO_BASIN
@@ -86,6 +103,7 @@ def measure(basin_band: np.ndarray, transform, cell_m: float) -> pd.DataFrame:
 
     total = np.bincount(flat[valid])
     in_ew = np.bincount(flat[valid & ew_mask.ravel()], minlength=len(total))
+    in_scot = np.bincount(flat[valid & scotland_mask.ravel()], minlength=len(total))
 
     basin_ids = np.flatnonzero(total)
     return pd.DataFrame(
@@ -93,6 +111,7 @@ def measure(basin_band: np.ndarray, transform, cell_m: float) -> pd.DataFrame:
             "raster_id": basin_ids.astype(np.int64),
             "area_km2": total[basin_ids] * cell_km2,
             "england_wales_area_km2": in_ew[basin_ids] * cell_km2,
+            "scotland_area_km2": in_scot[basin_ids] * cell_km2,
         }
     )
 
@@ -139,9 +158,14 @@ def cross_border(frame: pd.DataFrame) -> pd.DataFrame:
     that nobody expected to be there.
     """
     out = frame[frame["in_scope"]].copy()
+    # Cross-border means ground in ANOTHER COUNTRY, not ground outside a country
+    # polygon. The difference is the whole width of an estuary.
     out["outside_km2"] = out["area_km2"] - out["england_wales_area_km2"]
-    out = out[out["outside_km2"] > 1.0]
-    return out.sort_values("outside_km2", ascending=False)
+    out["tidal_or_offshore_km2"] = (
+        out["outside_km2"] - out["scotland_area_km2"]
+    ).clip(lower=0.0)
+    out = out[out["scotland_area_km2"] > 1.0]
+    return out.sort_values("scotland_area_km2", ascending=False)
 
 
 def polygonise(basin_band: np.ndarray, transform, keep: np.ndarray) -> pd.DataFrame:
@@ -151,9 +175,12 @@ def polygonise(basin_band: np.ndarray, transform, keep: np.ndarray) -> pd.DataFr
     only what is published is polygonised.
     """
     mask = np.isin(basin_band, keep)
+    # rasterio's polygoniser will not take int64; a basin id is a small positive
+    # integer, so int32 is ample and the cast is exact.
+    band = basin_band.astype(np.int32)
     rows = []
     for geom, value in shapes(
-        basin_band, mask=mask, transform=transform, connectivity=4
+        band, mask=mask, transform=transform, connectivity=4
     ):
         rows.append((int(value), shapely.geometry.shape(geom)))
     if not rows:

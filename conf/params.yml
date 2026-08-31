@@ -73,6 +73,24 @@ terrain:
   # kept distinctly named because sampling the burned one to check direction is
   # circular (§5, D-007).
   burn_depth_m: 20.0
+  # WHICH FORMS ARE BURNED, and this is the most consequential line in this file.
+  #
+  # Burning `tidalRiver` destroys the delineation. OS Open Rivers models estuaries as
+  # connected tidal water — PLAN.md §4.1 makes the point about network components, and
+  # it is just as true of a raster — so incising those 5,738 km carves a continuous
+  # channel along the coast that joins one river mouth to the next. Measured: with
+  # tidal links burned, ONE basin held 181,672 km2, 88% of the land, spanning
+  # 110,000-659,950 E and 10,050-700,000 N, while the median basin was 0.1 km2. **A
+  # shared estuary is not a shared catchment**, and burning tidal water is how you tell
+  # the DEM that it is — which defeats the one job the DEM was acquired for.
+  #
+  # `canal` is excluded for the same reason from the other direction: canals cross
+  # watersheds by design (D-011), so a burned summit pound joins two basins that the
+  # terrain separates. Excluding canals from the BURN does not exclude them from the
+  # network or from the reachability requirement; D-011 stands. It says only that the
+  # terrain is not carved along an artificial cut when deciding where water would
+  # naturally go.
+  burn_forms: [inlandRiver, lake]
   # The least-cost breach's search radius, in cells. 10 cells at 50 m is 500 m, and
   # the cost of this parameter is quadratic and steep. Measured on the burned national
   # surface, single-threaded:
@@ -94,6 +112,17 @@ terrain:
   # fill_pits) takes 380 s and returns a median land elevation of 2,272 m, which is
   # nonsense for a country whose highest ground is 1,345 m.
   breach_max_dist_cells: 10
+  # How far below the lowest land cell the sea is written in. Terrain 50 masks the sea
+  # out, and a masked cell is a WALL — WhiteboxTools will not route flow into nodata —
+  # so without this the water cannot leave the land at all and the conditioning pools
+  # the whole country into its lowest hollow. It needs only to be unambiguously below
+  # everything; the value is not a depth and means nothing physical.
+  sea_depth_below_land_m: 100.0
+  # How wide a margin of sea is given that elevation. The sea must be an outlet at the
+  # coast and nowhere else; writing in all 102 million sea cells more than doubles the
+  # conditioning's work and took breaching from seven minutes to over thirty. Ten cells
+  # is 500 m, which is wider than the coastline's own generalisation.
+  sea_margin_cells: 10
   # Sea is masked out of Terrain 50; a node on nodata is confirmation of tidal water,
   # not a missing sample (§6).
   sea_is_nodata: true
@@ -102,6 +131,10 @@ basins:
   # Delineation is over the conditioned surface. The stream threshold decides how many
   # basins come out; it is a reporting granularity, not a hydrological claim.
   flow_accumulation_cells: 400        # 400 * 50 m * 50 m = 1 km^2
+  # A river mouth from OS Open Rivers is a node on a generalised line and need not sit
+  # on the 50 m grid's own channel. Snap it to the largest flow accumulation within
+  # this radius, or the catchment delineated from it is a sliver beside the river.
+  pour_point_snap_m: 500.0
   min_basin_area_km2: 1.0
   # PLAN.md §4.1 calibration for the provisional scope: 122,104 links kept,
   # 72,367 excluded, over a Great Britain network.

@@ -103,10 +103,18 @@ def run() -> dict:
             ("in scope (some part in England or Wales)", len(in_scope)),
             ("in-scope area, km2", round(float(in_scope["area_km2"].sum()), 0)),
             (
-                "of which outside England and Wales, km2",
+                "of which in Scotland, km2 (in scope: the basin is)",
+                round(float(in_scope["scotland_area_km2"].sum()), 0),
+            ),
+            (
+                "of which tidal or offshore, in no country polygon",
                 round(
                     float(
-                        (in_scope["area_km2"] - in_scope["england_wales_area_km2"]).sum()
+                        (
+                            in_scope["area_km2"]
+                            - in_scope["england_wales_area_km2"]
+                            - in_scope["scotland_area_km2"]
+                        ).clip(lower=0).sum()
                     ),
                     0,
                 ),
@@ -125,14 +133,20 @@ def run() -> dict:
                 label or f"basin {int(row.raster_id)}",
                 round(float(row.area_km2), 1),
                 round(float(row.england_wales_area_km2), 1),
-                round(float(row.outside_km2), 1),
-                f"{row.outside_km2 / row.area_km2:.0%}",
+                round(float(row.scotland_area_km2), 1),
+                f"{row.scotland_area_km2 / row.area_km2:.0%}",
+                round(float(row.tidal_or_offshore_km2), 1),
             )
         )
     log.table(
-        "in-scope basins with land outside England and Wales — named individually (§9)",
-        ["basin", "area km2", "in E&W km2", "outside km2", "share outside"],
+        "in-scope basins with ground in SCOTLAND — the cross-border cases, named (§9)",
+        ["basin", "area km2", "in E&W", "in Scotland", "share Scottish", "tidal/offshore"],
         named,
+    )
+    log.detail(
+        "    the last column is ground in no country polygon at all — Boundary-Line "
+        "stops at Mean High Water, so a coastal basin's estuary and foreshore lie "
+        "outside every country and are not a border crossing"
     )
 
     # ------------------------------------------------------------ persist basins
@@ -266,14 +280,14 @@ def run() -> dict:
                 kind="cross_border_basin",
                 subject=labels.get(int(row.raster_id)) or f"basin {int(row.raster_id)}",
                 detail=(
-                    f"{row.outside_km2:,.0f} km2 of {row.area_km2:,.0f} km2 lies "
-                    "outside England and Wales, and is in scope because the basin is"
+                    f"{row.scotland_area_km2:,.0f} km2 of {row.area_km2:,.0f} km2 lies "
+                    "in Scotland, and is in scope because the basin is"
                 ),
                 easting=float(place["easting"].iloc[0]) if len(place) else None,
                 northing=float(place["northing"].iloc[0]) if len(place) else None,
                 metrics={
                     "area_km2": round(float(row.area_km2), 1),
-                    "outside_km2": round(float(row.outside_km2), 1),
+                    "scotland_km2": round(float(row.scotland_area_km2), 1),
                 },
             )
         )

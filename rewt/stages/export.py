@@ -266,8 +266,10 @@ def _write_readme(links, nodes, basins, corrections: int) -> None:
 Built {datetime.now(timezone.utc).date().isoformat()} by `rewt build`, from an empty
 checkout, from the sources declared in `conf/sources.yml`.
 
-**Stage 1 makes no historical claim at all.** There are no dates in this output, no old
-courses, no attestation and no flow. Everything of that kind belongs to later stages.
+**This is a modern river network and says nothing whatever about the past.** There are no
+dates in it, no superseded channels, no evidence that anything existed when, and no water
+moving through it. Everything of that kind belongs to later stages of the project, and a
+consumer who needs any of it does not have it here.
 
 ## What is here
 

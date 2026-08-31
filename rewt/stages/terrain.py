@@ -198,8 +198,14 @@ def _write_stream_vector() -> Path:
         b = ds.bounds
     box = shapely.box(b.left, b.bottom, b.right, b.top)
 
+    forms = config.param("terrain.burn_forms")
+    placeholders = ", ".join(f"'{f}'" for f in forms)
     frame = db.df(
-        "SELECT link_id, ST_AsWKB(geom) AS wkb FROM link ORDER BY link_id"
+        f"SELECT link_id, form, ST_AsWKB(geom) AS wkb FROM link "
+        f"WHERE form IN ({placeholders}) ORDER BY link_id"
+    )
+    excluded = db.scalar(
+        f"SELECT count(*) FROM link WHERE form NOT IN ({placeholders})"
     )
     geoms = [shapely.from_wkb(bytes(w)) for w in frame["wkb"]]
     inside = shapely.intersects(box, geoms)
@@ -222,8 +228,9 @@ def _write_stream_vector() -> Path:
         out.with_suffix(suffix).unlink(missing_ok=True)
     gdf.to_file(out)
     log.detail(
-        f"    {len(gdf):,} links written for burning; {dropped:,} lie wholly outside "
-        "the terrain extent and are not burned"
+        f"    {len(gdf):,} links written for burning ({', '.join(forms)}); "
+        f"{excluded:,} excluded by form and {dropped:,} more lie wholly outside the "
+        "terrain extent"
     )
     return out
 
@@ -254,6 +261,95 @@ def _burn(streams: Path) -> None:
     # A burned surface is the terrain minus a burn depth, so the plausible range is
     # the terrain's own, slack at the bottom. Britain's highest ground is 1,345 m.
     raster.assert_usable(raster.BURNED, "WhiteboxTools fill_burn", (-500.0, 1400.0))
+
+
+def _sea_as_outlet() -> None:
+    """Give the sea an elevation, so that water can leave the land.
+
+    Terrain 50 masks the sea out, and a masked cell is a **wall**: WhiteboxTools will
+    not route flow into nodata. Left that way, water cannot leave England and Wales at
+    all, and the conditioning pools the entire country into whatever its lowest land
+    cell happens to be. Measured: 72 million cells — 88% of the land — draining to one
+    node at -3.2 m in the Somerset Levels behind Bridgwater Bay, which is genuinely the
+    lowest ground in the country and therefore a completely plausible-looking answer.
+
+    So the sea is written in below every land cell. It is not terrain and is never
+    sampled as terrain: this raster exists only to delineate, it is named for what it
+    is, and `rewt.raster` refuses it for any question about elevation.
+    """
+    with rasterio.open(raster.UNCONDITIONED) as src:
+        profile = src.profile
+        dem = src.read(1)
+        nodata = src.nodata
+
+    from scipy import ndimage
+
+    sea = np.isclose(dem, nodata)
+    land_min = float(dem[~sea].min())
+    sea_level = land_min - float(config.param("terrain.sea_depth_below_land_m"))
+
+    # Only a MARGIN of sea is written in, not the whole of it. The sea has to be an
+    # outlet at the coast and nowhere else, and giving all 102 million of its cells a
+    # value more than doubles the conditioning's work for no gain -- breaching went
+    # from seven minutes to over thirty. Beyond the margin the raster stays nodata, so
+    # the margin's outer rim is the edge of the data, which is what an outlet is.
+    margin_cells = int(config.param("terrain.sea_margin_cells"))
+    near_land = ndimage.binary_dilation(~sea, iterations=margin_cells)
+    margin = sea & near_land
+    dem[margin] = sea_level
+    profile.update(BIGTIFF="YES")
+    with rasterio.open(raster.HYDRO, "w", **profile) as dst:
+        dst.write(dem, 1)
+    log.detail(
+        f"    a {margin_cells * 50:,.0f} m sea margin -- {int(margin.sum()):,} cells "
+        f"of {int(sea.sum()):,} -- set to {sea_level:,.1f} m, below the lowest land at "
+        f"{land_min:,.1f} m, so that coastal water has somewhere to go"
+    )
+
+
+def _pour_points() -> Path:
+    """River mouths, taken from the survey's own tidal termini.
+
+    A basin has one outlet, which is what makes "what share of this basin can reach its
+    own sea?" a complete question (PLAN.md §6). Delineating to the edge of the data
+    cannot give that, because a connected sea is one edge and would return one basin
+    for the country. Delineating to *these* points gives a catchment per river mouth,
+    anchored to a node the network actually contains.
+
+    They come from `form = tidalRiver`, never from a coastline (§5), and they are taken
+    from anywhere — including Scotland, because the Border Esk's mouth is in
+    Dumfriesshire and a basin seeded only inside England and Wales would strand it.
+    """
+    import geopandas as gpd
+
+    frame = db.df(
+        """
+        WITH outflow AS (SELECT DISTINCT from_node AS node_id FROM link),
+             inflow  AS (SELECT DISTINCT to_node   AS node_id FROM link)
+        SELECT n.node_id, n.easting, n.northing
+        FROM node n
+        JOIN inflow i ON i.node_id = n.node_id
+        LEFT JOIN outflow o ON o.node_id = n.node_id
+        WHERE o.node_id IS NULL AND n.terminus = 'tidal'
+        ORDER BY n.node_id
+        """
+    )
+    if frame.empty:
+        raise StageError(
+            "no tidal termini to delineate from. A basin is the catchment of an outlet; "
+            "without outlets there is nothing to delineate to."
+        )
+    gdf = gpd.GeoDataFrame(
+        {"node_id": frame["node_id"]},
+        geometry=gpd.points_from_xy(frame["easting"], frame["northing"]),
+        crs=config.param("crs.working"),
+    )
+    out = paths.INTERIM / "pour_points.shp"
+    for suffix in (".shp", ".shx", ".dbf", ".prj", ".cpg"):
+        out.with_suffix(suffix).unlink(missing_ok=True)
+    gdf.to_file(out)
+    log.detail(f"    {len(gdf):,} river mouths to delineate to")
+    return out
 
 
 def _whitebox():
@@ -292,11 +388,13 @@ def run() -> dict:
     streams = _write_stream_vector()
     _burn(streams)
 
+    _sea_as_outlet()
+
     wbt = _whitebox()
     log.info("  breaching depressions — breach, do not fill (PLAN.md §5)")
     max_dist = int(config.param("terrain.breach_max_dist_cells"))
     rc = wbt.breach_depressions_least_cost(
-        dem=raster.BURNED.name,
+        dem=raster.HYDRO.name,
         output=raster.CONDITIONED.name,
         dist=max_dist,
         fill=True,
@@ -306,22 +404,17 @@ def run() -> dict:
     raster.assert_usable(
         raster.CONDITIONED,
         "WhiteboxTools breach_depressions_least_cost",
-        (-500.0, 1400.0),
+        (-600.0, 1400.0),
     )
 
-    # Check the conditioning rather than assume it. A cell with no downslope
-    # neighbour is a place the water cannot leave, and a surface still full of them
-    # will delineate basins that are an artefact of the conditioning rather than of
-    # the terrain. Fail loudly is the rule; this is what there is to fail on.
+    # Check the conditioning rather than assume it. A cell with no downslope neighbour
+    # is a place the water cannot leave; a surface still full of them will delineate
+    # basins that are an artefact of the conditioning rather than of the terrain.
     log.info("  checking the conditioned surface for cells water cannot leave")
     no_flow = paths.INTERIM / "terrain50_no_flow_cells.tif"
     rc = wbt.find_no_flow_cells(dem=raster.CONDITIONED.name, output=no_flow.name)
     if rc != 0:
         raise StageError(f"WhiteboxTools find_no_flow_cells returned {rc}")
-    # Count only over land. The sea is masked out of Terrain 50 and every sea cell
-    # trivially has no downslope neighbour; counting those gave 204% of the land
-    # area, which is the kind of number that should stop a person rather than be
-    # written down.
     with rasterio.open(no_flow) as ds:
         flags = ds.read(1)
     with rasterio.open(raster.UNCONDITIONED) as ds:
@@ -329,9 +422,8 @@ def run() -> dict:
     stuck = int(np.count_nonzero(np.isfinite(flags) & (flags > 0) & land))
     land_cells = detail["land_cells"]
     log.detail(
-        f"    {stuck:,} cells have no downslope neighbour after breaching "
-        f"({stuck / land_cells:.4%} of land). These are the places the delineation "
-        "cannot resolve; they are reported, not silently accepted."
+        f"    {stuck:,} land cells have no downslope neighbour after breaching "
+        f"({stuck / land_cells:.4%} of land)"
     )
     detail["no_flow_cells"] = stuck
 
@@ -351,22 +443,57 @@ def run() -> dict:
         if rc != 0:
             raise StageError(f"WhiteboxTools {fn.__name__} returned {rc}")
 
-    # `Basins` delineates every catchment draining to the edge of the data. Terrain 50
-    # masks the sea out, so "the edge of the data" is the coastline — which is exactly
-    # the delineation §4.1 needs, and is why a shared estuary does not become a shared
-    # catchment here as it does with network components.
-    log.info("  delineating basins to the coast")
-    rc = wbt.basins(d8_pntr=raster.D8_POINTER.name, output=raster.BASINS.name)
+    # Delineate to the network's own river mouths, not to the edge of the data.
+    # `Basins` delineates everything draining to the data edge, and with the sea
+    # written in as an outlet that edge is one connected surface — so it returns the
+    # country as a single basin. A catchment per river mouth is both what §4.1 needs
+    # and what makes `basin.outlet_node` mean something.
+    log.info("  delineating a catchment for each river mouth")
+    pour = _pour_points()
+    snapped = paths.INTERIM / "pour_points_snapped.shp"
+    rc = wbt.snap_pour_points(
+        pour_pts=pour.name,
+        flow_accum=raster.FLOW_ACC.name,
+        output=snapped.name,
+        snap_dist=float(config.param("basins.pour_point_snap_m")),
+    )
     if rc != 0:
-        raise StageError(f"WhiteboxTools basins returned {rc}")
-    # A basin id is a small positive integer. Forty million of them means the pointer
-    # it was delineated from was noise.
-    raster.assert_usable(raster.BASINS, "WhiteboxTools basins", (1.0, 5e6))
+        raise StageError(f"WhiteboxTools snap_pour_points returned {rc}")
 
+    rc = wbt.watershed(
+        d8_pntr=raster.D8_POINTER.name,
+        pour_pts=snapped.name,
+        output=raster.BASINS.name,
+    )
+    if rc != 0:
+        raise StageError(f"WhiteboxTools watershed returned {rc}")
+    raster.assert_usable(raster.BASINS, "WhiteboxTools watershed", (1.0, 5e6))
+
+    # The sea is in the conditioned surface as an outlet; it is not land and is not in
+    # any basin. Mask it back out, so a basin's area is an area of ground.
     with rasterio.open(raster.BASINS) as ds:
         band = ds.read(1)
-        ids = np.unique(band[band != (ds.nodata if ds.nodata is not None else -32768)])
-    log.done(f"{len(ids):,} basins delineated to the coast")
+        profile = ds.profile
+        bnd = ds.nodata if ds.nodata is not None else -32768.0
+    band = np.where(land, band, bnd)
+    profile.update(BIGTIFF="YES")
+    with rasterio.open(raster.BASINS, "w", **profile) as dst:
+        dst.write(band, 1)
+
+    ids, counts = np.unique(band[band != bnd], return_counts=True)
+    km2 = counts * (detail["cell_m"] ** 2) / 1e6
+    log.done(f"{len(ids):,} basins delineated to river mouths")
+    if len(ids):
+        # Report the shape, not the count. A plausible number of basins with one of
+        # them holding most of the country is the failure this stage has already had
+        # twice, and it is invisible in any total.
+        log.detail(
+            f"    largest {km2.max():,.0f} km2 ({km2.max() / km2.sum():.1%} of the "
+            f"delineated area), median {np.median(km2):,.1f} km2, "
+            f"{int((km2 >= 100).sum()):,} over 100 km2"
+        )
+        detail["largest_basin_km2"] = round(float(km2.max()), 1)
+        detail["largest_basin_share"] = round(float(km2.max() / km2.sum()), 4)
 
     detail["basins_delineated"] = int(len(ids))
     detail["whitebox"] = WBT_VERSION
