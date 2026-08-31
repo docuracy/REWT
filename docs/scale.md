@@ -405,6 +405,13 @@ to publish a navigability range that is censored at one end. And it is built to 
 editions, so contributed work appears under its contributor's name at the next edition rather
 than waiting on the whole.
 
+**And what the two together make possible.** Neither dataset alone can weigh **water power
+against water route** as determinants of pre-industrial settlement — power needs flow and
+fall over the whole drainage, route needs dated navigability over the navigable part, and
+they have never been carried on the same lines. Spliced, they are. That is a question about
+occupational structure and urbanisation rather than about rivers, and it is not one this
+project would think to ask on its own.
+
 **What is not claimed.** This project's network is a drainage network — 152,000 km against
 20,000 km of navigable water — and the two are different objects with different purposes. The
 waterways GIS is not a subset of it and would not be absorbed into it. The proposition is

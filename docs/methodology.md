@@ -297,6 +297,47 @@ thousand labelled leats are a validation set** for a potential model, and a mode
 power where the surveyors found none, or none where they found a mill, has told you something
 either way.
 
+### Three questions the same model answers, and why they must not be asked together
+
+Flow, fall, known mill sites and population are four quantities. Fix any three and the fourth
+becomes a prediction, which gives three genuinely different studies:
+
+- **Where else were there mills?** Calibrate on the labelled mill sites against flow and fall,
+  and the model proposes the sites the record has lost — a search list rather than a claim.
+- **Were the population estimates right?** Where mills *are* known, grinding capacity is a
+  constraint on how many people a district could feed. A parish with far more milling than its
+  estimated population needed is either mis-estimated or milling for somewhere else, and both
+  are findings.
+- **What population could this country support?** Set aside where people actually were and ask
+  what the water alone would carry. That is a ceiling, not a history, and it is the version
+  most easily misread.
+
+**Each excludes the others in the same study.** Population cannot both calibrate the model and
+be tested by it; a mill distribution cannot be both the training set and the validation set.
+The temptation to run the loop once and quote all three results is the failure mode here, and
+it produces figures that are internally consistent and evidentially empty.
+
+Two further cautions belong with it. The labelled mills are **c.1900 attestations**, so
+calibrating a medieval model on them imports a Victorian distribution — one shaped by four
+centuries of consolidation onto the best sites, and by the mills that steam had already
+killed. And the model's fall comes from a national terrain surface that cannot see a weir and
+a leat, so it under-reads exactly the sites where a modest stream was engineered into a usable
+head.
+
+### The comparison this makes possible for the first time
+
+Water power and navigable water are usually studied apart, because no dataset has carried
+both. This one is built to: the same network holds a modelled discharge, a fall, and a
+[dated navigability](evidence#navigation), reach by reach.
+
+That allows a question worth asking directly. **Before coal, the determinant of a settlement's
+success may have been the power available to it rather than the water route out of it** —
+grinding, fulling, forging and sawing are things a place did for itself, while navigation
+mattered most once there was bulk to move and, above all, coal to bring in. Which of the two
+better explains where places grew, and when the answer changes, is an empirical question that
+has wanted a dataset rather than an argument. This project does not settle it; it is the first
+thing to put both variables on the same lines.
+
 ---
 
 ## Principles
