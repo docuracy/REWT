@@ -389,12 +389,35 @@ constraint in the evidence. [Escaping that is what frees the date](epochs).
 ### 1600 to 1948, and the problem with it
 
 Max Satchell and Leigh Shaw-Taylor's **dynamic GIS of the navigable waterways of England and
-Wales, 1600–1948** ([CAMPOP](https://www.campop.geog.cam.ac.uk/research/occupations/datasets/catalogues/transport/){:target="_blank"}, Cambridge) is the source that does what Oksanen cannot. It
-carries, per waterway, **the range of years for which it is known to be navigable or in
-commercial use**, and it distinguishes **natural river from improved river from canal**, and
-broad canal from narrow. A slice can be generated for any year in the range: the 1820 slice
-is 5,419 miles of navigable water. Versions edited specifically for network analysis exist
-for 1680, 1830 and 1911.
+Wales, 1600–1948** ([CAMPOP](https://www.campop.geog.cam.ac.uk/research/occupations/datasets/catalogues/transport/){:target="_blank"}, Cambridge) is the source that does what Oksanen cannot, and
+it is a great deal more substantial than a date field. It carries, per waterway, **the range
+of years for which it is known to be navigable or in commercial use**, distinguishes **natural
+river from improved river from canal**, and broad canal from narrow, and can generate a slice
+for any year in the range. Versions edited for network analysis exist for 1680, 1830 and 1911.
+
+**Measured, rather than taken from its documentation**, it holds some **20,247 km** of
+navigable water, of which **82.6% is engineered** — canal or improved river; a temporal model
+covering roughly **2,801 waterways across 349 years**, in optimistic and pessimistic scenarios,
+of which only **0.3%** fails as bad data; and a vertex spacing of about **82 m**, which is not
+a coarse sketch but essentially the resolution of the modern national product. Navigability in
+it is **testimony, not inference**: there is no flow model, no depth, gradient or lock
+dimension anywhere in it, and each section's status is cited to the navigation literature row
+by row.
+
+**And it has already done, for the Fens, the thing [this project's second edition](scale)
+proposes to do.** In the Great Level it carries 244 sections over 1,590 km, with the medieval
+channels as *separate features on their own courses* rather than as attributes of the modern
+one. The Well Stream — the medieval outfall of the Great Ouse to Wisbech — sits a median
+**1.4 km from any modern watercourse**; Morton's Leam, cut about 1490, sits **1.2 km** away.
+That those are not digitising error is settled by the same dataset: the New Bedford River of
+1652, which still exists, sits **4.3 m** from the modern channel. The pre-drainage courses were
+traced, and they were traced from eighteenth-century and early Ordnance Survey mapping and from
+the Fenland literature.
+
+Two further things in it are unused by anyone. A **craft-capacity grading per section** is an
+independent, evidenced check on modelled channel capacity — the nearest thing to a validation
+set this project's flow model could have. And **665 sections flagged as navigable at some
+earlier point** are a work queue pointing into the pre-1600 period from the other side.
 
 **That is precisely the dated navigability layer this project lacks**, and the terms on which
 it can be had are unresolved rather than closed.

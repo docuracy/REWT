@@ -97,6 +97,15 @@ its own established datasets and its own people. The natural collaborators are t
 already working on transport and industrialisation, and the contribution offered to them is
 the channel rather than the question.
 
+**And there is a specific invitation in that.** The most substantial body of work on English
+and Welsh inland navigation — dated section by section across three and a half centuries, with
+the pre-drainage Fen channels traced on their own courses — is not openly published, and its
+authors are free to publish it as they wish. This project is built to be the vehicle for
+exactly that: [what each side has, and why this is a vehicle rather than a competitor](scale#what-each-side-actually-has),
+set out plainly. The offer is an exchange — topology, direction, flow, an evidence-first date
+model, and an open licence enforced by the exporter rather than promised — and it is an offer
+rather than an assumption.
+
 **And it is meant to bring people in.** The paper is as much a solicitation as an
 announcement. [The scale of the work](scale) sets out which strands can be finished in house
 and which cannot, and the ones that cannot — the mill channels, and the regional documentary

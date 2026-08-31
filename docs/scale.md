@@ -273,6 +273,57 @@ boundary set, and cannot be published from.
 
 ---
 
+## Much of this has been done already
+
+The counts above describe work as though it were all ahead of us. For one of the hardest
+regions it is not, and a scale page that does not say so is misleading about its own subject.
+
+**The pre-drainage courses of the Great Level have been traced and dated.** Not sketched, not
+inferred from the modern line: the medieval channels are carried as separate features on their
+own courses, at a vertex spacing close to that of the modern national product, traced from
+eighteenth-century and early Ordnance Survey mapping and from the Fenland literature, with the
+navigation status of each section cited row by row. The Well Stream — the medieval outfall of
+the Great Ouse, and the single largest hole in the [scoping exercise's](background) network —
+is in it, 1.4 km from any modern watercourse. So is Morton's Leam. That is [Max Satchell and
+Leigh Shaw-Taylor's waterways GIS](evidence#1600-to-1948-and-the-problem-with-it), and it
+represents a body of work comparable in scale to the second edition proposed here.
+
+**The same corpus holds 349 years of dated navigability** across some 2,801 waterways, a
+craft-capacity grading per section, and 665 sections flagged as navigable at some point before
+its window opens. There is nothing else like it, and this project has no route to producing it
+independently: it rests on the navigation literature read systematically, which is a decade of
+scholarship rather than a pipeline stage.
+
+**None of it is openly published.** It sits under a safeguarded deposit licence — a choice
+made at deposit rather than a constraint on its authors, who can license their own work as
+they wish. The geometry was traced from Ordnance Survey mapping now out of copyright, so
+nothing third-party stands in the way of relicensing it.
+
+### What each side actually has
+
+Set out plainly, because the case for collaboration is an exchange and not a request.
+
+| | |
+|---|---|
+| **What the waterways GIS has** | dated navigability over 349 years, cited per section; pre-drainage courses in the Fens, traced; vessel capacity as evidence; the navigation literature systematically encoded |
+| **What it does not have** | flow direction, a connected traversable network, a flow model, an open licence, or a temporal model that can say *known by 1600, unknown before* without inventing a date |
+| **What this project has** | a directed and traversable modern network to attach courses to; modelled flow and [water power potential](methodology#what-the-flow-model-is-for-beyond-drawing-the-river); an [evidence-first date model](epochs#how-a-date-is-recorded) built on an interchange standard; an exporter that refuses to write anything not openly licensed; tooling for contribution and correction |
+| **What it does not have** | any of the first row |
+
+**Why this project is a vehicle rather than a competitor.** Its lines are not merely
+attributed — every line carries what it rests on, so a citation per section survives into the
+published product instead of being flattened into a layer. Its licence rule is enforced by the
+exporter rather than promised in a readme, so terms granted are terms kept. Its date model
+records *what a source actually says* rather than forcing a year, which is the only honest way
+to publish a navigability range that is censored at one end. And it is built to be released in
+editions, so contributed work appears under its contributor's name at the next edition rather
+than waiting on the whole.
+
+**What is not claimed.** This project's network is a drainage network — 152,000 km against
+20,000 km of navigable water — and the two are different objects with different purposes. The
+waterways GIS is not a subset of it and would not be absorbed into it. The proposition is
+publication and interoperation, not assimilation.
+
 ## What this adds up to
 
 | strand | count | who |
