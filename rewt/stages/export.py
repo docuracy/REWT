@@ -20,6 +20,7 @@ feature whose source is not openly licensed.** Keep that check; do not work arou
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime, timezone
 
 import geopandas as gpd
@@ -55,6 +56,12 @@ def run() -> dict:
     working = config.param("crs.working")
     export_crs = config.param("crs.export")
     paths.PUBLISHED.mkdir(parents=True, exist_ok=True)
+
+    # GDAL stamps a GeoPackage with the time it was written, which makes two builds
+    # from one set of inputs differ by eighteen bytes. Pin it to the newest input's
+    # acquisition, so the stamp still says something true — this is the edition the
+    # file describes — while being a function of the inputs rather than of the clock.
+    os.environ["OGR_CURRENT_DATE"] = _input_date()
 
     # ---------------------------------------------------------------- links
     links = con.execute(
@@ -171,8 +178,12 @@ def run() -> dict:
     ).df()
     CORRECTIONS_GPKG.unlink(missing_ok=True)
     if len(corrections):
+        # A junction, a reversal and an exclusion have no geometry of their own — they
+        # act on features that already exist — so they are published at the place they
+        # act on. `pd.isna` rather than `is None`: DuckDB returns pandas NA here, which
+        # is not None and does not convert to bytes.
         geoms = [
-            shapely.from_wkb(bytes(w)) if w is not None
+            shapely.from_wkb(bytes(w)) if not pd.isna(w)
             else (shapely.Point(e, n) if pd.notna(e) else None)
             for w, e, n in zip(corrections["wkb"], corrections["easting"], corrections["northing"])
         ]
@@ -188,6 +199,7 @@ def run() -> dict:
         corrections.to_csv(paths.PUBLISHED / "corrections.csv", index=False)
 
     # --------------------------------------------------------- attribution
+    _write_provenance()
     _write_attribution()
     _write_readme(link_gdf, node_gdf, basin_gdf, len(corrections))
 
@@ -212,6 +224,41 @@ def run() -> dict:
         "survey_km": round(survey_km, 1),
         "added_km": round(ours_km, 1),
     }
+
+
+def _input_date() -> str:
+    """The newest acquisition date among the inputs, as GDAL wants it."""
+    stamps = [
+        acquire.acquisition(src.id).acquired_at
+        for src in config.sources()
+        if acquire.acquisition(src.id)
+    ]
+    when = max(stamps) if stamps else "2026-01-01T00:00:00+00:00"
+    return datetime.fromisoformat(when).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+
+def _write_provenance() -> None:
+    """When this build ran, and from what.
+
+    Everything else published is a function of the inputs, so that two builds from
+    one set of inputs are byte-identical (§9). The one thing that cannot be is when
+    the build happened, so it lives here alone and nowhere else.
+    """
+    doc = {
+        "built_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "config_fingerprint": config.config_fingerprint(),
+        "sources": {},
+    }
+    for src in sorted(config.sources(), key=lambda s: s.id):
+        acq = acquire.acquisition(src.id)
+        if acq:
+            doc["sources"][src.id] = {
+                "issue": acq.issue, "sha256": acq.sha256,
+                "acquired_at": acq.acquired_at, "file": acq.file_name,
+            }
+    (paths.PUBLISHED / "provenance.json").write_text(
+        json.dumps(doc, indent=2, sort_keys=True), encoding="utf-8"
+    )
 
 
 def _write_attribution() -> None:
@@ -263,8 +310,10 @@ def _write_readme(links, nodes, basins, corrections: int) -> None:
     }
     text = f"""# REWT Stage 1 — a traversable modern network
 
-Built {datetime.now(timezone.utc).date().isoformat()} by `rewt build`, from an empty
-checkout, from the sources declared in `conf/sources.yml`.
+Built by `rewt build`, from an empty checkout, from the sources declared in
+`conf/sources.yml`. Everything here is a function of those inputs and is byte-identical
+between two builds from them; **when** this build ran is in `provenance.json`, which is
+the only file that carries a clock.
 
 **This is a modern river network and says nothing whatever about the past.** There are no
 dates in it, no superseded channels, no evidence that anything existed when, and no water

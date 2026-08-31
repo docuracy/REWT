@@ -139,9 +139,15 @@ class Report:
         self.findings.append(f)
 
     def to_dict(self) -> dict:
+        """The report's CONTENT, and deliberately not when it was made.
+
+        PLAN.md §9 asks for the same output twice from the same inputs. A build
+        timestamp inside every artefact makes that impossible to demonstrate while
+        telling a reader nothing they cannot get from `published/provenance.json`,
+        which is where it now lives. Everything here is a function of the inputs.
+        """
         return {
             "report": self.name,
-            "created": self.created,
             "sections": self.sections,
             "findings": [f.to_row() for f in self.findings],
         }

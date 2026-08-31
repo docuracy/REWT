@@ -223,6 +223,31 @@ def run() -> dict:
             )
             continue
         e, n = place[0]
+        # A junction whose target is nearest at one of its own ENDS is not a cut at
+        # all: the two channels already share a place and the survey records two nodes
+        # for it. That is §6's "touching but not joined", and the remedy is to merge
+        # the two nodes rather than to split anything. Handling it here rather than
+        # skipping keeps the class from needing a fourth kind of curated file.
+        endpoint = db.query(
+            """
+            SELECT n.node_id,
+                   sqrt(pow(n.easting - ?, 2) + pow(n.northing - ?, 2)) AS d
+            FROM link l JOIN node n
+              ON n.node_id IN (l.from_node, l.to_node)
+            WHERE l.link_id = ?
+            ORDER BY d LIMIT 1
+            """,
+            [e, n, target],
+        )
+        if endpoint and endpoint[0][1] <= float(p("repair.junction_max_offset_m")):
+            merged_nodes[row.resolved_to] = endpoint[0][0]
+            applied[row.correction_id] = True
+            log.detail(
+                f"    {row.subject}: merged onto the target's own end "
+                f"{endpoint[0][1]:.2f} m away — touching but not joined, so no "
+                "geometry is cut and none is invented"
+            )
+            continue
         try:
             node_id, children, extra = _split_link(target, e, n)
         except StageError as exc:

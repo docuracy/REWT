@@ -118,7 +118,7 @@ def run() -> dict:
                count(DISTINCT s.node_id) AS nodes
         FROM _sink s JOIN edge e ON e.to_node = s.node_id
         WHERE s.in_scope AND s.terminus <> 'tidal'
-        GROUP BY 1 ORDER BY 3 DESC
+        GROUP BY 1 ORDER BY 3 DESC, 1
         """
     ).df()
     log.table(
@@ -304,6 +304,7 @@ def run() -> dict:
         JOIN edge e ON e.to_node = nb.node_id
         JOIN link_reach r ON r.link_id = e.link_id
         GROUP BY 1, 2, 3, 4, 5
+        ORDER BY b.basin_id
         """
     ).df()
     basin_rows["unreached_km"] = basin_rows["km"] - basin_rows["reached_km"]
@@ -312,8 +313,13 @@ def run() -> dict:
     with db.registered("_ab_in", basin_rows):
         con.execute("CREATE TABLE audit_basin AS SELECT * FROM _ab_in ORDER BY basin_id")
 
+    # A tiebreaker on the identifier, not because ties are common but because a sort
+    # without one is a sort whose output depends on the order the rows arrived in.
+    # Two consecutive builds ranked two 6.74 km basins differently and the published
+    # audit differed, which is exactly what §2's "deterministic ordering wherever a
+    # result depends on iteration order" is about.
     ranked = basin_rows[basin_rows["in_scope"]].sort_values(
-        "unreached_km", ascending=False
+        ["unreached_km", "basin_id"], ascending=[False, True]
     )
     log.table(
         "reachability — the headline number (§6)",

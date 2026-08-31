@@ -78,6 +78,25 @@ def close() -> None:
 
 
 @contextlib.contextmanager
+def adopt(con: duckdb.DuckDBPyConnection) -> Iterator[duckdb.DuckDBPyConnection]:
+    """Install a connection as this thread's, and put back what was there.
+
+    For a caller that already holds a connection and wants the rest of the code to use
+    it rather than open a second one. DuckDB refuses to open the same file twice with
+    different settings, so a module reaching for `get()` under an existing read-only
+    connection does not merely waste a handle — it raises. The restore is this
+    function's job rather than the caller's, because a caller that forgets leaves the
+    process pointing at a closed connection.
+    """
+    previous = getattr(_local, "con", None)
+    _local.con = con
+    try:
+        yield con
+    finally:
+        _local.con = previous
+
+
+@contextlib.contextmanager
 def session(read_only: bool = False) -> Iterator[duckdb.DuckDBPyConnection]:
     """A scoped connection. Use this in scripts and tests; stages use `get()`."""
     con = connect(read_only=read_only)
