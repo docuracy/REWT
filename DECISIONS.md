@@ -611,3 +611,63 @@ found none of them — which reads exactly like a substantive disagreement about
 connectors, and was a unit error. It was caught only because 0 of 31 was too clean a
 result to believe. **An implausibly tidy disagreement deserves the same suspicion as an
 implausibly tidy agreement.**
+
+**D-027 — Dates on evidence are recorded in the Linked Places Format `when` object,
+with both bounds optional.** *2026-08-31*
+
+*Decided by Stephen; drafted by rewt-86.*
+
+**An epoch is a year the project draws. It is not the same thing as what the project
+knows about a stretch**, and conflating the two is how the old 1348 datum came about. So
+evidence dates are recorded separately from the dates that get built, as a set of
+`timespans`, each with an optional `start` and an optional `end`, each of those either
+`in` a year or bounded by `earliest` and `latest`, with a `certainty` on the whole.
+
+**Both bounds are optional, and that is the point.** Almost every source this project has
+appraised knows one bound and not the other, and each knows a different one:
+
+| what the source says | recorded as |
+|---|---|
+| a mill on a map surveyed 1824 | `start: {latest: 1824}` |
+| a channel labelled on a sheet surveyed 1899 | `start: {latest: 1899}`, `end: {earliest: 1899}` |
+| a reservoir completed 1869 | `start: {in: 1869}`; the drowned channel's `end: {in: 1869}` |
+| a valley river on the 1st edition, water on the 2nd | `end: {earliest: 1854, latest: 1894}` |
+| a declared year built that is visibly rounded | `start: {earliest: 1870, latest: 1880}`, `certainty: less-certain` |
+| a waterway already navigable when a window opens in 1600 | `start: {latest: 1600}` |
+| navigable at some point, no year given | `start: {latest: 1600}` — the same encoding |
+| an attestation carrying no start date at all | `end` only, **`start` absent** |
+
+**The last two rows are the argument.** A model that requires a start forces every source
+to invent the half it does not have, and the invention then reads as a finding — which is
+exactly how a datum comes to be fixed by the weakest constraint in the evidence. An absent
+`start` says *nobody knows when this began*, which is true and publishable. And a censoring
+floor and a bare "navigable once, no year" flag carry **identical information**: a plain
+year column makes one look like a date and the other like a hole.
+
+**It moves D-022 out of a footnote and into the data.** That decision exists because the
+pre-Ordnance-Survey mill mapping's year is the *map's* year, a terminus ante quem.
+`start: {latest: 1824}` says so structurally; a `date` column says the opposite.
+
+**Unknown is not unbounded.** A missing `start` because nobody knows is a different
+statement from a channel deliberately modelled as having no beginning, and the two must
+not collapse into the same empty field.
+
+**Two guards, part of the decision rather than commentary.** A bound is not a licence to
+interpolate — `start: {latest: 1600}` and nothing else must not be drawn at 1540 because
+the arithmetic permits it. And documentary uncertainty must never be blended with model
+uncertainty; one confidence number over both is worse than neither.
+
+**On convergence, and why this is not a formatting preference.** Linked Places is the
+interchange format for historical gazetteer work; its current draft relaxes the
+requirement for a `start` and carries `certainty` on the timespan, which is what evidence
+of this kind needs. The PLATO attestation ontology expresses the same information as a
+four-date model — `startEarliest` / `startLatest` / `endEarliest` / `endLatest`, aligned
+with PeriodO — and adds a precision term and an explicit flag for a bound deliberately
+left open rather than unknown. The two are inter-convertible. **The aim is to be
+expressible in either rather than to invent a third thing**, which matters here because a
+river reach carrying its own evidence *is* an attestation, and other people are already
+solving that modelling problem.
+
+**Stage 2, and it must not reach Stage 1.** CLAUDE.md's first override applies: if a task
+requires knowing what year it is, it is not Stage 1. No Stage 1 table gains a date column
+because of this, and `rewt/pipeline.py` never sees it.
