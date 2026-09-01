@@ -612,6 +612,71 @@ def run() -> dict:
         "in_scope_share": round((scoped[0] or 0) / (scoped[1] or 1), 6),
     })
     report.add("basins", ranked.head(200).to_dict("records"))
+
+    # ------------------------------------------- what a static reader needs whole
+    # The viewer computes these at boot today, from a server that reads the database
+    # per request. On Pages there is no server, so either the build emits them or the
+    # viewer bakes them into its own bundle — and a baked figure can only ever agree
+    # with itself. rewt-fc's boot-time check compares its numbers against the
+    # published file, and that check is what found the basin-attribution defect this
+    # morning, which neither side could see alone. So the build emits them.
+    #
+    # The top 200 in `audit.json` is a reading list. These are the whole tables.
+    import json as _json
+
+    from ..report import write_text as _write_text
+
+    # EVERY basin, not the in-scope ones. `ranked` is filtered to in-scope because
+    # that is the work list; this file backs a map that draws all of them, and a
+    # basin a reader can click and get nothing for is worse than one labelled
+    # out of scope. `in_scope` is on every row so the viewer can say which it is.
+    # And the 54 with no link arriving at all. They are delineated ground that
+    # nothing in the network drains through — a real category rather than an
+    # omission, and a map that draws 1,049 basins should be able to say so for
+    # every one of them rather than falling silent on the ones with no rivers.
+    empty = con.execute(
+        """
+        SELECT b.basin_id, b.label, b.area_km2, b.in_scope, b.outlet_node
+        FROM basin b
+        WHERE NOT EXISTS (
+            SELECT 1 FROM node_basin nb JOIN edge e ON e.to_node = nb.node_id
+            WHERE nb.basin_id = b.basin_id)
+        """
+    ).df()
+    for col in ("km", "reached_km", "unreached_km", "share", "links",
+                "shortfall_reason"):
+        empty[col] = 0.0 if col in ("km", "reached_km", "unreached_km", "links") else None
+    all_basins = (
+        pd.concat([basin_rows, empty], ignore_index=True)
+        .sort_values(["unreached_km", "basin_id"], ascending=[False, True])
+        .replace({np.nan: None})
+    )
+    _write_text(
+        paths.PUBLISHED / "audit" / "basin_reach.json",
+        _json.dumps(all_basins.to_dict("records"), indent=1, sort_keys=True,
+                    allow_nan=False, default=str),
+    )
+    dead = con.execute(
+        """
+        SELECT node_id, name, form, easting, northing, in_scope, inflows,
+               round(upstream_m / 1000.0, 3) AS upstream_km,
+               round(stranded_m / 1000.0, 3) AS stranded_km
+        FROM _sink
+        WHERE terminus IS DISTINCT FROM 'tidal'
+        ORDER BY stranded_m DESC, upstream_m DESC, node_id
+        """
+    ).df()
+    _write_text(
+        paths.PUBLISHED / "audit" / "dead_ends.json",
+        _json.dumps(dead.to_dict("records"), indent=1, sort_keys=True,
+                    allow_nan=False, default=str),
+    )
+    log.detail(
+        f"published/audit/: {len(all_basins):,} basins with their reached share "
+        f"({int(all_basins['in_scope'].sum()):,} in scope), and "
+        f"{len(dead):,} dead ends carrying BOTH upstream_km and stranded_km — rank on "
+        "stranded_km, since upstream_km counts water that has another way out"
+    )
     report.add("stranded_components", {
         "count": int(len(stranded)),
         "km": round(float(stranded["km"].sum()), 1) if len(stranded) else 0.0,
