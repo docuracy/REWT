@@ -55,7 +55,14 @@ that what was counted is readable in one place.
 
 `--places DIR` writes `mill_channel_places.csv`, `old_course_places.csv`,
 `new_cut_places.csv`, `towing_path_places.csv` and `assertion_places.csv`, each with
-`place_id,text,labels,easting,northing` in EPSG:27700.
+`place_id,text,captions,labels,easting,northing` in EPSG:27700.
+
+**Test against `captions`, not `text`.** A place is a *cluster*, so it can carry more than
+one caption, and `text` joins them for display. Asking a joined string whether it matches
+something answers *does any caption match*, when the question is usually *does no caption
+describe a channel* — and that difference has produced a wrong answer for two people
+independently. `captions` is a JSON array so the distinction is a visible choice at the
+point of writing the test rather than one you have to know to draw.
 
 **Use `assertion_places.csv` as the tracing queue, not the two class files.** *Old Course*
 and *New Cut* describe one event from either side and frequently sit on the same reach, so

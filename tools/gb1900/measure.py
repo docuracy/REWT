@@ -180,7 +180,9 @@ def places(rows, cls) -> list:
         for members in cluster(pts, CLUSTER_M):
             es = [pts[i][0] for i in members]
             ns = [pts[i][1] for i in members]
-            out.append({"text": group[members[0]]["text"], "labels": len(members),
+            caps = sorted({group[i]["text"] for i in members})
+            out.append({"text": "; ".join(caps), "captions": json.dumps(caps),
+                        "labels": len(members),
                         "easting": round(sum(es) / len(es), 1),
                         "northing": round(sum(ns) / len(ns), 1)})
     return out
@@ -232,7 +234,8 @@ def main() -> None:
             rows_out = sorted(places(ew, cls), key=lambda r: (r["easting"], r["northing"]))
             path = args.places / f"{cls}_places.csv"
             with path.open("w", newline="", encoding="utf-8") as fh:
-                w = csv.DictWriter(fh, ["place_id", "text", "labels", "easting", "northing"])
+                w = csv.DictWriter(fh, ["place_id", "text", "captions", "labels",
+                                        "easting", "northing"])
                 w.writeheader()
                 for i, r in enumerate(rows_out):
                     w.writerow({"place_id": f"{prefix}{i:05d}", **r})
@@ -249,13 +252,15 @@ def main() -> None:
         merged = []
         for members in cluster(coords, CLUSTER_M):
             texts = sorted({assertions[i]["text"] for i in members})
-            merged.append({"text": "; ".join(texts), "labels": len(members),
+            merged.append({"text": "; ".join(texts), "captions": json.dumps(texts),
+                           "labels": len(members),
                            "easting": round(sum(coords[i][0] for i in members) / len(members), 1),
                            "northing": round(sum(coords[i][1] for i in members) / len(members), 1)})
         merged.sort(key=lambda r: (r["easting"], r["northing"]))
         path = args.places / "assertion_places.csv"
         with path.open("w", newline="", encoding="utf-8") as fh:
-            w = csv.DictWriter(fh, ["place_id", "text", "labels", "easting", "northing"])
+            w = csv.DictWriter(fh, ["place_id", "text", "captions", "labels",
+                                    "easting", "northing"])
             w.writeheader()
             for i, r in enumerate(merged):
                 w.writerow({"place_id": f"as{i:05d}", **r})
