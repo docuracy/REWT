@@ -579,16 +579,25 @@ seamless layers cover England and Wales where the 25-inch is county by county. W
 25-inch changes is not which sheet is normal but **which operations are possible**, and the
 two do not transfer:
 
-| | six-inch | 25-inch |
+**And the distinction is per reach, not per sheet — a second correction, on top of the
+first.** OS switches from one line to two at a **ground width**, so a six-inch sheet carries
+both: a mill leat as a single stroke, a navigable river as a pair of banks, sometimes in one
+frame. `docs/evidence.md` records the Weaver at Northwich drawn as two banks on the
+six-inch. What the finer scale changes is **how many** channels fall on the two-bank side of
+the threshold, not whether the distinction exists.
+
+| | one stroke of ink | two banks with white between |
 |---|---|---|
-| how a watercourse is drawn | **one stroke of ink** | **two banks with white between** |
+| where it happens | a leat, a brook, a narrow cut — at any scale | a navigable river, a canal; more often at 1:2,500 |
 | the operation that fits | **follow the ink** (phase 3) | **find the middle between two sides** |
-| centring | refuses, correctly — there is no width to find a middle of | its proper home |
+| centring | refuses — there is no width to find a middle of | its proper home |
 | channel width | not readable | readable, and `PLAN.md` §10 wants it |
 
-**So centring is a 25-inch operation and snapping is a six-inch one**, and each is close to
-useless on the other's sheet. That is why the demonstration frames show centring refusing:
-on a single-stroke channel the refusal *is* the right answer.
+**So the tool must not choose by sheet.** A version of this did, disabling centring off the
+25-inch, and it would have been wrong on every wide river — which is precisely where the
+navigation evidence lives. **The per-vertex refusal decides it correctly and from the
+pixels**, and needed nothing added: *that point is on ink, so the channel here is drawn as a
+single line.*
 
 **The bank problem, stated for the scale it belongs to.** At 1:2,500 a corridor livewire
 minimising ink cost would lock onto whichever bank is darker or nearer and produce a trace

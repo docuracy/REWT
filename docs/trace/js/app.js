@@ -211,23 +211,31 @@ function applyBackdrop(layer) {
 function paintWhen() {
   const when = boundFromSurveyYear(CURRENT?.surveyYear);
   $('whenline').textContent = boundInWords(when);
-  /* Centring is a 25-inch operation. On a sheet where a watercourse is one stroke there is
-     no width to find a middle of, and the mode will refuse every vertex — correctly, but a
-     contributor left to discover that by watching it refuse will conclude the tool is
-     broken. Say which sheet affords what, before they try. */
-  const isDetailed = (CURRENT?.group === '25_inch');
-  const box = $('centring');
-  box.disabled = !isDetailed;
-  if (!isDetailed && box.checked) { box.checked = false; TRACER?.setCentring(false); }
-  box.parentElement.title = isDetailed
-    ? 'At 1:2,500 a watercourse is drawn as two banks, so it has a middle to find.'
-    : 'Only on the 25-inch. On this sheet a watercourse is a single stroke of ink: there '
-      + 'is no width to find a middle of, and every vertex would be refused.';
-  $('sheetnote').textContent = isDetailed
-    ? '1:2,500 — a watercourse is drawn as two banks here, so centring applies and a '
-      + 'channel width can be read.'
-    : 'Six-inch — a watercourse is a single stroke here. Centring does not apply; '
-      + 'following the ink (phase 3) is the operation for this sheet.';
+  /* WHICH OPERATION FITS IS A PROPERTY OF THE REACH, NOT OF THE SHEET, and an earlier
+     version of this function got that wrong: it disabled centring off the 25-inch, on my
+     claim that a six-inch watercourse is a single stroke. It is not universally. OS
+     switches from one line to two at a GROUND width, so a six-inch sheet carries both — a
+     mill leat as a single stroke and a navigable river as a pair of banks, sometimes in
+     one frame. `docs/evidence.md` records the Weaver at Northwich drawn as two banks on
+     the six-inch. The gate would therefore have been wrong on every wide river, which is
+     exactly where the navigation evidence lives.
+
+     The per-vertex refusal below already decides this correctly and from the pixels — *that
+     point is on ink, so the channel here is drawn as a single line* — so the sheet-level
+     gate was a worse test layered on top of a working one. Removed. What the finer scale
+     changes is how many channels fall on the two-bank side of the threshold, not whether
+     the distinction exists. */
+  const finer = (CURRENT?.group === '25_inch');
+  $('centring').disabled = false;
+  $('centring').parentElement.title =
+    'Finds the middle where the surveyor drew two banks, and refuses where the channel is '
+    + 'a single stroke. Which of those it is depends on the reach, not on the sheet.';
+  $('sheetnote').textContent = finer
+    ? '1:2,500 — more channels are drawn as two banks at this scale, so centring applies '
+      + 'more often and a width can be read more often.'
+    : 'Six-inch — a leat is a single stroke and a navigable river is a pair of banks, '
+      + 'often on the same sheet. Centring finds the middle of the second and refuses on '
+      + 'the first; it decides per vertex, from the ink.';
 }
 
 async function startMap() {
