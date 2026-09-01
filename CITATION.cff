@@ -16,6 +16,7 @@ license: CC-BY-4.0
 authors:
   - family-names: Gadd
     given-names: Stephen
+    affiliation: Docuracy Ltd
 identifiers:
   - type: doi
     value: 10.5281/zenodo.22238250

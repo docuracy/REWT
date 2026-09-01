@@ -18,12 +18,21 @@
     "written into code, and a URL belongs here rather than there."
   ],
   "creators": [
-    { "name": "Gadd, Stephen" }
+    {
+      "name": "Gadd, Stephen",
+      "affiliation": "Docuracy Ltd"
+    }
   ],
   "upload_type": "dataset",
   "license": "cc-by-4.0",
   "keywords": [
-    "rivers", "hydrology", "England", "Wales", "river network",
-    "Ordnance Survey", "historical geography", "drainage network"
+    "rivers",
+    "hydrology",
+    "England",
+    "Wales",
+    "river network",
+    "Ordnance Survey",
+    "historical geography",
+    "drainage network"
   ]
 }
