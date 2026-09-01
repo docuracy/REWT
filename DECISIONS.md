@@ -1702,3 +1702,42 @@ PLAN.md §10 and declined the rest, on the grounds that a specification records 
 must be true rather than what was tried, and that a plan which grows a paragraph
 whenever something is found becomes a diary and stops being checkable. That is right,
 and the boundary is worth having in writing.
+
+---
+
+**D-056 — A single sea network emerges, and I nearly reported that it did not.**
+*2026-09-01*
+
+§10's construction is built as far as the spanning tree, and it does what the
+specification hoped: **cost-allocation partitions the sea into 3,438 territories, all
+3,438 are adjacent-connected, and the minimum spanning tree over them has 3,437 edges
+— a single tree spanning every entry point around Britain.** The loop was not drawn
+and was not a parameter. It is what remained when the routes agreed.
+
+**But the first two answers said otherwise, and both were mine rather than the sea's.**
+The adjacency graph reported **84** components, then — after adding diagonal
+adjacency, which can only add edges — **169**. More edges cannot produce more
+components, and that impossibility is the only reason the result was questioned rather
+than written up as a finding about patchy bathymetry.
+
+**The cause: 421 of the 5,817 crossings cost exactly zero, and a sparse matrix does not
+store an explicit zero as an edge.** `scipy.sparse` drops them, `connected_components`
+walks the sparsity structure, and 421 real adjacencies — the cheapest ones, where two
+territories meet at the very cell a source sits on — silently disappeared. The graph
+was well-formed, the code ran clean, and the answer was confidently wrong in the
+direction that would have looked like a *discovery*: a fragmented coastal sea, which is
+exactly the finding §10 warns must be reported rather than repaired.
+
+Adding an epsilon to every weight keeps each edge in the structure and the count
+resolves to 1.
+
+**This is the day's shape once more and the most dangerous instance of it.** The
+others produced a wrong number. This one would have produced a wrong *conclusion about
+the world* — and one the specification had pre-authorised me to report, since it says a
+trunk that does not close is a finding about the bathymetry. **A prepared explanation
+for a failure is what makes the failure easy to accept.** The check that saved it was
+not scepticism about the data; it was noticing that the two runs contradicted each
+other in a way arithmetic forbids.
+
+So the rule earned here: **when a result changes after a change that could only move it
+one way, the discrepancy is the finding.** Not the result.
