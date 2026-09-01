@@ -393,13 +393,14 @@ project could not reach on its own.** The remaining four fifths are tracing — 
 repetitive, and needing many hands rather than one specialist.
 
 **Which is the other half of the argument, and the reason the two fit.** The [tooling for
-contribution](#designing-for-contribution) exists because that remainder was always going to be
-the problem: a snap-to-ink tracer that fits a segment to the printed ink of a historic sheet,
-so two people tracing the same channel produce substantially the same line and every vertex
-records which sheet it came from and whether a hand or an algorithm placed it; and a
-correction tool that returns a report against a *specific line* with the identifiers needed to
-act on it. **That is what makes the other four fifths feasible at all** — not a promise of
-effort, but the machinery for distributing it, already built and already tested at scale.
+contribution](#designing-for-contribution) is the answer to that remainder: a snap-to-ink
+tracer that fits a segment to the printed ink of a historic sheet, so two people tracing the
+same channel produce substantially the same line and every vertex records which sheet it came
+from and whether a hand or an algorithm placed it; and a correction tool that returns a report
+against a *specific line* with the identifiers needed to act on it. **That is what would make
+the other four fifths feasible** — machinery for distributing the work rather than a promise
+of effort. Both were built and used in the scoping exercise, and **neither is yet rebuilt
+here**; the rebuild is part of the second edition, not a thing a reader can go and use today.
 
 ### What each side actually has
 
@@ -478,8 +479,10 @@ what is already there.
 
 ## Designing for contribution
 
-If volunteers are to help, the tooling has to exist before they are asked — and the
-scoping exercise built the parts of it that were hardest:
+If volunteers are to help, the tooling has to exist before they are asked. The scoping
+exercise built the parts of it that were hardest and proved they work; **neither is rebuilt in
+this repository yet**, and this section describes what is being rebuilt rather than what is
+deployed:
 
 - **A correction-request tool.** A reader selects the stretch that is wrong, says what is
   wrong with it, and the report carries the identifiers needed to act on it. Feedback

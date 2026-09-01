@@ -31,8 +31,9 @@ minutes what analysis had missed for days.
 
 ## What carries over, and what does not
 
-**Carried over:** the approach, the hand-made judgements and their reasoning, the tracing
-and correction tooling, and the source declarations.
+**To be carried over:** the approach, the hand-made judgements and their reasoning, the
+tracing and correction tooling, and the source declarations. The judgements and the source
+declarations are here; the tooling is rebuilt rather than copied, and is not here yet.
 
 **Not carried over:** the pipeline's accumulated assumptions about the order of work. The
 scoping exercise grew twenty-three stages in which the sequence was load-bearing and
