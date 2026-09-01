@@ -611,10 +611,12 @@ def test_the_national_reachability_reproduces_from_the_published_network(audit):
     likely to be quoted on its own, so it should be checkable by anyone holding the
     GeoPackage and nothing else.
 
-    Note what `gb_km` and `in_scope_km` mean, because the names do not say it and
-    this test had to establish it: they are the lengths **reached**, not the totals.
-    97,786 km in scope is 93.28% of 104,829 km, not a total of which 93.28% was
-    reached. A reader who assumes otherwise understates the network by 7,000 km.
+    The keys used to be `gb_km` and `in_scope_km`, meaning the lengths **reached**
+    — which this test had to establish by computing both readings, because the
+    names did not say. They are now `reached_*` with `total_*` beside them, so the
+    ambiguity this docstring existed to warn about is gone from the artefact
+    rather than only documented here. Renamed by rewt-d3; the assertion below is
+    unchanged in substance and now names which quantity it is checking.
     """
     reachability = audit.get("reachability")
     if not reachability:
@@ -637,8 +639,8 @@ def test_the_national_reachability_reproduces_from_the_published_network(audit):
             f"{label} reachable share is {reached_km / total_km:.6f} in the published "
             f"network and {reachability[f'{label}_share']:.6f} in the audit"
         )
-        assert abs(reached_km - reachability[f"{label}_km"]) < 0.1, (
-            f"{label}_km is {reachability[f'{label}_km']:,.1f} in the audit and "
+        assert abs(reached_km - reachability[f"reached_{label}_km"]) < 0.1, (
+            f"{label}_km is {reachability[f'reached_{label}_km']:,.1f} in the audit and "
             f"{reached_km:,.1f} reached in the published network"
         )
 

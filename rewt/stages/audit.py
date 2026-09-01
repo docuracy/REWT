@@ -507,10 +507,20 @@ def run() -> dict:
     report.add("touching_not_joined", int(len(pairs)))
     report.add("cycles", {"count": len(cycles), "km": round(cycle_km, 1)})
     report.add("multi_sink_components", int(len(multi)))
+    # `*_km` used to mean the length REACHED, while the prose beside it read
+    # "93.28% of 97,786 km" — which states that 97,786 km is the total and that
+    # 93.28% of *that* reaches the sea. Both halves wrong: the total is 104,829 km
+    # and 97,786 km is what reaches. The line is internally consistent and reads
+    # perfectly, which is why it survived a dozen readings by me — I already knew
+    # which number was which. It is invisible to anyone with the context and
+    # visible only to a reader without it, and that reader is who the deliverable
+    # is for. Found by rewt-6a recomputing both readings to see which was meant.
     report.add("reachability", {
-        "gb_km": round(national[0] or 0, 1),
+        "reached_gb_km": round(national[0] or 0, 1),
+        "total_gb_km": round(national[1] or 0, 1),
         "gb_share": round((national[0] or 0) / (national[1] or 1), 6),
-        "in_scope_km": round(scoped[0] or 0, 1),
+        "reached_in_scope_km": round(scoped[0] or 0, 1),
+        "total_in_scope_km": round(scoped[1] or 0, 1),
         "in_scope_share": round((scoped[0] or 0) / (scoped[1] or 1), 6),
     })
     report.add("basins", ranked.head(200).to_dict("records"))
@@ -852,8 +862,12 @@ def _write_human_report(report: Report, ranked, by_form, worst) -> None:
     ]
     reach = report.sections["reachability"]
     lines += [
-        f"- Great Britain: **{reach['gb_share']:.2%}** of {reach['gb_km']:,.0f} km",
-        f"- In scope: **{reach['in_scope_share']:.2%}** of {reach['in_scope_km']:,.0f} km",
+        f"- Great Britain: **{reach['gb_share']:.2%}** — "
+        f"{reach['reached_gb_km']:,.0f} km reaches tidal water "
+        f"of {reach['total_gb_km']:,.0f} km",
+        f"- In scope: **{reach['in_scope_share']:.2%}** — "
+        f"{reach['reached_in_scope_km']:,.0f} km reaches tidal water "
+        f"of {reach['total_in_scope_km']:,.0f} km",
         "",
         "## Dead ends",
         "",

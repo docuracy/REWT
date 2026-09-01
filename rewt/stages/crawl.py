@@ -153,10 +153,14 @@ def run() -> dict:
     )
 
     report.add("seeds", len(seeds))
+    # Named `reached_*` for the reason given in the audit: `gb_km` meaning the
+    # length reached, beside a share, invites the reader to take it for the total.
     report.add("reachable", {
-        "gb_km": round(reached_km, 1),
+        "reached_gb_km": round(reached_km, 1),
+        "total_gb_km": round(total_km, 1),
         "gb_share": round(reached_km / total_km, 6),
-        "in_scope_km": round(in_scope[0] or 0, 1),
+        "reached_in_scope_km": round(in_scope[0] or 0, 1),
+        "total_in_scope_km": round(in_scope[1] or 0, 1),
         "in_scope_share": round((in_scope[0] or 0) / (in_scope[1] or 1), 6),
     })
     report.write_json(paths.PUBLISHED / "audit" / "crawl.json")
