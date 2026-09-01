@@ -54,12 +54,18 @@ jobs:
           echo "no provider credential found in docs/"
 
       - uses: ruby/setup-ruby@v1
-        with: { ruby-version: '3.3', bundler-cache: false }
+        with:
+          ruby-version: '3.3'
+          working-directory: docs
+          # Resolve and cache from docs/Gemfile, which pins the github-pages gem —
+          # the same Jekyll, themes and plugins GitHub's own builder used before this
+          # workflow replaced it. Installing bare Jekyll built nothing: _config.yml
+          # asks for jekyll-theme-primer and the theme is not in the base gem.
+          bundler-cache: true
 
       - name: Build the Jekyll site
-        run: |
-          gem install --no-document jekyll bundler
-          cd docs && jekyll build --destination ../_site
+        working-directory: docs
+        run: bundle exec jekyll build --destination ../_site
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

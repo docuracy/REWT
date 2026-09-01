@@ -784,3 +784,27 @@ def test_the_two_reachability_readings_are_computed_the_same_way(audit):
         "more length reaches the sea than reaches tidal water, which cannot happen: "
         "the sea test is a filter applied to the tidal one"
     )
+
+
+def test_the_audit_ships_as_its_own_release_asset():
+    """`docs/index.md` states the audit published with the data is the authority for
+    every figure on the documentation site. That promise rests on one thing.
+
+    **Fetchable by URL means listed as a file in its own right.** Folding
+    `published/` into a single archive would leave the audit machine-readable in
+    principle and unreachable in practice, and would read as tidiness in a diff —
+    nobody reviewing the change would think of a sentence on another site. This
+    test is the only thing that connects them, and rewt-1d asked for it before the
+    first tag rather than after.
+    """
+    from rewt import release
+
+    assert release.audit_is_its_own_asset(), (
+        f"{release.MACHINE_READABLE_AUDIT} is no longer among the release assets. "
+        "A promise on the documentation site depends on it being fetchable by URL."
+    )
+    names = [rel for rel, _ in release.ASSETS]
+    assert not any(n.endswith((".zip", ".tar.gz", ".tgz")) for n in names), (
+        f"a release asset is an archive: {names}. The audit must not end up inside "
+        "one, and an archive alongside it invites exactly that consolidation later."
+    )

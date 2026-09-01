@@ -509,6 +509,21 @@ def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) 
                 f"stages would re-run: {', '.join(stale)}. Run `rewt build`."
             )
 
+    # The documentation site states that the audit shipped with the data is the
+    # authority for every figure on it. That promise rests on the audit being its own
+    # asset rather than a member of an archive, and folding published/ into one file
+    # would read as tidiness in a diff. This is the only place the two are connected.
+    if not release.audit_is_its_own_asset():
+        problems.append(
+            f"{release.MACHINE_READABLE_AUDIT} is not attached as its own asset. The "
+            "documentation site promises the audit is fetchable with the data; inside "
+            "an archive it is machine-readable in principle and unreachable in practice."
+        )
+    try:
+        release.assets()
+    except FileNotFoundError as exc:
+        problems.append(str(exc))
+
     rc = subprocess.run(
         [sys.executable, "-m", "pytest", "tests", "-q"],
         capture_output=True, text=True, cwd=paths.ROOT,

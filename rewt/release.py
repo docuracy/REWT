@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import json
 
+import pathlib
+
 from . import paths
 
 
@@ -152,3 +154,50 @@ def notes(tag: str) -> str:
         "attached to it becomes uncheckable the moment the next edition lands.",
     ]
     return "\n".join(L) + "\n"
+
+
+# WHAT A RELEASE CARRIES, owned here and read by everything that needs it — the check
+# that refuses a bad release and the command that cuts one. Two lists would be two
+# facts that can disagree, which is the failure this repository keeps meeting; rewt-1d
+# puts the general form well: **do not restate a fact that something else owns.**
+#
+# `audit.json` IS LISTED SEPARATELY AND MUST STAY THAT WAY. The documentation site
+# states that the audit published with the data is the authority for every figure on
+# it, and that promise holds only while a script can fetch the audit BY URL. Folding
+# published/ into one archive would read as tidiness in a diff and would quietly make
+# that sentence false; nobody reviewing the tidy-up would think of the sentence. The
+# test below is the only thing that connects them.
+ASSETS: tuple[tuple[str, str], ...] = (
+    ("rewt_stage1_network.gpkg", "the network"),
+    ("rewt_stage1_corrections.gpkg", "every curated judgement, as its own file"),
+    ("audit/audit.json", "the audit, machine-readable — the authority for every figure"),
+    ("audit/audit.md", "the same audit, for a person"),
+    ("provenance.json", "what was fetched, and what it hashed to"),
+    ("ATTRIBUTION.md", "every source's required statement, in full"),
+)
+
+MACHINE_READABLE_AUDIT = "audit/audit.json"
+
+
+def assets() -> list[tuple[pathlib.Path, str]]:
+    """The files a release attaches, resolved, with the missing ones named."""
+    out, missing = [], []
+    for rel, why in ASSETS:
+        path = paths.PUBLISHED / rel
+        (out if path.exists() else missing).append((path, why))
+    if missing:
+        raise FileNotFoundError(
+            "the build has not produced everything a release carries:\n  "
+            + "\n  ".join(f"{p.relative_to(paths.ROOT)} — {w}" for p, w in missing)
+        )
+    return out
+
+
+def audit_is_its_own_asset() -> bool:
+    """The documentation site's promise, expressed as a question code can ask.
+
+    Fetchable by URL means listed as a file in its own right. Inside an archive it is
+    still machine-readable in principle and no longer reachable in practice, and the
+    difference is invisible in a diff that only shows a shorter asset list.
+    """
+    return MACHINE_READABLE_AUDIT in {rel for rel, _ in ASSETS}

@@ -1,0 +1,13 @@
+# The gems GitHub Pages itself uses, pinned as one set.
+#
+# The site builds from a workflow now rather than from the branch, and the workflow
+# has to reproduce what GitHub's own builder did — including the themes it bundles.
+# Installing bare Jekyll does not: `_config.yml` asks for `jekyll-theme-primer` and
+# the build died on `Could not find 'jekyll-theme-primer'`.
+#
+# The `github-pages` gem is that reproduction. It pins Jekyll, every supported theme
+# and every allowed plugin to the exact versions Pages runs, so the workflow builds
+# what the branch build built rather than something close to it. Naming Jekyll's
+# version here instead would drift from Pages the first time either moved.
+source "https://rubygems.org"
+gem "github-pages", group: :jekyll_plugins
