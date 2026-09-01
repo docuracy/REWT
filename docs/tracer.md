@@ -47,6 +47,34 @@ than by asking people to tick a box, because an agreement figure is worthless if
 contributors forgot. That distribution is a publishable result in its own right, and a
 precondition for trusting anything else contributed.
 
+## Two people, one basin
+
+Work is handed out **a basin at a time**, and a contributor holds it while they are in it.
+
+The basin is the unit because it is the unit a *person* learns: its drainage pattern, the
+sheets that cover it, the local vocabulary for a mill channel. The second hour in a basin is
+faster than the first, and scattering somebody across the country throws that away — forty
+places in forty valleys are forty unrelated ten-minute puzzles, where forty places in one
+valley are an afternoon's work in a landscape you have come to know.
+
+**The hold is a real one rather than a courtesy.** It is taken atomically, so two people
+cannot both believe they have it, and it **lapses after thirty minutes without activity**.
+The timeout is deliberately long: the drawing is quick and the deciding is slow, and a
+timeout tuned to the drawing would take a basin away from someone in the middle of reading a
+sheet. A lapsed hold can be claimed by anyone, and the record says who took it from whom, so
+an abandoned basin resolves itself without anybody administering it.
+
+**The interface never says *locked*.** It says who holds it and how long is left, because
+that is what is actually known.
+
+**And two people in one basin is sometimes correct.** The hold prevents *accidental*
+double-work; it does not prevent the deliberate kind, which is [how the agreement between
+two tracings is measured](#why-snapping-exists-and-what-it-is-not) and is arranged when the
+work is handed out rather than by anyone overriding anything. A reader who meets the hold
+without meeting the overlap would conclude the tool forbids two people on one channel. It
+does not — it arranges that on purpose, blind, and reports the distance between what they
+draw.
+
 ## How the ink is followed
 
 The obvious approach does not work. **On these sheets the median blue fraction is 0.000%**
