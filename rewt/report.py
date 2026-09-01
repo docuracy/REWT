@@ -118,9 +118,19 @@ class Finding:
     basin_id: int | None = None
 
     def to_row(self) -> dict:
+        """For a database column, where metrics must be one value."""
         d = asdict(self)
         d["metrics"] = json.dumps(d["metrics"], sort_keys=True, default=str)
         return d
+
+    def to_json(self) -> dict:
+        """For the report, where the file is already JSON.
+
+        Encoding a dict as a string inside a JSON document makes a consumer parse it
+        twice, and a map style expression cannot see into it at all — the viewer had
+        to flatten it server-side. A report is not a table.
+        """
+        return asdict(self)
 
 
 class Report:
@@ -149,7 +159,7 @@ class Report:
         return {
             "report": self.name,
             "sections": self.sections,
-            "findings": [f.to_row() for f in self.findings],
+            "findings": [f.to_json() for f in self.findings],
         }
 
     def write_json(self, path: Path) -> Path:

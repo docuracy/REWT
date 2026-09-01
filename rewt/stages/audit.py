@@ -416,6 +416,7 @@ def run() -> dict:
             f"within 150 m and {len(crossings) - corroborated:,} do not — the latter "
             "are the ones to look at"
         )
+        _write_refused_crossings(crossings)
         for row in crossings.head(int(p("audit.report_top_n"))).itertuples():
             findings.append(
                 Finding(
@@ -490,6 +491,62 @@ def run() -> dict:
         "cycles": len(cycles),
         "reachable_share_in_scope": round((scoped[0] or 0) / (scoped[1] or 1), 4),
     }
+
+
+def _write_refused_crossings(frame: pd.DataFrame) -> None:
+    """All of them, in their own file, uncapped.
+
+    The ranked lists in this audit are capped because they are ordered by magnitude and
+    the tail is small. **These are not ordered by magnitude.** An uncorroborated
+    crossing is a question — is this an aqueduct or a confluence? — and a cap on a list
+    of questions silently decides which ones get asked. So every one is written, with
+    `corroborated` as a real boolean and the nearest structure named where there is
+    one, so that a reader can sort and colour them rather than take the order given.
+    """
+    import json as _json
+
+    features = []
+    for row in frame.sort_values(
+        ["structure_m", "easting", "northing"], na_position="first"
+    ).itertuples():
+        corroborated = bool(pd.notna(row.structure_m))
+        features.append(
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [round(float(row.easting), 2),
+                                    round(float(row.northing), 2)],
+                },
+                "properties": {
+                    "stranded_watercourse": row.mine,
+                    "draining_watercourse": row.theirs,
+                    "corroborated": corroborated,
+                    "structure": row.structure if corroborated else None,
+                    "structure_m": round(float(row.structure_m), 1) if corroborated else None,
+                    "refused_by": "D-016",
+                    "note": (
+                        "A Canal & River Trust aqueduct or culvert is recorded nearby, "
+                        "which corroborates the refusal."
+                        if corroborated
+                        else "No Canal & River Trust structure is recorded within "
+                        "150 m. The Trust covers 101 waterways only, so this is "
+                        "absence of evidence and not evidence of absence — these are "
+                        "the ones worth looking at."
+                    ),
+                },
+            }
+        )
+    doc = {
+        "type": "FeatureCollection",
+        "name": "refused_crossings",
+        "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:EPSG::27700"}},
+        "features": features,
+    }
+    out = paths.PUBLISHED / "audit" / "refused_crossings.geojson"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(_json.dumps(doc, indent=1, sort_keys=True), encoding="utf-8")
+    log.detail(f"    all {len(features):,} written to {paths.rel(out)}, uncapped")
 
 
 def _refused_crossings() -> pd.DataFrame:
