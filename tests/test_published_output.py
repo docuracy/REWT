@@ -571,3 +571,73 @@ def test_the_audit_and_the_published_file_agree_per_basin():
         "link to the wrong basin — check whether each is keying on the oriented "
         "or the digitised downstream node."
     )
+
+
+def test_the_published_ids_are_what_the_scheme_would_mint_today(links):
+    """The golden values pin the rule; this pins the artefact against the rule.
+
+    `test_the_identifier_scheme_has_not_moved` fails when a composition rule
+    changes, which is the loud half. The quiet half is the published file, which
+    keeps whatever ids it was written with — so a scheme change plus an obliging
+    update to the golden values would leave the export carrying ids the code can no
+    longer mint, and nothing would say so.
+
+    Changing `ids.publisher` from `os:link:` to `os:link/` renumbered every anchored
+    basin and went through a full green build. This is the check that would have
+    caught it in the artefact rather than in the rule.
+    """
+    from rewt import ids
+
+    survey = links[(links["origin"] == "survey") & links["publisher_id"].notna()]
+    if survey.empty:
+        pytest.skip("no survey link carries a publisher id")
+    mismatched = [
+        f"{row.link_id} should be {ids.publisher('link', row.publisher_id)}"
+        for row in survey.head(5000).itertuples()
+        if row.link_id != ids.publisher("link", row.publisher_id)
+    ]
+    assert not mismatched, (
+        f"{len(mismatched)} published link ids are not what rewt.ids would mint "
+        "today, so the export and the scheme have parted company:\n  "
+        + "\n  ".join(mismatched[:5])
+    )
+
+
+def test_the_national_reachability_reproduces_from_the_published_network(audit):
+    """The headline number, re-derived from the ingredients published beside it.
+
+    *Reachability. The share of length from which the sea can be reached. This is
+    the headline number and the one to watch* (§6). It is also the number most
+    likely to be quoted on its own, so it should be checkable by anyone holding the
+    GeoPackage and nothing else.
+
+    Note what `gb_km` and `in_scope_km` mean, because the names do not say it and
+    this test had to establish it: they are the lengths **reached**, not the totals.
+    97,786 km in scope is 93.28% of 104,829 km, not a total of which 93.28% was
+    reached. A reader who assumes otherwise understates the network by 7,000 km.
+    """
+    reachability = audit.get("reachability")
+    if not reachability:
+        pytest.skip("the audit reports no reachability section")
+
+    frame = _read(
+        NETWORK, "link", ["in_scope", "reaches_tidal", "length_m", "retired"]
+    )
+    live = frame[~frame["retired"].astype(bool)]
+
+    for label, subset in (
+        ("gb", live),
+        ("in_scope", live[live["in_scope"].astype(bool)]),
+    ):
+        total_km = subset["length_m"].sum() / 1000.0
+        reached_km = (
+            subset[subset["reaches_tidal"].astype(bool)]["length_m"].sum() / 1000.0
+        )
+        assert abs(reached_km / total_km - reachability[f"{label}_share"]) < 1e-6, (
+            f"{label} reachable share is {reached_km / total_km:.6f} in the published "
+            f"network and {reachability[f'{label}_share']:.6f} in the audit"
+        )
+        assert abs(reached_km - reachability[f"{label}_km"]) < 0.1, (
+            f"{label}_km is {reachability[f'{label}_km']:,.1f} in the audit and "
+            f"{reached_km:,.1f} reached in the published network"
+        )

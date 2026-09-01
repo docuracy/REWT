@@ -168,3 +168,59 @@ def test_the_curated_judgements_are_tracked(tracked):
         + ", ".join(untracked)
         + ". They are the product, not an artefact."
     )
+
+
+# --------------------------------------------------------------------------
+# One place, and only one — the same shape as ids.py's grep
+# --------------------------------------------------------------------------
+
+# Each of these is a rule AGENTS.md states in one sentence and that nothing else
+# enforces. They are deliberately crude: they read source text rather than reason
+# about the code, because the mistake they catch is a shape — an import appearing
+# in a second file — and a check that catches the shape is worth more than its
+# ugliness costs. The grep for identifiers minted outside rewt/ids.py found a live
+# bug on its first run that reading had missed twice.
+ONE_PLACE_ONLY = [
+    (
+        "duckdb",
+        r"^\s*(?:import\s+duckdb|from\s+duckdb\b)",
+        {"rewt/db.py"},
+        "One module owns the database connection; everything else asks it for one. "
+        "This is what keeps a move to PostGIS cheap, and it is why there is one "
+        "module and not six.",
+    ),
+    (
+        "requests",
+        r"^\s*(?:import\s+requests|from\s+requests\b)",
+        {"rewt/acquire.py"},
+        "Declare every input; hard-code no URL. Sources are fetched by one module, "
+        "so an unregistered source is an error rather than a quiet download.",
+    ),
+    (
+        "the export CRS",
+        r"crs\.export",
+        {"rewt/stages/export.py"},
+        "EPSG:27700 throughout; EPSG:4326 only at export. Reproject once, at the "
+        "boundary, and nowhere else — a second place is how half a network ends up "
+        "in degrees.",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "what,pattern,allowed,why", ONE_PLACE_ONLY, ids=[r[0] for r in ONE_PLACE_ONLY]
+)
+def test_only_one_module_may_do_it(what, pattern, allowed, why):
+    """A rule with exactly one legitimate home, checked by looking for a second."""
+    rx = re.compile(pattern, re.MULTILINE)
+    offenders = sorted(
+        f"{path.relative_to(paths.ROOT)}"
+        for path in (paths.ROOT / "rewt").rglob("*.py")
+        if str(path.relative_to(paths.ROOT)) not in allowed
+        and rx.search(path.read_text(encoding="utf-8"))
+    )
+    assert not offenders, (
+        f"{what} appears outside {', '.join(sorted(allowed))}: "
+        + ", ".join(offenders)
+        + f". {why}"
+    )
