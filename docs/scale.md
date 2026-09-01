@@ -28,6 +28,23 @@ misdrawn junction strands everything above it. The scoping exercise cleared the 
 them with **73 hand-authored corrections** — roughly one judgement per thirty defects —
 each checked at the place by one person in a few minutes.
 
+<figure class="sheet-figure">
+  <div class="frames">
+    <img src="{{ '/assets/maps/network-as-assembled.jpg' | relative_url }}"
+         alt="The Stage 1 viewer over the Trent, the east Midlands and the Fens: the network coloured by form, with corrections, reversals, retired lines, tidal termini and dead ends drawn on top, the dead ends sized by the length draining into them.">
+  </div>
+  <figcaption><strong>The work, at the places it is.</strong> The Trent, the east Midlands and
+  the Fens, with everything the repair has touched drawn over the network: channels this
+  project added, directions it reversed, lines it retired rather than deleted, and — sized by
+  the length of river draining into each — the <strong>dead ends still outstanding</strong>.
+  The clusters are the argument: they gather in canal country and in the Fens and thin out
+  elsewhere, which is why a count of defects is the wrong unit and a count of judgements is
+  the right one. Read from the build of 1 September 2026, fingerprint <code>8c2a2095</code>,
+  over OS Open Rivers 2026-04, when 93.29% of in-scope length reached the sea and 1,290 dead
+  ends were outstanding. <span class="credit">Contains OS data © Crown copyright and database
+  rights 2026. Base map © OpenStreetMap contributors.</span></figcaption>
+</figure>
+
 **That clustering has now been looked at rather than taken on trust.** Drawn over the current
 build, the dead ends are nothing like evenly spread: they pile into the canal country of
 Cheshire and the west Midlands, and into the Fens, while Wales, the south-west peninsula and

@@ -1,0 +1,1827 @@
+{
+ "_generated_by": "tools/tracer/gen_backdrops.py from tools/nls_layers.json",
+ "_no_dates": "Deliberate. The bucket carries no survey years and this file invents none; the annotation records an explicit unknown instead.",
+ "_bounds_are_a_hint": "Extents are derived from a listing at zoom 9, so a box is snapped to about 78 km and several counties contain any given point. Fine for choosing a default; not a containment test. To know what actually covers a coordinate, ask the bucket for the tile.",
+ "layers": [
+  {
+   "id": "osm",
+   "name": "OpenStreetMap (for finding the place)",
+   "group": "modern",
+   "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    19
+   ],
+   "bounds": [
+    -180,
+    -85,
+    180,
+    85
+   ],
+   "surveyYear": null,
+   "historic": false,
+   "traceable": false,
+   "attribution": "© OpenStreetMap contributors"
+  },
+  {
+   "id": "os/6inchsecond",
+   "name": "OS Six-Inch, 2nd edition — seamless",
+   "group": "seamless",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/os/6inchsecond/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    17
+   ],
+   "bounds": [
+    -8.4375,
+    49.838,
+    2.1094,
+    60.9304
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "os/6inchfirst",
+   "name": "OS Six-Inch, 1st edition — seamless",
+   "group": "seamless",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/os/6inchfirst/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    17
+   ],
+   "bounds": [
+    -8.4375,
+    54.5721,
+    0.0,
+    60.9304
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/25_inch_holes_england",
+   "name": "25-inch — 25 inch holes england",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/25_inch_holes_england/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -7.0312,
+    49.838,
+    2.1094,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/Shrop_Derby",
+   "name": "25-inch — Shrop Derby",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/Shrop_Derby/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -3.5156,
+    52.0525,
+    -0.7031,
+    53.7487
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/Worcestershire",
+   "name": "25-inch — Worcestershire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/Worcestershire/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    51.618,
+    -1.4062,
+    52.9089
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/bedfordshire",
+   "name": "25-inch — Bedfordshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/bedfordshire/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -1.4062,
+    51.618,
+    0.0,
+    52.4828
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/berkshire",
+   "name": "25-inch — Berkshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/berkshire/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -2.1094,
+    51.1793,
+    0.0,
+    52.0525
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/buckingham",
+   "name": "25-inch — Buckingham",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/buckingham/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -1.4062,
+    51.1793,
+    0.0,
+    52.4828
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/cambridge",
+   "name": "25-inch — Cambridge",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/cambridge/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -0.7031,
+    51.618,
+    0.7031,
+    52.9089
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/cheshire",
+   "name": "25-inch — Cheshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/cheshire/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -3.5156,
+    52.9089,
+    -1.4062,
+    53.7487
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/cornwall",
+   "name": "25-inch — Cornwall",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/cornwall/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -7.0312,
+    49.838,
+    -3.5156,
+    51.1793
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/cornwall_1st",
+   "name": "25-inch — Cornwall 1st",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/cornwall_1st/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -7.0312,
+    49.838,
+    -3.5156,
+    51.1793
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/cumberland",
+   "name": "25-inch — Cumberland",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/cumberland/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    54.1624,
+    -2.1094,
+    55.3791
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/devon",
+   "name": "25-inch — Devon",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/devon/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.9219,
+    49.838,
+    -2.8125,
+    51.618
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/devon2nd",
+   "name": "25-inch — Devon2nd",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/devon2nd/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -4.9219,
+    49.838,
+    -2.8125,
+    51.618
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/dorset",
+   "name": "25-inch — Dorset",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/dorset/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -3.5156,
+    50.2893,
+    -1.4062,
+    51.1793
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/durham",
+   "name": "25-inch — Durham",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/durham/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    54.1624,
+    -0.7031,
+    55.3791
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/essex",
+   "name": "25-inch — Essex",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/essex/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -0.7031,
+    51.1793,
+    1.4062,
+    52.4828
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/gloucester",
+   "name": "25-inch — Gloucester",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/gloucester/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    51.1793,
+    -1.4062,
+    52.4828
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/gloucester2nd",
+   "name": "25-inch — Gloucester2nd",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/gloucester2nd/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    51.1793,
+    -1.4062,
+    52.4828
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/gloucester_3rd",
+   "name": "25-inch — Gloucester 3rd",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/gloucester_3rd/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    19
+   ],
+   "bounds": [
+    -2.8125,
+    51.1793,
+    -1.4062,
+    52.4828
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/gloucester_additions",
+   "name": "25-inch — Gloucester additions",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/gloucester_additions/{z}/{x}/{y}.png",
+   "zooms": [
+    9,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    51.1793,
+    -1.4062,
+    52.0525
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/hampshire",
+   "name": "25-inch — Hampshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/hampshire/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -2.1094,
+    50.2893,
+    -0.7031,
+    51.618
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/herefordshire",
+   "name": "25-inch — Herefordshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/herefordshire/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -3.5156,
+    51.618,
+    -2.1094,
+    52.4828
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/hertfordshire",
+   "name": "25-inch — Hertfordshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/hertfordshire/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -1.4062,
+    51.1793,
+    0.7031,
+    52.4828
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/holes_england",
+   "name": "25-inch — Holes england",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/holes_england/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -7.0312,
+    49.838,
+    2.1094,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/huntingdon",
+   "name": "25-inch — Huntingdon",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/huntingdon/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -0.7031,
+    52.0525,
+    0.7031,
+    52.9089
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/kent",
+   "name": "25-inch — Kent",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/kent/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -0.7031,
+    50.7365,
+    2.1094,
+    51.618
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/lancashire",
+   "name": "25-inch — Lancashire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/lancashire/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -3.5156,
+    52.9089,
+    -1.4062,
+    54.5721
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/leicestershire",
+   "name": "25-inch — Leicestershire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/leicestershire/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -2.1094,
+    52.0525,
+    0.0,
+    53.3309
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/lincolnshire",
+   "name": "25-inch — Lincolnshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/lincolnshire/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -1.4062,
+    52.4828,
+    0.7031,
+    53.7487
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/london",
+   "name": "25-inch — London",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/london/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -0.7031,
+    51.1793,
+    0.7031,
+    52.0525
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/middlesex",
+   "name": "25-inch — Middlesex",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/middlesex/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -0.7031,
+    51.1793,
+    0.7031,
+    52.0525
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/newcastle_addition",
+   "name": "25-inch — Newcastle addition",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/newcastle_addition/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    19
+   ],
+   "bounds": [
+    -2.1094,
+    54.5721,
+    -1.4062,
+    55.3791
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/norfolk",
+   "name": "25-inch — Norfolk",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/norfolk/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    0.0,
+    52.0525,
+    2.1094,
+    53.3309
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/northampton",
+   "name": "25-inch — Northampton",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/northampton/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -1.4062,
+    51.618,
+    0.0,
+    52.9089
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/northumberland",
+   "name": "25-inch — Northumberland",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/northumberland/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    54.5721,
+    -1.4062,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/nottinghamshire",
+   "name": "25-inch — Nottinghamshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/nottinghamshire/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -1.4062,
+    52.4828,
+    0.0,
+    53.7487
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/oxford",
+   "name": "25-inch — Oxford",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/oxford/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -2.1094,
+    51.1793,
+    -0.7031,
+    52.4828
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/abbey",
+   "name": "25-inch — Abbey",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/abbey/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.9219,
+    55.3791,
+    -4.2188,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/avondale",
+   "name": "25-inch — Avondale",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/avondale/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.9219,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/berkshire",
+   "name": "25-inch — Berkshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/berkshire/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    17
+   ],
+   "bounds": [
+    -2.1094,
+    51.1793,
+    0.0,
+    52.0525
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/biggar",
+   "name": "25-inch — Biggar",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/biggar/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -2.8125,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/blantyre",
+   "name": "25-inch — Blantyre",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/blantyre/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/cambusnethan",
+   "name": "25-inch — Cambusnethan",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/cambusnethan/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/carluke",
+   "name": "25-inch — Carluke",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/carluke/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/carmichael",
+   "name": "25-inch — Carmichael",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/carmichael/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/carnwath",
+   "name": "25-inch — Carnwath",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/carnwath/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -2.8125,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/carstairs",
+   "name": "25-inch — Carstairs",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/carstairs/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/covington",
+   "name": "25-inch — Covington",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/covington/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/crawford",
+   "name": "25-inch — Crawford",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/crawford/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/crawfordjohn",
+   "name": "25-inch — Crawfordjohn",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/crawfordjohn/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/culter",
+   "name": "25-inch — Culter",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/culter/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -2.8125,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/dalserf",
+   "name": "25-inch — Dalserf",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/dalserf/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/dalziel",
+   "name": "25-inch — Dalziel",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/dalziel/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/dolphinton",
+   "name": "25-inch — Dolphinton",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/dolphinton/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -3.5156,
+    55.3791,
+    -2.8125,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/douglas",
+   "name": "25-inch — Douglas",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/douglas/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/dunsyre",
+   "name": "25-inch — Dunsyre",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/dunsyre/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -2.8125,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/eaglesham",
+   "name": "25-inch — Eaglesham",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/eaglesham/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.9219,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/east_kilbride",
+   "name": "25-inch — East kilbride",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/east_kilbride/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.9219,
+    55.3791,
+    -3.5156,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/glassford",
+   "name": "25-inch — Glassford",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/glassford/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/hamilton",
+   "name": "25-inch — Hamilton",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/hamilton/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/lamington_and_wandell",
+   "name": "25-inch — Lamington and wandell",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/lamington_and_wandell/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/lanark",
+   "name": "25-inch — Lanark",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/lanark/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/lesmahagow",
+   "name": "25-inch — Lesmahagow",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/lesmahagow/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/liberton",
+   "name": "25-inch — Liberton",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/liberton/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/lochwinnoch",
+   "name": "25-inch — Lochwinnoch",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/lochwinnoch/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.9219,
+    55.3791,
+    -4.2188,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/mearns",
+   "name": "25-inch — Mearns",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/mearns/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.9219,
+    55.3791,
+    -4.2188,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/neilston",
+   "name": "25-inch — Neilston",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/neilston/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.9219,
+    55.3791,
+    -4.2188,
+    56.17
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/pettinain",
+   "name": "25-inch — Pettinain",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/pettinain/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/somerset_correction_121160692",
+   "name": "25-inch — Somerset correction 121160692",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/somerset_correction_121160692/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    51.1793,
+    -2.1094,
+    51.618
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/stonehouse",
+   "name": "25-inch — Stonehouse",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/stonehouse/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/symington",
+   "name": "25-inch — Symington",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/symington/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/walston",
+   "name": "25-inch — Walston",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/walston/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -2.8125,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/parishes/wiston_roberton",
+   "name": "25-inch — Wiston roberton",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/parishes/wiston_roberton/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    55.3791,
+    -3.5156,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/rutland",
+   "name": "25-inch — Rutland",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/rutland/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -1.4062,
+    52.4828,
+    0.0,
+    52.9089
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/scotland_lauder_correction",
+   "name": "25-inch — Scotland lauder correction",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/scotland_lauder_correction/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    19
+   ],
+   "bounds": [
+    -3.5156,
+    55.3791,
+    -2.1094,
+    55.7766
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/somerset",
+   "name": "25-inch — Somerset",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/somerset/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    50.7365,
+    -2.1094,
+    51.618
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/somerset1",
+   "name": "25-inch — Somerset1",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/somerset1/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -4.2188,
+    50.7365,
+    -2.1094,
+    51.618
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/stafford",
+   "name": "25-inch — Stafford",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/stafford/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    52.0525,
+    -1.4062,
+    53.3309
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/suffolk",
+   "name": "25-inch — Suffolk",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/suffolk/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    0.0,
+    51.618,
+    2.1094,
+    52.9089
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/surrey",
+   "name": "25-inch — Surrey",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/surrey/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -1.4062,
+    50.7365,
+    0.7031,
+    51.618
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/sussex",
+   "name": "25-inch — Sussex",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/sussex/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -1.4062,
+    50.2893,
+    1.4062,
+    51.1793
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/wales",
+   "name": "25-inch — Wales",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/wales/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -5.625,
+    51.1793,
+    -2.1094,
+    53.3309
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/warwick",
+   "name": "25-inch — Warwick",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/warwick/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -2.1094,
+    51.618,
+    -0.7031,
+    52.9089
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/westmorland",
+   "name": "25-inch — Westmorland",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/westmorland/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -3.5156,
+    53.7487,
+    -2.1094,
+    54.9776
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/wiltshire",
+   "name": "25-inch — Wiltshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/wiltshire/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    50.7365,
+    -1.4062,
+    52.0525
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/wiltshire2nd",
+   "name": "25-inch — Wiltshire2nd",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/wiltshire2nd/{z}/{x}/{y}.png",
+   "zooms": [
+    2,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    50.7365,
+    -1.4062,
+    52.0525
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/worcestershire",
+   "name": "25-inch — Worcestershire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/worcestershire/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    51.618,
+    -1.4062,
+    52.9089
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  },
+  {
+   "id": "25_inch/yorkshire",
+   "name": "25-inch — Yorkshire",
+   "group": "25_inch",
+   "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/yorkshire/{z}/{x}/{y}.png",
+   "zooms": [
+    1,
+    18
+   ],
+   "bounds": [
+    -2.8125,
+    52.9089,
+    0.7031,
+    54.9776
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037)."
+  }
+ ]
+}
