@@ -144,32 +144,11 @@ so that too has to be decided from the pixels rather than assumed.
   Scotland.</span></figcaption>
 </figure>
 
-**The 25-inch is where that goes wrong, and the pair below is why.**
-
-<figure class="sheet-figure pair">
-  <div class="frames">
-    <img src="{{ '/assets/maps/tracer-refusing.jpg' | relative_url }}"
-         alt="The tracer on a 25-inch sheet lettered Malthouse. Two vertices, both solid pink, and the message: left where you put it — that point is on ink, so the channel here is drawn as a single line.">
-    <img src="{{ '/assets/maps/tracer-working-and-wrong.jpg' | relative_url }}"
-         alt="The same sheet. Three vertices drawn hollow with cyan rings where the assist moved them, against solid pink where the tracer placed them, and the message: moved 1.1 m to the middle, the channel is 8.1 m wide here, measured across 3 transects.">
-  </div>
-  <figcaption><strong>Left: the assist refusing</strong> — <em>that point is on ink, so the
-  channel here is drawn as a single line. There is no width to find a middle of.</em>
-  <strong>Right: the assist working, and wrong.</strong> Three vertices moved and drawn hollow
-  against the ones a hand placed, the width reported across three transects. It has centred
-  perfectly — <strong>on the gap between two terraces of houses.</strong> Both frames are at
-  Ware on the <strong>25-inch</strong>, which is not the sheet this tool is meant for.
-  <span class="credit">Reproduced with the permission of the National Library of
-  Scotland.</span></figcaption>
-</figure>
-
-**The demonstration is on the wrong sheet, and that is worth saying rather than hiding.** This
-tool is meant for the **six-inch**; the frames above are a 25-inch experiment. But the reason
-is not that a six-inch watercourse is always a single stroke — **it often is not.** Ordnance
-Survey draws a channel as one line below a certain *ground* width and as two banks above it,
-at either scale, so a six-inch sheet carries both: a leat as a single stroke and a navigable
-river as a pair of banks, sometimes within one frame. What the finer scale changes is how many
-channels fall on the two-bank side of that threshold, not whether the distinction exists.
+**Both operations belong on the six-inch**, then, chosen per reach rather than per sheet:
+Ordnance Survey draws a channel as one line below a certain *ground* width and as two banks
+above it, so a single sheet carries both — a leat as one stroke, a navigable river as a pair
+of banks. A tool that decided between them by which sheet was loaded would be wrong on every
+wide river.
 
 **Two reasons the six-inch is the surface**, and neither is about resolution. The
 [work queue](scale#old-courses-the-victorian-surveyors-labelled) is a transcription of the
@@ -179,40 +158,21 @@ the six-inch is served seamlessly across England and Wales where the 25-inch is 
 county, so a national queue meets a national sheet. **Finer is the wrong axis; the sheet that
 carries the task is the right one.**
 
-**Which means both operations belong on the six-inch**, chosen per reach rather than per
-sheet: follow the ink where the channel is one line, find the middle where it is two banks.
-Neither is a property of the survey, and a tool that decides between them by which sheet is
-loaded will be wrong on every wide river. The interface says as much where a contributor will
-read it: *a leat is a single stroke and a navigable river is a pair of banks, often on the
-same sheet.*
+The interface says as much where a contributor will read it: *a leat is a single stroke and a
+navigable river is a pair of banks, often on the same sheet.*
 
 **What the assist is calibrated on is one trace of one reach**, and it says so in its own
 code. The constants that decide when a corridor counts as a channel rest on that single
 piece of evidence, so they are a starting point rather than a measurement — and the first
 thing a second reach may do is move them.
 
-**But the failure is not an artefact of the mistake, and it does not go away on the right
-sheet.** At 1:2,500 the town is full of things drawn as two roughly parallel lines a constant
-distance apart, and a corridor-finder cannot tell them from a channel. Asked for the strongest
-such feature anywhere in Ware, the algorithm returns — with 206 accepted points, a continuous
-500 m run and a median width of 17.4 m — **the railway**, between the goods shed and the signal
-posts. The terrace gap above was merely the next best.
-
-**Which makes these two frames one picture rather than two.** The geometry on the right is
-correct: there is a corridor, it has two sides, the middle is where the tool says and the width
-is what the tool says. Everything else is wrong, **nothing on the screen distinguishes that from
-a success**, and nothing in the raster can. That matters beyond this experiment, because
-reading channel *width* off the 25-inch is a thing [this project wants to do](evidence#the-25-inch-is-not-a-better-six-inch) — and these
-frames are what it looks like when that reading is confidently wrong. The contributor is not an
-operator of the tool; they are the part of it that knows a river from a railway.
-
-**And here is the limit, which is not a bug to be tuned away.** At 1:2,500 a *lane* with both
-its edges drawn is two roughly parallel lines a constant distance apart — and so is a
-channel. **No test of the local pixels can separate them.** An assist asked to find the
-middle of a corridor will centre itself just as confidently between two malt-house walls as
-between two banks, and be just as right about the geometry and just as wrong about the world.
-What supplies the missing knowledge is the contributor, who knows they are following a
-watercourse; nothing in the raster does.
+**And here is the limit, which is not a bug to be tuned away.** Two roughly parallel lines a
+constant distance apart are a channel — and are also a lane, a gap between terraces, a
+railway. **No test of the local pixels separates them.** Asked for the strongest such feature
+anywhere in Ware on the 25-inch, the assist returns the railway between the goods shed and the
+signal posts: 206 accepted points, a continuous 500 m run, a median width of 17.4 m, and
+correct about the geometry in every particular. What supplies the missing knowledge is the
+contributor, who knows they are following a watercourse. Nothing in the raster does.
 
 **It is an assistant, not an interpreter**, and the interface says so rather than leaving it
 to be inferred. Three consequences follow, and they are design rules and not caveats:
