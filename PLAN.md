@@ -641,15 +641,35 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
   depends on every drawn feature carrying an id they can send back.
 - **A tidal terminus that can later attach to something.** The sea is an abstraction in this
   stage: §1's traversability test ends at tidal water, and "reaches the sea" is true by
-  definition rather than by test. A later stage proposes to give the sea a geometry — a single
-  coastal path at optimum sailing distance, with branches to each river, the loop being the
-  terminus — at which point the test becomes *reaches the loop*, and is checkable.
+  definition rather than by test. The design for fixing that is now settled, and it is
+  simpler than the sailing route earlier considered:
 
-  Nothing to build now. What is wanted now is that **every tidal terminus is identified and
-  kept as a first-class thing** rather than being implied by the absence of an outflow, so
-  that attaching them later is a join and not a re-derivation. Note also that a
-  distance-optimal loop carries no date, while a path optimised for a vessel and a season is a
-  historical claim — the first could sit beside this stage, the second could not.
+  1. **A fixed-depth contour**, derived from bathymetry — one closing line around the coast of
+     England and Wales at a stated depth below Lowest Astronomical Tide.
+  2. **That contour is the terminus** for every river now reaching the sea *and* for every
+     river now blocked at the coast. The second is the larger prize: it gives a blocked river
+     something to reach rather than a definition to satisfy.
+  3. **Each mouth joins it along the deepest available channel** — a least-cost path over the
+     bathymetric grid maximising depth, not a straight line to the nearest point.
+
+  **This resolves a question this plan previously left open.** A contour at a fixed depth is a
+  geometric object carrying no year, so it is admissible beside a stage that makes no
+  historical claim. A path optimised for a particular vessel in a particular season is a
+  historical claim and is now out of scope rather than undecided — the loop is not a sailing
+  route, and the two would look alike on a map.
+
+  **Two things travel with the bathymetry, whichever source is registered.** Research
+  bathymetry carries `DO NOT USE FOR NAVIGATION`, and that is a constraint on *purpose* rather
+  than on redistribution: a topological terminus is not navigation, but nothing derived from
+  it may be presented as a route a vessel could follow. And **continuous coverage beats
+  resolution here** — the higher-resolution national holdings are individual surveys with gaps
+  between them, and a contour has to close while a least-cost path cannot cross a hole. It is
+  the same trade this project keeps meeting: the better-structured source answering a
+  different question.
+
+  **Nothing to build now.** What is wanted at this stage is that **every tidal terminus is
+  identified and kept as a first-class thing** rather than implied by the absence of an
+  outflow, so that attaching them later is a join and not a re-derivation.
 
 - **Fall per link, sampled from the UNCONDITIONED terrain.** A later stage models water
   power potential, which is flow times head — and the flow half is already planned while the

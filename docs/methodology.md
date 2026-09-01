@@ -155,21 +155,31 @@ gazetteer of ports does not.
   historical ports, however good, records where trade happened and not where rivers end; it is
   a sample where this needs a structural feature.
 
-**One distinction has to be kept sharp, because it decides which phase this belongs to — and
-the cleanest test is what each object *consumes*.** A path optimised for *distance* needs a
-coastline and a graph over the sea, and nothing else: no wind, no current, no bathymetry, and
-therefore no year. It is a geometric object and could be built alongside the modern network. A
-path optimised for a particular vessel in a particular month needs environmental fields, and
-the moment it reads them it is making a **historical claim** — so it belongs with the dated
-cross-sections. The two would look similar on a map, and building the second while calling it
-the first is exactly the drift this project is arranged to prevent. Reading what a thing was
-computed *from* separates them more reliably than reading what it says.
+**And it is a contour, not a sailing route.** That distinction was open for a while and is
+now settled, in favour of the simpler object: **a line at a fixed depth below Lowest
+Astronomical Tide**, derived from bathymetry, closing around the coast, with each river mouth
+joined to it **along the deepest available channel** rather than by the shortest line. A
+sailing route would have to be different for every class of vessel and every season; a depth
+contour is the same for all of them.
 
-**The coastline this needs is already in hand.** OS Boundary-Line ships a `high_water` layer —
-32,850 line features, already fetched, already declared, Open Government Licence. Several other
-open coastlines exist and would serve, which is the point: **the routing method is the valuable
-part, and the coastline under it is interchangeable.** So the licence question that attaches to
-any particular coastline is one this project can simply route around, and does.
+Which also settles what stage it belongs to, by the test of what it *consumes*: a fixed-depth
+contour reads bathymetry and nothing else — no wind, no current, no vessel — and therefore
+carries no year. A route optimised for a particular hull in a particular month reads
+environmental fields and is a **historical claim** the moment it does. The two would look
+alike on a map, and building the second while calling it the first is the drift this project
+is arranged to prevent.
+
+**One sentence has to travel with it.** Research bathymetry is published `DO NOT USE FOR
+NAVIGATION` — a constraint on purpose rather than on redistribution, since these are surveys
+of varying age merged into a surface rather than a charted product. A topological terminus is
+not navigation. But nothing built on it may be offered as a route a vessel could follow, and
+a page describing a line around the coast without saying so invites precisely that reading.
+
+**And here continuous coverage beats resolution.** The national hydrographic holdings are
+far finer and are published as thousands of individual surveys with gaps between them — and a
+contour has to *close*, while a least-cost path cannot cross a hole. It is the same trade as
+[the Welsh leats](evidence#the-map-record): the
+better-structured source answering a different question.
 
 **Exit condition.** No node carries more than a nominal flow into nowhere; the unreached
 residue is *explained* rather than merely counted; and the audit runs clean or every
