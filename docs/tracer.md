@@ -64,6 +64,13 @@ timeout tuned to the drawing would take a basin away from someone in the middle 
 sheet. A lapsed hold can be claimed by anyone, and the record says who took it from whom, so
 an abandoned basin resolves itself without anybody administering it.
 
+Whether the screen shows a **name** or only *someone else* is a setting, and the honest thing
+to say about it is that showing less is a **courtesy and not a protection**: the record is
+readable by anyone with access to the repository, so not rendering a name changes what is
+polite and not what is disclosed. What a contributor needs in order to act is *someone holds
+this, and for how long* — the name is useful in a small named group and is exposure in a large
+one.
+
 **The interface never says *locked*.** It says who holds it and how long is left, because
 that is what is actually known.
 
@@ -118,7 +125,13 @@ to be inferred. Three consequences follow, and they are design rules and not cav
 ## What the gate is, and what it is not
 
 Access to the tool is controlled: invited contributors, and their traces recorded to this
-project under their own names. **How a contributor is admitted is not settled**, and this
+project under their own names — which is the point, since [contributed work appears under its
+contributor's name](aims#publication), and is also a disclosure. **A contribution records a
+GitHub username, and that record is visible to everyone with access to this repository.** It
+is said at sign-in rather than discovered afterwards, because consent is the remedy and
+concealment would not be one.
+
+**How a contributor is admitted is not settled**, and this
 page will say what it actually asks of them when it is — including the cost, if there is
 one. It should not be read as *sign in with an account you already have* until it says so.
 
