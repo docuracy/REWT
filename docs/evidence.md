@@ -152,12 +152,13 @@ disagrees with itself, which is a different problem from a re-publisher being ca
     <img src="{{ '/assets/maps/foss-old-course-towing-path.jpg' | relative_url }}"
          alt="Six-inch first edition near Huntington, York: the River Foss with a channel labelled The Old Course beside it, a Towing Path along the far bank, Dowker's Swing Bridge, Huntington Landing, and Huntington Windmill (Corn).">
   </div>
-  <figcaption><strong>Three of this project's classes on one sheet.</strong> The River Foss
-  above York, with <em>The Old Course</em> lettered along an abandoned loop, a
-  <em>Towing Path</em> on the far bank, a swing bridge, a landing, and a corn windmill.
-  Location found from the GB1900 transcription of the labels; the sheet is the six-inch
-  first edition. <span class="credit">Reproduced with the permission of the National Library
-  of Scotland.</span></figcaption>
+  <figcaption><strong>Two of this project's classes on one sheet.</strong> The River Foss
+  above York, with <em>The Old Course</em> lettered along an abandoned loop and a
+  <em>Towing Path</em> on the far bank, either side of a swing bridge and a landing. The corn
+  windmill below is not a third: a mill counts here only where it took water, and this one
+  took none. Locations found from the GB1900 transcription of the labels; the sheet is the
+  six-inch first edition. <span class="credit">Reproduced with the permission of the National
+  Library of Scotland.</span></figcaption>
 </figure>
 
 The **first series** matters where the second is too late: much of Victorian water supply
