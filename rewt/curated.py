@@ -132,6 +132,48 @@ def _subject_field(kind: str, fieldnames: Iterable[str], path: Path) -> str:
     )
 
 
+# The National Grid origin is out at sea southwest of the Scillies, so no real feature
+# in this project sits within a kilometre of it. Degrees, by contrast, are all within
+# about 60 of it. That asymmetry is the test: an outer bound alone does not work,
+# because degrees fall comfortably INSIDE any generous National Grid box.
+_BNG_OUTER = (-100_000.0, -100_000.0, 800_000.0, 1_400_000.0)
+_DEGREES_LIKE = 1_000.0
+
+
+def _assert_national_grid(path: Path, feature_index: int, geom) -> None:
+    """Refuse a curated geometry that is not in EPSG:27700.
+
+    **GeoJSON is WGS84 by definition** — RFC 7946 fixes it at CRS84 and deprecates the
+    `crs` member. The curated connectors deviate from that knowingly (D-035): they are
+    an input to this build rather than a published artefact, their identifiers are
+    digests of their own projected coordinates, and reprojecting them would rewrite
+    every id. **The deviation is only safe if it is checked**, and this is the check.
+
+    It is not hypothetical. The predecessor's connectors are GeoJSON with no `crs`
+    member and are therefore degrees; compared against this project's metres they all
+    landed in the ocean, and the comparison reported that this build had independently
+    found none of them — which reads exactly like a substantive disagreement about
+    method and was a unit error. That was caught by a result being too clean to
+    believe. This catches it by arithmetic instead.
+    """
+    x0, y0, x1, y1 = shapely.bounds(geom)
+    lo_x, lo_y, hi_x, hi_y = _BNG_OUTER
+    outside = not (lo_x <= x0 and lo_y <= y0 and x1 <= hi_x and y1 <= hi_y)
+    degrees_like = (
+        abs(x0) < _DEGREES_LIKE and abs(x1) < _DEGREES_LIKE
+        and abs(y0) < _DEGREES_LIKE and abs(y1) < _DEGREES_LIKE
+    )
+    if outside or degrees_like:
+        raise CuratedError(
+            f"{paths.rel(path)} feature {feature_index} has coordinates "
+            f"({x0:,.3f}, {y0:,.3f}) - ({x1:,.3f}, {y1:,.3f}), which are not British "
+            "National Grid metres. GeoJSON is WGS84 by definition (RFC 7946), so a "
+            "file of degrees is what a conforming producer writes and what this "
+            "project's curated files deliberately are NOT (D-035). Reproject to "
+            "EPSG:27700 before authoring; do not let a degree reach the graph."
+        )
+
+
 def read_geojson(kind: str, path: Path) -> list[Judgement]:
     if not path.exists():
         return []
@@ -147,6 +189,7 @@ def read_geojson(kind: str, path: Path) -> list[Judgement]:
                 f"{paths.rel(path)} feature {i} is a {geom.geom_type}. A connector is "
                 "defined by its geometry — a line from one place to another (§5)."
             )
+        _assert_national_grid(path, i, geom)
         if shapely.length(geom) <= 0:
             raise CuratedError(
                 f"{paths.rel(path)} feature {i} has zero length. A zero-length "

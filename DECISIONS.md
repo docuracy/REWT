@@ -924,3 +924,45 @@ the Standard excludes it, the United Kingdom not including the Island. **It is o
 scope**: this project is England and Wales, and nothing draws it. Carrying an identifier
 so a lookup succeeds is not the same as including the ground, and the two must not be
 confused in a project whose scope rule is as carefully drawn as §4.1's.
+
+**D-035 — A published `.geojson` is WGS84, because the format says so. A curated one is
+not, and is checked.** *2026-09-01*
+
+*The defect was found by rewt-fc, whose layer drew nothing.*
+
+**GeoJSON is WGS84 by definition.** RFC 7946 fixes the coordinate reference system at
+CRS84 and explicitly *deprecates* the `crs` member that earlier practice used to declare
+otherwise. A conforming reader therefore ignores such a declaration: handed
+`[203862.05, 198975.63]` with a `crs` member saying EPSG:27700, QGIS, MapLibre,
+GitHub's preview and `geopandas.read_file` all read 203862.05 as a longitude and put the
+whole of England and Wales a few hundred kilometres off West Africa.
+
+`published/audit/refused_crossings.geojson` did exactly that. It is now WGS84 with no
+`crs` member, and carries `easting`/`northing` as ordinary properties so that a reader
+joining it to the rest of this project still has the National Grid position.
+AGENTS.md's rule already covered this — *EPSG:27700 throughout; EPSG:4326 only at
+export* — and a published `.geojson` is an export. A GeoPackage carries a real CRS and
+keeps 27700; it is `.geojson` specifically that cannot.
+
+**`data/curated/connectors.geojson` knowingly deviates, and the deviation is now
+checked rather than trusted.** It stays in EPSG:27700 for a reason that is not
+convenience: **a connector's identifier is a digest of its own coordinates** (D-013), so
+reprojecting the file would rewrite every one of the 1,204 ids, and D-013 exists
+precisely so that a feature keeps its identity between editions. It is also an input to
+this build rather than an artefact anyone else consumes.
+
+That is a defensible deviation and an unsafe one to leave unguarded, so `rewt/curated.py`
+now refuses a curated geometry that is not National Grid metres. **An outer bound is not
+enough**, and getting that wrong is instructive: degrees fall comfortably *inside* any
+generous National Grid box, so the first version of the check passed a file of degrees.
+What separates them is that the National Grid origin lies out at sea southwest of the
+Scillies, so no real feature here sits within a kilometre of it, while every degree
+coordinate in Britain is within about sixty. The guard tests for that, and catches Web
+Mercator too.
+
+**This is not hypothetical.** The predecessor's connectors are GeoJSON with no `crs`
+member and are therefore degrees. Compared against this project's metres, all 31 landed
+in the ocean and the validation reported that this build had independently found none of
+them — which reads exactly like a substantive disagreement about method (D-026). That
+was caught only because 0 of 31 was too clean a result to believe. It is now caught by
+arithmetic.

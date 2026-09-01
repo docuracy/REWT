@@ -505,18 +505,32 @@ def _write_refused_crossings(frame: pd.DataFrame) -> None:
     """
     import json as _json
 
+    from pyproj import Transformer
+
+    # **GeoJSON is WGS84 by definition.** RFC 7946 fixes the coordinate reference
+    # system at CRS84 and explicitly deprecates the `crs` member that earlier practice
+    # used to declare otherwise, so a conforming reader ignores such a declaration and
+    # reads 203862.05 as a longitude — which put this whole layer a few hundred
+    # kilometres off West Africa and drew nothing. AGENTS.md already says EPSG:27700
+    # throughout and EPSG:4326 only at export; a published .geojson IS an export, and
+    # is the one format that cannot carry the projected coordinates. A GeoPackage can,
+    # and does.
+    to_wgs84 = Transformer.from_crs(
+        config.param("crs.working"), "EPSG:4326", always_xy=True
+    )
+
     features = []
     for row in frame.sort_values(
         ["structure_m", "easting", "northing"], na_position="first"
     ).itertuples():
         corroborated = bool(pd.notna(row.structure_m))
+        lon, lat = to_wgs84.transform(float(row.easting), float(row.northing))
         features.append(
             {
                 "type": "Feature",
                 "geometry": {
                     "type": "Point",
-                    "coordinates": [round(float(row.easting), 2),
-                                    round(float(row.northing), 2)],
+                    "coordinates": [round(lon, 7), round(lat, 7)],
                 },
                 "properties": {
                     "stranded_watercourse": row.mine,
@@ -525,14 +539,29 @@ def _write_refused_crossings(frame: pd.DataFrame) -> None:
                     "structure": row.structure if corroborated else None,
                     "structure_m": round(float(row.structure_m), 1) if corroborated else None,
                     "refused_by": "D-016",
+                    # The National Grid position is kept as a property, because the
+                    # rest of this project works in EPSG:27700 and a reader joining
+                    # this file to anything else will want it.
+                    "easting": round(float(row.easting), 2),
+                    "northing": round(float(row.northing), 2),
+                    "in_trust_country": bool(row.in_trust_country),
                     "note": (
                         "A Canal & River Trust aqueduct or culvert is recorded nearby, "
                         "which corroborates the refusal."
                         if corroborated
-                        else "No Canal & River Trust structure is recorded within "
-                        "150 m. The Trust covers 101 waterways only, so this is "
-                        "absence of evidence and not evidence of absence — these are "
-                        "the ones worth looking at."
+                        else (
+                            "No Canal & River Trust structure is recorded within "
+                            "150 m, and this crossing IS in country the Trust covers "
+                            "— the register could have recorded a structure here and "
+                            "did not, so the refusal is genuinely unsupported and "
+                            "wants looking at."
+                            if row.in_trust_country
+                            else "No Canal & River Trust structure is recorded within "
+                            "150 m, and this crossing is OUTSIDE the country the Trust "
+                            "covers — the register was never going to speak about it, "
+                            "so this is absence of evidence rather than a doubtful "
+                            "refusal."
+                        )
                     ),
                 },
             }
@@ -540,7 +569,6 @@ def _write_refused_crossings(frame: pd.DataFrame) -> None:
     doc = {
         "type": "FeatureCollection",
         "name": "refused_crossings",
-        "crs": {"type": "name", "properties": {"name": "urn:ogc:def:crs:EPSG::27700"}},
         "features": features,
     }
     out = paths.PUBLISHED / "audit" / "refused_crossings.geojson"
@@ -597,7 +625,26 @@ def _refused_crossings() -> pd.DataFrame:
             FROM _cross_in c
             """
         )
-    return frame.merge(near, on=["easting", "northing"], how="left")
+    frame = frame.merge(near, on=["easting", "northing"], how="left")
+
+    # Is this crossing in country the Trust covers AT ALL? Without that, the
+    # corroboration flag is substantially a map of the register's extent rather than
+    # of whether a refusal is sound: the 232 corroborated cluster in the canal
+    # Midlands and North West, and the uncorroborated scatter across Devon, Cornwall,
+    # west Wales and the south coast, largely outside the canal network. The sharp
+    # list is the crossings the register COULD have spoken about and did not.
+    with db.registered("_cov_in", frame[["easting", "northing"]]):
+        cover = db.df(
+            """
+            SELECT c.easting, c.northing,
+                   EXISTS (SELECT 1 FROM structure s
+                           WHERE s.easting BETWEEN c.easting - 2000 AND c.easting + 2000
+                             AND s.northing BETWEEN c.northing - 2000 AND c.northing + 2000)
+                   AS in_trust_country
+            FROM _cov_in c
+            """
+        )
+    return frame.merge(cover, on=["easting", "northing"], how="left")
 
 
 def _share(value) -> str:
