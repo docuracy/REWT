@@ -301,6 +301,29 @@ sea:
   # means the penalty is too weak; or hug soundings through evident dead ends, too strong.
   deep_reference_m: 50.0
 
+  # How far a mouth may be from qualifying water and still be attached to the sea.
+  #
+  # It bridges the gap between where the survey stops drawing and where navigable
+  # depth begins, which §10 asks the sea network to do: OS Open Rivers draws linear
+  # watercourses, so the Humber estuary below Trent Falls, the Solway, the Tay and the
+  # Cree are simply absent from it — real water carrying real rivers to the sea, with
+  # no link to stand for it.
+  #
+  # MEASURED, and there is a knee. Share of the in-scope network that reaches the sea
+  # when tested, against the radius allowed:
+  #
+  #     radius   5 km    10 km   15 km   20 km   30 km   50 km
+  #     share   69.50%  71.55%  88.18%  88.19%  88.20%  88.88%
+  #
+  # The 16.6 points between 10 and 15 km are almost entirely the Humber, whose
+  # terminus sits about 12 km from the nearest qualifying water and carries 13,348 km
+  # of network behind it. Past 15 km the curve is flat: tripling the radius to 50 km
+  # buys 0.7 points, and every kilometre added past the knee is a kilometre in which a
+  # genuinely inland dead end might be joined to a sea it does not reach.
+  #
+  # Wrong if: raising it to 30 km moves the published share by more than a rounding.
+  snap_radius_km: 15.0
+
   # A path longer than this is refused rather than drawn. A least-cost path will cross
   # an unsurveyed hole and produce a confident track through water nobody has measured;
   # refusing is a finding, drawing it is a fabrication.

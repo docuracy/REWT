@@ -142,7 +142,8 @@ def run() -> dict:
     rows, cols = rowcol(T, mouths["easting"].to_numpy(), mouths["northing"].to_numpy())
     rows = np.clip(np.asarray(rows), 0, H - 1)
     cols = np.clip(np.asarray(cols), 0, W - 1)
-    moved, sr, sc = sea.snap(rows, cols, ocean, int(5000 / cell_m), cell_m)
+    snap_cells = int(float(p("sea.snap_radius_km")) * 1000 / cell_m)
+    moved, sr, sc = sea.snap(rows, cols, ocean, snap_cells, cell_m)
     got = moved >= 0
     for kind in ("terminus", "blocked"):
         m = (mouths["kind"] == kind).to_numpy()
@@ -153,7 +154,8 @@ def run() -> dict:
             f"({(got & m).sum() / m.sum():.1%})"
         )
         log.skip(
-            f"{int((~got & m).sum()):,} {kind} mouths have no open sea within 5 km "
+            f"{int((~got & m).sum()):,} {kind} mouths have no open sea within "
+            f"{p('sea.snap_radius_km'):.0f} km "
             "and cannot be attached; named, not dropped (§10)"
         )
 

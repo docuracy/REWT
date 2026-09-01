@@ -1918,3 +1918,57 @@ is the sentence that was missing for four months.
 **Noting against myself that "8 unread" was the same error I had just written the entry
 about.** I checked declarations against consumers, found a gap, and reported the gap as
 a single number without asking whether it was one thing. It was three.
+
+---
+
+**D-060 — The sea test's headline number was measuring my snap radius, three times
+over.** *2026-09-01*
+
+§10 requires both readings published when the sea becomes a test: the old definition,
+where *reaches tidal water* is true by construction, and the new one, where a mouth
+must actually connect to the sea network. The old figure is **93.59%** of the in-scope
+network. The new one moved twice under my own machinery before it settled, and each
+move was a defect on my side rather than a fact about the coast.
+
+| attempt | share | what it was actually measuring |
+|---|---|---|
+| test the outlet node's own attachment | 69.50% | the snap radius |
+| follow the tidal channel first | 75.33% | the snap radius |
+| **measure the radius and set it at the knee** | **88.18%** | the sea |
+
+**The second fix was right and insufficient.** A basin's outlet is the tidal terminus
+with the most water above it, which for the Humber sits 37 km up the estuary; its water
+leaves at Spurn Head, and the `tidalRiver` links between are already in the network. So
+a mouth reaches the sea if *any* terminus in its own tidal system does. That recovered
+the Thames and six points, and left the Humber failing.
+
+**Why the Humber failed is a fact about the source, and it is the case §10 was written
+for.** OS Open Rivers draws linear watercourses. The Humber's tidal links stop at
+E 503,007 — Trent Falls — and the estuary below it is an open water body the product
+does not carry. So the water reaches the end of the survey and has nothing to continue
+along. The Solway, the Tay and the Cree fail the same way. **Bridging exactly that gap
+is what the sea network is for**, and my 5 km radius was too short to do it: the nearest
+qualifying water is about 12 km east.
+
+**The knee settles the parameter, and it is sharp:**
+
+| radius | 5 km | 10 km | **15 km** | 20 km | 30 km | 50 km |
+|---|---|---|---|---|---|---|
+| share reaching the sea | 69.50% | 71.55% | **88.18%** | 88.19% | 88.20% | 88.88% |
+
+16.6 points between 10 and 15 km, almost all of it the Humber and the 13,348 km behind
+it. Past the knee the curve is flat — tripling the radius to 50 km buys 0.7 points —
+and every kilometre past it is one in which a genuinely inland dead end might be joined
+to a sea it does not reach. `sea.snap_radius_km: 15.0`.
+
+**So the honest cost of turning a definition into a test is 5.4 points, not 24.**
+93.59% reach tidal water; 88.18% reach tidal water that reaches the sea. **Most of the
+network genuinely does get to the sea when asked; a twentieth of it does not, and
+until today nothing could have told the difference.**
+
+**The discipline that produced this is the one recorded in D-057, applied to a second
+parameter.** Both numbers that mattered here — `clearance_m` and `snap_radius_km` — were
+set by reasoning before anything was built, and both were wrong in ways that moved the
+headline figure by tens of points. Neither was found by review. Both were found by
+sweeping the parameter and looking for a knee, which costs minutes and should have been
+done when they were written rather than after they had produced three different answers.
