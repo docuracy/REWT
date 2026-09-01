@@ -553,6 +553,32 @@ most useful artefact the predecessor produced, and the cheapest to keep.
 **Provenance travels with the data.** Wherever a short attribution appears, it may never
 attribute less than `conf/sources.yml` does.
 
+**A release is archived and gets a DOI, automatically.** GitHub can be linked to Zenodo so
+that every release is deposited and minted a DOI without anyone remembering to do it, which
+is the only kind of archiving that survives contact with a busy month. Enable it before the
+first release rather than after: the integration acts on releases made *while it is on*, so a
+release published before it is enabled is not archived retrospectively.
+
+Two properties of that route have to be designed around rather than discovered.
+
+- **The hook archives the repository, not the release assets.** Zenodo takes the source
+  zipball at the tag; files attached to a GitHub release are not included. This repository
+  commits **nothing acquired, derived or built** — `data/`, `db/` and `published/` are all
+  ignored — so a Zenodo record made this way would contain the code, the configuration and
+  the curated judgements, and **no dataset at all**. That is a defensible thing to archive
+  and it is not what a reader clicking a DOI will expect. Either the built outputs are
+  uploaded to the deposition explicitly from the release workflow, or the record says in its
+  description that it archives the method and points at where the data is. Deciding which is
+  a Stage 2 matter; knowing that the default is the wrong one is a Stage 1 matter, because it
+  is cheap now and embarrassing later.
+- **Two DOIs, and they mean different things.** Zenodo mints a *concept* DOI that always
+  resolves to the newest version, and a *version* DOI fixed to one deposit. A paper
+  describing the project cites the concept DOI; **a result computed from a particular edition
+  must cite that edition's version DOI**, or it becomes uncheckable the moment the next
+  edition lands. Since [editions and epochs are separate axes](docs/epochs.md) and a release
+  may carry several epochs, the version DOI is the only identifier that pins what was
+  actually used.
+
 ### What this plan deliberately does not decide
 
 Yours to choose: language and packaging, module layout, and how stages are invoked.

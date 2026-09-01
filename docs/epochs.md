@@ -188,6 +188,29 @@ is worse than neither.
 > matters more here than it might elsewhere, because a river reach carrying its own evidence
 > **is** an attestation, and the modelling problem is one other people are already solving.
 
+## How a release is archived
+
+**Editions are published as releases, and a release may carry more than one epoch.** Each
+release is deposited to [Zenodo](https://zenodo.org){:target="_blank"} automatically, through its link with GitHub, and
+minted a **DOI** — so a reader can cite what they used and a later reader can fetch exactly
+that, after this project's own site has changed or gone.
+
+**Two DOIs, and citing the wrong one loses the thing that makes a citation useful.** Zenodo
+issues a *concept* DOI that always resolves to the newest version, and a *version* DOI fixed
+to a single deposit. A paper about this project cites the concept DOI. **A result computed
+from a particular edition must cite that edition's version DOI** — otherwise the reference
+silently comes to point at a later network, and a figure that could once be checked no longer
+can. Since a release may carry several epochs, the version DOI is the only identifier that
+says which network a number came from.
+
+**And an archive of this repository is not an archive of the data.** Nothing acquired,
+derived or built is committed here — the inputs are declared and fetched, and the outputs are
+reproducible from them — so a deposit made from the repository alone holds the method, the
+configuration and the hand-made judgements, and none of the network. That is worth archiving
+and it is not what a reader following a DOI expects to find. The built outputs are deposited
+with it, or the record says plainly what it contains; the one thing that must not happen is a
+DOI that looks like a dataset and is not.
+
 ## One consequence worth accepting
 
 The first edition will be a **modern** network, and some readers will take it for a
