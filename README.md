@@ -116,6 +116,43 @@ its absence cost something.
 - **Fail loudly.** Unmatched inputs, topology errors and unresolved identifiers are
   reported, never silently repaired. The interesting findings live in those reports.
 
+## Identifiers
+
+**`rewt` is a registered CURIE prefix.** It is registered at the prefix.cc registry, which
+records it as `rewt` → `https://w3id.org/rewt/`, and that namespace is
+**[permanent and under this project's control](https://w3id.org/rewt/)** — maintained in
+[perma-id/w3id.org](https://github.com/perma-id/w3id.org/tree/master/rewt), so the
+identifiers survive any move of the hosting. Identifiers are minted as CURIEs —
+`rewt:basin/4385554389` — and a registered prefix is what lets a consumer expand one
+without having been told how by us.
+
+**One colon, then slashes, and it is not cosmetic.** A CURIE expands by plain concatenation
+of namespace and reference, so `rewt:basin/4385554389` becomes
+`https://w3id.org/rewt/basin/4385554389`, which is the shape the namespace's rules are
+written for. The build first minted
+`rewt:basin:4385554389`, which expands to `https://w3id.org/rewt/basin:4385554389` — a
+perfectly legal URI that resolves to nothing. Both are URIs; only one is the identifier, and
+the failure would have been silent and total the moment anything was serialised as JSON-LD
+([DECISIONS.md](DECISIONS.md) D-044).
+
+**What resolves today** is the namespace itself and the documentation:
+
+| | |
+|---|---|
+| `https://w3id.org/rewt/` | the documentation site |
+| `https://w3id.org/rewt/docs/{path}` | a documentation page |
+
+**What is reserved and deliberately not yet routed:** `link/`, `node/`, `basin/`, `course/`,
+`correction/` and `context`. The scheme is settled and written into the namespace's own
+configuration, but a rule is enabled only once it has a live target to reach. **A 303 into
+nothing is a worse answer than a 404**, because it looks like it worked.
+
+**Entities are grouped by type, never by edition.** The same stretch of river must carry one
+identifier across every published edition, and partitioning by edition would mint a second
+identifier for a reach the moment a later edition described it again. That the *publisher's*
+own identifiers are not persistent between product versions is a separate and unresolved
+problem — it is why the network is frozen on one issue, and it is recorded as D-045.
+
 ## Releases and citation
 
 Editions are published as GitHub releases and deposited to
@@ -138,8 +175,9 @@ authoritative in both states.
 
 Data is a separate question. Every source carries its own licence and attribution, some
 of them incompatible with redistribution, and the MIT grant covers this repository's code
-and nothing that flows through it. See
-[Evidence](https://docuracy.github.io/REWT/evidence).
+and nothing that flows through it.
+[Sources](https://docuracy.github.io/REWT/sources) lists every dataset used and the credit
+it requires; [Evidence](https://docuracy.github.io/REWT/evidence) sets out the reasoning.
 
 ## Contact
 
