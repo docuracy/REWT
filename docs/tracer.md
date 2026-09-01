@@ -6,12 +6,18 @@ labelled mill channels alone are some 4,068 places, an order of magnitude larger
 everything above them on that page, and there is no route to finishing them that does not
 involve many hands.
 
-> **Not yet built, and this page carries no screenshots for that reason.** The design is
-> settled and the work is under way. Pictures will follow when there is something real to
-> photograph — a snapped trace with its clicked and its snapped vertices visibly different —
-> rather than a mock-up of one. This site has already had to correct a sentence that
-> described tooling as existing when it existed somewhere else, and a picture makes that
-> mistake harder to notice, not easier.
+> **Part-built, not deployed, and carrying no screenshots yet.** What exists is the
+> machinery for getting work out of a browser and into this repository: a contributor signs
+> in, and what they record arrives as an append-only log, offline-tolerant, in the
+> repository's own history. **What does not exist is the map** — the snapping, the sheets,
+> the work queue and the basin hold described below are still to come, so nobody can yet
+> trace a channel with it, and there is no public address to visit.
+>
+> Pictures follow when there is something real to photograph — a snapped trace with its
+> clicked and its snapped vertices visibly different — rather than a mock-up of one. This
+> site has already had to correct a sentence that described tooling as existing when it
+> existed somewhere else; the remedy is not to overstate in the other direction now, so the
+> rest of this page describes a **settled design**, and says what is built only here.
 
 ## What a contributor actually does
 
