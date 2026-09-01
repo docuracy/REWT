@@ -660,6 +660,30 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
 
 - **Stable identifiers.** Later stages add courses and epochs. A stretch present in two
   published editions must carry the same id in both. Design the scheme once, here.
+
+  **And one module composes every identifier this project mints.** Stability across editions
+  is not enough on its own. A scheme is changed in one place and reaches only the code that
+  asked for it, so an identifier built by hand goes on emitting the previous scheme
+  indefinitely and nothing complains — the string is still well-formed, still unique, and
+  still wrong.
+
+  Where the identifier is a URI this is worse than an omission: **a URI that resolves to
+  nothing invites a consumer to dereference it and conclude that the *thing* does not exist,
+  rather than that the identifier is wrong.** The rule is therefore enforced by a test and not
+  by this sentence, and the test should catch the *shape* of a hand-composed identifier rather
+  than its meaning. **It has already been broken three times by being a sentence**, by two
+  different mechanisms — wrong strings in two pipeline modules, and in the tracer's lifted
+  code an absent owner, where the file looked *more* disciplined than it was and the eye
+  stopped at the literals that were correctly placed. Reading is worst at absences. The test
+  earned its keep in the hour it was written: it found `os:node:{id}` being looked up in a
+  database now holding `os:node/`, which would have reported "not found" for every node that
+  exists and read as a data problem rather than an identifier one.
+
+  **And a derived identifier inherits every instability of what it was derived from.** A basin
+  id that is a digest of its outlet node's id changes value when node ids change shape — not
+  its spelling, its value — so a string held from before the change is unresolvable rather
+  than merely differently spelt, and nothing about the new one says the old ever meant
+  anything.
 - **Room for a course that is not an OS link.** Later, traced geometry joins the network.
   It should not require a second table or a second graph — the earlier work held two
   graphs for one geometry and could not reconcile them.
