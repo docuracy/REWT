@@ -287,15 +287,19 @@ before the dam" has to be answered below the six-inch, and this is what is on th
 
 ### The 25-inch is not a better six-inch
 
-<figure class="sheet-figure">
+<figure class="sheet-figure pair">
   <div class="frames">
-    <img src="{{ '/assets/maps/weaver-25-inch-banks.jpg' | relative_url }}"
-         alt="OS County Series 25-inch at Northwich: the River Weaver and the River Dane drawn as pairs of bank lines with a blue wash between them, roads washed yellow, Town Bridge and Dane Bridge lettered.">
+    <img src="{{ '/assets/maps/marston-six-inch-one-stroke.jpg' | relative_url }}"
+         alt="Six-inch first edition at Marston Flour Mill, Somerset: the mill stream drawn as a single blue stroke with the mill pond a small blue shape.">
+    <img src="{{ '/assets/maps/marston-25-inch-two-banks.jpg' | relative_url }}"
+         alt="County Series 25-inch over the identical ground, uncoloured: the same mill stream drawn as two hatched bank lines, with Sluice and F.B. lettered separately.">
   </div>
-  <figcaption><strong>At 1:2,500 the surveyor draws the banks, not the course.</strong> The
-  Weaver and the Dane at Northwich: two bank lines with the water between them, tinted blue
-  on this sheet. <span class="credit">Reproduced with the permission of the National Library
-  of Scotland.</span></figcaption>
+  <figcaption><strong>The same mill stream at two scales.</strong> Marston Flour Mill,
+  Somerset. Left, the six-inch: <em>one stroke</em>, washed blue, with the pond a blue shape.
+  Right, the 25-inch over identical ground: <em>two hatched bank lines</em> with the water
+  between them, the sluice and the footbridge lettered separately — and no colour at all.
+  <span class="credit">Reproduced with the permission of the National Library of
+  Scotland.</span></figcaption>
 </figure>
 
 The County Series **25-inch**, at 1:2,500, resolves an order of magnitude finer than the
@@ -308,9 +312,13 @@ pair of lines with the water between them at 25-inch.
 and where its edges ran*; the six-inch says *where it ran*. For [tracing a course](tracer)
 the coarser drawing is often the more directly useful one, because a single stroke is a line
 to follow and two banks are two lines with the answer in between — an ink-following tool
-locks to one bank and sits half a channel-width out. On the sheets looked at here the water
-between the banks carries a **blue wash**, which offers a way round; the scans are not
-uniformly coloured, and a tool must not assume it.
+locks to one bank and sits half a channel-width out.
+
+**And the colour cannot be predicted from the scale.** Where water is washed blue it can be
+segmented by hue, which sidesteps the problem entirely — but whether a sheet is coloured
+varies sheet by sheet **and it varies in both directions**. At Northwich the 25-inch carries
+the wash and the six-inch does not; at Marston, above, it is exactly the other way round. A
+tool must test the sheet in front of it rather than infer from the series or the scale.
 
 Two practical notes. Coverage is a few points short of the six-inch — sampled against
 network midpoints inside three historic counties, 88–96% against the six-inch's 94–100% —
