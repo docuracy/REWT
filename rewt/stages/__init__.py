@@ -19,6 +19,7 @@ from . import (  # noqa: F401  (imported to register)
     screen,
     flags,
     crawl,
+    sea,
     audit,
     export,
     check,

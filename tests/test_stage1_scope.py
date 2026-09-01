@@ -89,6 +89,10 @@ def test_the_model_stays_small():
     four = {"link", "node", "basin", "correction"}
     derived = {
         "edge", "retirement", "link_scope", "link_reach", "link_flag",
+        # §10's sea network, added 2026-09-01 when the sea became a test rather
+        # than a definition. Their reasons are in schema.py's docstring with the
+        # rest; this set is deliberately not the place to state them.
+        "sea_entry", "sea_link",
     }
     unexplained = set(schema.TABLES) - four - derived
     assert not unexplained, (

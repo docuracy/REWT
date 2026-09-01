@@ -1856,3 +1856,39 @@ arrived at by accident.
 **All 3,770 edges traced, none refused, none unterminated** — which also confirms the
 D8 backlink decoding, since a wrong direction convention would have sent walks off the
 grid instead of into their sources.
+
+---
+
+**D-059 — §4's source count is right by accident; its composition is wrong.**
+*2026-09-01. Raised by rewt-6a, which noticed 14 declarations against §4's six.*
+
+§4 names four OS products plus two LiDAR services and says *resist adding more — every
+extra source is a licence to check, a checksum to keep and a reason to defer the thing
+that actually needs doing.* `conf/sources.yml` now declares **14**.
+
+Counting declarations is the wrong measurement, so here is the right one: **6 of the 14
+are read by a pipeline stage, and 8 are not.**
+
+| | |
+|---|---|
+| read by a stage | `os_open_rivers`, `os_open_map_local`, `os_terrain_50`, `os_boundary_line`, `crt_navigation_structures`, `emodnet_bathymetry` |
+| declared, read by nothing | `ea_lidar_composite_dtm_1m`, `nrw_lidar_dtm_1m`, `gb1900_raw_dump`, `eidc_uk_reservoir_inventory`, `mills_of_britain`, `nrw_large_raised_reservoirs`, `hct_historic_counties`, `nls_historic_map_tilesets` |
+
+**So Stage 1 reads six sources, exactly as §4 budgeted — and not the six it names.**
+Both LiDAR services are unread; the Canal & River Trust structures and EMODnet
+bathymetry took their places. A reader checking the total would have found it correct
+and concluded nothing had drifted. **The aggregate agreed while every row under it had
+changed**, which is this repository's own recurring shape arriving in its own
+specification.
+
+**Not proposing to cut the eight.** Several are declared for consumers outside the
+pipeline — `nls_historic_map_tilesets` for the tracer, `hct_historic_counties` as the
+county vocabulary — and a registered source costs a licence check and a checksum,
+which the tests already do and which is the cheap part. The two LiDAR services are §4's
+own and are for the per-section work D-006 defers.
+
+**What is worth fixing is the sentence, not the file.** §4 describes a repository that
+no longer exists, and the useful form of its rule is not a count: *resist adding a
+source that no stage reads*. A count invites exactly the error above — satisfied in
+total, wrong in every particular. That is rewt-1d's to land in PLAN.md if Stephen wants
+it, and this entry is what it would rest on.

@@ -12,6 +12,20 @@ reason each, and each is a direct answer to something that went wrong before:
 * **One stage rebuilt a table another had written columns into** (§2). So no stage
   adds a column to another stage's table. Scope, reachability and basin membership
   are their own narrow tables keyed on `link_id`, and the exporter joins them.
+* **A source set shaped by an implementation detail is not the specification's**
+  (`sea_entry`). §10's sea network serves every mouth *and every river blocked at the
+  coast*, and the blocked ones are absent from the `terminus` layer by construction —
+  their terminus is not tidal, which is what makes them blocked. This table records
+  which mouths were offered to the sea, which reached it, and how far each moved to do
+  so, so that a mouth the sea could not take is a named finding rather than a silent
+  omission. It is the same defect as D-048 one turn later, and it was caught only
+  because the count was compared against §10's words rather than against another count.
+* **A sea route must be a `link` in one network, not a second graph** (`sea_link`).
+  §10 is explicit that sea segments do not get a routing graph of their own, and §8
+  records what happened last time two graphs were held over one geometry. This is the
+  working record from which those links are built — carrying the shallowest depth on
+  each route, so the clearance the network was constructed to respect can be checked
+  against the geometry rather than assumed from the parameter that produced it.
 
 Geometry is EPSG:27700 throughout; EPSG:4326 only at export (AGENTS.md).
 """
@@ -172,6 +186,34 @@ CREATE TABLE link_flag (
 )
 """
 
+
+SEA_ENTRY_DDL = """
+CREATE TABLE sea_entry (
+    entry_id     INTEGER NOT NULL,   -- the sea cell a mouth was snapped to
+    node_id      VARCHAR NOT NULL,   -- the tidal terminus or coastal orphan
+    kind         VARCHAR NOT NULL,   -- 'terminus' or 'orphan'
+    snapped_m    DOUBLE,             -- how far the mouth moved to reach open water
+    easting      DOUBLE,
+    northing     DOUBLE
+)
+"""
+
+# §10's sea network. A `link` in the published model, with a distinguishing form —
+# these rows are the working record, not a second graph.
+SEA_LINK_DDL = """
+CREATE TABLE sea_link (
+    link_id         VARCHAR NOT NULL,
+    from_entry      INTEGER NOT NULL,
+    to_entry        INTEGER NOT NULL,
+    from_node       VARCHAR,
+    to_node         VARCHAR,
+    length_m        DOUBLE NOT NULL,
+    min_depth_m     DOUBLE,          -- shallowest point on the route; the clearance holds
+    median_depth_m  DOUBLE,
+    geom            GEOMETRY
+)
+"""
+
 TABLES = {
     "link": LINK_DDL,
     "node": NODE_DDL,
@@ -182,6 +224,8 @@ TABLES = {
     "link_scope": LINK_SCOPE_DDL,
     "link_reach": LINK_REACH_DDL,
     "link_flag": LINK_FLAG_DDL,
+    "sea_entry": SEA_ENTRY_DDL,
+    "sea_link": SEA_LINK_DDL,
 }
 
 
