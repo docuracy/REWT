@@ -10,7 +10,8 @@ involve many hands.
 > [the tracer](https://docuracy.github.io/REWT/trace/), a historic sheet is drawn, and a line
 > can be traced on it — by hand, or with either of two assists that **choose themselves from
 > what the surveyor drew**: centring a vertex where the channel is a pair of banks, following
-> the ink where it is a single stroke. Each shows its own work while tracing, and what is
+> the ink where it is a single stroke, and **neither where the pixels support neither**, which
+> leaves the straight line the contributor drew. Each shows its own work while tracing, and what is
 > recorded arrives as an append-only log in this repository's own history — public the moment
 > it is saved.
 >
