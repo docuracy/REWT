@@ -223,23 +223,40 @@ export function classifyPatch(patch) {
 /* ── centring on a transect ───────────────────────────────────────────────────────── */
 
 export const CENTRE_DEFAULTS = {
-  /* IN METRES, NOT PIXELS. The first version set these in pixels, which made the mode
-     behave differently at every zoom — 30 px is 22 m at z17 and 11 m at z18, so the same
-     click on the same channel would be accepted at one zoom and refused at the next, and
-     nothing would say why. A channel's width is a fact about the world. */
-  maxWidthM: 30,        // wider than this and it is not a channel a contributor is tracing
-  minWidthM: 1.5,       // narrower and the two banks are one line
-  minTravelPx: 6,       // below this the previous vertex gives no reliable bearing
-  inkRunPx: 2,          // consecutive ink pixels needed to count as a bank
-  transectOffsets: [-4, 0, 4],
-  /* THE DISCRIMINATOR THAT MAKES THIS SELECTIVE AT ALL, and it was missing from the first
-     version. A channel has very nearly the same width a few pixels further along; a gap
-     between buildings, a field corner or the space beside a road does not. Measured over a
-     768 px patch of Ware at 1:2,500, probing four directions at every sixth pixel: without
-     this the transect test accepted **39% of the whole sheet** — fields, yards, the goods
-     yard, everything. Requiring the parallel transects to agree on the width is what
-     separates a channel from an opening that merely happens to have ink on both sides. */
-  widthAgreementM: 2.5, // spread across the parallel transects
+  /* ── EVERY QUANTITY ABOUT THE GROUND IS IN METRES. ────────────────────────────────
+     This was got wrong twice, the second time because the first fix was applied to the
+     instance rather than to the class.
+     
+     The first version put the width limits in pixels, so 30 px was 22 m at z17 and 11 m
+     at z18 and the same click on the same channel was accepted at one zoom and refused at
+     the next. Those were converted to metres — and `transectOffsets` was left in pixels,
+     where it did exactly the same thing one level down: [-4, 0, 4] spans 3 m on the
+     25-inch at z18 and **6 m on the six-inch at z17**, so changing sheet doubled the
+     length of river the three transects sample. Over 6 m an outer transect falls off the
+     reach through a bridge, a gate or a bend, fails to find both banks, and the
+     all-must-agree rule then refuses the vertex. Measured on a real six-inch trace of THE
+     CUT at Ware: **0 of 5 vertices centred as shipped; 1 moved and 2 already central once
+     the offsets were in metres.** Neither of the other two rules was the blocker.
+     
+     The rule that follows: if a constant describes the world it is in metres; if it
+     describes the raster it is in pixels, and it says so. */
+  maxWidthM: 30,          // wider than this and it is not a channel being traced by hand
+  minWidthM: 1.5,         // narrower and the two banks are one line
+  minTravelM: 4,          // below this the previous vertex gives no reliable bearing
+  transectSpacingM: 1.2,  // how far apart the parallel transects sit ALONG the channel
+  transectCount: 3,
+
+  /* IN PIXELS, AND DELIBERATELY. This is a property of the engraving and the scan, not of
+     the ground: how many pixels of ink make a bank rather than a stipple dot or the serif
+     of a letter. A bank line does not get wider in metres when the sheet is finer. */
+  inkRunPx: 2,
+
+  /* THE DISCRIMINATOR THAT MAKES THIS SELECTIVE AT ALL. A channel has very nearly the same
+     width a metre further along; a gap between buildings, a field corner or the space
+     beside a road does not. Probing a 768 px patch of Ware at 1:2,500 in four directions
+     at every sixth pixel, without this test the transect accepted **39% of the whole
+     sheet**; with it, 0.9%. */
+  widthAgreementM: 2.5,
 };
 
 /** First index t>=1 along (dirX,dirY) from (x,y) where ink persists for `run` pixels. */
@@ -291,7 +308,7 @@ export function centreOnTransect(patch, px, py, fromX, fromY, opts = {}) {
   const dx = px - fromX;
   const dy = py - fromY;
   const travel = Math.hypot(dx, dy);
-  if (!Number.isFinite(travel) || travel < o.minTravelPx) {
+  if (!Number.isFinite(travel) || travel * mPerPx < o.minTravelM) {
     return {
       moved: false,
       why: 'there is no direction of travel yet — centring measures the channel ACROSS the '
@@ -310,8 +327,16 @@ export function centreOnTransect(patch, px, py, fromX, fromY, opts = {}) {
   const ux = dx / travel; const uy = dy / travel;
   const nx = -uy; const ny = ux;              // unit normal: across the direction of travel
 
+  /* Spread the parallel transects over a fixed distance of RIVER, whatever the scale. At
+     least one pixel apart, or on a coarse sheet they collapse onto the same row and the
+     agreement test becomes a test of nothing. */
+  const spacingPx = Math.max(1, o.transectSpacingM / mPerPx);
+  const half = (o.transectCount - 1) / 2;
+  const alongs = [];
+  for (let i = -half; i <= half; i += 1) alongs.push(i * spacingPx);
+
   const offsets = []; const widths = [];
-  for (const along of o.transectOffsets) {
+  for (const along of alongs) {
     const ox = px + ux * along;
     const oy = py + uy * along;
     if (isInk(patch, Math.round(ox), Math.round(oy))) continue;
@@ -324,7 +349,7 @@ export function centreOnTransect(patch, px, py, fromX, fromY, opts = {}) {
 
   /* EVERY transect must find a cross-section, not a majority. One or two is what a field
      corner produces. */
-  if (offsets.length < o.transectOffsets.length) {
+  if (offsets.length < alongs.length) {
     return {
       moved: false,
       why: 'no bank on both sides within a channel\'s width, all the way along — this is '

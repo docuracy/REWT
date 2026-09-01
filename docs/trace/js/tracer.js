@@ -115,12 +115,22 @@ export function createTracer({ map, backdrop, onChange, centring = false }) {
 
   /* ── the sheet under the cursor ────────────────────────────────────────────────── */
 
-  /* Trace at the sheet's own best resolution rather than the screen's: the map may be at
-     zoom 16.4, but the ink was drawn for a particular scale and a channel is only two
-     banks at the layer's own maximum. */
+  /**
+   * The sheet's own best resolution, ALWAYS — never the screen's.
+   *
+   * The lifted module said this and the first REWT version did not do it: it took
+   * `min(max, max(14, round(mapZoom)))`, which caps at the layer's maximum but otherwise
+   * follows the map. So a contributor at map zoom 16.4 read the six-inch at z16, where
+   * 1.48 m per pixel blurs a bank line into the paper and **every vertex is refused with
+   * "no bank on both sides"** — measured: 0 of 5 on a real trace at z16, against 2 of 5
+   * at z17 on the same trace and the same code.
+   *
+   * The reader is not looking at what the person is looking at. It is looking at the ink,
+   * and the ink was engraved for one scale; there is no version of this where reading a
+   * downsampled copy is better. Zoom is a property of the view and irrelevant here.
+   */
   function traceZoom(source) {
-    const max = Number(source?.zooms?.[1]) || 18;
-    return Math.min(max, Math.max(14, Math.round(map.getZoom())));
+    return Number(source?.zooms?.[1]) || 18;
   }
 
   async function patchFor(lon, lat) {
