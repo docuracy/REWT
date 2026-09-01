@@ -156,8 +156,10 @@ disagrees with itself, which is a different problem from a re-publisher being ca
   above York, with <em>The Old Course</em> lettered along an abandoned loop and a
   <em>Towing Path</em> on the far bank, either side of a swing bridge and a landing. The corn
   windmill below is not a third: a mill counts here only where it took water, and this one
-  took none. Locations found from the GB1900 transcription of the labels; the sheet is the
-  six-inch first edition. <span class="credit">Reproduced with the permission of the National
+  took none. Locations found from the GB1900 transcription of the labels. The sheet is the
+  six-inch first edition, whose Yorkshire survey ran 1844–1893 — so the labels are attested
+  by that survey and carry no date of their own: <em>The Old Course</em> says the river moved,
+  not when. <span class="credit">Reproduced with the permission of the National
   Library of Scotland.</span></figcaption>
 </figure>
 
