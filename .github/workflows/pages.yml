@@ -1,0 +1,76 @@
+name: Publish the site
+
+# Pages now builds from a workflow rather than from a branch, and that change is what
+# makes the whole dataset servable. Serving from `main:/docs` means anything published
+# must be committed, and `.gitignore`'s first rule is that nothing acquired, derived
+# or built is committed — so a tiled network could never have been published that way
+# without breaking it.
+#
+# Building here instead, nothing derived enters the repository: the tiles are made in
+# CI and deployed straight to Pages. The rule is kept rather than excepted from.
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refuse to publish a credential
+        run: |
+          # GitHub Pages serves docs/ publicly. This repository's own gates run in the
+          # build, but the build is not what publishes — this workflow is. So the check
+          # runs HERE too, against exactly what is about to be deployed.
+          #
+          # It looks for a tile provider's name beside an opaque value, which is what a
+          # published basemap configuration looks like whatever the surrounding key is
+          # called. The repository's pattern check requires an `api` prefix and would
+          # not catch `{"keys": {"maptiler": "..."}}`.
+          # `.{0,40}` and not `[^"']{0,40}`: in `"maptiler": "<key>"` the characters
+          # immediately after the provider name ARE quotes, so a class excluding them
+          # matches nothing. The first version of this line was silent on the exact
+          # case it was written for, and four probes caught it — two that must block,
+          # two that must not.
+          if grep -rEiI "(maptiler|mapbox|thunderforest|stadiamaps|cartocdn).{0,40}[\"'][A-Za-z0-9_-]{16,}[\"']" docs/ ; then
+            echo "::error::A tile provider's key looks present in docs/. Pages is public"
+            echo "::error::even when the repository is not, and a published key can only"
+            echo "::error::be rotated, never withdrawn. Refusing to deploy."
+            exit 1
+          fi
+          echo "no provider credential found in docs/"
+
+      - uses: ruby/setup-ruby@v1
+        with: { ruby-version: '3.3', bundler-cache: false }
+
+      - name: Build the Jekyll site
+        run: |
+          gem install --no-document jekyll bundler
+          cd docs && jekyll build --destination ../_site
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
