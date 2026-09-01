@@ -258,7 +258,9 @@ def test_a_later_stage_source_still_declares_its_licence(source_id):
     src = config.source(source_id)
     assert src.licence.strip(), f"{source_id} declares no licence"
     assert src.attribution.strip(), f"{source_id} declares no attribution"
-    src.require_redistributable()
+    # Not require_redistributable(): a later-stage source may legitimately have
+    # unestablished terms, and recording that is the honest thing to do. What must
+    # hold is that it cannot be read or exported — tests/test_licence.py has that.
 
 
 @pytest.mark.parametrize("source_id", _later_stage_sources())

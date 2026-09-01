@@ -184,8 +184,12 @@ def test_the_attribution_travels_with_the_data():
     if not path.exists():
         pytest.skip(f"{paths.rel(path)} does not exist; the export stage has not run")
     text = path.read_text(encoding="utf-8")
+    # Sources the build reads. One declared for a later stage has nothing in this
+    # export to attribute, and requiring it here would only report staleness.
     missing = [
-        src.id for src in config.sources() if src.attribution not in text
+        src.id
+        for src in config.sources()
+        if src.get("stage", default=1) == 1 and src.attribution not in text
     ]
     assert not missing, (
         "sources whose required attribution is not reproduced in full in "

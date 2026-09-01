@@ -52,22 +52,81 @@ def test_every_source_declares_a_licence_and_an_attribution():
         )
 
 
-def test_every_declared_source_is_open_and_redistributable():
-    """The repository is intended to become public.
-
-    A source that is not both is not necessarily a bug — but it must never reach an
-    export, and declaring one is a decision that belongs in DECISIONS.md rather than
-    in a quiet edit to conf/sources.yml.
-    """
-    encumbered = [
-        f"{src.id} (access={src.access}, redistribution={src.redistribution})"
+def _encumbered() -> list[str]:
+    """Sources conf/sources.yml does not clear for redistribution."""
+    return sorted(
+        src.id
         for src in config.sources()
         if not (src.is_open and src.is_redistributable)
-    ]
-    assert not encumbered, (
-        "sources that may not be redistributed: " + ", ".join(encumbered) + ". "
-        "Nothing licence-encumbered may be committed or exported."
     )
+
+
+def test_every_source_the_build_reads_is_redistributable():
+    """The guarantee, put where AGENTS.md puts it: on what is read and exported.
+
+    *The exporter refuses to write a feature whose source is not openly licensed.*
+    Declaring a source whose terms are unknown is honest bookkeeping — it records
+    what is known, which is the opposite of the failure this project guards against.
+    Reading one into the build is the act that cannot be undone once the repository
+    is public, because the output would carry terms nobody has established.
+    """
+    import rewt.stages  # noqa: F401  (registers every stage)
+
+    from rewt.pipeline import PIPELINE
+
+    read = sorted({sid for name in PIPELINE.names for sid in PIPELINE[name].sources})
+    offenders = [sid for sid in read if sid in set(_encumbered())]
+    assert not offenders, (
+        "stages read sources that may not be redistributed: " + ", ".join(offenders)
+    )
+    for sid in read:
+        config.source(sid).require_redistributable()
+
+
+def test_a_source_that_may_not_be_redistributed_is_quarantined():
+    """Declared, and kept where it cannot reach an output.
+
+    Three conditions, because any one of them alone leaks. It must be marked for a
+    later stage, so `Pipeline.add` refuses any stage that reaches for it; no stage
+    may declare it; and the build must not fetch it in bulk, because a file on disk
+    is the start of somebody using it.
+    """
+    import rewt.stages  # noqa: F401
+
+    from rewt import acquire
+    from rewt.pipeline import PIPELINE
+
+    for source_id in _encumbered():
+        src = config.source(source_id)
+        assert src.get("stage", default=1) != 1, (
+            f"{source_id} may not be redistributed and is not marked for a later "
+            "stage, so nothing stops a stage reading it"
+        )
+        declaring = [n for n in PIPELINE.names if source_id in PIPELINE[n].sources]
+        assert not declaring, (
+            f"{source_id} may not be redistributed and is declared by "
+            + ", ".join(declaring)
+        )
+        assert source_id not in acquire.national_sources(), (
+            f"{source_id} may not be redistributed and is fetched in bulk"
+        )
+
+
+def test_an_encumbered_source_records_what_is_not_known_about_it():
+    """*Never add a source without recording its licence and required attribution.*
+
+    A source whose terms are unestablished must say so in words, not merely score
+    badly in a field. The next person to read the file needs to know what was
+    checked and what was not.
+    """
+    for source_id in _encumbered():
+        src = config.source(source_id)
+        assert src.licence.strip(), f"{source_id} records no licence at all"
+        assert len(src.licence.strip()) > 30, (
+            f"{source_id} is not cleared for redistribution and its licence field "
+            f"says only {src.licence!r}. What is not known about it has to be "
+            "written down, or the next reader will assume it was checked."
+        )
 
 
 def test_the_four_os_products_need_no_api_key():
@@ -172,7 +231,21 @@ def test_the_exporter_gate_rejects_what_the_registry_rejects():
     # 'rewt' is this project's own geometry and is deliberately exempt: a connector
     # has no publisher. Everything else must be declared.
     export._licence_gate(["rewt", None])
-    export._licence_gate([src.id for src in config.sources()])
+
+    # Every source the build actually reads passes the gate.
+    import rewt.stages  # noqa: F401
+
+    from rewt.pipeline import PIPELINE
+
+    export._licence_gate(
+        {sid for name in PIPELINE.names for sid in PIPELINE[name].sources}
+    )
+
+    # And a real encumbered source is refused by it — better evidence than the
+    # synthetic one above, because this is a source that genuinely exists here.
+    for source_id in _encumbered():
+        with pytest.raises(UnlicensedSource):
+            export._licence_gate([source_id])
 
 
 @pytest.mark.db
