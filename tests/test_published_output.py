@@ -525,3 +525,49 @@ def test_every_published_identifier_expands_to_a_routable_uri(links, termini):
     basins = _read(NETWORK, "basin", ["basin_id"])
     bad = [v for v in basins["basin_id"].dropna().unique() if not shape.match(v)]
     assert not bad, f"basin identifiers do not expand: {bad[:5]}"
+
+
+def test_the_audit_and_the_published_file_agree_per_basin():
+    """The per-basin figures a reader computes must match the ones we report.
+
+    They did not. The audit attributes a link to a basin by its **oriented**
+    downstream node (`edge.to_node`); `link_scope` attributed it by the
+    **digitised** one. For a reversed link those are opposite ends, and 335 links
+    are reversed — so 64 links, 94.3 km, sat in one basin in the published file
+    and a different one in the audit.
+
+    The error was small (worst basin 0.2%) and systematic, which is the bad
+    combination: too small to notice, consistent enough to look like a real
+    property of the data. It was found by rewt-fc recomputing our figures from
+    outside and refusing to accept its own first answer.
+
+    So the check belongs here — an outside reader summing the published file must
+    reach the audit's number, or one of the two is lying about the same rivers.
+    """
+    import json
+
+    from rewt import paths
+
+    audit_path = paths.PUBLISHED / "audit" / "audit.json"
+    if not audit_path.exists():
+        pytest.skip("the audit has not run")
+    rows = json.loads(audit_path.read_text())["sections"]["basins"]
+
+    frame = _read(NETWORK, "link", ["basin_id", "length_m", "retired"])
+    live = frame[~frame["retired"].fillna(False).astype(bool)]
+    mine = live.groupby("basin_id")["length_m"].sum() / 1000.0
+
+    worst = (0.0, None)
+    for row in rows:
+        theirs = float(row["km"])
+        ours = float(mine.get(row["basin_id"], 0.0))
+        gap = abs(theirs - ours)
+        if gap > worst[0]:
+            worst = (gap, row["label"])
+
+    assert worst[0] < 0.5, (
+        f"the published file and the audit disagree by {worst[0]:,.1f} km on "
+        f"{worst[1]!r}. Both count the same rivers, so one of them attributes a "
+        "link to the wrong basin — check whether each is keying on the oriented "
+        "or the digitised downstream node."
+    )

@@ -1503,3 +1503,49 @@ is untouched. The identifier scheme was genuinely stale; the basin count never w
 independent full terrain runs, with 195,015 edges and 334 in-scope basins reproduced
 exactly, is evidence that the breach is deterministic at this granularity. It simply
 never needed a discrepancy to explain, because there was none.
+
+---
+
+**D-052 — A link's basin is decided by its *oriented* downstream node, not the one it
+was drawn towards.** *2026-09-01*
+
+The audit attributes a link to a basin with `JOIN edge e ON e.to_node = nb.node_id` —
+the oriented routing graph's downstream end. `link_scope`, which is where the
+published `basin_id` comes from, attributed it by `link.to_node` — the **digitised**
+end. For a reversed link those are opposite ends, and 335 links are reversed.
+
+**64 links, 94.3 km, 56 of them reversed, sat in one basin in the published
+GeoPackage and a different one in the audit.**
+
+**The audit was right, which is why the disagreement had a sign.** A reversed link's
+water leaves by the end it was drawn entering; the oriented sense is the only correct
+basis for anything about where water goes, and `link_scope` keying on the digitised
+end silently contradicted this project's own decision that reversals are applied.
+`basins` runs after `repair` (D-028) precisely so that `edge` is available at this
+point. It simply was not being used.
+
+**Found from outside, which is the only place it could have been found.** rewt-fc
+recomputed the per-basin figures from the published file and got 15 of 200 basins
+differing, worst the Afon Hafren at −14.9 km on 6,917 km — **0.2%**. It tested the
+obvious explanation, that the audit keyed on the *upstream* node, and got 161 of 200,
+an order of magnitude worse, so it reported the difference as real and unexplained
+rather than dropping it. Both halves of that matter: it refused its own first answer
+(a mid-build snapshot, which it withdrew), and it refused mine (that the gap was all
+retired links, which accounted for most but not all of it).
+
+**Too small to notice, consistent enough to look like data.** That is the combination
+that survives longest. A 0.2% worst case reads as rounding, and eleven of fifteen
+differences sharing a sign reads as a property of large basins rather than as a defect.
+Nothing inside the build was comparing the two, because both were computed by us and
+each was self-consistent.
+
+So the comparison is now inside the build.
+`test_the_audit_and_the_published_file_agree_per_basin` sums the published link layer
+per basin and requires the audit's own figure to within 0.5 km. **An outside reader
+adding up the file must reach the number we report, or one of the two is lying about
+the same rivers.**
+
+**What moved.** In-scope totals shift by 44 km — 97,786 reached of 104,829, from
+97,746 of 104,785 — because `link_scope.in_scope` keys on the same node. The share is
+unchanged at **93.28%**, and the earlier figures were wrong in their third significant
+figure rather than in their meaning.

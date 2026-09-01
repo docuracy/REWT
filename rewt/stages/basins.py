@@ -232,10 +232,28 @@ def run() -> dict:
         con.execute(
             """
             INSERT INTO link_scope
+            -- The link's DOWNSTREAM node decides its basin and its scope. That has
+            -- to be the *oriented* downstream node, not the digitised one: a reversed
+            -- link's water leaves by the end it was drawn entering, and 335 links are
+            -- reversed. `basins` runs after `repair` (D-028) precisely so that `edge`
+            -- exists here and the oriented sense is available.
+            --
+            -- It used to key on the digitised `to_node`, which put 64 links (94.3 km,
+            -- 56 of them reversed) in a different basin from the one the audit counts
+            -- them in — the audit joins on `edge.to_node`. Small, systematic, and
+            -- exactly the kind of disagreement between the audit and the published
+            -- file that makes a reader distrust both. Found by rewt-fc comparing the
+            -- two from outside.
+            --
+            -- `coalesce` because a retired link has no edge and still needs a basin.
             WITH every_link AS (
-                SELECT link_id, to_node FROM link
-                UNION ALL
-                SELECT link_id, to_node FROM repair_link
+                SELECT l.link_id, coalesce(e.to_node, l.to_node) AS to_node
+                FROM (
+                    SELECT link_id, to_node FROM link
+                    UNION ALL
+                    SELECT link_id, to_node FROM repair_link
+                ) l
+                LEFT JOIN edge e ON e.link_id = l.link_id
             )
             SELECT l.link_id,
                    nb.basin_id,
