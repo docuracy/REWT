@@ -5,6 +5,19 @@
 REWT follows a scoping exercise carried out in 2026 under the name **Premodern Rivers**,
 which produced a working reconstruction, two delivered datasets, and a map.
 
+**It began as a favour.** Justin Colson ([Institute of Historical Research](https://www.history.ac.uk/){:target="_blank"}) asked for a
+GIS of rivers to support a Domesday mapping project, and suggested the obvious way to build
+one: take [Oksanen's routes](evidence#before-1348) and splice them into the modern
+[OS Open Rivers](https://www.ordnancesurvey.co.uk/products/os-open-rivers){:target="_blank"} network. It sounded like an afternoon's work.
+
+**It was not, and the reasons it was not are this project.** The modern network turned out
+not to be traversable — water could not be followed from every stretch to the sea — so there
+was nothing sound to splice *onto*; and the synthesis turned out to sit a median 236 m from
+the modern channel where its courses are derived from parish boundaries, so splicing it on
+would have reconciled two orders of accuracy silently, at every junction. The project now
+[declines to do the thing it was asked for](methodology#go-to-the-sources-not-to-the-synthesis),
+and the reasoning behind that refusal is most of what it has to offer.
+
 **That work is not public**, and this page is the account of it. What it established, and
 what was and was not carried forward, is set out below; the regional source surveys it
 produced have been rewritten for this project and are [the rebuilt landscapes](regions/).
