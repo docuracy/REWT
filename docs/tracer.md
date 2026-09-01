@@ -147,11 +147,12 @@ so that too has to be decided from the pixels rather than assumed.
 </figure>
 
 **The demonstration is on the wrong sheet, and that is worth saying rather than hiding.** This
-tool is meant for the **six-inch**, where a watercourse is drawn as a *single stroke* — which
-is why the left-hand frame refuses, and why refusing is the ordinary answer there. Centring
-between two sides is a **25-inch** operation, because that is the scale at which a channel is
-drawn as two banks. The pictures show a 25-inch experiment, and the intended operation on the
-six-inch is following ink rather than finding a middle.
+tool is meant for the **six-inch**; the frames above are a 25-inch experiment. But the reason
+is not that a six-inch watercourse is always a single stroke — **it often is not.** Ordnance
+Survey draws a channel as one line below a certain *ground* width and as two banks above it,
+at either scale, so a six-inch sheet carries both: a leat as a single stroke and a navigable
+river as a pair of banks, sometimes within one frame. What the finer scale changes is how many
+channels fall on the two-bank side of that threshold, not whether the distinction exists.
 
 **Two reasons the six-inch is the surface**, and neither is about resolution. The
 [work queue](scale#old-courses-the-victorian-surveyors-labelled) is a transcription of the
@@ -160,6 +161,11 @@ contributor to a different survey and they are hunting for a caption that is not
 the six-inch is served seamlessly across England and Wales where the 25-inch is county by
 county, so a national queue meets a national sheet. **Finer is the wrong axis; the sheet that
 carries the task is the right one.**
+
+**Which means both operations belong on the six-inch**, chosen per reach rather than per
+sheet: follow the ink where the channel is one line, find the middle where it is two banks.
+Neither is a property of the survey, and a tool that decides between them by which sheet is
+loaded will be wrong on every wide river.
 
 **But the failure is not an artefact of the mistake, and it does not go away on the right
 sheet.** At 1:2,500 the town is full of things drawn as two roughly parallel lines a constant
