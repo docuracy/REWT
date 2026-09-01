@@ -19,6 +19,17 @@ is an input to the history of commerce and industrialisation, and not only to th
 landscape. Navigability is a property of a *route*; this is the only open historical river
 dataset being built to carry one.
 
+**And a route is only half of what a river was for.** Every reach in the network carries a
+modelled flow and a fall, and flow times fall is **power**. Before steam that is what a river
+did for the place beside it: grinding corn, fulling cloth, driving hammers, bellows, saws and
+eventually machinery. Power potential is as computable from this dataset as navigability, and
+because both sit on the same lines a question becomes askable that neither answers alone —
+**did a place grow because of what it could ship, or because of what it could make?** Before
+coal made the first decisive, the second may have mattered more. [What that model is and is
+not](methodology#what-the-flow-model-is-for-beyond-drawing-the-river) is set out with the
+method: it is a screening surface rather than a site assessment, and its most useful output is
+where it *disagrees* with the mills that were actually built.
+
 ## Who it is for
 
 - **Landscape and economic historians**, for whom river access is a variable that has
@@ -26,14 +37,9 @@ dataset being built to carry one.
   grew, where markets were sited, what could be moved and at what cost?
 - **Archaeologists and local historians**, who need to know where a river ran before it
   was straightened.
-- **Historians of industry, technology and population.** Flow and fall together give **water
-  power potential** — where a river could have been made to grind corn, and later to drive
-  tools. Because the same network also carries dated navigability, it is the first dataset
-  that can weigh **power against route** as determinants of where places grew: before coal,
-  what a settlement could do for itself may have mattered more than what it could ship.
-  [What that is and is not](methodology#what-the-flow-model-is-for-beyond-drawing-the-river)
-  is set out with the method; the short form is that it is a screening surface, and its most
-  useful output is where it disagrees with the mills that were actually built.
+- **Historians of industry, technology and population**, for whom water power potential and
+  dated navigability carried on the same lines are a way into milling capacity, settlement and
+  industrialisation — and a way to test which of the two better explains where places grew.
 - **Anyone needing a routable hydrography of England and Wales**, historical interest or
   not. The first edition is useful on its own terms — and there is currently nothing open
   that does the job.
