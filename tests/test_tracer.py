@@ -129,23 +129,43 @@ def test_the_browser_mints_no_identifier_for_geometry():
     )
 
 
+# An identifier is *composed*. In Python that means an f-string, which is why
+# D-051's grep looks for `f"rewt:` and not for the prefix on its own; the JavaScript
+# equivalent is a template literal with a substitution in it, or a concatenation.
+#
+# The distinction is not pedantry, it is the difference between a rule and a false
+# positive: `{ 'rewt:supersedes': supersedes }` in anno.js is a **JSON-LD property
+# name** — a term in a vocabulary, the key of a key/value pair — and nothing about
+# it identifies a feature. Matching presence rather than composition caught it, and
+# a test that cries wolf about a correct line is one people learn to ignore.
+_MINTING = re.compile(
+    r"`[^`]*\b(?:os|rewt):[^`]*\$\{"                 # `os:link/${id}`
+    r"""|['"][^'"]*\b(?:os|rewt):[^'"]*['"]\s*\+"""   # 'rewt:node/' + h
+    r"""|\+\s*['"]\s*(?:os|rewt):"""                  # h + 'rewt:node/'
+)
+
+
 def test_the_browser_composes_no_identifier_outside_its_own_module():
     """D-051's grep, pointed at the browser, and held here as well as in the script.
 
     `check_ids.py` checks this too. It is repeated rather than delegated because
-    this one runs in the build and because the rule is the one that has already
-    caught a live bug in the Python: a template literal composing `os:` or `rewt:`
-    somewhere that is not the identifier module.
+    this one runs in the build, and because the rule has already caught a live bug
+    in the Python that reading had missed twice.
+
+    **A vocabulary term is not an identifier**, so this matches composition and not
+    presence. Whether the JSON-LD vocabulary should itself have one owner is a real
+    question — a term invented in one module and misspelled in another fails as
+    silently as an identifier does — but it is a different rule and wants its own
+    test and its own sentence rather than being smuggled in as this one.
     """
     files = [p for p in _js_files() if p.name != "ids.js"]
     if not files:
         pytest.skip(f"{paths.rel(BROWSER_JS)} holds no module but ids.js")
-    minting = re.compile(r"""[`'"]\s*(?:os|rewt):""")
     offenders = [
         f"{paths.rel(path)}:{lineno}: {line.strip()[:90]}"
         for path in files
         for lineno, line in _code_lines(path.read_text(encoding="utf-8"))
-        if minting.search(line)
+        if _MINTING.search(line)
     ]
     assert not offenders, (
         "identifiers composed outside docs/trace/js/ids.js:\n  "
