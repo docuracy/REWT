@@ -13,4 +13,9 @@ __pycache__/
 published/
 # Acquired by the viewer, never committed — same rule as data/raw/.
 tools/viewer/cache/
+# What the map reads: built by `rewt viewer-data` from a finished published/,
+# attached to the release, and fetched by pages.yml at deploy time. Building the
+# site in a workflow rather than from the branch is what lets this stay uncommitted
+# while the whole network is still served.
+docs/viewer/data/
 vendor/

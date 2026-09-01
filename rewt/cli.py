@@ -446,6 +446,34 @@ def propose_reversals_cmd(
              f"({len(fresh):,} new)")
 
 
+@app.command("viewer-data")
+def viewer_data_cmd(
+    layers_only: bool = typer.Option(False, "--layers-only",
+                                     help="skip the tiles, which take minutes"),
+) -> None:
+    """Build what the map reads: one PMTiles archive and nine small layers.
+
+    **Built here and not in CI.** The workflow that deploys the site cannot make this
+    — it would need OS Open Rivers, Terrain 50, EMODnet and the hours the terrain stage
+    takes. So it is built from a finished `published/`, attached to the release, and
+    fetched by `pages.yml` at deploy time. Nothing derived is committed either way.
+    """
+    from . import tiles
+
+    tiles.build_layers()
+    if not layers_only:
+        tiles.build_tiles()
+        # Never a flag on its own: the archive is read back and counted. A build that
+        # dropped the defects it exists to show is worse than no map.
+        tiles.verify()
+        # PACKED HERE AND NOWHERE ELSE. The tar is what the release attaches and what
+        # pages.yml serves, so building the tiles without repacking leaves the published
+        # map a different pass from the GeoPackage beside it — two artefacts, each
+        # internally consistent, never compared. rewt-6a found exactly that: a tar
+        # ninety minutes older than the tiles on disk, with counts that agreed.
+        tiles.pack()
+
+
 @app.command("release-notes")
 def release_notes_cmd(
     tag: str = typer.Argument(..., help="the tag this release will carry"),
@@ -524,12 +552,31 @@ def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) 
     except FileNotFoundError as exc:
         problems.append(str(exc))
 
+    # Two renderings of one licence obligation, each checked against the manifest that
+    # is the authority for both. A DOI is the point after which a wrong attribution
+    # cannot be withdrawn, so it is checked here rather than only on the site.
+    problems += release.attribution_drift()
+    # The map that ships and the data it was built from must be one pass.
+    problems += release.viewer_data_drift()
+
     rc = subprocess.run(
-        [sys.executable, "-m", "pytest", "tests", "-q"],
+        [sys.executable, "-m", "pytest", "tests", "-q", "-rs"],
         capture_output=True, text=True, cwd=paths.ROOT,
     )
     if rc.returncode != 0:
         problems.append("the suite is not green:\n      " + rc.stdout.strip().splitlines()[-1])
+    # A SUITE THAT SKIPPED IS NOT A SUITE THAT PASSED. A running build holds the DuckDB
+    # write lock, every test that reads the database skips itself with a named reason,
+    # and pytest still exits 0 — so `release-check` would have called 25 unrun tests
+    # green. The skip is right (a read-only connection would block the writer); treating
+    # its exit code as an answer is not.
+    locked = [l for l in rc.stdout.splitlines() if "Conflicting lock is held" in l]
+    if locked:
+        problems.append(
+            f"{len(locked)} test(s) could not read the database because a build holds "
+            "its lock, and pytest still exited 0. Wait for the build and re-run: a "
+            "release must not be cut on a suite that skipped the database."
+        )
 
     if problems:
         log.error(f"{len(problems)} reason(s) not to cut {tag}:")

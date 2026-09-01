@@ -17,6 +17,14 @@ on:
     # would leave the published page crediting last month's terms, and a licence
     # page that is quietly out of date is worse than no page at all.
     paths: ['docs/**', 'conf/sources.yml', 'tools/docs/**', '.github/workflows/pages.yml']
+  # A NEW RELEASE IS A NEW MAP. The data the viewer reads is fetched from the latest
+  # release, not built here and not committed, so the site goes stale when a release
+  # is cut and not when the code that made it changes. Adding `rewt/tiles.py` to the
+  # paths above would be the intuitive fix and the wrong one: an edit there deploys
+  # nothing until a release carries it, and a release with no code change at all still
+  # needs this to run.
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -33,6 +41,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # A RELEASE EVENT'S REF IS THE TAG, and checking it out would rebuild the site
+          # from the tree as it stood at the tag — silently reverting every
+          # documentation commit made since, with a green run and no diff to look at.
+          # The map data comes from the release API further down and does not depend on
+          # this ref at all, so the tree wanted here is always the current
+          # documentation. A release says new data exists; it is not an instruction to
+          # travel back to the code that made it.
+          #
+          # `sources_page.py --check` below would not have caught it: it compares two
+          # files in the same tree, and at the tag they agree. Internal agreement is not
+          # correctness unless something anchors it outside itself — the same fault this
+          # workflow's attribution check was rewritten to avoid.
+          ref: ${{ github.event_name == 'release' && github.event.repository.default_branch || github.sha }}
 
       - name: Refuse to publish a credential
         run: |
@@ -73,6 +95,37 @@ jobs:
           # the same fault in a more confident voice.
           pip install --quiet pyyaml
           python tools/docs/sources_page.py --check
+
+      - name: Fetch what the map reads from the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # THE DATA CANNOT BE BUILT HERE. It needs OS Open Rivers, Terrain 50, EMODnet
+          # and the hours the terrain stage takes; a documentation deploy is not the
+          # place for any of that. So `rewt viewer-data` builds it beside a finished
+          # published/, `rewt release` attaches it, and this step brings it in.
+          #
+          # The hop through this workflow is the point, not an inconvenience. Release
+          # assets send no CORS header, so a browser cannot read one; Pages sends CORS
+          # AND honours Range, which is what lets a PMTiles archive be read a viewport
+          # at a time instead of downloaded whole. Downloading server-side and serving
+          # from Pages is what makes the WHOLE network loadable rather than an extract.
+          mkdir -p docs/viewer/data
+          tag=$(gh release list --limit 1 --json tagName -q '.[0].tagName' 2>/dev/null || true)
+          if [ -z "$tag" ]; then
+            echo "::warning::No release yet, so the map deploys without its data."
+            echo "::warning::The viewer NAMES each absent layer on the page rather than"
+            echo "::warning::drawing an empty map — an absent layer and an empty one are"
+            echo "::warning::opposite things and must not look alike. This is that path."
+            exit 0
+          fi
+          if ! gh release download "$tag" --pattern 'viewer-data.tar' --dir /tmp; then
+            echo "::warning::Release $tag carries no viewer-data.tar; deploying without it."
+            exit 0
+          fi
+          tar -xf /tmp/viewer-data.tar -C docs/viewer/data
+          echo "from release $tag:"
+          ls -la docs/viewer/data
 
       - uses: ruby/setup-ruby@v1
         with:
