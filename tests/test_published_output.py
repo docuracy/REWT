@@ -750,3 +750,37 @@ def test_no_published_json_carries_a_bare_nan():
 
         json.loads(text, parse_constant=refuse)
     assert checked, "no published JSON found to check"
+
+
+def test_the_two_reachability_readings_are_computed_the_same_way(audit):
+    """§10 publishes both readings so the sea becoming a test never reads as the
+    network improving. That only holds if they are comparable.
+
+    They were not. The first version summed the sea reading over `link`, which
+    omits the 2,650 links this project adds, while the reachability section sums
+    over `edge`. The audit then carried **two in-scope totals differing by 1,844
+    km** — 103,855 beside its own 105,699 — and the smaller denominator made the
+    sea share look higher. Neither number was wrong; the pair was, which is
+    precisely the failure the requirement to publish both exists to prevent.
+
+    Found because the release-notes generator reads the audit rather than
+    restating it, and put both totals on one page.
+    """
+    r = audit.get("reachability")
+    s = audit.get("reachability_tested_against_the_sea")
+    if not r or not s:
+        pytest.skip("the audit reports only one reading")
+    assert abs(r["total_in_scope_km"] - s["in_scope_total_km"]) < 0.5, (
+        f"the two readings disagree about the size of the in-scope network: "
+        f"{r['total_in_scope_km']:,.1f} km against {s['in_scope_total_km']:,.1f} km. "
+        "They are published side by side to be compared, so they must be summed over "
+        "the same thing."
+    )
+    assert abs(r["reached_in_scope_km"] - s["reaches_tidal_water_km"]) < 0.5, (
+        "the two readings disagree about how much reaches tidal water, which is the "
+        "quantity they share"
+    )
+    assert s["reaches_the_sea_km"] <= s["reaches_tidal_water_km"] + 0.5, (
+        "more length reaches the sea than reaches tidal water, which cannot happen: "
+        "the sea test is a filter applied to the tidal one"
+    )

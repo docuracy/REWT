@@ -511,17 +511,24 @@ def run() -> dict:
                             [(n,) for n in sorted(reachable_by_sea)])
         tested = con.execute(
             """
-            SELECT sum(l.length_m) / 1000.0 AS total_km,
-                   sum(CASE WHEN r.reaches_tidal THEN l.length_m ELSE 0 END) / 1000.0
+            -- OVER `edge`, EXACTLY AS THE REACHABILITY SECTION ABOVE DOES. The point
+            -- of publishing both readings is that they are comparable, so they must be
+            -- summed over the same thing — and the first version of this was not. It
+            -- summed over `link`, which omits the 2,650 links this project ADDS, and
+            -- reported 103,855 km in scope beside the audit's own 105,699. Two totals
+            -- for one quantity in one document, differing by 1,844 km, and the smaller
+            -- one made the sea share look higher. `edge` already excludes retired
+            -- links, because a retired link has no edge.
+            SELECT sum(e.length_m) / 1000.0 AS total_km,
+                   sum(CASE WHEN r.reaches_tidal THEN e.length_m ELSE 0 END) / 1000.0
                        AS tidal_km,
                    sum(CASE WHEN r.reaches_tidal
                              AND r.seed_node IN (SELECT node_id FROM _sea_ok)
-                            THEN l.length_m ELSE 0 END) / 1000.0 AS sea_km
-            FROM link l
+                            THEN e.length_m ELSE 0 END) / 1000.0 AS sea_km
+            FROM edge e
+            JOIN link_reach r USING (link_id)
             JOIN link_scope sc USING (link_id)
-            LEFT JOIN link_reach r USING (link_id)
-            LEFT JOIN retirement t USING (link_id)
-            WHERE sc.in_scope AND t.link_id IS NULL
+            WHERE sc.in_scope
             """
         ).fetchone()
         total_km, tidal_km, sea_km = (float(x or 0) for x in tested)
