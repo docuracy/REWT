@@ -320,6 +320,24 @@ varies sheet by sheet **and it varies in both directions**. At Northwich the 25-
 the wash and the six-inch does not; at Marston, above, it is exactly the other way round. A
 tool must test the sheet in front of it rather than infer from the series or the scale.
 
+**Which makes the two sheets complementary in a way that is worth building on.** A line
+traced from the six-inch is a *course*; the 25-inch holds the *width* of the same channel and
+cannot easily be traced, because there is no single line on it to follow. But a course is the
+instrument for reading a width: given a well-placed centreline, a machine can step along it,
+cut across the channel at right angles at intervals, and measure the distance between the two
+banks — or across the tint, where the sheet is coloured. **One traced line then yields two
+measurements**, the second of them obtained without anybody tracing the finer sheet at all,
+and channel width is a quantity this project has no other open historical source for.
+
+Four conditions on that, and the first is the one that bites. **The measurement inherits the
+trace's error**: a centreline half a channel out returns a width that is wrong and looks
+entirely reasonable, so this is a use for [carefully placed traces](tracer) and not for rough
+ones. It works only where the 25-inch covers the reach, only where the channel is wide enough
+to be drawn as two banks at that scale — a narrow leat is a single stroke there too — and the
+sheet has to be classified first, since whether the water is tinted varies between sheets in
+both directions. And what it measures is the channel **as drawn at that survey**, which is a
+historical width and not a present one; that is the point of wanting it.
+
 Two practical notes. Coverage is a few points short of the six-inch — sampled against
 network midpoints inside three historic counties, 88–96% against the six-inch's 94–100% —
 and **the reason is not known**: the obvious hypothesis, that the gaps are uncultivated
