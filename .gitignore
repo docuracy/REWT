@@ -11,3 +11,5 @@ __pycache__/
 .env
 .DS_Store
 published/
+# Acquired by the viewer, never committed — same rule as data/raw/.
+tools/viewer/cache/

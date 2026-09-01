@@ -525,3 +525,51 @@ sources:
       connector at a 0 m crossing on the reasoning that it is far more often an
       aqueduct or a culvert than a confluence. There are 329 aqueducts and 2,962
       culverts here, located. The rule can be checked against them rather than argued.
+
+  # NOT A STAGE 1 INPUT. County polygons used by the viewer to mask the National
+  # Library of Scotland's first-edition six-inch county mosaics to their own county
+  # boundaries — those mosaics are published county by county and are not cut at the
+  # county line, so unmasked, two surveys of the same ground overlap and the join
+  # lands wherever the draw order falls. Its purpose is therefore a dated map series,
+  # which makes it stage 2 by CLAUDE.md's first override, and rewt/pipeline.py refuses
+  # to register any stage that declares it.
+  - id: hct_historic_counties
+    title: "Historic County Borders Project — UK Definition A, simplified"
+    publisher: "Historic Counties Trust"
+    url: "https://county-borders.co.uk/UKDefinitionA_WG84_Simplified.zip"
+    homepage: "https://county-borders.co.uk/"
+    standard: "https://historiccountiestrust.co.uk/Historic_Counties_Standard.pdf"
+    licence: >-
+      Free of charge for all personal, educational, non-commercial and commercial use;
+      no specific permission required. Acknowledgement requested, not required.
+    attribution: >-
+      This mapping made use of data provided by the Historic County Borders Project,
+      https://www.county-borders.co.uk
+    access: open
+    redistribution: permitted
+    used_by: viewer
+    stage: 2
+    format: [shapefile]
+    crs: "EPSG:4326"
+    cache_path: "tools/viewer/cache"
+    checksum: "c830da98ec7cbac480c9b97ba3b6831ff19d457d8b8f6351073145897abcfdd9"
+    issue: "2026-08-31"
+    status: verified
+    notes: >
+      LICENCE VERIFIED FROM THE README INSIDE THE DISTRIBUTION, not from a summary of
+      it, and re-verified here: the archive's sha256 is
+      c830da98ec7cbac480c9b97ba3b6831ff19d457d8b8f6351073145897abcfdd9 and its README
+      reads "The data are provided free of charge for all personal, educational,
+      non-commercial and commercial use. No specific permission is required." The
+      acknowledgement above is requested rather than required, and is given anyway.
+      That is the D-023 standard: a licence traced to a statement about this dataset.
+
+      COUNTY NAMES COME FROM THE HISTORIC COUNTIES STANDARD (D-034), not from the NLS
+      tileset filenames, which differ from it in three places. Three-letter codes —
+      BED, YRK, CMB. IOM is carried so a reference to the Isle of Man resolves, and is
+      OUT OF SCOPE: this project is England and Wales.
+
+      Cached under tools/viewer/ rather than data/raw/ because the viewer is what
+      fetches and uses it, and nothing in the build reads it. It is declared here
+      rather than in a second registry because two registries is what AGENTS.md warns
+      against, and this file is the one that decides whether a thing may be published.

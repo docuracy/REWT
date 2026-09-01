@@ -901,3 +901,26 @@ discarded those at exactly 0 m (D-016's aqueducts and culverts). The stranded Sh
 touches reached water at 0 m in at least five places, so on a bad region the list filled
 with zeros and the real gap was never reached. The closest strictly-positive approach is
 now asked for in SQL rather than filtered out of a limited result.
+
+**D-034 — Counties are named by the Historic Counties Standard, and the Isle of Man is
+carried but out of scope.** *2026-09-01*
+
+*Stephen's convention, arising from the viewer's county mosaics; recorded because it
+binds any later stage that attributes a place to a county.*
+
+Wherever this project refers to a county it uses the Historic Counties Standard's names
+or its three-letter codes — `BED`, `YRK`, `CMB`. **Not the National Library of
+Scotland's tileset filenames**, which differ from the Standard in three places, and not
+ad-hoc strings.
+
+The reason it is a decision and not a style note is that county attribution is a join
+key. A later stage that attributes a mill, a lock or a map sheet to a county will match
+against something, and two spellings of one county silently produce two counties — which
+is the same shape as D-032's Welsh name field and D-023's licence granularity: a
+mismatch that produces a plausible answer rather than an error.
+
+`IOM` is carried so that a reference to the Isle of Man resolves rather than failing —
+the Standard excludes it, the United Kingdom not including the Island. **It is out of
+scope**: this project is England and Wales, and nothing draws it. Carrying an identifier
+so a lookup succeeds is not the same as including the ground, and the two must not be
+confused in a project whose scope rule is as carefully drawn as §4.1's.
