@@ -89,6 +89,21 @@ same event from either side, and often sit on the same reach. Each is a statemen
 someone who was there, not an inference from the modern line. At ten minutes to find the
 sheet and trace the channel, that is **about six working days**.
 
+**Not all of them are channels, and the queue needs a cleaning pass.** Read through, **nine
+of the 274 name no watercourse at all**: they are the New River Company's built estate —
+*NEW RIVER STREET*, *NEW RIVER WALK*, *New River Head*, a gate house, a pumping station, a
+well, and three reservoirs. The pattern is matching a proper noun, because a company named
+after a river carries the river's name across everything it owns. **A caption naming a thing
+is not a caption describing one**, and a transcription records what the surveyor wrote
+rather than what the feature is.
+
+A further ten or so letter **only a structure standing on the channel** — *New Cut Bridge*,
+*Old River Farm*, *Old Eau Field*. Those are not contamination. A bridge named for a cut
+locates a cut the surveyor did not letter, which is weaker evidence than a lettered channel
+and is a good deal better than nothing; they belong in the queue with that written on them.
+The line between the two groups is a judgement in a handful of cases, which is itself the
+reason the pass has to be made by a person.
+
 **Verdict: in house, comfortably.** This is the second edition's core, and it is finishable.
 
 > **How these were counted.** From the **CC0 raw dump** of the GB1900 transcriptions, never
