@@ -380,9 +380,16 @@ def stale_stages() -> list[str]:
     verifies is not verifying it (D-062), so the arithmetic lives here and `run` and
     this function read the same lines.
     """
+    # PLAN ORDER, NOT REGISTRATION ORDER. `run` iterates the plan, and the plan puts
+    # `curated` and `repair` before `basins` (D-028) where registration does not. A
+    # fingerprint depends on the upstream values known AT THAT POINT, so walking the
+    # wrong order silently drops real dependencies and every downstream stage reports
+    # as stale. That was this check's third wrong answer, all three from reconstructing
+    # what `run` does instead of doing it — which is why the arithmetic moved here, and
+    # why moving it was not enough on its own.
     fps: dict[str, str] = {}
     stale: list[str] = []
-    for name in PIPELINE.names:
+    for name in PIPELINE.plan():
         st = PIPELINE[name]
         deps = {
             d: fps[d]
