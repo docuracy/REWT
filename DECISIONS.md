@@ -1605,9 +1605,14 @@ The remedy is in `tools/tracer/PLAN.md` and belongs to phase 2, before the sites
 
 ---
 
-**D-053 — The project keeps Ordnance Survey's identifiers and freezes the issue.**
+**D-054 — The project keeps Ordnance Survey's identifiers and freezes the issue.**
 *2026-09-01. Stephen's ruling on the identifier card: rejected minting our own, with
 the note "Freeze on the 2026-04 issue".*
+
+*Renumbered from D-053: rewt-2b and I appended entries within the same minute and both
+took that number. Theirs was appended first and keeps it. Recorded rather than quietly
+fixed, because a decision log whose numbers move without saying so is worse than one
+with a gap.*
 
 D-045 recorded the problem and left it open. OS's specification says, verbatim: *"The
 identifier is not persistent between product versions; there is therefore no

@@ -136,7 +136,7 @@ def test_the_forms_are_the_survey_s_own():
 
 
 # --------------------------------------------------------------------------
-# The pin (D-053)
+# The pin (D-054)
 # --------------------------------------------------------------------------
 
 
@@ -152,7 +152,7 @@ def test_os_open_rivers_is_pinned_to_a_single_issue():
     frozen = config.source("os_open_rivers").get("frozen_issue", default=None)
     assert frozen, (
         "os_open_rivers has no frozen_issue. The identifier scheme depends on the "
-        "input being pinned (D-053); without it, a reissue renumbers 195,689 links "
+        "input being pinned (D-054); without it, a reissue renumbers 195,689 links "
         "and every judgement in data/curated/ that keys on them."
     )
     assert frozen == "2026-04-14", f"the pin moved to {frozen} — was that decided?"

@@ -20,7 +20,7 @@ sources:
     crs: "EPSG:27700"
     cache_path: "data/raw/os_open_rivers/"
     checksum: null
-    # THE PIN (D-053). Stephen's ruling on the identifier card: freeze on this issue
+    # THE PIN (D-054). Stephen's ruling on the identifier card: freeze on this issue
     # rather than mint our own identifiers. OS's specification says its GUIDs are not
     # persistent *between product versions* — so with exactly one version there is no
     # second version for them to be inconsistent with, and §10's stability requirement

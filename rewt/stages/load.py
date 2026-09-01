@@ -116,7 +116,7 @@ def run() -> dict:
     )
 
     # ------------------------------------------------------------------ the pin
-    # D-053. The project takes OS's identifiers and freezes the issue rather than
+    # D-054. The project takes OS's identifiers and freezes the issue rather than
     # minting its own. That is only a guarantee if the freeze is enforced: OS says
     # its GUIDs are not persistent between product versions, so accepting a reissue
     # silently would renumber 195,689 links and 198,457 nodes, and every judgement in
@@ -129,7 +129,7 @@ def run() -> dict:
     if frozen and issued_on and issued_on != frozen:
         raise StageError(
             f"OS Open Rivers is pinned to the {frozen} issue (conf/sources.yml, "
-            f"D-053) and the file on disk was written {issued_on}. This is the "
+            f"D-054) and the file on disk was written {issued_on}. This is the "
             "reissue the pin exists to catch.\n\n"
             "A reissue renumbers every link and node, and data/curated/ keys on "
             "those identifiers, so this is a decision and not a refresh. Either "
