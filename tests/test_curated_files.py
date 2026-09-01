@@ -160,3 +160,49 @@ def test_each_class_has_one_file_and_the_right_extension(kind, filename):
             "This is a legitimate state before the audit has been adjudicated."
         )
     assert path.stat().st_size > 0, f"{paths.rel(path)} is empty rather than absent"
+
+
+def test_every_judgement_names_who_made_it_and_when(curated_judgements):
+    """*Evidence — a place, a source, or a person and the date they looked* (§7).
+
+    `author` and `dated` are optional to the parser, and that is the wrong default
+    for a research dataset: a judgement that does not say who made it cannot be
+    weighed a year later, and cannot be told apart from one a rule proposed. Both
+    are required here.
+    """
+    anonymous = [
+        f"{j.kind} {j.subject!r} ({j.source_file} row {j.source_row})"
+        for j in curated_judgements
+        if not (j.author or "").strip() or not (j.dated or "").strip()
+    ]
+    assert not anonymous, (
+        "judgements that do not say who made them and when: " + ", ".join(anonymous)
+    )
+
+
+def test_a_judgement_adjudicated_by_rule_says_so_in_its_author(curated_judgements):
+    """A rule's proposal and a person's judgement must not read alike.
+
+    PLAN.md §5 asks for candidates to be *derived* from the audit and then
+    *adjudicated*, and `rewt candidates` says of itself that it proposes and does
+    not decide. Both remain true only while the record says which of the two
+    produced each row — otherwise the corpus stops being able to answer how much of
+    itself has actually been looked at.
+
+    This does not judge how much should be adjudicated by rule. It requires only
+    that a row cannot be one and claim the other.
+    """
+    BY_RULE = "judged by rule"
+    mislabelled = []
+    for j in curated_judgements:
+        evidence_says_rule = BY_RULE in j.evidence.lower()
+        author_says_rule = "rule" in (j.author or "").lower()
+        if evidence_says_rule and not author_says_rule:
+            mislabelled.append(
+                f"{j.kind} {j.subject!r} ({j.source_file} row {j.source_row}): "
+                f"evidence says it was judged by rule, author is {j.author!r}"
+            )
+    assert not mislabelled, (
+        "judgements whose evidence and author disagree about who decided:\n  "
+        + "\n  ".join(mislabelled)
+    )
