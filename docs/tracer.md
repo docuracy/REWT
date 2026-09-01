@@ -6,30 +6,37 @@ labelled mill channels alone are some 4,068 places, an order of magnitude larger
 everything above them on that page, and there is no route to finishing them that does not
 involve many hands.
 
-> **Part-built and not deployed.** What exists: a contributor signs in, a historic sheet is
-> drawn, a line can be traced on it by hand, and what they record arrives as an append-only
-> log in this repository's own history. **Both assists are working** — one centres a vertex
-> in the channel and reports its width, the other follows the printed ink inside a corridor
-> the contributor drew — and each shows its own work while tracing.
+> **Deployed, and part-built.** A contributor signs in at
+> [the tracer](https://docuracy.github.io/REWT/trace/), a historic sheet is drawn, and a line
+> can be traced on it — by hand, or with either of two assists that **choose themselves from
+> what the surveyor drew**: centring a vertex where the channel is a pair of banks, following
+> the ink where it is a single stroke. Each shows its own work while tracing, and what is
+> recorded arrives as an append-only log in this repository's own history — public the moment
+> it is saved.
 >
-> **What does not exist:** the work queue, the basin hold, and — the one that matters —
-> **the paired blind trace that measures whether two people produce the same line.** That
-> machinery exists and the measurement does not, which is the gap to watch, because the
-> argument for pooling contributed geometry rests on the measurement rather than on either
-> assist. There is no public address to visit.
+> **What does not exist:** the work queue, the basin hold, and the binding of a trace to the
+> network link it supersedes. That last is a dependency rather than an omission: the field
+> takes a publisher's identifier typed by hand, because the base network is not fetchable
+> until it ships as a release asset.
 >
-> This site has had to correct a sentence that described tooling as existing when it existed
-> somewhere else, and then a sentence that went on denying tooling after it was built.
-> Overstating in the other direction is the same fault. Where a section below describes
-> something not yet built, it says so.
+> **And the measurement that matters has not been made** — a proportion of tasks assigned
+> twice, blind, to test whether two people produce substantially the same line. **Every
+> argument on this page for pooling contributed geometry rests on that measurement rather
+> than on the tool existing**, and the tool now existing does not advance it.
+>
+> This site has had to correct a sentence describing tooling as existing when it existed
+> somewhere else, and then a sentence still denying tooling after it was built. Both are the
+> same fault. Where a section below describes something not yet built, it says so.
 
 ## What a contributor actually does
 
-One place, one sheet, one channel. The tool hands out a task from a [work
-queue](scale#old-courses-the-victorian-surveyors-labelled) — a place where the Ordnance
-Survey lettered *Old Course*, *New Cut* or a mill leat — shows the historic sheet for that
-place, and asks for two things: the line the sheet draws, and a statement of what it
-replaces.
+One place, one sheet, one channel. A task is a place where the Ordnance Survey lettered
+*Old Course*, *New Cut* or a mill leat; the tool shows the historic sheet for it and asks for
+two things: the line the sheet draws, and a statement of what that line replaces. **The
+handing out is the part not yet built** — the [work
+queue](scale#old-courses-the-victorian-surveyors-labelled) that turns those labelled places
+into tasks is phase 4, and until it exists a contributor arrives at a place rather than being
+sent to one.
 
 **It is not an editor of the modern network, and must never become one.** A contributor
 draws a channel that a sheet shows. They cannot move, delete or re-attribute anything in
@@ -73,6 +80,11 @@ contributors forgot. That distribution is a publishable result in its own right,
 precondition for trusting anything else contributed.
 
 ## Two people, one basin
+
+**This section describes a design, not an artefact.** The basin hold is phase 4, alongside
+the queue that would hand the basins out; what follows is the shape it is specified to take
+and the reasoning that fixed it, which is worth writing down before it is built rather than
+after.
 
 Work is handed out **a basin at a time**, and a contributor holds it while they are in it.
 
