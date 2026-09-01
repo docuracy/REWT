@@ -402,3 +402,126 @@ def test_a_lake_link_is_never_named_for_the_water_body_it_crosses(links):
         f"({', '.join(sorted(set(reservoirs))[:5])}). The convention this test "
         "records has changed, and any reasoning that rested on it needs re-reading."
     )
+
+
+# --------------------------------------------------------------- PLAN.md §10
+# Three things §10 asks Stage 1 for, checked in the deliverable rather than in the
+# database, because §10's whole argument is that a later stage must be able to *join*
+# to these rather than re-derive them — and a later stage will have the GeoPackage.
+
+
+@pytest.fixture(scope="module")
+def termini():
+    return _read(
+        NETWORK,
+        "terminus",
+        ["node_id", "terminus", "basin_id", "arriving_form", "is_crawl_seed"],
+    )
+
+
+def test_tidal_termini_are_published_as_objects(termini):
+    """*Every tidal terminus is identified and kept as a first-class thing rather than
+    implied by the absence of an outflow* (§10).
+
+    The failure this guards is a layer that exists but is empty, or one that has
+    quietly become a copy of the seed set.
+    """
+    assert len(termini) > 0, "the terminus layer is empty"
+    assert set(termini["terminus"].unique()) == {"tidal"}
+
+
+def test_a_terminus_is_not_the_same_thing_as_a_crawl_seed(termini):
+    """The distinction the layer exists to preserve.
+
+    A node can be tidal without the crawl having seeded from it. If these two sets
+    were identical the layer would be redundant, and — worse — a later stage joining
+    a depth contour to "the termini" would be attaching to whichever nodes *this*
+    build's crawl happened to use. That would make a Stage 2 artefact depend on a
+    Stage 1 implementation detail, which is the re-derivation §10 asks us to prevent.
+    """
+    seeds = termini["is_crawl_seed"].fillna(False).astype(bool)
+    assert seeds.any(), "no published terminus was a crawl seed — the join is broken"
+    assert not seeds.all(), (
+        "every tidal terminus is also a crawl seed. Either the network really has "
+        "changed, or the layer is being derived from `seed` rather than from "
+        "`node.terminus` — check the export before believing the first."
+    )
+
+
+def test_the_terminus_layer_carries_basins_where_basins_exist(termini):
+    """§8 asks for reporting per basin, so the layer must carry the basin.
+
+    It cannot carry one for every terminus, and that is a property of the
+    delineation rather than of this layer: **53,755 of 197,734 nodes — 27% —
+    fall outside any delineated basin**, and tidal termini sit at the coast
+    where that is most likely. 4,067 of 13,030 have no basin, which is close
+    to the network-wide rate and so is not evidence of anything worse.
+
+    What this test guards is the join breaking altogether, which would look
+    identical to "these termini have no basin" in every downstream report. So
+    it requires the assigned share to stay in the neighbourhood of the
+    network-wide share rather than requiring it to be complete — a bound that
+    fails loudly if the join silently starts returning nothing.
+    """
+    assigned = termini["basin_id"].notna().mean()
+    assert 0.5 < assigned < 1.0, (
+        f"{assigned:.1%} of published termini carry a basin. Network-wide, 73% "
+        "of nodes do. Far below that means the join has broken; exactly 100% "
+        "means it is no longer reading node_basin."
+    )
+
+
+def test_fall_is_published_for_screening_and_named_as_such(links):
+    """§10 asks for the fall of every link from the unconditioned terrain.
+
+    The name is the load-bearing part, not the number. A 50 m model does not resolve
+    a mill's head — a weir and a leat make metres of fall over a few hundred — so a
+    column called `fall_m` in a published GeoPackage would eventually be read as a
+    site measurement by someone who never saw this repository. The prefix is the only
+    part of the artefact that travels with the value, so it is worth a test.
+    """
+    import pyogrio
+
+    fields = set(pyogrio.read_info(NETWORK, layer="link")["fields"])
+    for column in (
+        "screening_elevation_upstream_m",
+        "screening_elevation_downstream_m",
+        "screening_fall_m",
+        "screening_terrain_verdict",
+    ):
+        assert column in fields, f"{column} is not published"
+
+    bare = {f for f in fields if f in ("fall_m", "elevation_m", "gradient")}
+    assert not bare, (
+        f"{sorted(bare)} published without the `screening_` prefix. The prefix is "
+        "what stops a 50 m sample being read as a survey."
+    )
+
+
+def test_every_published_identifier_expands_to_a_routable_uri(links, termini):
+    """A CURIE expands by concatenation, so the separator has to be a slash.
+
+    `rewt:basin/4385554389` expands onto `https://w3id.org/rewt/basin/4385554389`,
+    which w3id routes. `rewt:basin-unanchored:1002` expands onto
+    `https://w3id.org/rewt/basin-unanchored:1002`, which is a legal URI that
+    resolves to nothing — and it shipped, because it was built by an f-string in
+    another module rather than by `ids.py`.
+
+    Checked on the published file because that is where an outside consumer meets
+    these strings, and a resolver will not care which module composed them.
+    """
+    import re
+
+    import pyogrio
+
+    shape = re.compile(r"^(os|rewt):[a-z][a-z0-9-]*/[^/:]+$")
+    for name, frame, column in (
+        ("link", links, "link_id"),
+        ("terminus", termini, "node_id"),
+    ):
+        bad = [v for v in frame[column].dropna().unique()[:5000] if not shape.match(v)]
+        assert not bad, f"{name}.{column} identifiers do not expand: {bad[:5]}"
+
+    basins = _read(NETWORK, "basin", ["basin_id"])
+    bad = [v for v in basins["basin_id"].dropna().unique() if not shape.match(v)]
+    assert not bad, f"basin identifiers do not expand: {bad[:5]}"

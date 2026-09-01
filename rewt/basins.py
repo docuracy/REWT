@@ -219,4 +219,4 @@ def basin_identity(raster_id: int, outlet_node: str | None) -> str:
     """
     if outlet_node:
         return ids.basin(outlet_node)
-    return f"rewt:basin-unanchored:{raster_id}"
+    return ids.basin_unanchored(raster_id)

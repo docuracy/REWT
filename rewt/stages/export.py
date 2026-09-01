@@ -98,12 +98,26 @@ def run() -> dict:
                ret.reason                         AS retired_reason,
                ret.superseded_by,
                a.parent_link_id,
+               -- §10 asks for the fall of every link, sampled from the
+               -- UNCONDITIONED surface, because a later stage models water power and
+               -- head is the half nobody plans for. It costs nothing here and cannot
+               -- be recovered cheaply afterwards without a second national pass.
+               --
+               -- NAMED AS A SCREENING QUANTITY ON PURPOSE. A 50 m model does not
+               -- resolve a mill's head — a weir and a leat make metres of fall over a
+               -- few hundred — so this must never be mistaken for a site measurement,
+               -- and the column name is the only thing that will stop that.
+               g.up_m                             AS screening_elevation_upstream_m,
+               g.down_m                           AS screening_elevation_downstream_m,
+               g.fall_m                           AS screening_fall_m,
+               g.verdict                          AS screening_terrain_verdict,
                ST_AsWKB(a.geom)                   AS wkb
         FROM all_links a
         LEFT JOIN edge e        ON e.link_id  = a.link_id
         LEFT JOIN link_scope s  ON s.link_id  = a.link_id
         LEFT JOIN link_reach r  ON r.link_id  = a.link_id
         LEFT JOIN retirement ret ON ret.link_id = a.link_id
+        LEFT JOIN link_gradient g ON g.link_id = a.link_id
         ORDER BY a.link_id
         """
     ).df()
@@ -161,8 +175,36 @@ def run() -> dict:
     if export_crs != working:
         basin_gdf = basin_gdf.to_crs(export_crs)
 
+    # ------------------------------------------------------------- termini
+    # §10: *every tidal terminus is identified and kept as a first-class thing rather
+    # than implied by the absence of an outflow, so that attaching them later is a
+    # join and not a re-derivation.* A later stage attaches a depth contour to these;
+    # it should not have to re-derive which nodes they are from a graph property.
+    termini = con.execute(
+        """
+        SELECT n.node_id, n.publisher_id, n.terminus, n.easting, n.northing,
+               s.inflows, s.inflow_length_m, s.form AS arriving_form,
+               nb.basin_id,
+               (s.node_id IS NOT NULL) AS is_crawl_seed,
+               ST_AsWKB(n.geom) AS wkb
+        FROM node n
+        LEFT JOIN seed s ON s.node_id = n.node_id
+        LEFT JOIN node_basin nb ON nb.node_id = n.node_id
+        WHERE n.terminus = 'tidal'
+        ORDER BY n.node_id
+        """
+    ).df()
+    terminus_gdf = gpd.GeoDataFrame(
+        termini.drop(columns=["wkb"]),
+        geometry=[shapely.from_wkb(bytes(w)) for w in termini["wkb"]],
+        crs=working,
+    )
+    if export_crs != working:
+        terminus_gdf = terminus_gdf.to_crs(export_crs)
+
     NETWORK_GPKG.unlink(missing_ok=True)
     link_gdf.to_file(NETWORK_GPKG, layer="link", driver="GPKG")
+    terminus_gdf.to_file(NETWORK_GPKG, layer="terminus", driver="GPKG")
     node_gdf.to_file(NETWORK_GPKG, layer="node", driver="GPKG")
     basin_gdf.to_file(NETWORK_GPKG, layer="basin", driver="GPKG")
 
@@ -379,10 +421,26 @@ consumer who needs any of it does not have it here.
 
 | file | what it is |
 |---|---|
-| `rewt_stage1_network.gpkg` | the network: `link`, `node` and `basin` layers, EPSG:27700 |
+| `rewt_stage1_network.gpkg` | the network: `link`, `node`, `terminus` and `basin` layers, EPSG:27700 |
 | `rewt_stage1_corrections.gpkg` | every curated judgement, so the difference from the survey is openable |
 | `audit/audit.md`, `audit/audit.json` | the audit, per basin and national |
 | `ATTRIBUTION.md` | every source's required statement, in full |
+
+### Two columns and one layer that are easy to misread
+
+`link` carries `screening_fall_m`, with the elevation of each end beside it. It is
+sampled from the terrain model *before* the model is conditioned for flow, and it is
+named `screening_` for a reason: a 50 m grid does not resolve a weir, a leat, or a
+mill's head, all of which make metres of fall over a few hundred. **It is fit for
+sorting links, and not for telling anyone how much head a site has.**
+
+`terminus` is the 13,030 nodes where the network meets tidal water, published as
+objects rather than left to be inferred from a node having no outflow. `is_crawl_seed`
+says whether this build's reachability crawl actually started there — a node can be
+tidal without being a seed, so the two sets are not interchangeable. **4,067 termini
+carry no `basin_id`**, because 27% of all nodes fall outside any delineated basin and
+the delineation runs out at the coast, which is where termini are. A per-basin figure
+therefore does not cover every terminus.
 
 ## Telling the survey from this project
 

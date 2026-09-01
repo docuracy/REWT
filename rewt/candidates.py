@@ -30,7 +30,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from . import config, db, graph
+from . import config, db, graph, ids
 from .report import log
 
 
@@ -354,7 +354,7 @@ def inspect(sink_publisher_id: str, radius_m: float = 1500.0) -> dict:
     looking — what arrives, what is nearby, whether it drains, how far, and which way
     the ground falls. It reports; the judgement is the reader's.
     """
-    node_id = f"os:node:{sink_publisher_id}"
+    node_id = ids.publisher("node", sink_publisher_id)
     place = db.query(
         "SELECT easting, northing, terminus, category FROM node WHERE node_id = ?",
         [node_id],

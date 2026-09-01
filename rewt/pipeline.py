@@ -18,11 +18,14 @@ of it. Change any of those and the cache is not used.
 
 from __future__ import annotations
 
+import ast
+import functools
 import hashlib
 import inspect
 import json
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Callable, Iterable
 
 from . import config, db, paths
@@ -70,6 +73,85 @@ def artefact(name: str, kind: str = "table", path: str | None = None) -> Artefac
     return art
 
 
+# ---------------------------------------------------------------- module reach
+# What a stage can reach, so that its fingerprint can cover it. Read from the
+# source text rather than from `sys.modules`, because an import that has not
+# happened yet in this process is still an import the stage depends on.
+
+_PACKAGE = __name__.split(".")[0]
+
+
+@functools.lru_cache(maxsize=None)
+def _module_file(name: str) -> Path | None:
+    rel = Path(*name.split("."))
+    for candidate in (rel.with_suffix(".py"), rel / "__init__.py"):
+        path = paths.ROOT / candidate
+        if path.is_file():
+            return path
+    return None
+
+
+@functools.lru_cache(maxsize=None)
+def _module_digest(name: str) -> str:
+    path = _module_file(name)
+    if path is None:
+        return "absent"
+    return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
+
+
+@functools.lru_cache(maxsize=None)
+def _direct_imports(name: str) -> tuple[str, ...]:
+    """The `rewt.*` modules this module imports, relative imports resolved."""
+    path = _module_file(name)
+    if path is None:
+        return ()
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    except SyntaxError as exc:                                  # pragma: no cover
+        raise StageError(f"cannot parse {paths.rel(path)} to fingerprint it: {exc}")
+
+    parts = name.split(".")
+    package = parts[:-1] if _module_file(name) and path.name != "__init__.py" else parts
+    found: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name.split(".")[0] == _PACKAGE:
+                    found.add(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            if node.level:
+                base = package[: len(package) - node.level + 1]
+                target = base + ([node.module] if node.module else [])
+            elif node.module and node.module.split(".")[0] == _PACKAGE:
+                target = node.module.split(".")
+            else:
+                continue
+            stem = ".".join(target)
+            if not stem or stem.split(".")[0] != _PACKAGE:
+                continue
+            found.add(stem)
+            # `from . import db, graph` names modules, not attributes.
+            for alias in node.names:
+                child = f"{stem}.{alias.name}"
+                if _module_file(child) is not None:
+                    found.add(child)
+    return tuple(sorted(found))
+
+
+@functools.lru_cache(maxsize=None)
+def _reachable_modules(name: str) -> tuple[str, ...]:
+    """`name` and everything it transitively imports inside the package."""
+    seen: set[str] = set()
+    stack = [name]
+    while stack:
+        current = stack.pop()
+        if current in seen or _module_file(current) is None:
+            continue
+        seen.add(current)
+        stack.extend(_direct_imports(current))
+    return tuple(sorted(seen))
+
+
 @dataclass
 class Stage:
     """One step of the build, with what it reads and what it writes declared."""
@@ -85,11 +167,40 @@ class Stage:
     always: bool = False              # runs every build regardless of cache (the audit)
 
     def source_hash(self) -> str:
+        """The stage's own body **and every project module it can reach.**
+
+        The narrow version of this — hashing only `inspect.getsource(self.fn)` —
+        was wrong, and wrong in the way that does not announce itself. A stage
+        function is a few lines that call into `ids`, `graph`, `topology`,
+        `curated`, `schema`. Rewrite any of those and the stage's own text is
+        unchanged, so its fingerprint is unchanged, so the build serves the
+        artefact the *previous* code produced and reports success.
+
+        It happened. `ids.publisher` was changed from `os:link:{id}` to
+        `os:link/{id}` — one character, deliberate, so that a CURIE expands by
+        concatenation onto a URI w3id actually routes. No stage's fingerprint
+        moved. The database kept 195,689 links and 198,457 nodes identified in a
+        scheme the code on disk no longer produces, and `rewt build` exited 0 with
+        every figure intact. Only a unit test comparing `ids` against a literal
+        caught it, and only because it imports the module directly rather than
+        reading the database.
+
+        So the fingerprint now covers the transitive closure of `rewt.*` imports
+        from the module the stage is defined in. It is deliberately coarse: a
+        change to `db.py` rebuilds nearly everything, because nearly everything
+        imports it. That is the right direction to be wrong in. A rebuild that
+        was not needed costs an hour; a cached artefact built by code that no
+        longer exists costs the reproducibility guarantee §2 is built on, and
+        costs it silently.
+        """
         try:
             src = inspect.getsource(self.fn)
         except (OSError, TypeError):
             src = self.fn.__qualname__
-        return hashlib.sha256(src.encode("utf-8")).hexdigest()[:16]
+        payload = [src]
+        for name in _reachable_modules(self.fn.__module__):
+            payload.append(f"{name}\n{_module_digest(name)}")
+        return hashlib.sha256("\n".join(payload).encode("utf-8")).hexdigest()[:16]
 
     def config_slice(self) -> dict:
         p = config.params()

@@ -113,7 +113,7 @@ def test_a_basin_without_an_outlet_is_the_coastal_case_and_not_the_rule(con):
     A basin whose outlet could not be anchored to a network node is expected and is
     not a defect: **where a DEM is masked over the sea the outlet sits on nodata,
     which is itself confirmation that the component reaches tidal water.** The id
-    scheme names them `rewt:basin-unanchored:…`, which is the right way to carry the
+    scheme names them `rewt:basin-unanchored/…`, which is the right way to carry the
     case forward.
 
     What would be a defect is anchoring failing wholesale, because a basin with no

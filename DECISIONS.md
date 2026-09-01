@@ -1200,3 +1200,306 @@ readings until someone asks.
 A further entry will describe the gate **as built** rather than as intended, once phase 1
 of the tracing tool exists. This entry records the rulings; that one will record the
 mechanism.
+
+**D-044 — Identifiers use one colon and then slashes, so that a CURIE expands to a URI
+that resolves.** *2026-09-01*
+
+*Found by rewt-86 on the day the `rewt` namespace went live, which is the only window in
+which this was free to change.*
+
+The build minted `rewt:basin:4385554389`. `rewt` is now a registered w3id prefix bound to
+`https://w3id.org/rewt/`, and **a CURIE expands by plain concatenation of namespace and
+reference**, so that identifier expands to `https://w3id.org/rewt/basin:4385554389` — a
+perfectly legal URI which resolves to nothing, because what w3id routes is
+`https://w3id.org/rewt/basin/4385554389`. Both are URIs; only one is the identifier.
+
+Identifiers are now `rewt:basin/4385554389`: the prefix delimiter once, slashes
+thereafter. It expands correctly by concatenation, needs no special tooling, and matches
+the routes already published. `os:link/{GUID}` follows the same shape.
+
+**The alternative that was rejected is worth recording**, because it is the one already
+written into the w3id README: documenting the expansion as a *transformation* — replace
+colons with slashes after the prefix. That is not what a CURIE means, and generic tooling
+would ignore it, which makes it a rule that works only where someone has read the
+documentation. The other alternative, accepting both forms in `.htaccess`, gives one
+basin two URIs, which is what an identifier scheme exists to prevent.
+
+**The failure this avoids would have been silent and total.** The moment this data is
+serialised as JSON-LD — which D-027 already commits it to, LPF `when` objects being
+JSON-LD — a context binding the prefix expands every identifier by concatenation,
+produces the unrouted form, and reports no error. Nothing in the pipeline would notice
+and every URI would be wrong at once. It is the same family as D-031's silent
+truncation: the operation succeeds and the artefact is wrong.
+
+**D-045 — The publisher's identifiers are NOT persistent, so `os:link/{GUID}` cannot
+satisfy §10. Recorded as unresolved.** *2026-09-01*
+
+*Raised by rewt-86; the specification checked here; the measurement was already in D-026.*
+
+PLAN.md §10: *a stretch present in two published editions must carry the same id in
+both. Design the scheme once, here.* The build mints `os:link/{GUID}` and
+`os:node/{GUID}` for 194,658 links and 198,119 nodes, borrowing the Ordnance Survey's
+own identifier. **The OS Open Rivers technical specification says, verbatim:**
+
+> The identifier is not persistent between product versions; there is therefore no
+> change-history information for features.
+
+So the identifiers for the entire survey-derived network rest on a value the publisher
+explicitly declines to keep stable, in a product reissued twice a year. `basin_id`,
+`rewt:link/…` and the correction identifiers are minted here and do not have this
+problem; the survey's do.
+
+**This is measured, not merely warned about.** D-026 records that of the predecessor's
+73 corrections, **12 reference a link that does not exist in issue 2026-04 at all** — of
+25 junction targets, 13 survive; of 45 connector link ids, 32. That churn is exactly this
+defect, observed eleven months apart, and it is why that comparison had to be made by
+place rather than by identifier.
+
+**No scheme is proposed here, and that is deliberate.** Replacing it is a design decision
+with consequences that reach outside this file: `data/curated/` keys reversals,
+junctions and exclusions on publisher ids, so any new scheme has to say what happens to a
+judgement whose subject is re-issued under a different GUID. A geometry digest — the
+scheme D-013 already uses for connectors — is the obvious candidate and is not obviously
+right, because OS re-generalises geometry between issues too, so a re-drawn reach would
+take a new identifier and look like a different river.
+
+Recorded now, unresolved, because §10's own logic applies to fixing it: the window in
+which an identifier scheme can be changed for free is the window before anything outside
+this repository has resolved one, and that window is open today. **It is on the decision
+queue for Stephen.**
+
+---
+
+**D-046 — The survey's own generalisation is measured, because Stage 1 is the only
+stage that can measure it.** *2026-09-01*
+
+PLAN.md §10 asks that the audit record what OS Open Rivers' generalisation actually
+is. It is now measured on all 193,040 as-surveyed links and 2,137,230 vertices, and
+it turns out to be sharper than "generalised" suggests:
+
+| percentile | vertex spacing | sagitta |
+|---|---|---|
+| 5th | 18.9 m | 8.28 m |
+| 50th | 56.7 m | 15.59 m |
+| 95th | 204.6 m | 40.64 m |
+
+*Sagitta* is how far a vertex sits off the straight line joining its two neighbours —
+the amplitude of the bend that vertex was kept to record.
+
+**The interesting number is the low tail, not the median.** Sagitta at the 0.1st
+percentile is 0.18 m and only 0.25% of vertices sit under 1 m, but by the 10th
+percentile it is already 8.99 m. That is a knee, not a taper: **the survey retains
+bends down to about 9 m of amplitude and almost nothing below it.** A near-empty
+low tail is the signature of a tolerance filter, so ~9 m is a reasonable read of the
+tolerance OS generalised to, inferred from what survived rather than from a
+specification we do not have.
+
+Two consequences worth writing down while they are cheap:
+
+**The survey is finer than the terrain that conditions it.** Median sagitta 15.6 m
+and median spacing 56.7 m, against a 50 m DEM. Where §5's terrain evidence and the
+survey's own geometry disagree about a course, the survey is the higher-resolution
+witness and the DEM is not entitled to overrule it on shape.
+
+**It sets a floor for any later stage.** A stage proposing to move a line by less
+than ~9 m is arguing with the tolerance, not with the river. This is measured now
+because it cannot be measured later: once anything puts its own vertices on a line,
+OS's spacing is gone and is not recoverable from the result.
+
+---
+
+**D-047 — Fall per link is published, and named so it cannot be mistaken for a
+measurement.** *2026-09-01*
+
+§10 asks for the fall of every link sampled from the *unconditioned* terrain, on the
+grounds that a later stage modelling water power needs head and head is the half
+nobody plans for. `link_gradient` already held it — §5 computes it to test flow
+direction against the ground — so this costs one join, and the whole cost of not
+doing it now is a second national terrain pass later.
+
+**The naming is the actual decision.** The columns ship as
+`screening_elevation_upstream_m`, `screening_elevation_downstream_m`,
+`screening_fall_m` and `screening_terrain_verdict`. A 50 m DEM does not resolve a
+mill's head — a weir and a leat make metres of fall over a few hundred, and the
+model will not see either — so a column called `fall_m` in a published GeoPackage
+would eventually be read as a site measurement by someone who never saw this file.
+The prefix is the only part of the artefact that travels with the number.
+
+---
+
+**D-048 — Tidal termini are published as objects, not inferred from the absence of an
+outflow.** *2026-09-01*
+
+§10, on the coastal terminus: *nothing to build now*, but it asks that **every tidal
+terminus is identified and kept as a first-class thing rather than implied by the
+absence of an outflow, so that attaching them later is a join and not a
+re-derivation.*
+
+It was implied. A terminus was a node the crawl happened to start from, and
+"is it tidal?" was answered by running the graph. `published/rewt_stage1_network.gpkg`
+now carries a **`terminus` layer**: 13,030 nodes with `terminus = 'tidal'`, each with
+its basin, the form arriving at it, its inflow count and length, and whether the
+crawl actually seeded from it.
+
+**The distinction is not cosmetic, because the two sets are not the same.** A node
+can be tidal and not be a seed. Deriving termini from seeds would silently publish
+the smaller set, and a later stage joining a depth contour to "the termini" would
+attach to whichever ones this build's crawl happened to use — a Stage 2 artefact
+shaped by a Stage 1 implementation detail. Recording both, and the flag that
+separates them, means the join is a join.
+
+---
+
+**D-049 — A stage's fingerprint now covers every project module it can reach, not
+only its own body.** *2026-09-01*
+
+**The bug, because it is worth stating before the fix.** `Stage.source_hash()` hashed
+`inspect.getsource(self.fn)` — the stage function's own text and nothing else. But a
+stage function is a few lines that call into `ids`, `graph`, `topology`, `curated`,
+`schema`. Rewrite any of those and the stage's own text is unchanged, so its
+fingerprint is unchanged, so the build serves the artefact the *previous* code
+produced and reports success.
+
+**It had already happened.** `ids.publisher` was changed from `os:link:{id}` to
+`os:link/{id}` — one character, deliberate, so a CURIE expands by concatenation onto
+a URI w3id actually routes. No fingerprint moved. The database went on holding
+195,689 links and 198,457 nodes identified in a scheme the code on disk no longer
+produced, `rewt build` exited 0, and every published figure was intact and unaffected.
+
+**What caught it was a unit test, and only by accident of how it was written.**
+`test_a_publisher_feature_keeps_the_publishers_identity` compares `ids.publisher(...)`
+against a literal. It imports the module, so it sees the new code; the database holds
+the old. Nothing that read the database could have found this, because the database
+was *internally consistent* — every identifier in it agreed with every other. A
+consistency check would have passed. This is the failure mode where the artefact is
+coherent and simply not the one the source code describes.
+
+**The fix, and the direction it is deliberately wrong in.** The fingerprint now covers
+the transitive closure of `rewt.*` imports from the module the stage is defined in,
+resolved from the source text by AST rather than from `sys.modules` — an import that
+has not executed yet in this process is still a dependency. It is coarse: a change to
+`db.py` rebuilds nearly everything, because nearly everything imports it. That is the
+right direction. **A rebuild that was not needed costs an hour; a cached artefact
+built by code that no longer exists costs the reproducibility guarantee §2 rests on,
+and costs it silently.**
+
+Two tests hold it: one perturbs `rewt/ids.py` and requires the `load` stage's
+fingerprint to move; one requires the walk to follow relative imports, since nearly
+every import in this package is relative and a walk that only understood absolute ones
+would return almost nothing while still producing a plausible-looking hash.
+
+**The honest caveat.** §9's reproducibility check compares two builds. Both were run
+against this defect, so what it demonstrated was that the pipeline is deterministic
+given its cache — not that the cache corresponds to the source. That is a weaker claim
+than the one I made for it, and it is the second time this session that a check has
+reported success for the one case it could not see.
+
+---
+
+**D-050 — Tidal termini outside any delineated basin are named, not quietly dropped.**
+*2026-09-01*
+
+**4,067 of 13,030 tidal termini fall outside every delineated basin**, and 1,059 of
+those are crawl seeds. They cannot appear in a per-basin figure, which is what §8 asks
+the audit to report.
+
+**It is not a defect of the terminus layer and it is not about the coast especially.**
+53,755 of 197,734 nodes — 27% — have no basin assigned, because D8 delineation from
+pour points does not cover every cell a node can sit on. Termini are at 31%, which is
+close enough to the network-wide rate to be the same phenomenon rather than a worse
+one. The delineation simply runs out near the coast, which is exactly where termini
+are.
+
+Recorded rather than fixed, and the audit now prints it as a named skip, because the
+risk is not the gap itself but a per-basin reachability figure being read as covering
+the whole coast when a fifth of the coast's termini are not in any basin to be
+counted. The test on the published layer was written to match: it requires the
+assigned share to sit near the network-wide share, so that the join silently returning
+nothing — which looks identical to "these have no basin" in every downstream report —
+fails loudly instead.
+
+---
+
+**D-051 — Two identifiers were being minted outside `ids.py`, and both were wrong the
+moment the scheme changed.** *2026-09-01*
+
+`rewt/ids.py` exists so that identifiers are composed in one place. The rule was
+written down and not enforced, so it had been broken twice, and neither break
+announced itself:
+
+| where | what it built | what it should have built |
+|---|---|---|
+| `basins.py:222` | `rewt:basin-unanchored:1002` | `rewt:basin-unanchored/1002` |
+| `candidates.py:357` | `os:node:{publisher_id}` | `os:node/{publisher_id}` |
+
+**Both were f-strings, so the move to slashes went straight past them.** The first
+shipped: every unanchored basin in the published GeoPackage carried an identifier
+expanding to `https://w3id.org/rewt/basin-unanchored:1002` — a legal URI that
+resolves to nothing, which is exactly the defect the slash rule was introduced to
+prevent. The second is worse in kind though it never shipped: `candidates.inspect()`
+composed a node id in the old form and looked it up in a database that now holds the
+new one, so **the tool for adjudicating a defect at the place would have reported "not
+found" for every node that exists.** It would have looked like a data problem.
+
+**The lesson is the one D-049 already paid for, one level down.** There, a stage's
+fingerprint did not cover the module it called. Here, a module's identifier scheme did
+not cover the two places that composed identifiers without asking it. In both cases
+the artefact was internally consistent and simply not what the source described, and
+in both cases nothing that read the artefact could have noticed.
+
+So the rule is now a test rather than a sentence. `test_no_module_but_ids_mints_an_
+identifier` greps every module but `ids.py` for an f-string beginning `os:` or `rewt:`.
+It is crude deliberately — it catches the *shape* of the mistake without having to
+understand the code, and it found `candidates.py` immediately, which no amount of
+reading had. A second test checks the published file itself, because a resolver meeting
+these strings will not care which module composed them.
+
+**What did not move.** In-scope reachability is **93.28%**, to the same 97,746 km of
+104,785 as before the rebuild, and 334 basins remain in scope. The stale cache
+affected the identifier scheme; it did not touch the measurement the project is
+judged on. *(See the correction below: it did not affect the basin count either.)*
+
+
+---
+
+**Correction to D-049 and D-051 — the basin count was never evidence of staleness.**
+*2026-09-01. Appended rather than edited into place; the entries above stand as
+written, with a pointer.*
+
+I reported that the basin count had moved from 1,049 to 1,279 across the rebuild, and
+attributed the difference to the stale cache. **That was wrong, and the two numbers
+were never in tension.**
+
+`basins.py` logs `len(measured)` as *basins delineated* — every basin D8 produces,
+**1,279**. It then stores only those that are in scope or above
+`basins.min_basin_area_km2` (line 163), which is **1,049**, and that is what reaches
+the `basin` table and the published GeoPackage. Both figures are correct, they measure
+different things, and both have been printed by the same build all along. I compared
+the delineated count from the running build against the stored count I remembered from
+the published output, and read the difference as a defect.
+
+**This is the exact error this repository has spent the day cataloguing — a real value
+attached to the wrong object — committed while reporting on that error.** It is also
+the failure the aggregates rule exists to prevent: I checked a summarising number
+against my memory of another summarising number instead of against the thing each one
+counts. Two minutes reading `basins.py` would have settled it, and I reached for an
+explanation before I reached for the source.
+
+**The mechanism is worth naming, because it is not carelessness and it will recur.**
+I had just found a genuine staleness bug. That made an adjacent staleness explanation
+feel *earned* rather than hypothesised — the second finding inherited the first one's
+credibility without inheriting any of its evidence. A real finding is exactly the
+condition under which the next wrong one goes unchallenged, so the guard belongs
+immediately after a success and not after a failure: **having just been right is not
+evidence about the next claim.**
+
+**What survives, because it was established a different way.** D-049's stale-cache
+defect is real and is not supported by the basin count at all: it was demonstrated by
+perturbing `rewt/ids.py` and watching the `load` fingerprint move, and by the database
+holding `os:link:` identifiers while the code on disk emitted `os:link/`. That evidence
+is untouched. The identifier scheme was genuinely stale; the basin count never was.
+
+**And the determinism result stands on its own.** 1,279 delineated across two
+independent full terrain runs, with 195,015 edges and 334 in-scope basins reproduced
+exactly, is evidence that the breach is deterministic at this granularity. It simply
+never needed a discrepancy to explain, because there was none.

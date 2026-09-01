@@ -446,6 +446,51 @@ def run() -> dict:
         [f.to_row() for f in findings],
         columns=["kind", "subject", "detail", "easting", "northing", "metrics", "basin_id"],
     )
+    # ------------------------------------------- termini outside any basin
+    # Named because §8 reports per basin and these cannot be. Not a defect of the
+    # terminus layer: 27% of all nodes fall outside a delineated basin, and termini
+    # sit on the coast where the delineation runs out. Reported so that a per-basin
+    # figure is never read as covering the whole coast.
+    unplaced = con.execute(
+        """
+        SELECT count(*) FILTER (WHERE nb.basin_id IS NULL) AS no_basin,
+               count(*) FILTER (WHERE nb.basin_id IS NULL AND s.node_id IS NOT NULL)
+                   AS no_basin_but_seeded,
+               count(*) AS termini
+        FROM node n
+        LEFT JOIN node_basin nb ON nb.node_id = n.node_id
+        LEFT JOIN seed s ON s.node_id = n.node_id
+        WHERE n.terminus = 'tidal'
+        """
+    ).fetchone()
+    report.add("termini_without_basin", unplaced[0])
+    log.skip(
+        f"{unplaced[0]:,} of {unplaced[2]:,} tidal termini fall outside any delineated "
+        f"basin and cannot appear in a per-basin figure; {unplaced[1]:,} of them are "
+        "crawl seeds. The delineation runs out at the coast, which is where termini are."
+    )
+
+    # --------------------------------------------- the survey's own generalisation
+    gen = _generalisation()
+    report.add("generalisation", gen)
+    log.rule("What the survey has already generalised away")
+    log.table(
+        "OS Open Rivers vertex geometry, as delivered",
+        ["percentile", "vertex spacing (m)", "sagitta (m)"],
+        [[f"{k}th", f"{gen['spacing_m'][k]:,.1f}", f"{gen['sagitta_m'][k]:,.2f}"]
+         for k in (5, 25, 50, 75, 95, 99)],
+    )
+    log.info(
+        "OS Open Rivers is generalised: median vertex spacing "
+        f"{gen['spacing_m'][50]:.0f} m (5th–95th {gen['spacing_m'][5]:.0f}–{gen['spacing_m'][95]:.0f} m), "
+        f"median sagitta {gen['sagitta_m'][50]:.2f} m (95th {gen['sagitta_m'][95]:.2f} m), "
+        f"from {gen['vertices']:,} vertices on {gen['links_measured']:,} as-surveyed links. "
+        "Detail smaller than this is absent from the record, not from the river."
+    )
+    log.detail(
+        f"Closest two vertices anywhere: {gen['spacing_min_m']:,.2f} m. "
+        f"Largest single bend retained: {gen['sagitta_max_m']:,.1f} m."
+    )
     con.execute("DROP TABLE IF EXISTS audit_finding")
     with db.registered("_af_in", frame):
         con.execute("CREATE TABLE audit_finding AS SELECT * FROM _af_in")
@@ -873,3 +918,74 @@ def _write_human_report(report: Report, ranked, by_form, worst) -> None:
     from ..report import write_text
 
     write_text(paths.PUBLISHED / "audit" / "audit.md", "\n".join(lines) + "\n")
+
+
+def _generalisation() -> dict:
+    """Measure the generalisation OS Open Rivers has already applied.
+
+    §10: *the survey has already generalised, and the audit should record what that
+    generalisation actually is, because it is measurable at Stage 1 and nowhere else.*
+    Once a later stage puts its own vertices on a line, the survey's own vertex
+    spacing is gone and cannot be recovered from the result.
+
+    Two quantities, both from the geometry as delivered:
+
+    **Vertex spacing** — the distance between consecutive vertices. This is the
+    sampling interval: the survey says nothing about the course between two
+    vertices, so a bend shorter than this spacing is not absent from the river, it
+    is absent from the *record* of the river.
+
+    **Sagitta** — how far each interior vertex sits off the straight line joining
+    its two neighbours. This is the amplitude of detail that survived: a vertex
+    kept a bend, and the sagitta is how big that bend was. Together the pair say
+    that OS retained detail down to about this size at about this spacing, and a
+    later stage proposing to move a line by less than that is arguing with noise.
+
+    Measured on `link`, which holds the survey as delivered and nothing else —
+    everything this project split or added lives in `repair_link`. Retired links are
+    kept in the measurement deliberately: a link we later split was still surveyed by
+    OS at OS's own spacing, and dropping it would bias the result toward the
+    geometry we happened not to touch.
+    """
+    import shapely
+
+    con = db.get()
+    rows = con.execute(
+        """
+        SELECT ST_AsWKB(l.geom) AS wkb FROM link l WHERE l.origin = 'survey'
+        """
+    ).fetchall()
+    if not rows:
+        raise StageError("no as-surveyed links to measure generalisation on")
+
+    spacing: list[np.ndarray] = []
+    sagitta: list[np.ndarray] = []
+    vertices = 0
+    for (wkb,) in rows:
+        xy = shapely.get_coordinates(shapely.from_wkb(bytes(wkb)))
+        if len(xy) < 2:
+            continue
+        vertices += len(xy)
+        seg = np.hypot(*(xy[1:] - xy[:-1]).T)
+        spacing.append(seg[seg > 0])
+        if len(xy) < 3:
+            continue
+        a, b, c = xy[:-2], xy[1:-1], xy[2:]
+        chord = c - a
+        chord_len = np.hypot(*chord.T)
+        ok = chord_len > 0
+        # perpendicular distance from b to the line a->c
+        h = np.abs(np.cross(chord[ok], b[ok] - a[ok])) / chord_len[ok]
+        sagitta.append(h)
+
+    spacing_all = np.concatenate(spacing)
+    sagitta_all = np.concatenate(sagitta)
+    pct = [5, 25, 50, 75, 95, 99]
+    return {
+        "links_measured": len(rows),
+        "vertices": vertices,
+        "spacing_m": dict(zip(pct, np.percentile(spacing_all, pct).round(1))),
+        "spacing_min_m": float(spacing_all.min().round(2)),
+        "sagitta_m": dict(zip(pct, np.percentile(sagitta_all, pct).round(2))),
+        "sagitta_max_m": float(sagitta_all.max().round(1)),
+    }

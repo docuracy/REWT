@@ -27,11 +27,11 @@ from rewt import config, ids, pipeline
 
 
 def test_a_publisher_feature_keeps_the_publishers_identity():
-    assert ids.publisher("link", "watercourse_link.1234") == "os:link:watercourse_link.1234"
-    assert ids.is_publisher("os:link:x")
-    assert not ids.is_ours("os:link:x")
-    assert ids.publisher_id_of("os:link:watercourse_link.1234") == "watercourse_link.1234"
-    assert ids.publisher_id_of("rewt:link:abcdef") is None
+    assert ids.publisher("link", "watercourse_link.1234") == "os:link/watercourse_link.1234"
+    assert ids.is_publisher("os:link/x")
+    assert not ids.is_ours("os:link/x")
+    assert ids.publisher_id_of("os:link/watercourse_link.1234") == "watercourse_link.1234"
+    assert ids.publisher_id_of("rewt:link/abcdef") is None
 
 
 def test_our_ids_are_derived_from_what_the_feature_is():
@@ -176,4 +176,111 @@ def test_the_working_crs_is_metric():
     assert config.param("crs.working") == "EPSG:27700", (
         "the working CRS is not EPSG:27700. Metric work in degrees is wrong "
         "everywhere and looks right at the equator."
+    )
+
+
+# --------------------------------------------------------------------------
+# The fingerprint must cover what the stage can reach, not only what it says
+# --------------------------------------------------------------------------
+
+
+def test_a_stage_fingerprint_covers_the_modules_the_stage_calls():
+    """The gap that let a rebuilt identifier scheme go unrebuilt.
+
+    A stage function is a few lines that call into `ids`, `graph`, `topology`,
+    `curated`. Hashing only the function's own text means any of those can be
+    rewritten without a single fingerprint moving — so the build serves the
+    artefact the *previous* code produced, and says it succeeded.
+
+    That is not hypothetical. `ids.publisher` changed from `os:link:{id}` to
+    `os:link/{id}` and no fingerprint noticed; the database held 195,689 links
+    identified in a scheme the code no longer produced, and the build exited 0.
+
+    The test perturbs a module the stage does not mention and requires the
+    fingerprint to move. It restores the file in a `finally` — a test that
+    edits the working tree must not leave it edited when it fails.
+    """
+    import pathlib
+
+    from rewt import cli
+
+    cli._import_stages()
+    stage = pipeline.PIPELINE._stages["load"]
+    assert "rewt.ids" in pipeline._reachable_modules(stage.fn.__module__), (
+        "the load stage no longer reaches rewt.ids; this test is watching the "
+        "wrong module and should be pointed at one the stage actually calls"
+    )
+
+    caches = (
+        pipeline._module_file,
+        pipeline._module_digest,
+        pipeline._direct_imports,
+        pipeline._reachable_modules,
+    )
+
+    def clear():
+        for cache in caches:
+            cache.cache_clear()
+
+    target = pathlib.Path("rewt/ids.py")
+    original = target.read_bytes()
+    before = stage.source_hash()
+    try:
+        target.write_bytes(original + b"\n# fingerprint probe\n")
+        clear()
+        after = stage.source_hash()
+    finally:
+        target.write_bytes(original)
+        clear()
+
+    assert after != before, (
+        "editing rewt/ids.py did not change the load stage's fingerprint. A "
+        "cached artefact can now be served by code that no longer exists."
+    )
+    assert stage.source_hash() == before, "the probe did not restore ids.py"
+
+
+def test_the_reachability_walk_follows_relative_imports():
+    """`from . import db` and `from ..config import x` must both be followed.
+
+    Nearly every import in this package is relative, so a walk that only
+    understood absolute ones would return almost nothing and would look like it
+    was working — the fingerprint would still be *a* hash, just a blind one.
+    """
+    reach = pipeline._reachable_modules("rewt.stages.audit")
+    for expected in ("rewt.db", "rewt.graph", "rewt.config", "rewt.paths"):
+        assert expected in reach, f"{expected} not reached from rewt.stages.audit"
+    assert all(name.startswith("rewt") for name in reach), (
+        f"the walk escaped the package: {[n for n in reach if not n.startswith('rewt')]}"
+    )
+
+
+def test_no_module_but_ids_mints_an_identifier():
+    """`rewt/ids.py` is the only place an identifier may be composed.
+
+    The rule existed and was not enforced, so it was broken quietly. `basins.py`
+    built `f"rewt:basin-unanchored:{raster_id}"` inline; when the scheme moved to
+    slashes, that line kept emitting the colon form and went on expanding to
+    `https://w3id.org/rewt/basin-unanchored:1002` — a legal URI resolving to
+    nothing. **An identifier minted outside the module does not get the module's
+    corrections.**
+
+    Grepping for the prefix in an f-string is crude, and crude is the point: it
+    catches the shape of the mistake without needing to understand the code.
+    """
+    import re
+
+    from rewt import paths
+
+    offenders = []
+    pattern = re.compile(r'f"(?:os|rewt):|f\'(?:os|rewt):')
+    for path in sorted((paths.ROOT / "rewt").rglob("*.py")):
+        if path.name == "ids.py":
+            continue
+        for number, line in enumerate(path.read_text().splitlines(), 1):
+            if pattern.search(line):
+                offenders.append(f"{paths.rel(path)}:{number}: {line.strip()}")
+
+    assert not offenders, (
+        "identifiers composed outside rewt/ids.py:\n  " + "\n  ".join(offenders)
     )
