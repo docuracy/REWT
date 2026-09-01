@@ -58,6 +58,18 @@ Wales:
 | Towing path | 2,169 | 1,724 | direct evidence that *this* channel carried traffic — see [navigation](evidence#navigation) |
 | Mill channels — *Mill Race*, *Mill Leat*, *Mill Pond* | 4,996 | **4,068** | frequently medieval, and belonging *in* the reconstruction |
 
+<figure class="sheet-figure">
+  <div class="frames">
+    <img src="{{ '/assets/maps/new-cut-little-wilbraham.jpg' | relative_url }}"
+         alt="Six-inch first edition at Little Wilbraham, Cambridgeshire: a straightened blue channel lettered New Cut, with a sluice on it.">
+  </div>
+  <figcaption><strong>An assertion, not an inference.</strong> At Little Wilbraham the
+  surveyor letters a straightened channel <em>New Cut</em> and draws a sluice on it — which
+  says, without any dating of the ink, that this reach replaced something. Located from the
+  GB1900 transcription of that label. <span class="credit">Reproduced with the permission of
+  the National Library of Scotland.</span></figcaption>
+</figure>
+
 **Two columns, because a caption is not a channel.** The Ordnance Survey repeated a name
 along the feature it named, so one stretch of abandoned river can carry *Old Course* three
 or four times and a transcription of the labels counts the type, not the river. The second

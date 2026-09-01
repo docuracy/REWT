@@ -197,6 +197,18 @@ second where it does not, flagging every significant departure of the historic c
 the modern line. That finds the courses no volunteer transcribed because no surveyor
 captioned them, which is most of them.
 
+**And on the sheets printed in colour, the water is already separated for you.** Where an
+edition prints watercourses in blue — many of the earlier county sheets do, and the
+[mill leat](evidence#the-map-record) and [new cut](scale#old-courses-the-victorian-surveyors-labelled)
+illustrated elsewhere on this site are examples — the channel can be lifted from a
+georeferenced sheet **by colour alone**, before anybody looks at it. That is a cheap national
+first pass: a raster mask of everything the surveyor drew as water, which the tracer then
+snaps to and a person adjudicates. It does not date anything and it does not decide which of
+two channels is the older, but it converts *find the ink* from a per-sheet human task into a
+per-sheet computation, and leaves the judgement for the part that needs one. It applies only
+to the editions and printings that carry the colour; the monochrome sheets still have to be
+read.
+
 Two things keep this bounded rather than open-ended. The first pass is **mechanisable**: the
 modern network can be overlaid on the georeferenced sheet and the divergence measured, so a
 person judges only the places where it exceeds a threshold. And **the threshold has to sit

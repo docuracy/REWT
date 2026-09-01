@@ -664,6 +664,16 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
   make metres of fall over a few hundred — so what is being stored is a screening quantity,
   and the field should be named so that nobody later mistakes it for a site measurement.
 
+- **Room for a raster-derived first pass at the ink.** Many earlier county sheets print
+  watercourses in **blue**, so on those the channel can be separated from a georeferenced
+  sheet by colour before anyone looks at it — a national mask of everything the surveyor drew
+  as water, for the tracer to snap to and a person to adjudicate. Nothing to build now, and
+  no Stage 1 stage should attempt it. What it implies here is only that a traced course must
+  be able to record **how each vertex was placed** — by hand, by snapping, or by an automatic
+  pass — because a course that cannot say which of the three it came from cannot be reviewed
+  at the right level of suspicion. That is a property of the geometry model, and models are
+  expensive to change later.
+
 - **A reach that can be compared with a historic sheet, and a place to record the verdict.**
   Stage 2 will sweep every river course along its length against the earliest available
   six-inch edition — first edition where it exists, second where it does not — looking for

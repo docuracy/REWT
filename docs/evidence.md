@@ -32,6 +32,18 @@ was read from, a terminus ante quem from cartographic attestation with no docume
 archaeological date behind it. Earlier evidence that a mill stood is earlier evidence that a
 leat existed, and that is the whole of what it offers.
 
+<figure class="sheet-figure">
+  <div class="frames">
+    <img src="{{ '/assets/maps/mill-leat-corn-mill.jpg' | relative_url }}"
+         alt="Six-inch first edition in west Somerset: a corn mill with a weir and sluice, and a channel lettered Mill Leat leaving the river above the mill and running parallel to it.">
+  </div>
+  <figcaption><strong>What a mill channel looks like on the ground.</strong> A corn mill, its
+  weir and sluice, Mill Bridge, and the <em>Mill Leat</em> drawn as a separate blue channel
+  leaving the river above the mill and running back to it below. Nothing on the sheet dates
+  it. Location found from the GB1900 transcription. <span class="credit">Reproduced with the
+  permission of the National Library of Scotland.</span></figcaption>
+</figure>
+
 **Domesday cannot be pressed into service either, and fails twice over.** It is the source
 that could in principle date a mill rather than merely attest it earlier, so it is worth
 saying why it does not. The open transcription's raw data carries a licence that is **both
@@ -134,6 +146,19 @@ a link followed from a site record lands among material under the restrictive te
 is the fifth time on this page that a licence has had to be traced past whoever was
 re-publishing it — but the first where the **owner's own** statement is the one that
 disagrees with itself, which is a different problem from a re-publisher being careless.
+
+<figure class="sheet-figure">
+  <div class="frames">
+    <img src="{{ '/assets/maps/foss-old-course-towing-path.jpg' | relative_url }}"
+         alt="Six-inch first edition near Huntington, York: the River Foss with a channel labelled The Old Course beside it, a Towing Path along the far bank, Dowker's Swing Bridge, Huntington Landing, and Huntington Windmill (Corn).">
+  </div>
+  <figcaption><strong>Three of this project's classes on one sheet.</strong> The River Foss
+  above York, with <em>The Old Course</em> lettered along an abandoned loop, a
+  <em>Towing Path</em> on the far bank, a swing bridge, a landing, and a corn windmill.
+  Location found from the GB1900 transcription of the labels; the sheet is the six-inch
+  first edition. <span class="credit">Reproduced with the permission of the National Library
+  of Scotland.</span></figcaption>
+</figure>
 
 The **first series** matters where the second is too late: much of Victorian water supply
 predates 1888, so for a valley drowned in the 1870s the second series shows the lake and
@@ -276,15 +301,18 @@ identical extent in 1900 there is open water, the lettering of the lake's name, 
 and a new house on the shore. The church, the chapels, the mill, the bridges and the river are
 simply not there.
 
-<figure class="sheet-pair">
-  <img src="{{ '/assets/maps/vyrnwy-1885-first-edition.jpg' | relative_url }}"
-       alt="Six-inch first edition, surveyed 1885: the village of Llanwddyn in the valley floor, with the Afon Efyrnwy running through it and the reservoir works already labelled at the western edge.">
-  <img src="{{ '/assets/maps/vyrnwy-1900-second-edition.jpg' | relative_url }}"
-       alt="Six-inch second edition, surveyed 1900, at the identical extent: open water, the lettering of the lake's name, a rain gauge, and a dotted parish boundary crossing the water.">
-  <figcaption>Lake Vyrnwy, the same ground fifteen years apart. Above, surveyed 1885 —
-  Llanwddyn, its church, chapels, mill and bridges, and the river drawn the whole way
-  through. Below, surveyed 1900 — the lake, a rain gauge, and a boundary line that does not
-  drown. Reproduced with the permission of the National Library of Scotland.</figcaption>
+<figure class="sheet-figure pair">
+  <div class="frames">
+    <img src="{{ '/assets/maps/vyrnwy-1885-first-edition.jpg' | relative_url }}"
+         alt="Six-inch first edition, surveyed 1885: the village of Llanwddyn on the valley floor, the Afon Efyrnwy running through it, and the reservoir works already labelled at the western edge.">
+    <img src="{{ '/assets/maps/vyrnwy-1900-second-edition.jpg' | relative_url }}"
+         alt="Six-inch second edition, surveyed 1900, at the identical extent: open water, a rain gauge, and a dotted parish boundary crossing the lake.">
+  </div>
+  <figcaption><strong>Lake Vyrnwy, the same ground fifteen years apart.</strong> Left,
+  surveyed 1885 — Llanwddyn with its church, chapels, mill and bridges, and the river drawn
+  the whole way through. Right, surveyed 1900 — the lake, a rain gauge, and a boundary line
+  that does not drown. <span class="credit">Reproduced with the permission of the National
+  Library of Scotland.</span></figcaption>
 </figure>
 
 **But the edition number is not the rule; the survey date is.** At the Elan Valley the second

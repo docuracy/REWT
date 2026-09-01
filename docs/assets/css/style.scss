@@ -65,20 +65,35 @@ $rewt-rule: #d8d2c4;
   .pun { color: #8a8276; }
 }
 
-/* Paired historic sheets: the same ground at two surveys, stacked so the extents align. */
-.sheet-pair {
+/* Historic sheet figures. A pair sits side by side where there is room and stacks below
+   it, so two surveys of the same ground can be compared without leaving the column. */
+.sheet-figure {
   margin: 1.5rem 0;
+
+  .frames {
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: 1fr;
+  }
+
+  &.pair .frames { grid-template-columns: 1fr 1fr; }
 
   img {
     border: 1px solid $rewt-rule;
     display: block;
-    margin-bottom: 0.5rem;
     width: 100%;
   }
 
   figcaption {
     color: #6a6257;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     line-height: 1.45;
+    margin-top: 0.5rem;
   }
+
+  .credit { color: #8a8276; }
+}
+
+@media (max-width: 620px) {
+  .sheet-figure.pair .frames { grid-template-columns: 1fr; }
 }
