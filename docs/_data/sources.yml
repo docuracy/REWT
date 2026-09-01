@@ -28,6 +28,7 @@ unsettled:
   format: png
   crs: EPSG:3857
   redistribution_label: not established
+verified_count: 7
 sources:
 - id: crt_navigation_structures
   title: Canal & River Trust navigation structures (locks, aqueducts, culverts, weirs)

@@ -1,23 +1,37 @@
 # Sources
 
-**Every dataset this project reads, who made it, and the credit its licence requires.**
-This page is generated from `conf/sources.yml` — the file the code itself reads — so it
-cannot fall behind what is actually being used. Nothing is typed here by hand.
+**Every dataset registered for use here, who made it, and the credit its licence
+requires.** This page is generated from `conf/sources.yml` — the file the code itself
+reads — so it cannot fall behind what the build is declared to use. Nothing is typed
+here by hand.
 
 **An unregistered source is a hard error rather than a warning.** A stage that reaches for
 data with no declaration in the manifest fails; it does not proceed with a note in a log.
 That rule exists because unattributed provenance is not provenance, and because a
 credit added later is a credit that was owed in the interval.
 
-{{ site.data.sources.count }} sources are registered. What each one can and cannot say —
-which is a different question, and the interesting one — is argued on
-[Evidence](evidence).
+**Registered is not the same as used**, and the difference is worth stating rather than
+leaving in a column. {{ site.data.sources.count }} sources are declared;
+{{ site.data.sources.verified_count }} have been fetched and pinned so far. A declaration
+comes first — the licence researched, the attribution recorded, the terms settled — and the
+fetch follows, sometimes by months. So this is the list of what may be used and on what
+terms, not a claim that every line of it is in the current build.
 
-## The credit this project owes
+What each source can and cannot say — a different question, and the interesting one — is
+argued on [Evidence](evidence).
+
+## The credit each source requires
 
 **These strings are obligations, not courtesies.** Where a licence specifies the wording of
 an attribution, the wording is reproduced exactly as the publisher requires it, and it
 travels with every derived file rather than living only on this page.
+
+**What a given release actually owes is narrower than this list**, and is published with the
+data as `published/ATTRIBUTION.md` — restricted to the sources that release's build genuinely
+consumed, because crediting a registered-but-unused source is itself a false statement about
+where the data came from. Both are generated from the same manifest, and each is checked
+against it rather than against the other: two renderings that agree with one another and
+disagree with the manifest is exactly the case that credits the wrong people.
 
 {% for s in site.data.sources.sources %}{% if s.attribution %}
 **{{ s.title }}**

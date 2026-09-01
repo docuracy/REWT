@@ -82,12 +82,22 @@ def project(manifest: dict) -> dict:
     # publishing. Counting here means the page cannot say "the one" when there are two.
     unsettled = [r for r in out if r["redistribution"] != "permitted"]
 
+    # Registered is not the same as used, and the page must not blur them. A source
+    # can be declared with its licence researched and its attribution recorded long
+    # before anything fetches it -- half the manifest is in that state -- so a page
+    # headed "every dataset this project reads" is false for half its own list, and
+    # "the credit this project owes" claims a debt not yet incurred. What a release
+    # actually owes is published/ATTRIBUTION.md, which is restricted to the sources
+    # the build consumed. Counted here so the page states it rather than implying it.
+    verified = [r for r in out if r.get("status") == "verified"]
+
     return {
         "generated_from": str(MANIFEST),
         "generator": "tools/docs/sources_page.py",
         "count": len(out),
         "unsettled_count": len(unsettled),
         "unsettled": unsettled,
+        "verified_count": len(verified),
         "sources": out,
     }
 

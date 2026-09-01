@@ -94,3 +94,30 @@ def test_page_renders_from_data_not_from_a_list_of_sources() -> None:
         if s["title"] in body
     ]
     assert not named, f"named in the page text rather than rendered: {named}"
+
+
+def test_verified_count_is_derived(projected: dict) -> None:
+    """Registered and used are different, and the page states the difference.
+
+    A source is declared -- licence researched, attribution recorded -- well before
+    anything fetches it. A page headed "every dataset this project reads" is false for
+    every source still awaiting its first fetch, and "the credit this project owes"
+    claims a debt not yet incurred. Both counts are computed so neither can be typed
+    into the prose and left there.
+    """
+    expected = [s for s in projected["sources"] if s.get("status") == "verified"]
+    assert projected["verified_count"] == len(expected)
+    assert projected["verified_count"] <= projected["count"]
+
+
+def test_page_does_not_hard_code_a_count() -> None:
+    """No figure on the page is typed; each is rendered from the projection.
+
+    This repository's recurring failure is a number that was right when written and
+    stayed on the page looking authoritative after it stopped being right.
+    """
+    import re
+    body = PAGE.read_text()
+    prose = re.sub(r"\{\{.*?\}\}|\{%.*?%\}|`[^`]*`", "", body, flags=re.S)
+    numerals = re.findall(r"(?<![\w/.-])\d+(?![\w/.-])", prose)
+    assert not numerals, f"figures typed into the page rather than rendered: {numerals}"
