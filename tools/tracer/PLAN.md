@@ -1139,6 +1139,36 @@ Each phase ends in something usable by one person; nothing waits on the phase af
 | **6** | Ingest: `rewt contributions`, the three validations, `data/curated/traces/`. | a contributed trace survives a rebuild |
 | **7** | The agreement measurement: blind double-assignment, paired-distance distribution. | the claim in `docs/scale.md` is either supported or withdrawn |
 
+### Every phase reports which sentences crossed from design to artefact
+
+`docs/tracer.md` describes a settled design. As each phase lands, some of its sentences
+stop being claims about a design and become claims about a running artefact — and **the two
+need checking differently**. A design claim is checked by reading the argument; an artefact
+claim is checked by using the thing.
+
+So each phase ends by handing rewt-1d the list of sentences that crossed, and it is part of
+the phase rather than a courtesy afterwards. Its ask, and it is a smaller one than
+re-reading the page: check those, not the whole of it. **A page that is re-read entirely is
+a page nobody re-reads.**
+
+Two already identified, both rewt-1d's:
+
+- **"Nobody types a year"** is true of the design and not yet of the code, because phase 1
+  has no date field at all. It crosses at **phase 2**, when the annotation profile arrives,
+  and what is then checkable is that the bound is computed from the sheet and shown back in
+  words.
+- **"Which vertices were placed by hand and which by the algorithm is visible *while
+  tracing*"** crosses at **phase 3** — and it is the one most likely to **survive as a field
+  and quietly not as a display**. The annotation will carry `vertex_origin` whether or not
+  anything renders it, so the file will look correct while the contributor sees nothing.
+  That is the display obligation degrading into provenance, which is the exact failure §4's
+  rule exists to prevent, and it will not announce itself.
+
+**And the shape generalises past this page.** A claim that is true of a design and false of
+its implementation is not a lie anyone tells; it is a sentence that was accurate when
+written and was never re-asked. Naming the crossing point at the moment it happens is the
+only cheap time to catch it.
+
 **Phases 1–4 are the tool.** 5 is what makes the reservoir strand possible. 6 is what makes
 any of it count. 7 is what makes it defensible.
 
