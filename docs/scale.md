@@ -31,10 +31,10 @@ each checked at the place by one person in a few minutes.
 <figure class="sheet-figure">
   <div class="frames">
     <img src="{{ '/assets/maps/network-as-assembled.jpg' | relative_url }}"
-         alt="The Stage 1 viewer over the Trent, the east Midlands and the Fens: basins shaded by the share of their length that reaches the sea, green where nearly all of it does and orange to red where little does, with corrections, reversals, retired lines, tidal termini and dead ends drawn over the network.">
+         alt="The Stage 1 viewer over the Trent, the east Midlands and the Fens: basins shaded by the share of their length that reaches tidal water, green where nearly all of it does and orange to red where little does, with corrections, reversals, retired lines, tidal termini and dead ends drawn over the network.">
   </div>
   <figcaption><strong>The work, at the places it is.</strong> The Trent, the east Midlands and
-  the Fens. Basins are shaded by <strong>how much of their length reaches the sea</strong> —
+  the Fens. Basins are shaded by <strong>how much of their length reaches tidal water</strong> —
   green where nearly all of it does, orange and red where little does — and over them lie the
   things the repair has touched: channels this project added, directions it reversed, lines it
   retired rather than deleted, and, sized by the river draining into each, the <strong>dead
@@ -44,7 +44,9 @@ each checked at the place by one person in a few minutes.
   hundreds of defects, which is why a count of defects is the wrong unit and a count of
   judgements is the right one. Read from the build of 1 September 2026, fingerprint
   <code>8c2a2095</code>, over OS Open Rivers 2026-04, when 93.29% of in-scope length reached
-  the sea and 1,290 dead ends were outstanding. <span class="credit">Contains OS data © Crown copyright and database
+  tidal water and 1,290 dead ends were outstanding. <strong>Tidal water, not the sea:</strong>
+  the two are separate tests and the audit reports both, the first being true by construction
+  where the second is one a river mouth can fail. <span class="credit">Contains OS data © Crown copyright and database
   rights 2026. Base map © OpenStreetMap contributors.</span></figcaption>
 </figure>
 

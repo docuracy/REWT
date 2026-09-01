@@ -8,17 +8,20 @@ involve many hands.
 
 > **Part-built and not deployed.** What exists: a contributor signs in, a historic sheet is
 > drawn, a line can be traced on it by hand, and what they record arrives as an append-only
-> log in this repository's own history. An assist that **centres a vertex in the channel** and
-> reports its width is working, and shows its own work while tracing.
+> log in this repository's own history. **Both assists are working** — one centres a vertex
+> in the channel and reports its width, the other follows the printed ink inside a corridor
+> the contributor drew — and each shows its own work while tracing.
 >
-> **What does not exist:** fitting a line to the printed ink, the work queue, and the basin
-> hold. So the *centring* described below is an artefact and **snapping to ink is still a
-> design**, which matters because the argument for pooling contributed geometry rests on the
-> second. There is no public address to visit.
+> **What does not exist:** the work queue, the basin hold, and — the one that matters —
+> **the paired blind trace that measures whether two people produce the same line.** That
+> machinery exists and the measurement does not, which is the gap to watch, because the
+> argument for pooling contributed geometry rests on the measurement rather than on either
+> assist. There is no public address to visit.
 >
-> This site has already had to correct a sentence that described tooling as existing when it
-> existed somewhere else; the remedy is not to overstate in the other direction now. Where a
-> section below describes something not yet built, it says so.
+> This site has had to correct a sentence that described tooling as existing when it existed
+> somewhere else, and then a sentence that went on denying tooling after it was built.
+> Overstating in the other direction is the same fault. Where a section below describes
+> something not yet built, it says so.
 
 ## What a contributor actually does
 
@@ -187,9 +190,12 @@ to be inferred. Three consequences follow, and they are design rules and not cav
   tracing**, not only recorded in the file. A machine-placed vertex looks more authoritative
   than a drawn one and is not — it is a reading of ink in a corridor a person pointed at. The
   person most likely to over-trust it is the contributor, in the moment, and a provenance
-  field only a later reader sees does nothing for them. **This one is built**: a moved vertex
-  draws hollow and ringed where a placed one is solid, with a line of text saying how far it
-  moved and how wide the channel was found to be.
+  field only a later reader sees does nothing for them. **This one is built**, and it
+  distinguishes three origins rather than two: a vertex a hand placed draws solid, one moved
+  to the middle of the channel draws hollow, and one the ink-following produced draws hollow
+  and **smaller** — deliberately, because a run of thirty vertices laid down in one step was
+  nobody's decision and should not carry the visual weight of a judgement. A line of text
+  says how far a vertex moved and how wide the channel was found to be.
 
 ## What the gate is, and what it is not
 
