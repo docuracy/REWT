@@ -78,6 +78,11 @@ $rewt-rule: #d8d2c4;
 
   &.pair .frames { grid-template-columns: 1fr 1fr; }
 
+  /* A screenshot of an interface is read, not examined: cap it at its own pixel width
+     rather than letting it stretch to the column. Stretching a 450px capture to 1000
+     is how it came to be twice the size it should be. */
+  &.narrow { max-width: 460px; }
+
   img {
     border: 1px solid $rewt-rule;
     display: block;

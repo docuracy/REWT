@@ -129,7 +129,7 @@ sheet is coloured the water can be segmented on hue instead — but **which shee
 cannot be predicted from the scale**, and varies in both directions between the two series,
 so that too has to be decided from the pixels rather than assumed.
 
-<figure class="sheet-figure">
+<figure class="sheet-figure narrow">
   <div class="frames">
     <img src="{{ '/assets/maps/tracer-lea-at-ware.jpg' | relative_url }}"
          alt="The tracer on the six-inch second edition at Ware: fourteen vertices along the Lea past the wharves, ten solid pink where a hand placed them and four hollow and cyan-ringed where centring moved them, with the message: moved 0.4 m to the middle, the channel is 25.8 m wide here, measured across 7 transects.">
