@@ -61,8 +61,8 @@ MasterMap and built into a topologically correct network with automated rules an
 survey, and the UKCEH network was digitised from OS 1:50,000 mapping and then used to *define
 the flow paths in* CEH's terrain model rather than being derived from it. So the gap this
 project fills is not methodological. **Good routable survey-based hydrographies of England
-and Wales exist. Their licences restrict who may use them and what may be published from
-them — and none of them is dated.**
+and Wales exist. What their licences restrict is re-use, derivation and publication — which
+is the whole of what this project does — and none of them is dated.**
 
 ## Two axes of publication
 
