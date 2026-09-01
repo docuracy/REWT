@@ -1742,6 +1742,32 @@ other in a way arithmetic forbids.
 So the rule earned here: **when a result changes after a change that could only move it
 one way, the discrepancy is the finding.** Not the result.
 
+**Two sharpenings from rewt-86, which checked its own code against this and was safe.**
+
+*The exposure is narrower than "scipy drops zeros".* Its `connected_components` calls
+build the matrix from `np.ones(len(pairs))` — indicators, never costs — so nothing was
+ever dropped and its 1,724 and 4,068 place counts are unaffected. **The trap is
+specific to matrices holding costs, where 0 is a meaningful value; it is absent from
+matrices holding indicators, where 1 is.** Anyone using `connected_components` as a
+union-find over pairs is safe. "Avoid scipy sparse" would be the wrong lesson and would
+cost a good tool.
+
+*And the better guard is the one that needs no knowledge of the cause.* The tell was
+84 components, then 169 after adding edges that can only reduce them. **Where an
+operation has a known direction of effect, assert the direction.** That catches this
+with no insight into sparse storage whatever, and it catches the next instance too,
+which will not be about scipy.
+
+**One more, and it is the part that generalises furthest.** §10 states that a trunk
+which does not close is a finding about the bathymetry. So a fragmented sea was a
+*pre-registered* outcome, with an explanation already written down and waiting for it.
+rewt-86 put it better than I did: **having a legitimate, pre-registered reason why
+something might fail is the condition under which a real fault is least likely to be
+debugged** — the explanation fits, so nobody looks further. That is worse than an
+unexplained failure, which at least provokes a search. **When a result matches an
+anticipated failure mode, that is the moment to check the machinery hardest, not to
+write it up.**
+
 ---
 
 **D-057 — `sea.clearance_m` was a guess that severed mouths from the sea; it is now
