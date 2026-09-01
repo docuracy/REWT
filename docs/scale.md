@@ -54,9 +54,11 @@ each checked at the place by one person in a few minutes.
 build, the dead ends are nothing like evenly spread: they pile into the canal country of
 Cheshire and the west Midlands, and into the Fens, while Wales, the south-west peninsula and
 the northern uplands are comparatively clean. And the largest single one shows why a count is
-the wrong unit — **1,127 km of the Manchester Ship Canal drains to one node with no outflow,
-at Weston Point on the Mersey.** That is one defect, one judgement, and one repair. The audit
-reports it with a grid reference, because a finding without a place cannot be checked.
+the wrong unit — **456.7 km of the Manchester Ship Canal drains to one node with no
+outflow**, at 378231 E, 398190 N. That is one defect, one judgement, and one repair. The
+grid reference is quoted because the audit gives one for every finding, and a finding
+without a place cannot be checked — which is how this figure was caught being stale here
+while the audit had moved on.
 
 **Verdict: in house.** Days of adjudication, not months, and the crawl-from-the-sea method
 generates the queue automatically and ranks it by how much water is at stake.

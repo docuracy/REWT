@@ -8,6 +8,11 @@
 # `why` is one sentence and has to work in two places: a column in a table that is read in
 # sequence, and a caption beside a control that is read alone. If a rationale will not do
 # both, the argument belongs in the page's prose and this stays the short form of it.
+#
+# WRITE THEM LOWER-CASE, as table cells. The viewer capitalises the first character at
+# render time because its caption follows a full stop; capitalising here would read wrongly
+# in the table and gains nothing there. A consumer adjusting presentation is correct — a
+# consumer editing the sentence would be the copy this file exists to prevent.
 
 - year: 1086
   why: "Domesday — corroborated by independent evidence the project can hold: the coastline, and the mills"
