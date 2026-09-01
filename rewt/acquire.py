@@ -449,9 +449,21 @@ def fetch_wcs(source_id: str, *, force: bool = False) -> Acquisition:
 
     acq = Acquisition(
         source_id=source_id,
-        # The manifest IS the issue. The publisher's own identifier cannot name the
-        # release we built against, so the bytes do.
-        issue=manifest[:16],
+        # WHAT THE PUBLISHER CALLED IT, AND WHEN WE TOOK IT — not a shortened digest.
+        #
+        # This field said `manifest[:16]`, on the reasoning that the bytes are the pin
+        # because EMODnet's coverage ids cannot name a release. The pinning reasoning is
+        # right and the field was the wrong place for it: `issue` is read as a version,
+        # it appeared as one in provenance.json, ATTRIBUTION.md and published/README.md,
+        # and sixteen hex characters are meaningless as a version. Worse, it HID the
+        # thing that makes the source reproducible — a reader would look for a release
+        # that does not exist instead of matching the digest.
+        #
+        # The full sha256 is carried in `sha256` below and is printed beside this in
+        # every record, so nothing is lost by saying here what was actually asked for
+        # and when. Found by rewt-86 reading the release rather than the code.
+        issue=f"{coverage}, acquired "
+              f"{datetime.now(timezone.utc).date().isoformat()}",
         file_name=f"{len(digests)} windows under {src.get('cache_path')}",
         url=f"{src.raw['url']} coverageId={coverage}",
         bytes=total,

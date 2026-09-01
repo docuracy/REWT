@@ -431,6 +431,13 @@ def _write_attribution() -> None:
 def _write_readme(links, nodes, basins, corrections: int) -> None:
     """What a stranger needs in order to tell survey from correction (§7, §9)."""
     con = db.get()
+    # Counted, never typed: the prose and the file cannot drift apart. `by_rule` is the
+    # single most load-bearing caveat on the reachability figure printed below it, and
+    # it appeared in no published prose at all until rewt-6a read the GeoPackage.
+    by_rule = con.execute(
+        "SELECT count(*) FROM correction WHERE upper(evidence) LIKE '%JUDGED BY RULE%'"
+    ).fetchone()[0]
+    by_person = corrections - by_rule
     reach = con.execute(
         """
         SELECT sum(CASE WHEN r.reaches_tidal THEN e.length_m ELSE 0 END) / 1000.0,
@@ -443,6 +450,19 @@ def _write_readme(links, nodes, basins, corrections: int) -> None:
         s.id: (acquire.acquisition(s.id).issue if acquire.acquisition(s.id) else None)
         for s in config.sources()
     }
+    # Composed from the manifest, not written out here — a credit line typed into prose
+    # is another rendering of a licence obligation, and the one in the release notes was
+    # wrong: it dropped the citation EMODnet's CC BY requires. Only the sources this
+    # build actually used, because crediting an unused one is a false claim about where
+    # the data came from. Deduplicated: the OS products share one statement and OGL asks
+    # for the acknowledgement, not for four of them.
+    required: list[str] = []
+    for sid, issue in sorted(issues.items()):
+        if issue is None:
+            continue
+        text = config.sources()[sid].attribution
+        if text not in required:
+            required.append(text)
     text = f"""# REWT Stage 1 — a traversable modern network
 
 Built by `rewt build`, from an empty checkout, from the sources declared in
@@ -502,10 +522,33 @@ Nothing is deleted to correct it, so a reader can tell a correction from an omis
 - **{(reach[0] or 0) / (reach[1] or 1):.2%}** of in-scope length can reach tidal water
 - {corrections:,} curated judgements
 
+## How the corrections were made, which the reachability figure depends on
+
+**{by_rule:,} of the {by_rule + by_person:,} corrections were proposed BY RULE from the audit's own
+evidence and have not been adjudicated at the place by a person.** {by_person} were. Each
+records which it is in its own `evidence` field, so the distinction survives into any
+analysis — but it is stated here because a reader who takes the corrected network as
+human-checked would be badly wrong, and reading a string in a GeoPackage is not a fair
+way to learn it.
+
+What that costs is measurable: the Weaver reached the sea only after a person looked,
+and 1,178 km of network stood behind a 184 m break that every rule had passed over.
+
 ## Provenance
+
+`status: verified` in `conf/sources.yml` means **this project has fetched the source and
+recorded its digest** — not that the entry carries a checksum. An entry-level `checksum`
+is a stronger thing: a pin that fails the build if the bytes move, used only where the
+publisher offers no version that can name a release. Both facts are per source below and
+in `provenance.json`.
 
 {chr(10).join(f'- {k}: issue {v}' if v else f'- {k}: not used in this build' for k, v in sorted(issues.items()))}
 
-See `ATTRIBUTION.md`. Contains OS data © Crown Copyright and database rights 2026.
+## Attribution
+
+Every source's required statement is in `ATTRIBUTION.md`, in full. Reproduced here
+exactly as `conf/sources.yml` requires it, for the sources this build actually used:
+
+{chr(10).join(f'- {a}' for a in required)}
 """
     write_text(paths.PUBLISHED / "README.md", text)

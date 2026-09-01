@@ -26,7 +26,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from .. import config, db, graph, paths, sea, topology
+from .. import acquire, config, db, graph, paths, sea, topology
 from ..pipeline import PIPELINE, StageError, artefact
 from ..report import Finding, Report, log
 
@@ -48,9 +48,10 @@ PLAN_BY_FORM = {
     "audit",
     "the audit: dead ends, direction faults, cycles, reachability, per basin",
     reads=["edge", "node", "link_reach", "link_scope", "basin", "node_basin",
-           "sea_entry", "sea_link"],
+           "sea_entry", "sea_link", "raw_os_boundary_line"],
     writes=["audit_finding", "audit_basin"],
     params=["audit", "topology", "forms", "seeds"],
+    sources=["os_boundary_line"],
     always=True,
 )
 def run() -> dict:
@@ -677,6 +678,8 @@ def run() -> dict:
         f"{len(dead):,} dead ends carrying BOTH upstream_km and stranded_km — rank on "
         "stranded_km, since upstream_km counts water that has another way out"
     )
+    _sweep_the_outletless_basins(report, findings)
+
     report.add("stranded_components", {
         "count": int(len(stranded)),
         "km": round(float(stranded["km"].sum()), 1) if len(stranded) else 0.0,
@@ -1165,3 +1168,123 @@ def _generalisation() -> dict:
         "sagitta_m": dict(zip(pct, np.percentile(sagitta_all, pct).round(2))),
         "sagitta_max_m": float(sagitta_all.max().round(1)),
     }
+
+
+# How close a basin must lie to Mean High Water, or to a tidal terminus, before its
+# having no outlet is the expected coastal case rather than a hole in the network.
+# 500 m is the survey's own order of generalisation, not a tuned number.
+COASTAL_M = 500.0
+
+
+def _sweep_the_outletless_basins(report: Report, findings: list[Finding]) -> None:
+    """Check EVERY basin with no outlet, not a sample of them.
+
+    This was a caveat before it was a check: the release said the ones examined were
+    coastal catchments and that they had not all been swept. That is two claims, and the
+    second undoes the first — the member of such a set worth finding is exactly the one
+    a sample does not reach. Sweeping all of them costs seconds.
+
+    A basin is explained when it touches Mean High Water OR stands beside a tidal
+    terminus. **Both tests are needed and neither alone is enough.** An estuary is wide:
+    a basin on the inner shore of the Ribble sits 2.3 km from the outer coast and 48 m
+    from tidal water, and against the coastline alone it reads as an inland hole.
+    """
+    frame = _outletless_against_the_coast()
+    if frame.empty:
+        report.add("outletless_basins", {"total": 0, "in_scope": 0, "unexplained": 0})
+        return
+
+    scoped = frame[frame["in_scope"]]
+    explained = scoped[(scoped.coast_m <= COASTAL_M) | (scoped.tidal_m <= COASTAL_M)]
+    unexplained = scoped[(scoped.coast_m > COASTAL_M) & (scoped.tidal_m > COASTAL_M)]
+
+    report.add("outletless_basins", {
+        "total": int(len(frame)),
+        "in_scope": int(len(scoped)),
+        "explained_as_coastal_or_tidal": int(len(explained)),
+        "unexplained": int(len(unexplained)),
+        "threshold_m": COASTAL_M,
+        "in_scope_km2": round(float(scoped.area_km2.sum()), 1),
+    })
+    log.detail(
+        f"basins with no outlet: {len(frame):,} ({len(scoped):,} in scope, "
+        f"{scoped.area_km2.sum():,.0f} km2). Swept against Mean High Water and the "
+        f"tidal termini: {len(explained):,} are coastal or estuarine, "
+        f"{len(unexplained):,} are not explained by either"
+    )
+    for row in unexplained.itertuples():
+        findings.append(
+            Finding(
+                kind="outletless_basin_inland",
+                subject=row.basin_id,
+                detail=(
+                    f"{row.area_km2:,.1f} km2 basin with no outlet node stands "
+                    f"{row.coast_m / 1000:,.1f} km from Mean High Water and "
+                    f"{row.tidal_m / 1000:,.1f} km from the nearest tidal terminus — "
+                    "so it is neither a coastal nor an estuarine catchment, and its "
+                    "water has nowhere in this network to go"
+                ),
+                metrics={"area_km2": round(float(row.area_km2), 2),
+                         "coast_m": round(float(row.coast_m), 1),
+                         "tidal_m": round(float(row.tidal_m), 1)},
+            )
+        )
+
+
+def _outletless_against_the_coast() -> pd.DataFrame:
+    """Every basin with no outlet node, and how far it lies from Mean High Water.
+
+    **The question this settles.** A basin the network never drains out of is either the
+    expected coastal case — a cliff or ria catchment whose water reaches the sea without
+    a mapped watercourse — or a genuine hole, a catchment with nowhere for its water to
+    go that nobody has noticed. Those are opposite findings and they had been reported as
+    one: *"the ones examined are coastal, and they have not all been checked."* A sample
+    is not a sweep, and the interesting member of a set like this is precisely the one a
+    sample misses.
+
+    **Measured against Boundary-Line's `high_water`, which is Mean High Water itself**
+    rather than against a country polygon. The country polygons stop AT Mean High Water,
+    so testing containment in them answers a different question and answers it the same
+    way for every coastal basin.
+
+    **Distance is evidence, not a verdict.** An estuary is wide, and a basin on its inner
+    shore can stand kilometres from the outer coast while sitting beside tidal water — so
+    the distance to the nearest tidal terminus is carried alongside, and it is that pair
+    which distinguishes an estuarine basin from an inland one.
+    """
+    import geopandas as gpd
+
+    con = db.get()
+    basins = gpd.GeoDataFrame(
+        con.execute(
+            "SELECT basin_id, label, area_km2, in_scope, ST_AsWKB(geom) AS wkb "
+            "FROM basin WHERE outlet_node IS NULL"
+        ).df().assign(geometry=lambda d: gpd.GeoSeries.from_wkb(
+            [bytes(v) for v in d.pop("wkb")])),
+        geometry="geometry", crs=config.param("crs.working"),
+    )
+    if basins.empty:
+        return basins
+
+    gpkg = acquire.one("os_boundary_line", "bdline_gb.gpkg")
+    coast = gpd.read_file(gpkg, layer="high_water").to_crs(basins.crs)
+    near_coast = gpd.sjoin_nearest(
+        basins[["basin_id", "geometry"]], coast[["geometry"]],
+        how="left", distance_col="coast_m",
+    ).groupby("basin_id", as_index=False).coast_m.min()
+
+    termini = gpd.GeoDataFrame(
+        con.execute(
+            "SELECT node_id, ST_AsWKB(geom) AS wkb FROM node WHERE terminus = 'tidal'"
+        ).df().assign(geometry=lambda d: gpd.GeoSeries.from_wkb(
+            [bytes(v) for v in d.pop("wkb")])),
+        geometry="geometry", crs=basins.crs,
+    )
+    near_tidal = gpd.sjoin_nearest(
+        basins[["basin_id", "geometry"]], termini[["geometry"]],
+        how="left", distance_col="tidal_m",
+    ).groupby("basin_id", as_index=False).tidal_m.min()
+
+    out = (basins.drop(columns="geometry")
+           .merge(near_coast, on="basin_id").merge(near_tidal, on="basin_id"))
+    return out.sort_values(["coast_m", "basin_id"], ascending=[False, True])

@@ -66,8 +66,9 @@ sources:
       load-bearing here for the same reason `frozen_issue` is on OS Open Rivers (D-054):
       the input is pinned by what was fetched, not by what was asked for.
 
-      Established against the live service by rewt-86 on 2026-09-01; `status: unverified`
-      until this project has fetched it and recorded the checksum itself.
+      Established against the live service by rewt-86 on 2026-09-01; `status: verified`
+      once this project had fetched it and recorded the checksum itself, which is what
+      `verified` means throughout this manifest — see published/README.md.
 
   - id: os_open_rivers
     title: "OS Open Rivers"
@@ -582,8 +583,17 @@ sources:
     format: [geojson, csv]
     crs: "EPSG:4326"          # ArcGIS FeatureServer default; reproject to 27700 on load
     cache_path: "data/raw/crt_structures/"
+    # NOT PINNED, and that is deliberate rather than an omission. `checksum` here means
+    # "refuse the build if the bytes move", which is right for EMODnet, where the
+    # publisher offers no version that can name a release. This is a live ArcGIS
+    # FeatureServer that the Trust updates as structures are surveyed, and pinning it
+    # would fail the build on the publisher doing its job. The digest of what was
+    # actually fetched is recorded at acquisition and travels in provenance.json.
     checksum: null
-    status: unverified
+    # `verified` = this project has fetched it and recorded its digest. It had — the
+    # release carried the sha256 and the acquisition date while this said `unverified`,
+    # so the record contradicted itself. Found by rewt-86 reading the two together.
+    status: verified
     api: arcgis
     arcgis:
       base: "https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services"
