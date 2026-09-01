@@ -31,17 +31,20 @@ each checked at the place by one person in a few minutes.
 <figure class="sheet-figure">
   <div class="frames">
     <img src="{{ '/assets/maps/network-as-assembled.jpg' | relative_url }}"
-         alt="The Stage 1 viewer over the Trent, the east Midlands and the Fens: the network coloured by form, with corrections, reversals, retired lines, tidal termini and dead ends drawn on top, the dead ends sized by the length draining into them.">
+         alt="The Stage 1 viewer over the Trent, the east Midlands and the Fens: basins shaded by the share of their length that reaches the sea, green where nearly all of it does and orange to red where little does, with corrections, reversals, retired lines, tidal termini and dead ends drawn over the network.">
   </div>
   <figcaption><strong>The work, at the places it is.</strong> The Trent, the east Midlands and
-  the Fens, with everything the repair has touched drawn over the network: channels this
-  project added, directions it reversed, lines it retired rather than deleted, and — sized by
-  the length of river draining into each — the <strong>dead ends still outstanding</strong>.
-  The clusters are the argument: they gather in canal country and in the Fens and thin out
-  elsewhere, which is why a count of defects is the wrong unit and a count of judgements is
-  the right one. Read from the build of 1 September 2026, fingerprint <code>8c2a2095</code>,
-  over OS Open Rivers 2026-04, when 93.29% of in-scope length reached the sea and 1,290 dead
-  ends were outstanding. <span class="credit">Contains OS data © Crown copyright and database
+  the Fens. Basins are shaded by <strong>how much of their length reaches the sea</strong> —
+  green where nearly all of it does, orange and red where little does — and over them lie the
+  things the repair has touched: channels this project added, directions it reversed, lines it
+  retired rather than deleted, and, sized by the river draining into each, the <strong>dead
+  ends still outstanding</strong>. Both readings are in one picture, and they are the argument
+  for each other. The red basins in the north-west are canal country, where a single misdrawn
+  junction strands everything above it; most of the rest is green while still carrying
+  hundreds of defects, which is why a count of defects is the wrong unit and a count of
+  judgements is the right one. Read from the build of 1 September 2026, fingerprint
+  <code>8c2a2095</code>, over OS Open Rivers 2026-04, when 93.29% of in-scope length reached
+  the sea and 1,290 dead ends were outstanding. <span class="credit">Contains OS data © Crown copyright and database
   rights 2026. Base map © OpenStreetMap contributors.</span></figcaption>
 </figure>
 

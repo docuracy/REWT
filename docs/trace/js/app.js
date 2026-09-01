@@ -122,25 +122,57 @@ async function signIn(token) {
 /* ── the map ──────────────────────────────────────────────────────────────── */
 
 /**
- * The backdrop a contributor can actually trace on.
+ * The backdrop a contributor can actually trace on — decided by asking, not by arithmetic.
  *
- * BOUNDS ARE A HINT, NOT A CONTAINMENT TEST. The catalogue's extents are derived from a
- * listing at zoom 9, so a box is snapped to about 78 km and several counties genuinely
- * contain any given point. Picking the SMALLEST box containing the centre lands on the
- * right county far more often than picking the first — at Northwich the first is
- * `Shrop_Derby`, which draws one tile in fifty-seven. It is a default, and the picker is
- * there because a default is all it can be.
+ * BOUNDS ARE A HINT AND NOT A CONTAINMENT TEST, and this function exists because the first
+ * version forgot that. The catalogue's extents are derived from a listing at zoom 9, so a
+ * box is snapped to about 78 km and several counties genuinely contain any given point.
+ * Choosing the smallest box containing the centre picked **Bedfordshire for a point in
+ * Ware, Hertfordshire** — whose tiles do not cover it, so the map drew nothing at all and
+ * said nothing about why. That is rewt-fc's Northwich case arriving unprompted: picking the
+ * first box there lands on `Shrop_Derby`, which draws one tile in fifty-seven.
+ *
+ * So the boxes only NOMINATE. The bucket decides: fetch the one tile covering the point
+ * from each candidate in turn and take the first that answers. One request per candidate,
+ * usually one candidate, and it is the difference between a sheet and a blank screen.
  */
-function bestFor(lon, lat, group) {
-  const inside = BACKDROPS.filter((l) => l.group === group
-    && lon >= l.bounds[0] && lon <= l.bounds[2] && lat >= l.bounds[1] && lat <= l.bounds[3]);
-  if (!inside.length) return null;
-  const area = (l) => (l.bounds[2] - l.bounds[0]) * (l.bounds[3] - l.bounds[1]);
-  return inside.sort((a, b) => area(a) - area(b))[0];
+function tileXY(lon, lat, z) {
+  const n = 2 ** z;
+  return {
+    x: Math.floor(((lon + 180) / 360) * n),
+    y: Math.floor((1 - Math.asinh(Math.tan((lat * Math.PI) / 180)) / Math.PI) / 2 * n),
+  };
 }
 
-function backdropOptions(lon, lat) {
-  const best = bestFor(lon, lat, '25_inch');
+async function servesTile(layer, lon, lat) {
+  const z = Math.min(layer.zooms[1], 16);
+  const { x, y } = tileXY(lon, lat, z);
+  const url = layer.tiles.replace('{z}', z).replace('{x}', x).replace('{y}', y);
+  try {
+    const r = await fetch(url, { method: 'GET', cache: 'no-store' });
+    return r.ok;
+  } catch {
+    return false;                       // offline, or the host refused
+  }
+}
+
+function candidatesFor(lon, lat, group) {
+  const area = (l) => (l.bounds[2] - l.bounds[0]) * (l.bounds[3] - l.bounds[1]);
+  return BACKDROPS
+    .filter((l) => l.group === group
+      && lon >= l.bounds[0] && lon <= l.bounds[2] && lat >= l.bounds[1] && lat <= l.bounds[3])
+    .sort((a, b) => area(a) - area(b));
+}
+
+async function bestFor(lon, lat, group) {
+  for (const l of candidatesFor(lon, lat, group)) {
+    if (await servesTile(l, lon, lat)) return l;
+  }
+  return null;
+}
+
+async function backdropOptions(lon, lat) {
+  const best = await bestFor(lon, lat, '25_inch');
   const order = [
     ...(best ? [best] : []),
     ...BACKDROPS.filter((l) => l.group === 'seamless'),
@@ -175,7 +207,7 @@ async function startMap() {
   /* Ware, on the Lea — the calibration ground for the centring mode, and a place with a
      New Cut, a navigation and the New River within one screen. */
   const start = { lon: -0.0290, lat: 51.8080, zoom: 16 };
-  const first = backdropOptions(start.lon, start.lat);
+  const first = await backdropOptions(start.lon, start.lat);
   MAP = new maplibregl.Map({
     container: 'map', center: [start.lon, start.lat], zoom: start.zoom,
     style: { version: 8, sources: {}, layers: [] },
@@ -185,7 +217,12 @@ async function startMap() {
   });
   await new Promise((r) => MAP.on('load', r));
   applyBackdrop(first);
+  /* The same affordance the viewer offers, and for the same reason: somebody reads out a
+     coordinate and you need to get there. `window.rewt` also carries the tracer, so the
+     experimental centring can be exercised from the console without clicking. */
   window.map = MAP;
+  window.rewt = { get map() { return MAP; }, get tracer() { return TRACER; },
+                  get backdrop() { return CURRENT; }, backdrops: () => BACKDROPS };
 
   TRACER = createTracer({
     map: MAP,
@@ -196,9 +233,16 @@ async function startMap() {
   MAP.on('zoom', () => { $('zoompill').textContent = 'z' + MAP.getZoom().toFixed(1); });
   $('zoompill').textContent = 'z' + MAP.getZoom().toFixed(1);
 
-  $('backdrop').onchange = () => {
+  $('backdrop').onchange = async () => {
     const l = BACKDROPS.find((x) => x.id === $('backdrop').value);
-    if (l) applyBackdrop(l);
+    if (!l) return;
+    applyBackdrop(l);
+    /* A sheet that covers no ground here draws nothing and says nothing, which reads as a
+       broken map rather than a wrong choice. Say it. */
+    if (l.traceable && !(await servesTile(l, MAP.getCenter().lng, MAP.getCenter().lat))) {
+      await paint(`${l.name} has no sheet over this ground — the map will be blank here. `
+        + 'County extents in the catalogue are approximate; the sheet itself is the test.', true);
+    }
   };
 }
 
