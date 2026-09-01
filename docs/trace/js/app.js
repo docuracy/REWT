@@ -288,12 +288,34 @@ function paintTrace(s) {
   $('undo').disabled = n < 1;
   $('abandon').disabled = n < 1;
   $('record').disabled = n < 2;
+  /* The two notes are independent, and an early return used to swallow the second: with
+     centring off this function returned before reaching paintSnap, so the livewire never
+     said anything at all and looked switched off. Neither note may depend on the other's
+     mode being on. */
+  paintCentre(s);
+  paintSnap(s);
+  if (s.finished) $('record').focus();
+}
+
+/**
+ * What the livewire did, said while tracing rather than only recorded.
+ *
+ * The same obligation as the centring note and for the same reason: a run of snapped
+ * vertices looks more authoritative than a drawn line and is not — it is a cheapest path
+ * through ink that describes roads, railways and parish boundaries as readily as rivers.
+ * The corridor is what bounds how wrong it can be, so the corridor is what the contributor
+ * is told about.
+ */
+function paintCentre(s) {
   const note = $('centrenote');
   if (s.busy) { note.textContent = 'reading the sheet…'; note.className = ''; return; }
   const c = s.lastCentre;
   if (!s.centring) { note.textContent = ''; note.className = ''; return; }
-  if (!c) { note.textContent = 'Centring is on. It measures the channel ACROSS the way you '
-    + 'are going, so it needs a previous vertex to take a bearing from.'; note.className = ''; return; }
+  if (!c) {
+    note.textContent = 'Centring is on. It measures the channel ACROSS the way you are '
+      + 'going, so it needs a previous vertex to take a bearing from.';
+    note.className = ''; return;
+  }
   if (c.moved) {
     note.textContent = `Moved ${c.movedM.toFixed(1)} m to the middle. The channel is `
       + `${c.widthM.toFixed(1)} m wide here, measured across ${c.transectsAgreeing} transects.`;
@@ -302,7 +324,22 @@ function paintTrace(s) {
     note.textContent = 'Left where you put it — ' + c.why;
     note.className = '';
   }
-  if (s.finished) $('record').focus();
+}
+
+function paintSnap(s) {
+  const el = $('snapnote');
+  if (!s.snapping) { el.textContent = ''; return; }
+  const k = s.lastSnap;
+  if (!k) {
+    el.textContent = 'Following the ink between your clicks, inside a corridor around the '
+      + 'straight line — so it can only choose among ink you have already pointed at. '
+      + 'Where the ink runs out or forks, click more often.';
+    return;
+  }
+  el.textContent = k.snapped
+    ? `Followed the ink: ${k.vertices} vertices from ${k.pixels} pixels, on a `
+      + `${k.mode} sheet, inside a ${k.corridorM} m corridor.`
+    : 'Straight line — ' + k.why;
 }
 
 /* ── wiring ───────────────────────────────────────────────────────────────── */
@@ -369,6 +406,7 @@ function boot() {
     $('starttrace').textContent = 'Start tracing'; };
   $('finish').onclick = () => { TRACER.stop(); $('starttrace').textContent = 'Start tracing'; };
   $('centring').onchange = (e) => TRACER.setCentring(e.target.checked);
+  $('snapping').onchange = (e) => TRACER.setSnapping(e.target.checked);
   $('record').onclick = recordTrace;
 
   const held = gh.readToken();

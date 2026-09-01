@@ -23,6 +23,7 @@
  */
 
 import { loadPatch, patchPixel, patchLonLat, centreOnTransect, metresPerPixel } from './ink.js';
+import { snapSegment, LIVEWIRE_DEFAULTS } from './livewire.js';
 
 const SRC = 'trace-src';
 const SRC_CANDIDATE = 'trace-candidate-src';
@@ -30,10 +31,19 @@ const SRC_VERTEX = 'trace-vertex-src';
 
 const emptyFC = () => ({ type: 'FeatureCollection', features: [] });
 
-export function createTracer({ map, backdrop, onChange, centring = false }) {
+export function createTracer({ map, backdrop, onChange, centring = false, snapping = false }) {
   const state = {
     active: false,
+    /* SNAPPING IS A SEPARATE SWITCH FROM TRACING, and conflating them made the predecessor's
+       tool unusable where it was most needed. Arming the map for clicks and following the
+       printed ink between them are different decisions: the ink runs out, forks, or is
+       crossed by a road, and there the only honest line is the one a person draws. With
+       this off a vertex lands exactly where it was put, the segment to it is straight, and
+       the annotation records every vertex as `clicked` — which is what it is. */
+    snapping,
     centring,
+    lastSnap: null,
+    snapAt: 0,
     coordinates: [],
     origin: [],
     candidate: [],
@@ -67,14 +77,20 @@ export function createTracer({ map, backdrop, onChange, centring = false }) {
         paint: { 'line-color': '#ff3b6b', 'line-width': 2, 'line-dasharray': [2, 2], 'line-opacity': 0.8 } });
       map.addLayer({ id: 'trace-vertices', type: 'circle', source: SRC_VERTEX,
         paint: {
-          'circle-radius': 5,
           /* THE DISPLAY OBLIGATION, not decoration. A vertex a person put down and one an
              algorithm moved are different evidence, and the person most likely to
              over-trust the second is the contributor, in the moment, with the line in
              front of them. Clicked reads solid; centred reads hollow. */
           'circle-color': ['case', ['==', ['get', 'origin'], 'clicked'], '#ff3b6b', '#ffffff'],
-          'circle-stroke-color': ['case', ['==', ['get', 'origin'], 'centred'], '#00b4d8', '#ff3b6b'],
+          'circle-stroke-color': ['case',
+            ['==', ['get', 'origin'], 'centred'], '#00b4d8',
+            ['==', ['get', 'origin'], 'snapped'], '#7a5cff',
+            '#ff3b6b'],
           'circle-stroke-width': 2,
+          /* A snapped vertex is one of dozens in a run and was nobody's decision; a clicked
+             one is a judgement. Drawing them the same size would give the run a visual
+             weight it has not earned. */
+          'circle-radius': ['case', ['==', ['get', 'origin'], 'snapped'], 2.5, 5],
         } });
       return true;
     } catch {
@@ -105,6 +121,8 @@ export function createTracer({ map, backdrop, onChange, centring = false }) {
     return {
       active: state.active,
       centring: state.centring,
+      snapping: state.snapping,
+      lastSnap: state.lastSnap,
       vertices: state.coordinates.length,
       coordinates: state.coordinates.slice(),
       origin: state.origin.slice(),
@@ -133,62 +151,139 @@ export function createTracer({ map, backdrop, onChange, centring = false }) {
     return Number(source?.zooms?.[1]) || 18;
   }
 
-  async function patchFor(lon, lat) {
+  /**
+   * The sheet under a SEGMENT, not under a point.
+   *
+   * The first version centred the patch on the new click with a fixed 140 px radius — about
+   * 103 m at z17 — so the moment two clicks were further apart than that, the PREVIOUS
+   * vertex fell outside the patch, the path search rejected it as out of bounds, and the
+   * segment silently fell back to a straight line. Silently is the word that matters: the
+   * livewire worked perfectly when handed a patch that contained both ends, so the bug
+   * looked like the algorithm failing when it was the window being too small to see the
+   * question.
+   *
+   * So the patch is centred on the MIDPOINT and sized to hold both ends, the corridor
+   * around them, and a margin. A segment too long for a sensible patch is refused by
+   * `snapSegment` with a reason, which is the honest answer to a click 400 m from the last.
+   */
+  async function patchFor(from, to) {
     const source = backdrop();
     if (!source?.tiles || !source.traceable) return null;
     const zoom = traceZoom(source);
-    const key = `${source.id}|${zoom}|${Math.round(lon * 2000)}|${Math.round(lat * 2000)}`;
+    const mid = [(from[0] + to[0]) / 2, (from[1] + to[1]) / 2];
+    const mPerPx = metresPerPixel(mid[1], zoom);
+    const spanPx = Math.hypot(
+      (to[0] - from[0]) * Math.cos(mid[1] * Math.PI / 180) * 111320 / mPerPx,
+      (to[1] - from[1]) * 110540 / mPerPx);
+    /* half the span, plus the corridor, plus a margin for the transects and the search */
+    const radiusPx = Math.ceil(spanPx / 2 + (LIVEWIRE_DEFAULTS.corridorM / mPerPx) + 60);
+    const key = `${source.id}|${zoom}|${Math.round(mid[0] * 4000)}|${Math.round(mid[1] * 4000)}|${radiusPx}`;
     if (state.patchKey === key && state.patch) return state.patch;
-    state.patch = await loadPatch({ template: source.tiles, zoom, lon, lat, radiusPx: 140 });
+    state.patch = await loadPatch({ template: source.tiles, zoom, lon: mid[0], lat: mid[1], radiusPx });
     state.patchKey = state.patch ? key : null;
     return state.patch;
   }
 
   /* ── placing a vertex ──────────────────────────────────────────────────────────── */
 
+  /**
+   * Place a vertex, choosing the assist from what the surveyor drew.
+   *
+   * THE TWO ASSISTS ARE FOR DIFFERENT REACHES AND THE SAME TEST CHOOSES BETWEEN THEM.
+   * Where a channel is drawn as two banks there is a middle to find, and following ink
+   * would ride whichever bank is nearer. Where it is a single stroke there is no middle,
+   * and following the ink IS the channel. `centreOnTransect` already distinguishes those
+   * from the pixels — it refuses with *that point is on ink* on a single-stroke reach — so
+   * its answer selects the operation. That is Stephen's correction made mechanical: the
+   * choice is a property of the reach in front of the contributor, not of the loaded sheet.
+   */
   async function place(lngLat) {
     const to = [lngLat.lng, lngLat.lat];
-    if (!state.coordinates.length || !state.centring) {
-      push(to, 'clicked', null);
-      return;
-    }
+    if (!state.coordinates.length) { push(to, 'clicked', null, null); return; }
+    const prev = state.coordinates[state.coordinates.length - 1];
+
     state.busy = true; redraw();
     try {
-      const patch = await patchFor(to[0], to[1]);
-      if (!patch) { push(to, 'clicked', { moved: false, why: 'no readable sheet here' }); return; }
-      const prev = state.coordinates[state.coordinates.length - 1];
-      const p = patchPixel(patch, to[0], to[1]);
-      const q = patchPixel(patch, prev[0], prev[1]);
-      const r = centreOnTransect(patch, p.x, p.y, q.x, q.y,
-        { mPerPx: metresPerPixel(to[1], patch.zoom) });
-      if (r.moved) {
-        const ll = patchLonLat(patch, r.x, r.y);
-        push([ll.lon, ll.lat], 'centred', r);
-      } else {
-        /* Refusing is the common case and is not a failure. The vertex goes exactly where
-           it was put, and the reason is shown — never a silent no-op, which would read as
-           the mode being broken. */
-        push(to, 'clicked', r);
+      const patch = await patchFor(prev, to);
+      if (!patch) {
+        push(to, 'clicked', { moved: false, why: 'no readable sheet here' }, null);
+        return;
       }
+      const mPerPx = metresPerPixel(to[1], patch.zoom);
+
+      let centre = null;
+      if (state.centring) {
+        const p = patchPixel(patch, to[0], to[1]);
+        const q = patchPixel(patch, prev[0], prev[1]);
+        centre = centreOnTransect(patch, p.x, p.y, q.x, q.y, { mPerPx });
+        if (centre.moved) { push([...toLonLatOf(patch, centre)], 'centred', centre, null); return; }
+        if (centre.why === 'already in the middle') { push(to, 'clicked', centre, null); return; }
+      }
+
+      /* Two banks were not found, so this is a single-stroke reach — or centring is off.
+         Follow the ink between the last vertex and this one. */
+      if (state.snapping) {
+        const snap = snapSegment(patch, prev, to);
+        state.lastSnap = snap;
+        if (snap.snapped && snap.coordinates.length > 2) {
+          const body = snap.coordinates.slice(1);
+          body.forEach((c, i) => {
+            /* The interior of a snapped run is machine-placed; the vertex the person
+               actually clicked is the last one. */
+            state.coordinates.push(c);
+            state.origin.push(i < body.length - 1 ? 'snapped' : 'clicked');
+          });
+          state.lastCentre = centre;
+          state.candidate = [];
+          redraw();
+          return;
+        }
+      }
+      push(to, 'clicked', centre, state.lastSnap);
     } finally {
       state.busy = false;
       redraw();
     }
   }
 
-  function push(coord, origin, centreResult) {
+  function toLonLatOf(patch, r) {
+    const ll = patchLonLat(patch, r.x, r.y);
+    return [ll.lon, ll.lat];
+  }
+
+  function push(coord, origin, centreResult, snapResult) {
     state.coordinates.push(coord);
     state.origin.push(origin);
     state.lastCentre = centreResult;
+    if (snapResult !== undefined) state.lastSnap = snapResult;
     state.candidate = [];
     redraw();
   }
 
   /* ── interaction ───────────────────────────────────────────────────────────────── */
 
+  /* The candidate segment, previewed as the cursor moves.
+   *
+   * THROTTLED, AND SYNCHRONOUS-OR-NOTHING. The livewire is a Dijkstra over a corridor and
+   * runs on mouse-move; at 55 ms it is comfortable and at every event it is not. And it
+   * only previews from a patch ALREADY IN HAND — a preview that awaited a tile fetch would
+   * make the line lag the cursor by a network round trip, which reads as the tool being
+   * broken rather than busy. Until the patch arrives the preview is the straight line,
+   * which is also exactly what will be committed if the sheet turns out to be unreadable. */
   function onMouseMove(e) {
     if (!state.active || !state.coordinates.length) return;
-    state.candidate = [state.coordinates[state.coordinates.length - 1], [e.lngLat.lng, e.lngLat.lat]];
+    const from = state.coordinates[state.coordinates.length - 1];
+    const to = [e.lngLat.lng, e.lngLat.lat];
+    state.candidate = [from, to];
+
+    if (state.snapping && state.patch && !state.busy) {
+      const now = Date.now();
+      if (now - state.snapAt >= 55) {
+        state.snapAt = now;
+        const snap = snapSegment(state.patch, from, to);
+        if (snap.snapped) state.candidate = snap.coordinates;
+      }
+    }
     redraw();
   }
   function onClick(e) { if (state.active) place(e.lngLat); }
@@ -199,12 +294,18 @@ export function createTracer({ map, backdrop, onChange, centring = false }) {
     else if (e.key === 'Backspace') { e.preventDefault(); undo(); }
   }
 
+  /* One Backspace undoes ONE CLICK, not one algorithmically-placed pixel. A snapped run can
+     be dozens of vertices and none of them was a decision. */
   function undo() {
     if (!state.coordinates.length) return;
     state.coordinates.pop();
     state.origin.pop();
+    while (state.origin.length && state.origin[state.origin.length - 1] === 'snapped') {
+      state.coordinates.pop();
+      state.origin.pop();
+    }
     state.candidate = [];
-    state.lastCentre = null;
+    state.lastCentre = null; state.lastSnap = null;
     redraw();
   }
 
@@ -233,6 +334,15 @@ export function createTracer({ map, backdrop, onChange, centring = false }) {
     redraw();
   }
 
+  /* Changing a mode must not disturb what is already drawn: the vertices placed so far keep
+     their own provenance, and only the segment now under the cursor changes shape. */
+  function setSnapping(on) {
+    state.snapping = Boolean(on);
+    state.candidate = [];
+    redraw();
+    onChange?.(summary());
+  }
+
   function setCentring(on) {
     state.centring = Boolean(on);
     state.patch = null; state.patchKey = null;
@@ -246,17 +356,22 @@ export function createTracer({ map, backdrop, onChange, centring = false }) {
   function refresh() { if (ensureLayers()) redraw(); else retryLater(); }
 
   return {
-    start, stop, undo, cancel, setCentring, refresh,
+    start, stop, undo, cancel, setCentring, setSnapping, refresh,
     get active() { return state.active; },
     get centring() { return state.centring; },
+    get snapping() { return state.snapping; },
     result: () => ({
       coordinates: state.coordinates.slice(),
       vertexOrigin: state.origin.slice(),
-      /* WHAT THE ANNOTATION IS ENTITLED TO SAY. Phase 2 has no cost surface, so no vertex
-         came from one and naming a colour mode would imply a machine read the sheet when
-         none did. `hand` is truthful even where centring moved a vertex: centring measures
-         a width, it does not follow ink along a course. */
-      snapMode: 'hand',
+      /* WHAT THE ANNOTATION IS ENTITLED TO SAY. With snapping off no vertex came from a
+         cost surface, so naming the sheet's colour mode would imply a machine read one when
+         none did — `hand` is the truthful value, and it stays truthful where centring moved
+         a vertex, because centring measures a width across the channel and does not follow
+         ink along it. Only a run the livewire actually produced earns `monochrome` or
+         `coloured`, and `vertexOrigin` says which vertices those were. */
+      snapMode: state.origin.includes('snapped')
+        ? (state.lastSnap?.mode ?? 'monochrome')
+        : 'hand',
     }),
   };
 }

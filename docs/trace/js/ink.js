@@ -217,23 +217,53 @@ export function isInk(patch, x, y, threshold = INK_LUMINANCE) {
   return (0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]) < threshold;
 }
 
-/** Is the sheet coloured, or a monochrome outline edition? Decided per patch, at use. */
+/**
+ * Blue water ink, as an ORDERING test rather than a hue window.
+ *
+ * Scanned County Series paper is cream to sepia, so red >= green >= blue across the whole
+ * sheet. Printed blue water ink inverts that ordering. Testing the ordering needs no white
+ * balance and survives the yellowing that varies from sheet to sheet, where a hue window
+ * has to be retuned for every scan. Carried across from the scoping exercise, where it was
+ * measured against this series.
+ */
+export function isBluePixel(r, g, b) {
+  return b - r > 20 && b - g > 8 && b > 55;
+}
+
+/**
+ * Is this sheet coloured, and is it a sheet at all? Decided per patch, at use.
+ *
+ * THE THRESHOLDS ARE THE MEASURED ONES. An earlier version of this function used numbers
+ * I had chosen by eye — 0.005 for colour and 0.0005 for usable — when the scoping exercise
+ * had already measured them over this series and written down why. Replaced with the
+ * measured pair, which is the same mistake as reading the nearest label: a plausible answer
+ * to a question somebody had already answered properly.
+ */
 export function classifyPatch(patch) {
   const d = patch.data.data;
   let blue = 0; let ink = 0; const n = patch.width * patch.height;
   for (let i = 0; i < d.length; i += 4) {
     const r = d[i]; const g = d[i + 1]; const b = d[i + 2];
-    if (b > r + 25 && b > g + 15) blue += 1;
-    if (0.299 * r + 0.587 * g + 0.114 * b < INK_LUMINANCE) ink += 1;
+    if (isBluePixel(r, g, b)) blue += 1;
+    if ((r + g + b) / 3 < 170) ink += 1;
   }
+  const blueFraction = blue / n;
+  const inkFraction = ink / n;
   return {
-    blueFraction: blue / n,
-    inkFraction: ink / n,
-    /* Measured over this series: roughly one sheet in twenty is a coloured printing and
-       the rest are monochrome outline editions, where a blue-water detector finds nothing
-       at all. The distribution is bimodal, so this decides reliably at runtime. */
-    coloured: blue / n > 0.005,
-    usable: ink / n > 0.0005,
+    blueFraction,
+    inkFraction,
+    /* 0.2% sits in the empty middle of a bimodal distribution: measured coloured sheets run
+       to several percent, monochrome ones to exactly zero. Roughly one sheet in twenty is a
+       coloured printing, so monochrome is the normal case. Anything near the threshold is a
+       sheet with very little water on it, where snapping will be poor either way. */
+    coloured: blueFraction > 0.002,
+    /* BLANK PAPER IS NOT A SHEET. Tiles that 404, fall outside coverage, or are refused all
+       leave the mosaic white, and white classifies quite happily as "monochrome" —
+       whereupon the tracer announces it is snapping to printed ink, runs a shortest path
+       over a uniform field, and marks the vertices it invents as machine-placed. Every one
+       of those statements is false, and the provenance recorded in the annotation would be
+       false with them. An unusable sheet has to be recognised as unusable and said so. */
+    usable: inkFraction > 0.005,
   };
 }
 

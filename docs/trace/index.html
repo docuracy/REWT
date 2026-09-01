@@ -69,6 +69,7 @@
          vertical-align:-1px; }
   .dot.clicked { background:#ff3b6b; border:2px solid #ff3b6b; }
   .dot.centred { background:#fff; border:2px solid #00b4d8; }
+  .dot.snapped { background:#fff; border:2px solid #7a5cff; }
 </style>
 </head>
 <body>
@@ -169,13 +170,17 @@
       <button id="finish" class="ghost" disabled>Finish</button>
       <button id="undo" class="ghost" disabled>Undo</button>
       <button id="abandon" class="ghost" disabled>Abandon</button>
+      <label style="flex:0 0 auto"><input type="checkbox" id="snapping" style="width:auto">
+        Follow the ink</label>
       <label style="flex:0 0 auto"><input type="checkbox" id="centring" style="width:auto">
         Centre on the channel <em>(experimental)</em></label>
       <span class="legend"><span><i class="dot clicked"></i>placed by you</span>
-        <span><i class="dot centred"></i>moved by centring</span></span>
+        <span><i class="dot centred"></i>moved by centring</span>
+        <span><i class="dot snapped"></i>followed the ink</span></span>
     </div>
     <p id="sheetnote" class="note"></p>
     <p id="centrenote"></p>
+    <p id="snapnote" class="note"></p>
 
     <div class="row">
       <div><label for="t_task">Task id</label><input id="t_task" placeholder="as00000"></div>
@@ -202,7 +207,7 @@
 
 </main>
 
-<script type="module" src="./js/app.js?v=0.2.5-p2"></script>
+<script type="module" src="./js/app.js?v=0.3.1-p3"></script>
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 </body>
 </html>
