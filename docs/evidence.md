@@ -184,10 +184,13 @@ valley is not a channel that ceased to exist — it is one that is under water, 
 is recoverable from a map made before the dam. **The network cannot find them by name**, which is not the same as
 their being absent from it. Of 24,146 standing-water links, 18,104 are unnamed; of the rest,
 about 68% carry a running-water name and fewer than 5% a standing-water one, and none at all
-contains the word *Reservoir*. A lake link is named for the watercourse routed *through* the
-water body rather than for the body itself — so **the reservoirs are in the network, under the
-names of the valleys they drowned**: Kielder Water's links are still *Belling Burn* and
-*Cranecleugh Burn*. A gazetteer of named places is needed, and has to be declared before any count from it
+contains the word *Reservoir*. That is guaranteed by the specification rather than
+discovered in the data: **OS Open Rivers has no water-body feature type at all.** It has two
+features, a watercourse link and a node; `lake` is a *form* that a stretch of watercourse
+takes — "a large area of non-tidal water without an obvious flow that is enclosed by land" —
+and the name field names the watercourse. A reservoir has nowhere in the schema to be named.
+So **the reservoirs are in the network, under the names of the valleys they drowned**: Kielder
+Water's links are still *Belling Burn* and *Cranecleugh Burn*. A gazetteer of named places is needed, and has to be declared before any count from it
 can be quoted; the scoping exercise's 606 reservoirs over 1,834 links was obtained that way
 and is inherited here, not earned.
 
@@ -272,6 +275,17 @@ edge of the same sheet, already labelled, are the reservoir works that would dro
 identical extent in 1900 there is open water, the lettering of the lake's name, a rain gauge
 and a new house on the shore. The church, the chapels, the mill, the bridges and the river are
 simply not there.
+
+<figure class="sheet-pair">
+  <img src="{{ '/assets/maps/vyrnwy-1885-first-edition.jpg' | relative_url }}"
+       alt="Six-inch first edition, surveyed 1885: the village of Llanwddyn in the valley floor, with the Afon Efyrnwy running through it and the reservoir works already labelled at the western edge.">
+  <img src="{{ '/assets/maps/vyrnwy-1900-second-edition.jpg' | relative_url }}"
+       alt="Six-inch second edition, surveyed 1900, at the identical extent: open water, the lettering of the lake's name, a rain gauge, and a dotted parish boundary crossing the water.">
+  <figcaption>Lake Vyrnwy, the same ground fifteen years apart. Above, surveyed 1885 —
+  Llanwddyn, its church, chapels, mill and bridges, and the river drawn the whole way
+  through. Below, surveyed 1900 — the lake, a rain gauge, and a boundary line that does not
+  drown. Reproduced with the permission of the National Library of Scotland.</figcaption>
+</figure>
 
 **But the edition number is not the rule; the survey date is.** At the Elan Valley the second
 edition, surveyed 1902–04 while the dams were going up, draws *both at once* — the reservoirs
@@ -360,6 +374,23 @@ of the National Library of Scotland", but is explicit that terms vary by collect
 some under CC-BY-NC-SA and third-party content carved out entirely. That is the same lesson
 as the GB1900 gazetteers and the mill layers: **an item's licence is not its collection's
 licence**, and this project checks the item.
+
+**For the georeferenced sheets, the trace fails and the terms here rest on a decision.** The
+copyright page covers map *images* and is silent on the tile services that a web map actually
+consumes. Checked: the per-layer re-use table in the georeferencing guide does not list the
+England and Wales layers; the tilesets' own metadata carries an `attribution` naming the
+rendering software and no rights statement; the WMTS and WFS capabilities documents contain no
+licence, access-constraint or fee element at all; and there is no licence file in the bucket.
+**So the sheets above are used as CC-BY by this project's own ruling, not by a statement from
+the Library** — recorded that way deliberately, on a page arguing that licences must be traced
+rather than assumed. That ruling covers *rights*. It does not cover the Library's separate
+request that these layers be used locally rather than served from a public site, which is a
+request about their infrastructure and is a different question with a different answer.
+
+> A trap worth naming, because it is the shape this page keeps meeting. The tilesets' metadata
+> *does* carry a populated `attribution` field — and it credits the rendering software. **A
+> populated field is not a rights statement**: a well-formed value, in the right-looking place,
+> answering a different question.
 
 ### What has been looked for and not yet found
 

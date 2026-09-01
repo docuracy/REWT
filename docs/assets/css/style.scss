@@ -64,3 +64,21 @@ $rewt-rule: #d8d2c4;
   p { margin: 0 0 0.25rem; }
   .pun { color: #8a8276; }
 }
+
+/* Paired historic sheets: the same ground at two surveys, stacked so the extents align. */
+.sheet-pair {
+  margin: 1.5rem 0;
+
+  img {
+    border: 1px solid $rewt-rule;
+    display: block;
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+
+  figcaption {
+    color: #6a6257;
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+}
