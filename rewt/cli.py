@@ -446,6 +446,82 @@ def propose_reversals_cmd(
              f"({len(fresh):,} new)")
 
 
+@app.command("release-notes")
+def release_notes_cmd(
+    tag: str = typer.Argument(..., help="the tag this release will carry"),
+    out: Optional[str] = typer.Option(None, "--out", help="write here instead of stdout"),
+) -> None:
+    """Generate the release notes from the build, never from memory.
+
+    Every figure is read out of `published/`. A note that quotes a number by hand is
+    right once and wrong at the next edition, and authoritative in both states.
+    """
+    from . import release
+
+    text = release.notes(tag)
+    if out:
+        paths.ROOT.joinpath(out).write_text(text, encoding="utf-8")
+        log.done(f"release notes for {tag} written to {out}")
+    else:
+        print(text)
+
+
+@app.command("release-check")
+def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) -> None:
+    """Refuse to release a build that is not current, clean and green.
+
+    **The three ways an alpha embarrasses you**, each checked rather than assumed:
+    a working tree with uncommitted changes, so nobody can reconstruct what was
+    released; a `published/` older than the code that claims to have made it; and a
+    suite that was last green before the last edit.
+    """
+    import subprocess
+
+    from . import release
+
+    problems: list[str] = []
+
+    dirty = subprocess.run(
+        ["git", "status", "--porcelain"], capture_output=True, text=True, cwd=paths.ROOT
+    ).stdout.strip()
+    tracked_dirty = [l for l in dirty.splitlines() if not l.startswith("??")]
+    if tracked_dirty:
+        problems.append(
+            f"{len(tracked_dirty)} tracked file(s) are modified. A release nobody can "
+            "reconstruct is not a release:\n      " + "\n      ".join(tracked_dirty[:6])
+        )
+
+    network = paths.PUBLISHED / "rewt_stage1_network.gpkg"
+    if not network.exists():
+        problems.append("published/rewt_stage1_network.gpkg does not exist; run `rewt build`")
+    else:
+        newest_code = max(
+            (p.stat().st_mtime for p in (paths.ROOT / "rewt").rglob("*.py")), default=0
+        )
+        if network.stat().st_mtime < newest_code:
+            problems.append(
+                "published/ is older than rewt/*.py — the build does not correspond to "
+                "the code being released. Run `rewt build`."
+            )
+
+    rc = subprocess.run(
+        [sys.executable, "-m", "pytest", "tests", "-q"],
+        capture_output=True, text=True, cwd=paths.ROOT,
+    )
+    if rc.returncode != 0:
+        problems.append("the suite is not green:\n      " + rc.stdout.strip().splitlines()[-1])
+
+    if problems:
+        log.error(f"{len(problems)} reason(s) not to cut {tag}:")
+        for p_ in problems:
+            log.error(f"  - {p_}")
+        raise typer.Exit(1)
+
+    text = release.notes(tag)
+    log.done(f"{tag} is ready: tree clean, build current, suite green")
+    log.info(f"notes are {len(text.splitlines())} lines; `rewt release-notes {tag}` to see them")
+
+
 @app.command()
 def check() -> None:
     """Run the build's own tests: curated identifiers, licences, determinism."""

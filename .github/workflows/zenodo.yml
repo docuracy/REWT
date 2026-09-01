@@ -1,0 +1,69 @@
+name: Deposit the release to Zenodo, with the data
+
+# WHY THIS EXISTS, GIVEN ZENODO IS ALREADY LINKED TO THIS REPOSITORY.
+#
+# The GitHub-Zenodo hook archives the SOURCE ZIPBALL at the tag and nothing else.
+# This repository commits nothing acquired, derived or built — data/, db/ and
+# published/ are all ignored — so the record that hook produces would contain the
+# code, the configuration and the 1,559 curated judgements, and NO RIVERS AT ALL.
+# That is a defensible thing to archive and it is not what someone clicking a DOI
+# expects (D-051's neighbour in reasoning: an artefact that resolves is worse than
+# one that does not, when it resolves to the wrong thing).
+#
+# So this workflow deposits explicitly: it takes the assets attached to the GitHub
+# release and uploads them to a Zenodo deposition alongside the metadata, so the DOI
+# resolves to the network as well as the method.
+#
+# IT FAILS LOUDLY WITHOUT A TOKEN rather than falling back to the hook's behaviour.
+# A silent fallback would produce a code-only record that looks like a success, and
+# nobody would look at it again until a reader complained there was no data in it.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  deposit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refuse to run without a Zenodo token
+        env:
+          ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
+        run: |
+          if [ -z "$ZENODO_TOKEN" ]; then
+            echo "::error::ZENODO_TOKEN is not set. This workflow exists to put the"
+            echo "::error::DATA in the Zenodo record; without a token it can only"
+            echo "::error::produce the code-only deposit the plain hook already makes,"
+            echo "::error::which would resolve to a river project containing no rivers."
+            echo "::error::Create a personal access token at"
+            echo "::error::https://zenodo.org/account/settings/applications/tokens/new/"
+            echo "::error::with scopes deposit:write and deposit:actions, and add it as"
+            echo "::error::the repository secret ZENODO_TOKEN."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - name: Fetch the release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          mkdir -p assets
+          gh release download "$TAG" --dir assets --repo "$GITHUB_REPOSITORY"
+          echo "attached to the release:"; ls -la assets
+          if [ -z "$(ls -A assets)" ]; then
+            echo "::error::the release carries no assets, so there is nothing to"
+            echo "::error::deposit but the source. Attach the built network first."
+            exit 1
+          fi
+
+      - name: Deposit to Zenodo
+        env:
+          ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+          BODY: ${{ github.event.release.body }}
+        run: python .github/scripts/zenodo_deposit.py
