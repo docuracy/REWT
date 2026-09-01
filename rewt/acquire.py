@@ -344,6 +344,137 @@ def fetch_arcgis(source_id: str, *, force: bool = False) -> Acquisition:
     return acq
 
 
+def fetch_wcs(source_id: str, *, force: bool = False) -> Acquisition:
+    """Fetch a WCS coverage over a declared window, in tiles, and pin the bytes.
+
+    The service serves ONE seamless coverage subsettable to any window, so the tiling
+    here is about request size and nothing else — there is no mosaicking problem of the
+    kind Terrain 50 has, where the publisher's own tiles have to be reconciled.
+
+    **The pin is the bytes, and it has to be.** `emodnet__mean` is whatever release is
+    current; the dated coverage ids are PAST releases and there is no `_2024`, so asking
+    for a dated id would silently take older data rather than freezing the current one.
+    The identifier cannot express "the release I built against", so the digest does —
+    the same shape as OS Open Rivers' `frozen_issue` (D-054), arrived at from the
+    opposite direction.
+
+    The manifest digest is over the sorted `name:sha256` of every window, so it moves if
+    any window's bytes move and does not depend on the order they were fetched in.
+    """
+    src = config.source(source_id)
+    p = config.params()
+    west, south, east, north = [float(v) for v in p("sea.extent_wgs84")]
+    step = float(p("sea.window_deg"))
+    if not (east > west and north > south):
+        raise AcquisitionError(
+            f"sea.extent_wgs84 is not a window: {west},{south} to {east},{north}"
+        )
+
+    dest = paths.ROOT / src.get("cache_path")
+    dest.mkdir(parents=True, exist_ok=True)
+    coverage = src.get("coverage_id")
+    wcs = src.get("wcs") or {}
+
+    lats = _steps(south, north, step)
+    lons = _steps(west, east, step)
+    windows = [(la, lo) for la in lats for lo in lons]
+    log.info(
+        f"{src.title}: {len(windows)} windows of {step}\u00b0 over "
+        f"{west},{south} to {east},{north}"
+    )
+
+    digests: list[str] = []
+    fetched = skipped = 0
+    for lat0, lon0 in windows:
+        lat1, lon1 = min(lat0 + step, north), min(lon0 + step, east)
+        name = f"emodnet_{lat0:+06.2f}_{lon0:+07.2f}.tif".replace("+", "p").replace("-", "m")
+        out = dest / name
+        if out.exists() and not force:
+            skipped += 1
+        else:
+            params = {
+                "service": "WCS",
+                "version": wcs.get("version", "2.0.1"),
+                "request": "GetCoverage",
+                "coverageId": coverage,
+                "format": wcs.get("format", "image/tiff"),
+            }
+            url = (
+                f"{src.raw['url']}?"
+                + "&".join(f"{k}={v}" for k, v in params.items())
+                + f"&subset=Lat({lat0},{lat1})&subset=Long({lon0},{lon1})"
+            )
+            resp = requests.get(url, timeout=_TIMEOUT)
+            if resp.status_code != 200 or not resp.content:
+                raise AcquisitionError(
+                    f"{source_id}: window Lat({lat0},{lat1}) Long({lon0},{lon1}) "
+                    f"returned HTTP {resp.status_code}, {len(resp.content)} bytes. "
+                    "Named rather than skipped: a missing window is a hole in the cost "
+                    "surface, and a least-cost path routes through a hole without "
+                    "saying so."
+                )
+            if not resp.content.startswith((b"II", b"MM")):
+                raise AcquisitionError(
+                    f"{source_id}: window Lat({lat0},{lat1}) Long({lon0},{lon1}) is not "
+                    f"a TIFF. WCS reports failure as a 200 with an XML body, so the "
+                    f"first bytes are checked rather than the status: {resp.content[:200]!r}"
+                )
+            out.write_bytes(resp.content)
+            fetched += 1
+        digests.append(f"{name}:{sha256_file(out)}")
+
+    manifest = hashlib.sha256("\n".join(sorted(digests)).encode("utf-8")).hexdigest()
+    total = sum((dest / d.split(":")[0]).stat().st_size for d in digests)
+
+    # THE PIN BITES HERE, or it is only a comment. The coverage id cannot name the
+    # release we built against — `emodnet__mean` is whatever is current — so the
+    # digest is the only thing that can, and a digest nothing compares is provenance
+    # theatre. Same reasoning as OS Open Rivers' frozen_issue (D-054): fail rather
+    # than warn, because a reissue is a rare event nobody is present for.
+    declared = src.get("checksum", default=None)
+    if declared and declared != manifest:
+        raise AcquisitionError(
+            f"{source_id} is pinned to manifest {declared[:16]}\u2026 and what was "
+            f"fetched hashes to {manifest[:16]}\u2026. The published coverage has "
+            "moved under the pin.\n\n"
+            "This is a decision, not a refresh: the cost surface, every sea route and "
+            "every figure measured against them come from these bytes. Either restore "
+            "the pinned windows, or take the decision to move the pin and record what "
+            "changed in DECISIONS.md."
+        )
+    log.done(
+        f"{len(digests)} windows ({fetched} fetched, {skipped} already held), "
+        f"{total / 1e6:,.0f} MB, manifest {manifest[:16]}"
+    )
+
+    acq = Acquisition(
+        source_id=source_id,
+        # The manifest IS the issue. The publisher's own identifier cannot name the
+        # release we built against, so the bytes do.
+        issue=manifest[:16],
+        file_name=f"{len(digests)} windows under {src.get('cache_path')}",
+        url=f"{src.raw['url']} coverageId={coverage}",
+        bytes=total,
+        md5=None,
+        sha256=manifest,
+        acquired_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        extracted_to=paths.rel(dest),
+        members=len(digests),
+    )
+    ledger = _load_ledger()
+    ledger[source_id] = acq.to_dict()
+    _save_ledger(ledger)
+    return acq
+
+
+def _steps(lo: float, hi: float, step: float) -> list[float]:
+    out, v = [], lo
+    while v < hi - 1e-9:
+        out.append(round(v, 6))
+        v += step
+    return out
+
+
 def fetch(source_id: str, *, force: bool = False) -> Acquisition:
     """Fetch one declared source by whatever route its declaration names."""
     src = config.source(source_id)
@@ -352,6 +483,8 @@ def fetch(source_id: str, *, force: bool = False) -> Acquisition:
         return fetch_os_downloads(source_id, force=force)
     if api == "arcgis":
         return fetch_arcgis(source_id, force=force)
+    if api == "wcs":
+        return fetch_wcs(source_id, force=force)
     if src.get("wcs") or src.get("tile_index"):
         raise AcquisitionError(
             f"{source_id} is fetched per section, never nationally (PLAN.md §4, D-006). "

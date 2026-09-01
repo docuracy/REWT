@@ -179,3 +179,46 @@ def test_the_pin_is_enforced_and_not_merely_declared():
         "load reads frozen_issue but does not fail on a mismatch. A warning on a "
         "twice-yearly event is a warning nobody is present for."
     )
+
+
+def test_the_bathymetry_is_pinned_by_its_bytes():
+    """§10's sea terminus rests on a coverage whose identifier cannot be pinned.
+
+    `emodnet__mean` is whatever release is current and will move when 2026 ships;
+    the dated coverage ids are *past* releases, and there is no `_2024`, so asking
+    for a dated id takes older data rather than freezing the current one. The
+    publisher's identifier simply cannot express "the release I built against", so
+    the digest does — a manifest over the sorted `name:sha256` of all 120 windows.
+
+    This matters more here than for a vector source: the cost surface, every sea
+    route, and every figure measured against them come out of these bytes.
+    """
+    src = config.source("emodnet_bathymetry")
+    declared = src.get("checksum", default=None)
+    assert declared, (
+        "emodnet_bathymetry declares no checksum. Its coverage id cannot be pinned, "
+        "so without this the build has no way to say which release it used."
+    )
+    assert len(declared) == 64, f"not a sha256: {declared!r}"
+
+
+def test_the_bathymetry_pin_is_compared_and_not_merely_declared():
+    """Verified by firing it: a single appended byte across 481 MB was caught.
+
+    Read from the source rather than trusted, for the same reason as the OS pin —
+    a digest nothing compares is provenance theatre, and this repository has
+    already shipped one artefact whose consistency check could not see the thing
+    that was wrong with it.
+    """
+    import inspect
+
+    from rewt import acquire
+
+    body = inspect.getsource(acquire.fetch_wcs)
+    assert 'src.get("checksum"' in body, (
+        "fetch_wcs never reads the declared checksum, so the pin in "
+        "conf/sources.yml is a comment rather than a constraint"
+    )
+    assert "raise AcquisitionError" in body.split('src.get("checksum"', 1)[1][:900], (
+        "fetch_wcs reads the checksum but does not fail on a mismatch"
+    )

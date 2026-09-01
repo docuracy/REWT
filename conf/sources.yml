@@ -21,8 +21,12 @@ sources:
     format: [geotiff]
     crs: "EPSG:4326"
     cache_path: "data/raw/emodnet_bathymetry/"
-    checksum: null
-    status: unverified
+    # THE PIN. Not a provenance note: `fetch_wcs` refuses to proceed if the manifest
+    # differs, because `emodnet__mean` is whatever release is current and will move
+    # when 2026 ships. A digest over the sorted name:sha256 of all 120 windows, so it
+    # moves if any window's bytes move and does not depend on fetch order.
+    checksum: "33255844e907362085647fea70a72c3638f3a8e01bce735527cb19faed8e7bfa"
+    status: verified
     stage: 1
     notes: >
       THE SEA SURFACE §10's terminus is built on. Served as ONE seamless coverage over
