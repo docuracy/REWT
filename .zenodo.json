@@ -10,7 +10,12 @@
     "",
     "Add `orcid` and `affiliation` to a creator when they are known — both are",
     "optional to Zenodo and both make the record more useful to cite. Anyone who",
-    "should be credited on a future edition is added here, not in the script."
+    "should be credited on a future edition is added here, not in the script.",
+    "",
+    "WRITE `orcid` AS THE FULL RESOLVER URL, https://orcid.org/0000-.... CITATION.cff",
+    "wants it in that form and Zenodo's API wants the bare identifier, so one must be",
+    "derived from the other; the bare one is derived, because that needs no URL",
+    "written into code, and a URL belongs here rather than there."
   ],
   "creators": [
     { "name": "Gadd, Stephen" }

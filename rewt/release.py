@@ -512,7 +512,12 @@ def citation_file(tag: str) -> str:
         if given:
             authors.append(f"    given-names: {given}")
         if c.get("orcid"):
-            authors.append(f"    orcid: https://orcid.org/{c['orcid']}")
+            # Emitted verbatim, and `.zenodo.json` carries the FULL resolver URL. CFF
+            # wants the URL and Zenodo's API wants the bare identifier, so one of them
+            # has to be derived — and it is the bare one, because deriving it needs no
+            # URL literal in code. `test_no_url_is_hard_coded_in_the_code` caught the
+            # other arrangement, and it was right to: a URL belongs in configuration.
+            authors.append(f"    orcid: {c['orcid']}")
         if c.get("affiliation"):
             authors.append(f"    affiliation: {c['affiliation']}")
     return "\n".join([

@@ -81,9 +81,18 @@ def main() -> None:
             "refuse to publish, which is the most expensive way to discover it."
         )
 
+    # Zenodo wants the bare identifier; `.zenodo.json` holds the full resolver URL
+    # because CITATION.cff needs that form. Derived here, so neither file guesses.
+    creators = []
+    for c in zj["creators"]:
+        c = dict(c)
+        if c.get("orcid"):
+            c["orcid"] = c["orcid"].rstrip("/").rsplit("/", 1)[-1]
+        creators.append(c)
+
     meta = {
         "metadata": {
-            "creators": zj["creators"],
+            "creators": creators,
             "title": f"REWT {TAG} — Rivers of England and Wales, Temporally (Stage 1)",
             "upload_type": zj.get("upload_type", "dataset"),
             "description": BODY.replace("\n", "<br>") or "See the repository.",
