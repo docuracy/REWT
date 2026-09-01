@@ -664,6 +664,23 @@ This repository is private while it is assembled, and is being built so that it 
 opened without any such material having to be removed — which is why nothing is carried
 across from earlier work except deliberately and after checking.
 
+**One question this project has had to answer rather than dodge: is a traced line a
+derivative of the sheet it was traced from?** A contributor working in the [tracing
+tool](scale#designing-for-contribution) reads a georeferenced historic sheet and draws a
+watercourse from it. **This project's position is that the resulting geometry is its own
+work and not a derivative of the tile** — what is taken is the *fact* of where a channel
+ran, which is not anybody's property, and the line is the contributor's rendering of it.
+Contributed geometry therefore reaches `data/curated/` and publishes on this project's own
+terms.
+
+That is a **ruling on a reading**, recorded as one. It is the position a reasonable person
+would take and it has not been tested. So the design keeps the cautious product available
+in case it ever needs to be reached for: every trace carries its **sheet citation and its
+per-vertex provenance as first-class fields**, which means a version of the dataset
+restricted by source could be extracted later without re-tracing anything. A ruling that
+would be expensive to reverse is a different thing from one that would merely be
+embarrassing, and this one has been kept in the second category on purpose.
+
 Every source is declared with its licence and attribution before anything reads it. An
 unregistered source is a hard error, not a warning: unattributed provenance is not
 provenance.

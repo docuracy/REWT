@@ -6,7 +6,7 @@ a while these numbers lived only in a session scratchpad.
 
 ```
 .venv/bin/python tools/gb1900/measure.py                       # the published figures
-.venv/bin/python tools/gb1900/measure.py --places places.csv   # and the work queue
+.venv/bin/python tools/gb1900/measure.py --places out/     # and the work queues
 ```
 
 **It is not a build stage.** `gb1900_raw_dump` is registered `stage: 2, used_by: docs`, and
@@ -22,7 +22,7 @@ a while these numbers lived only in a session scratchpad.
 | Mill channels — 4,996 labels, 4,068 places | the same |
 | 1,888 of 6,884 mill-channel labels are Scottish | `docs/scale.md` |
 | *Old Course* + *New Cut* together — 361 labels at 274 places | `docs/scale.md` |
-| the 4,068 mill-channel places, as a CSV | the work queue for tracing |
+| one CSV per class, a row per distinct place | the work queues for tracing |
 
 ## Input, and the two traps
 
@@ -53,4 +53,7 @@ that what was counted is readable in one place.
 
 ## Outputs are not committed
 
-The CSVs are derived and regenerable; only the script is kept. Write them where you like.
+`--places DIR` writes `mill_channel_places.csv`, `old_course_places.csv`,
+`new_cut_places.csv` and `towing_path_places.csv`, each with
+`place_id,text,labels,easting,northing` in EPSG:27700. They are derived and regenerable;
+only the script is kept. Write them where you like — not into the repository.

@@ -491,6 +491,9 @@ deployed:
   sheet rather than clicked freehand, so two people tracing the same channel produce
   substantially the same line. It records which vertices were placed by hand and which by
   the algorithm, and on which sheet — so a contributed trace carries its own provenance.
+  That record is not only for the reader: it is what keeps [a source-restricted version of
+  the dataset extractable](evidence#licensing-and-why-this-repository-is-structured-as-it-is)
+  should the project's reading of what a traced line *is* ever need revisiting.
 
 **[GB1900](http://www.gb1900.org/){:target="_blank"} is the proof that this scale of volunteer work succeeds**: 2.6 million labels,
 transcribed by the public, and the reason the assertions this project most needs are

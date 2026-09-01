@@ -190,8 +190,8 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--archive", type=Path, default=DEFAULT_ARCHIVE)
-    ap.add_argument("--places", type=Path,
-                    help="write one row per mill-channel place to this CSV")
+    ap.add_argument("--places", type=Path, metavar="DIR",
+                    help="write one CSV per class into DIR, a row per distinct place")
     ap.add_argument("--unverified", action="store_true",
                     help="proceed when the archive does not match the declared checksum, "
                          "with a warning; the run then carries no provenance")
@@ -225,13 +225,18 @@ def main() -> None:
           f"{len(cluster(coords, CLUSTER_M)):,} places, clustering on position alone")
 
     if args.places:
-        rows_out = sorted(places(ew, "mill_channel"), key=lambda r: (r["easting"], r["northing"]))
-        with args.places.open("w", newline="", encoding="utf-8") as fh:
-            w = csv.DictWriter(fh, ["place_id", "text", "labels", "easting", "northing"])
-            w.writeheader()
-            for i, r in enumerate(rows_out):
-                w.writerow({"place_id": f"mc{i:05d}", **r})
-        print(f"\nwrote {len(rows_out):,} mill-channel places to {args.places}")
+        args.places.mkdir(parents=True, exist_ok=True)
+        print()
+        for cls, prefix in (("mill_channel", "mc"), ("old_course", "oc"),
+                            ("new_cut", "nc"), ("towing_path", "tp")):
+            rows_out = sorted(places(ew, cls), key=lambda r: (r["easting"], r["northing"]))
+            path = args.places / f"{cls}_places.csv"
+            with path.open("w", newline="", encoding="utf-8") as fh:
+                w = csv.DictWriter(fh, ["place_id", "text", "labels", "easting", "northing"])
+                w.writeheader()
+                for i, r in enumerate(rows_out):
+                    w.writerow({"place_id": f"{prefix}{i:05d}", **r})
+            print(f"wrote {len(rows_out):>6,} places to {path}")
 
 
 if __name__ == "__main__":
