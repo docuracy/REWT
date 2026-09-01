@@ -726,9 +726,11 @@ The rule is simple and enforced in code rather than remembered: **a feature whos
 is not openly licensed cannot reach the published site or any exported product.** The
 build refuses to write it.
 
-This repository is private while it is assembled, and is being built so that it can be
-opened without any such material having to be removed — which is why nothing is carried
-across from earlier work except deliberately and after checking.
+**This repository is now public, and it opened without anything having to be removed from
+it** — which was the point of the rule rather than a happy outcome. Nothing was carried
+across from earlier work except deliberately and after checking, and the check was the
+cheaper of the two possible orders: deciding what a source permits before reading it costs
+an hour, and deciding afterwards costs the work built on it.
 
 **One question this project has had to answer rather than dodge: is a traced line a
 derivative of the sheet it was traced from?** A contributor working in the [tracing

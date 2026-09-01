@@ -59,9 +59,15 @@ changed.
 
 ## Status
 
-**Nothing is published yet.** This repository is being built from a clean sheet after a
-scoping exercise that established the approach and, more usefully, what goes wrong.
-See [Background](background).
+**Stage 1 is built and the repository is public.** The first edition — the modern survey
+repaired into a network water can be followed through — is assembled and being prepared for
+release; the historic editions are not. It was built from a clean sheet after a scoping
+exercise that established the approach and, more usefully, [what goes wrong](background).
+
+**The figures on these pages are of the build they were taken from, and say so.** The audit
+published with the data is the authority for any of them, because a number written into a
+page drifts while continuing to look authoritative — which is this project's own recurring
+failure, and not one to reproduce in its documentation.
 
 ---
 
