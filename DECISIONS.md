@@ -2111,3 +2111,38 @@ the shape of a textbook connector — but the straight line between the two cros
 other watercourses**, and every one of the 1,204 connectors in the corpus was required
 to cross none. It wants a person at the place, not a rule, and it is left on the list
 rather than forced.
+
+---
+
+**D-064 — Browser reference data is committed under `docs/viewer/`, and the rule it
+bends is named rather than assumed.** *2026-09-01. rewt-fc asked instead of excepting
+itself, which is why this entry exists.*
+
+`.gitignore` opens with *nothing acquired, derived or built is committed*.
+`docs/viewer/` carries **337 KB of `counties.json`** — 52 Historic Counties polygons
+simplified to about 200 m — and **16 `nls_*.json` collection lists**, about 160 KB.
+All of it is derived, and all of it is committed.
+
+**Why it cannot be fetched at runtime.** The browser masks the first-edition mosaics to
+county boundaries in a canvas behind a `firsted://` protocol handler, because MapLibre
+has no raster clip. That needs the rings client-side, before the first tile draws. The
+NLS lists are the same: the viewer must know what collections exist to offer them.
+
+**Why it is not generated in CI, which was the obvious answer and is wrong here.** The
+Historic Counties source is declared `stage: 2`, and the pipeline refuses a Stage 1
+stage that reads a Stage 2 source. Generating it in the Pages workflow would put two
+external services in the path of every documentation deploy — a site that fails to
+publish because a third party is down is a worse artefact than a stale polygon.
+
+**So the rule's reason is what decides it, not its wording.** The reason is that a
+committed artefact silently stops matching its inputs. **The two files differ in how
+badly that bites.** The Historic Counties Standard is a fixed historical vocabulary and
+does not change, so `counties.json` cannot drift from an input that is itself still.
+The NLS lists are bucket listings and **will** drift as the Library adds collections —
+that one is a real, accepted staleness, and its symptom is a collection the viewer does
+not offer rather than a wrong answer about rivers.
+
+**The boundary.** This exempts browser reference data that the page cannot function
+without and cannot fetch at runtime. **It does not exempt the network, the basins, the
+sea routes or any figure** — those are built in CI into `docs/viewer/data/` and are
+committed nowhere, which is the whole reason Pages was moved off the branch build.

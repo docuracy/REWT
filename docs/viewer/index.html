@@ -1,0 +1,110 @@
+<!doctype html>
+<!-- NO YAML FRONT MATTER, EVER, in anything under docs/viewer/.
+     Jekyll runs Liquid only over files that carry front matter and copies everything
+     else byte-for-byte. A Liquid opening delimiter inside a JS template string would
+     otherwise be eaten, and an empty `---`/`---` pair is the switch that turns that on.
+     Do not add one. (This comment avoids writing those delimiters literally, so that
+     adding front matter later fails on your code rather than on this warning about it.)
+     Same rule as docs/trace/, and for the same reason. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REWT — the network as currently assembled</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+
+<aside id="panel">
+  <header>
+    <h1>The network as currently assembled</h1>
+    <p class="sub">Stage 1. A modern river network, made traversable. It makes no
+      historical claim whatever.</p>
+    <p class="sub" id="built">reading…</p>
+  </header>
+
+  <div id="stale" class="banner" hidden></div>
+  <div id="warn" class="banner bad" hidden></div>
+
+  <section class="block" id="figures">
+    <div class="tally">
+      <div><b id="f-share">—</b><span>of in-scope length reaches the sea</span></div>
+      <div><b id="f-defects">—</b><span>dead ends that are the work</span></div>
+    </div>
+    <p class="note" id="f-detail"></p>
+  </section>
+
+  <section class="block">
+    <label class="field"><span>Backdrop</span><select id="backdrop"></select></label>
+    <label class="field inline"><span>Backdrop strength</span>
+      <input type="range" id="backdrop-opacity" min="0" max="100" step="5"></label>
+    <label class="field" id="county-field" hidden><span id="county-label">Sheet</span>
+      <select id="county"></select></label>
+    <p class="note" id="backdrop-note" hidden></p>
+    <p class="note warnnote" id="historic-note" hidden></p>
+
+    <!-- TEMPORALITY. Not a caption promising dates later: the real control, with its
+         real stops, one of which is reachable. A map of rivers under a title ending
+         "Temporally", with no time control at all, invites exactly the inference the
+         whole repository is written to prevent. -->
+    <div class="field" id="epochs">
+      <span>Epoch</span>
+      <div class="steps" id="epoch-steps"></div>
+      <p class="note" id="epoch-note"></p>
+    </div>
+
+    <label class="field"><span>Colour the network by</span>
+      <select id="theme">
+        <option value="reach">whether it reaches tidal water</option>
+        <option value="form">form — river, canal, lake, tidal</option>
+        <option value="origin">whose geometry it is</option>
+        <option value="scope">why it is in scope</option>
+        <option value="lake">lakes, named and unnamed</option>
+      </select></label>
+    <p class="note" id="thinning">…</p>
+  </section>
+
+  <section class="block">
+    <h2>Layers</h2>
+    <div id="layers"></div>
+  </section>
+
+  <section class="block">
+    <h2>Basins <span class="hint">least reaching the sea first — click to fly</span></h2>
+    <input type="search" id="basin-filter" placeholder="Filter by name…">
+    <ul id="basin-list" class="rows"></ul>
+  </section>
+
+  <section class="block">
+    <h2>The audit's own findings <span class="hint">click to fly</span></h2>
+    <select id="finding-kind"></select>
+    <ul id="finding-list" class="rows"></ul>
+  </section>
+
+  <section class="block" id="detail-block" hidden>
+    <h2>Under the cursor</h2>
+    <div id="detail"></div>
+  </section>
+
+  <footer>
+    <button type="button" id="copy-link">Copy a link to this view</button>
+    <p class="note" id="copied" hidden></p>
+    <p class="note" id="attribution">…</p>
+    <p class="note">A demonstrator. <a href="../">About this project</a> ·
+      <a href="../epochs">Why these dates</a></p>
+  </footer>
+</aside>
+
+<div id="map"></div>
+<div id="legend"></div>
+
+<!-- Classic scripts, so both arrive as globals. pmtiles' ESM build has a bare `fflate`
+     import that no bundler-less page can resolve; maplibre is loaded the same way for
+     consistency and because the order matters — the protocol must be registered
+     before any style referencing it is created. -->
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/pmtiles@3.0.6/dist/pmtiles.js"></script>
+<script type="module" src="viewer.js"></script>
+</body>
+</html>

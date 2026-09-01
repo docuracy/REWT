@@ -1,0 +1,712 @@
+[
+ {
+  "county": "anglesey",
+  "tiles_z10": 7,
+  "bounds": [
+   -4.9219,
+   52.9089,
+   -3.8672,
+   53.5403
+  ]
+ },
+ {
+  "county": "bedfordshire",
+  "tiles_z10": 9,
+  "bounds": [
+   -1.0547,
+   51.618,
+   0.0,
+   52.4828
+  ]
+ },
+ {
+  "county": "berkshire",
+  "tiles_z10": 10,
+  "bounds": [
+   -1.7578,
+   51.1793,
+   -0.3516,
+   51.8358
+  ]
+ },
+ {
+  "county": "berkshireV",
+  "tiles_z10": 10,
+  "bounds": [
+   -1.7578,
+   51.1793,
+   -0.3516,
+   51.8358
+  ]
+ },
+ {
+  "county": "brecknockshire",
+  "tiles_z10": 10,
+  "bounds": [
+   -3.8672,
+   51.618,
+   -2.8125,
+   52.4828
+  ]
+ },
+ {
+  "county": "buckinghamshire",
+  "tiles_z10": 12,
+  "bounds": [
+   -1.4062,
+   51.3992,
+   -0.3516,
+   52.2682
+  ]
+ },
+ {
+  "county": "caernarvonshire",
+  "tiles_z10": 12,
+  "bounds": [
+   -4.9219,
+   52.6964,
+   -3.5156,
+   53.5403
+  ]
+ },
+ {
+  "county": "cambridgeshire",
+  "tiles_z10": 13,
+  "bounds": [
+   -0.3516,
+   51.8358,
+   0.7031,
+   52.9089
+  ]
+ },
+ {
+  "county": "cardiganshire",
+  "tiles_z10": 11,
+  "bounds": [
+   -4.9219,
+   51.8358,
+   -3.5156,
+   52.6964
+  ]
+ },
+ {
+  "county": "carmarthenshire",
+  "tiles_z10": 11,
+  "bounds": [
+   -4.9219,
+   51.618,
+   -3.5156,
+   52.2682
+  ]
+ },
+ {
+  "county": "cheshire",
+  "tiles_z10": 15,
+  "bounds": [
+   -3.5156,
+   52.9089,
+   -1.4062,
+   53.7487
+  ]
+ },
+ {
+  "county": "cornwall",
+  "tiles_z10": 41,
+  "bounds": [
+   -6.6797,
+   49.838,
+   -2.8125,
+   51.3992
+  ]
+ },
+ {
+  "county": "cumberland",
+  "tiles_z10": 21,
+  "bounds": [
+   -3.8672,
+   53.9561,
+   -2.1094,
+   55.3791
+  ]
+ },
+ {
+  "county": "cumberlandV",
+  "tiles_z10": 21,
+  "bounds": [
+   -3.8672,
+   53.9561,
+   -2.1094,
+   55.3791
+  ]
+ },
+ {
+  "county": "denbighshire",
+  "tiles_z10": 12,
+  "bounds": [
+   -4.2188,
+   52.6964,
+   -2.8125,
+   53.5403
+  ]
+ },
+ {
+  "county": "denbighshireV",
+  "tiles_z10": 9,
+  "bounds": [
+   -3.8672,
+   52.6964,
+   -2.8125,
+   53.3309
+  ]
+ },
+ {
+  "county": "derbyshire",
+  "tiles_z10": 13,
+  "bounds": [
+   -2.1094,
+   52.4828,
+   -1.0547,
+   53.5403
+  ]
+ },
+ {
+  "county": "devonshire",
+  "tiles_z10": 27,
+  "bounds": [
+   -4.9219,
+   50.0642,
+   -2.8125,
+   51.3992
+  ]
+ },
+ {
+  "county": "dorset",
+  "tiles_z10": 10,
+  "bounds": [
+   -3.1641,
+   50.5134,
+   -1.7578,
+   51.1793
+  ]
+ },
+ {
+  "county": "durham",
+  "tiles_z10": 14,
+  "bounds": [
+   -2.4609,
+   54.3678,
+   -1.0547,
+   55.1789
+  ]
+ },
+ {
+  "county": "durhamV",
+  "tiles_z10": 14,
+  "bounds": [
+   -2.4609,
+   54.3678,
+   -1.0547,
+   55.1789
+  ]
+ },
+ {
+  "county": "essex",
+  "tiles_z10": 17,
+  "bounds": [
+   -0.3516,
+   51.3992,
+   1.4062,
+   52.2682
+  ]
+ },
+ {
+  "county": "essexV",
+  "tiles_z10": 18,
+  "bounds": [
+   -0.3516,
+   51.3992,
+   1.4062,
+   52.2682
+  ]
+ },
+ {
+  "county": "flintshire",
+  "tiles_z10": 11,
+  "bounds": [
+   -3.8672,
+   52.6964,
+   -2.4609,
+   53.5403
+  ]
+ },
+ {
+  "county": "flintshireV",
+  "tiles_z10": 11,
+  "bounds": [
+   -3.8672,
+   52.6964,
+   -2.4609,
+   53.5403
+  ]
+ },
+ {
+  "county": "glamorgan",
+  "tiles_z10": 12,
+  "bounds": [
+   -4.5703,
+   51.1793,
+   -2.8125,
+   51.8358
+  ]
+ },
+ {
+  "county": "gloucestershire",
+  "tiles_z10": 16,
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -1.4062,
+   53.3309
+  ]
+ },
+ {
+  "county": "hampshire",
+  "tiles_z10": 17,
+  "bounds": [
+   -2.1094,
+   50.5134,
+   -0.3516,
+   51.618
+  ]
+ },
+ {
+  "county": "hampshireV",
+  "tiles_z10": 19,
+  "bounds": [
+   -2.1094,
+   50.5134,
+   -0.3516,
+   51.618
+  ]
+ },
+ {
+  "county": "herefordshire",
+  "tiles_z10": 12,
+  "bounds": [
+   -3.5156,
+   51.618,
+   -2.1094,
+   52.4828
+  ]
+ },
+ {
+  "county": "hertfordshire",
+  "tiles_z10": 10,
+  "bounds": [
+   -1.0547,
+   51.618,
+   0.3516,
+   52.2682
+  ]
+ },
+ {
+  "county": "huntingdonshire",
+  "tiles_z10": 6,
+  "bounds": [
+   -0.7031,
+   52.0525,
+   0.0,
+   52.6964
+  ]
+ },
+ {
+  "county": "isle-of-man",
+  "tiles_z10": 6,
+  "bounds": [
+   -4.9219,
+   53.9561,
+   -4.2188,
+   54.5721
+  ]
+ },
+ {
+  "county": "isle-of-manV",
+  "tiles_z10": 6,
+  "bounds": [
+   -4.9219,
+   53.9561,
+   -4.2188,
+   54.5721
+  ]
+ },
+ {
+  "county": "kent",
+  "tiles_z10": 19,
+  "bounds": [
+   -0.3516,
+   50.7365,
+   1.7578,
+   51.618
+  ]
+ },
+ {
+  "county": "kentV",
+  "tiles_z10": 18,
+  "bounds": [
+   -0.3516,
+   50.7365,
+   1.7578,
+   51.618
+  ]
+ },
+ {
+  "county": "lancashire",
+  "tiles_z10": 27,
+  "bounds": [
+   -3.5156,
+   53.1204,
+   -1.7578,
+   54.5721
+  ]
+ },
+ {
+  "county": "lancashireV",
+  "tiles_z10": 27,
+  "bounds": [
+   -3.5156,
+   53.1204,
+   -1.7578,
+   54.5721
+  ]
+ },
+ {
+  "county": "leicestershire",
+  "tiles_z10": 11,
+  "bounds": [
+   -1.7578,
+   52.2682,
+   -0.3516,
+   53.1204
+  ]
+ },
+ {
+  "county": "lincolnshire",
+  "tiles_z10": 25,
+  "bounds": [
+   -1.0547,
+   52.4828,
+   0.7031,
+   53.7487
+  ]
+ },
+ {
+  "county": "merionethshire",
+  "tiles_z10": 8,
+  "bounds": [
+   -4.2188,
+   52.4828,
+   -3.1641,
+   53.1204
+  ]
+ },
+ {
+  "county": "middlesex",
+  "tiles_z10": 8,
+  "bounds": [
+   -0.7031,
+   51.1793,
+   0.3516,
+   51.8358
+  ]
+ },
+ {
+  "county": "middlesexV",
+  "tiles_z10": 8,
+  "bounds": [
+   -0.7031,
+   51.1793,
+   0.3516,
+   51.8358
+  ]
+ },
+ {
+  "county": "monmouthshire",
+  "tiles_z10": 8,
+  "bounds": [
+   -3.5156,
+   51.3992,
+   -2.4609,
+   52.0525
+  ]
+ },
+ {
+  "county": "monmouthshireV",
+  "tiles_z10": 8,
+  "bounds": [
+   -3.5156,
+   51.3992,
+   -2.4609,
+   52.0525
+  ]
+ },
+ {
+  "county": "montgomeryshire",
+  "tiles_z10": 10,
+  "bounds": [
+   -4.2188,
+   52.2682,
+   -2.8125,
+   52.9089
+  ]
+ },
+ {
+  "county": "norfolk",
+  "tiles_z10": 21,
+  "bounds": [
+   0.0,
+   52.2682,
+   2.1094,
+   53.1204
+  ]
+ },
+ {
+  "county": "northamptonshire",
+  "tiles_z10": 12,
+  "bounds": [
+   -1.4062,
+   51.8358,
+   0.0,
+   52.6964
+  ]
+ },
+ {
+  "county": "northumberland",
+  "tiles_z10": 23,
+  "bounds": [
+   -2.8125,
+   54.5721,
+   -1.4062,
+   55.9738
+  ]
+ },
+ {
+  "county": "northumberlandV",
+  "tiles_z10": 22,
+  "bounds": [
+   -2.8125,
+   54.5721,
+   -1.4062,
+   55.9738
+  ]
+ },
+ {
+  "county": "nottinghamshire",
+  "tiles_z10": 10,
+  "bounds": [
+   -1.4062,
+   52.6964,
+   -0.3516,
+   53.5403
+  ]
+ },
+ {
+  "county": "oxfordshire",
+  "tiles_z10": 11,
+  "bounds": [
+   -2.1094,
+   51.3992,
+   -0.7031,
+   52.2682
+  ]
+ },
+ {
+  "county": "oxfordshireV",
+  "tiles_z10": 11,
+  "bounds": [
+   -2.1094,
+   51.3992,
+   -0.7031,
+   52.2682
+  ]
+ },
+ {
+  "county": "pembrokeshire",
+  "tiles_z10": 12,
+  "bounds": [
+   -5.625,
+   51.3992,
+   -4.2188,
+   52.2682
+  ]
+ },
+ {
+  "county": "radnorshire",
+  "tiles_z10": 5,
+  "bounds": [
+   -3.8672,
+   52.0525,
+   -2.8125,
+   52.4828
+  ]
+ },
+ {
+  "county": "rutland",
+  "tiles_z10": 4,
+  "bounds": [
+   -1.0547,
+   52.4828,
+   -0.3516,
+   52.9089
+  ]
+ },
+ {
+  "county": "shropshire",
+  "tiles_z10": 16,
+  "bounds": [
+   -3.5156,
+   52.2682,
+   -2.1094,
+   53.1204
+  ]
+ },
+ {
+  "county": "somerset",
+  "tiles_z10": 19,
+  "bounds": [
+   -4.2188,
+   50.7365,
+   -2.1094,
+   51.618
+  ]
+ },
+ {
+  "county": "staffordshire",
+  "tiles_z10": 14,
+  "bounds": [
+   -2.8125,
+   52.2682,
+   -1.4062,
+   53.3309
+  ]
+ },
+ {
+  "county": "suffolk",
+  "tiles_z10": 16,
+  "bounds": [
+   0.0,
+   51.8358,
+   2.1094,
+   52.6964
+  ]
+ },
+ {
+  "county": "surrey",
+  "tiles_z10": 11,
+  "bounds": [
+   -1.0547,
+   50.9584,
+   0.3516,
+   51.618
+  ]
+ },
+ {
+  "county": "surreyV",
+  "tiles_z10": 11,
+  "bounds": [
+   -1.0547,
+   50.9584,
+   0.3516,
+   51.618
+  ]
+ },
+ {
+  "county": "sussex",
+  "tiles_z10": 15,
+  "bounds": [
+   -1.0547,
+   50.5134,
+   1.0547,
+   51.1793
+  ]
+ },
+ {
+  "county": "sussexV",
+  "tiles_z10": 15,
+  "bounds": [
+   -1.0547,
+   50.5134,
+   1.0547,
+   51.1793
+  ]
+ },
+ {
+  "county": "warwickshire",
+  "tiles_z10": 10,
+  "bounds": [
+   -2.1094,
+   51.8358,
+   -1.0547,
+   52.6964
+  ]
+ },
+ {
+  "county": "westmorland",
+  "tiles_z10": 10,
+  "bounds": [
+   -3.5156,
+   54.1624,
+   -2.1094,
+   54.7753
+  ]
+ },
+ {
+  "county": "westmorlandV",
+  "tiles_z10": 11,
+  "bounds": [
+   -3.5156,
+   53.9561,
+   -2.1094,
+   54.7753
+  ]
+ },
+ {
+  "county": "wiltshire",
+  "tiles_z10": 15,
+  "bounds": [
+   -2.4609,
+   50.7365,
+   -1.4062,
+   51.8358
+  ]
+ },
+ {
+  "county": "worcestershire",
+  "tiles_z10": 12,
+  "bounds": [
+   -2.8125,
+   51.8358,
+   -1.4062,
+   52.6964
+  ]
+ },
+ {
+  "county": "yorkshire",
+  "tiles_z10": 54,
+  "bounds": [
+   -2.8125,
+   53.1204,
+   0.3516,
+   54.7753
+  ]
+ },
+ {
+  "county": "yorkshireV",
+  "tiles_z10": 56,
+  "bounds": [
+   -2.8125,
+   53.1204,
+   0.3516,
+   54.7753
+  ]
+ }
+]

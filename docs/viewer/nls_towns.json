@@ -1,0 +1,107 @@
+[
+ {
+  "id": "birmingham-1855",
+  "name": "Birmingham 1855 \u2014 100% in E&W",
+  "zooms": [
+   1,
+   20
+  ],
+  "bounds": [
+   -2.1094,
+   52.0525,
+   -1.4062,
+   52.9089
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "colchester/bl",
+  "name": "Bl \u2014 100% in E&W",
+  "zooms": [
+   1,
+   20
+  ],
+  "bounds": [
+   0.7031,
+   51.618,
+   1.4062,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "colchester/nls",
+  "name": "Nls \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   0.7031,
+   51.618,
+   1.4062,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "edinburgh1849",
+  "name": "Edinburgh1849 \u2014 31% in E&W",
+  "zooms": [
+   2,
+   20
+  ],
+  "bounds": [
+   -3.5156,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "edinburgh_1893",
+  "name": "Edinburgh 1893 \u2014 31% in E&W",
+  "zooms": [
+   1,
+   20
+  ],
+  "bounds": [
+   -3.5156,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "glasgow1857",
+  "name": "Glasgow1857 \u2014 31% in E&W",
+  "zooms": [
+   1,
+   20
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "glasgow1894",
+  "name": "Glasgow1894 \u2014 31% in E&W",
+  "zooms": [
+   1,
+   20
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ }
+]

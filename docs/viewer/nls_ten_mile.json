@@ -1,0 +1,287 @@
+[
+ {
+  "id": "coal_iron",
+  "name": "Coal iron \u2014 48% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   58.8137
+  ],
+  "england_wales_share": 0.484
+ },
+ {
+  "id": "iron_steel",
+  "name": "Iron steel \u2014 47% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   59.1759
+  ],
+  "england_wales_share": 0.466
+ },
+ {
+  "id": "farming",
+  "name": "Farming \u2014 40% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.395
+ },
+ {
+  "id": "land_classification",
+  "name": "Land classification \u2014 40% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.395
+ },
+ {
+  "id": "land_utilisation",
+  "name": "Land utilisation \u2014 40% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.395
+ },
+ {
+  "id": "limestone",
+  "name": "Limestone \u2014 40% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.395
+ },
+ {
+  "id": "population_change_1921",
+  "name": "Population change 1921 \u2014 40% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.395
+ },
+ {
+  "id": "population_change_1931",
+  "name": "Population change 1931 \u2014 40% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.395
+ },
+ {
+  "id": "population_change_1939",
+  "name": "Population change 1939 \u2014 40% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.395
+ },
+ {
+  "id": "population_density_1931",
+  "name": "Population density 1931 \u2014 40% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.395
+ },
+ {
+  "id": "railway",
+  "name": "Railway \u2014 40% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.395
+ },
+ {
+  "id": "rainfall",
+  "name": "Rainfall \u2014 40% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.395
+ },
+ {
+  "id": "admin",
+  "name": "Admin \u2014 38% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   61.2702
+  ],
+  "england_wales_share": 0.384
+ },
+ {
+  "id": "general",
+  "name": "General \u2014 38% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   61.2702
+  ],
+  "england_wales_share": 0.384
+ },
+ {
+  "id": "population_density_1951",
+  "name": "Population density 1951 \u2014 38% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   61.2702
+  ],
+  "england_wales_share": 0.384
+ },
+ {
+  "id": "roads_46",
+  "name": "Roads 46 \u2014 38% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -8.4375,
+   49.3824,
+   3.5156,
+   61.2702
+  ],
+  "england_wales_share": 0.384
+ },
+ {
+  "id": "roads_56",
+  "name": "Roads 56 \u2014 37% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -9.1406,
+   49.3824,
+   3.5156,
+   60.9304
+  ],
+  "england_wales_share": 0.373
+ },
+ {
+  "id": "geological",
+  "name": "Geological \u2014 36% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -9.1406,
+   49.3824,
+   3.5156,
+   61.2702
+  ],
+  "england_wales_share": 0.363
+ },
+ {
+  "id": "physical",
+  "name": "Physical \u2014 36% in E&W",
+  "zooms": [
+   1,
+   12
+  ],
+  "bounds": [
+   -9.1406,
+   49.3824,
+   3.5156,
+   61.2702
+  ],
+  "england_wales_share": 0.363
+ }
+]

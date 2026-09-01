@@ -1,0 +1,1096 @@
+{
+  "default": "osm",
+  "options": {
+    "osm": {
+      "label": "OpenStreetMap",
+      "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      "max_zoom": 19,
+      "opacity": 0.45,
+      "attribution": "© <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
+      "group": "modern"
+    },
+    "nls_six_inch": {
+      "label": "OS Six-Inch, 2nd ed. 1888–1913 — seamless",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/os/6inchsecond/{z}/{x}/{y}.png",
+      "max_zoom": 17,
+      "opacity": 0.9,
+      "historic": true,
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Served by the National Library of Scotland directly, no key. Verified 1 Sep 2026 at z6–z17 from a localhost origin. Seamless over England and Wales.",
+      "group": "seamless"
+    },
+    "nls_one_inch": {
+      "label": "OS One-Inch, revised — seamless",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/os/1inch_revised/{z}/{x}/{y}.png",
+      "max_zoom": 16,
+      "opacity": 0.9,
+      "historic": true,
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Also keyless, and it replaces the MapTiler one-inch entirely. Verified at z6–z16.",
+      "group": "seamless"
+    },
+    "nls_six_inch_first": {
+      "label": "OS Six-Inch, 1st ed. 1840s–1880s — seamless",
+      "tiles": "firsted://{z}/{x}/{y}",
+      "max_zoom": 17,
+      "min_zoom": 9,
+      "opacity": 0.9,
+      "historic": true,
+      "local": true,
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them., county boundaries: This mapping made use of data provided by the Historic County Borders Project, https://www.county-borders.co.uk",
+      "note": "The first edition is published county by county and the mosaics are NOT cut at the county line — they bleed over their neighbours. This layer is composited IN YOUR BROWSER: for each tile, every county covering it is fetched from the Library and masked to its own Historic Counties Standard polygon, so the whole of England and Wales draws at once with the seams on the boundaries. A pixel is taken only where the county owns the ground AND its own sheet has something to say there. Nothing below zoom 9, and the first pan over new ground is slow.",
+      "group": "composited"
+    },
+    "nls_six_inch_first_county": {
+      "label": "OS Six-Inch, 1st ed. — one county, unmasked",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/os/six-inch-{county}/{z}/{x}/{y}.png",
+      "max_zoom": 17,
+      "min_zoom": 9,
+      "opacity": 0.9,
+      "historic": true,
+      "counties": "counties.json",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "The raw NLS mosaic for one county, straight from the Library and not cut at the county line, so it spills over its neighbours. This is the sheet as published; the seamless option above is this project's composite of it.",
+      "group": "collection",
+      "item_label": "County (Historic Counties Standard)"
+    },
+    "nls_old_series": {
+      "label": "OS One-Inch Old Series, 1805–1874 — the early survey",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/os/one-inch-old-series-all/{z}/{x}/{y}.png",
+      "min_zoom": 6,
+      "max_zoom": 9,
+      "opacity": 0.9,
+      "historic": true,
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "The earliest OS survey of England and Wales, and complete for it — verified 1 Sep 2026 from Land's End to Berwick and from Pembroke to Dover, with the Isle of Man and Scotland absent. BUT IT STOPS AT ZOOM 9, about 230 m to the pixel, so it will not carry a traced channel: it is for seeing the shape of a valley system before the canals, not for following one. Beyond z9 the tiles are magnified, not resurveyed. The Scottish equivalents (os/6inchfirst, os/one-inch-first-bart38) draw nothing here.",
+      "group": "seamless"
+    },
+    "nls_county_maps": {
+      "label": "Pre-Ordnance county surveys, 1771–1831",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/county/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_county_maps.json",
+      "item_label": "County survey",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Commercial county surveys made BEFORE the Ordnance Survey reached these counties — earlier than the first-edition six-inch by twenty to sixty years, and Cumberland 1771 and Cheshire 1794 predate the canal age outright. Eleven counties in the North and Midlands only, one at a time, to z11–z14. THEY ARE NOT ORDNANCE SURVEY: a different surveyor, a different standard of accuracy, and a channel drawn here is weaker evidence of position than the same channel on a six-inch sheet."
+    },
+    "nls_estates": {
+      "label": "Estates — 68 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/estates/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_estates.json",
+      "item_label": "Estates",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "68 tilesets under `estates/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 100%; sets below 15% are not offered."
+    },
+    "nls_london_1890s": {
+      "label": "London 1890s",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/london_1890s/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 21,
+      "bounds": [
+        -0.7031,
+        51.1793,
+        0.7031,
+        51.618
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–21, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_town_england": {
+      "label": "Town england — 28 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/town_england/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_town_england.json",
+      "item_label": "Town england",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "28 tilesets under `town_england/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 100%; sets below 15% are not offered."
+    },
+    "nls_air_photos_1250": {
+      "label": "Air photos 1250",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photos-1250/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 20,
+      "bounds": [
+        -4.2188,
+        50.2893,
+        2.1094,
+        54.9776
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–20, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_air_photos_1250_238223269": {
+      "label": "Air photos 1250 238223269",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photos-1250-238223269/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 20,
+      "bounds": [
+        1.4062,
+        52.0525,
+        2.1094,
+        52.4828
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–20, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_air_photos_1250_238225828": {
+      "label": "Air photos 1250 238225828",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photos-1250-238225828/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 20,
+      "bounds": [
+        -0.7031,
+        51.1793,
+        0.0,
+        51.618
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–20, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_air_photos_1250_238418479": {
+      "label": "Air photos 1250 238418479",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photos-1250-238418479/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 20,
+      "bounds": [
+        -0.7031,
+        51.1793,
+        0.0,
+        51.618
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–20, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_london1890s": {
+      "label": "London1890s",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/london1890s/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 20,
+      "bounds": [
+        -0.7031,
+        51.1793,
+        0.7031,
+        51.618
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–20, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_gloucester": {
+      "label": "Gloucester",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/gloucester/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 8,
+      "max_zoom": 19,
+      "bounds": [
+        -2.8125,
+        51.1793,
+        -1.4062,
+        52.4828
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 8–19, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_london_1940s": {
+      "label": "London 1940s",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/london_1940s/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 19,
+      "bounds": [
+        -0.7031,
+        50.7365,
+        1.4062,
+        52.0525
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–19, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_ad_chart": {
+      "label": "Admiralty charts — 4 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/ad_chart/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_ad_chart.json",
+      "item_label": "Chart",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Admiralty charts — the only source found that DRAWS the water rather than stopping at it, which is what makes them useful for adjudicating a dead end at tidal water. MEASURED COVERAGE, so nobody plans around them as general: of a sample of 400 seed nodes, 20% have a chart tile; of 400 other tidal termini, 14%. FOUR SEEDS IN FIVE HAVE NO CHART. Individual sheets, not a series: two charts over one tile is normal, they overlap and disagree, and they are UNDATED — the identifier is an accession number, not a year. A chart surveyed over an estuary that has since silted is evidence about a coast that no longer exists, so this is a backdrop for a person to look at and never a source for a rule. Stage 1 takes its tidal test from the survey's own form = tidalRiver."
+    },
+    "nls_air_photos_10560": {
+      "label": "Air photos 10560",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photos-10560/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 16,
+      "bounds": [
+        -4.2188,
+        50.2893,
+        2.1094,
+        53.3309
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_lus25k": {
+      "label": "Lus25k",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/lus25k/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 16,
+      "bounds": [
+        -5.625,
+        50.2893,
+        2.1094,
+        55.7766
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_lus25kpub": {
+      "label": "Lus25kpub",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/lus25kpub/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 16,
+      "bounds": [
+        -5.625,
+        50.2893,
+        2.1094,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 95% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_newpopular": {
+      "label": "Newpopular",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/newpopular/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 16,
+      "bounds": [
+        -6.3281,
+        49.838,
+        2.1094,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 96% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_1inch_3rd_col_eng": {
+      "label": "1inch 3rd col eng",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/1inch_3rd_col_eng/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 17,
+      "bounds": [
+        -7.0312,
+        49.838,
+        2.1094,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–17, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_land_uti_eng": {
+      "label": "Land uti eng",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/land_uti_eng/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 16,
+      "bounds": [
+        -7.0312,
+        49.838,
+        2.1094,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_lus_10k": {
+      "label": "Lus 10k",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/lus_10k/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 16,
+      "bounds": [
+        -7.0312,
+        49.838,
+        2.1094,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_bartholomew_england_wales_1920s": {
+      "label": "Bartholomew england wales 1920s",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/bartholomew_england_wales_1920s/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -7.0312,
+        49.838,
+        2.1094,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_lus_scapes": {
+      "label": "Lus scapes",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/lus-scapes/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -7.0312,
+        49.3824,
+        2.1094,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 87% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_one_inch_agricultural": {
+      "label": "One inch agricultural",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/one-inch-agricultural/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -7.0312,
+        49.838,
+        2.1094,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_wildscape_habitats": {
+      "label": "Wildscape habitats",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/wildscape_habitats/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -7.0312,
+        49.838,
+        2.1094,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_wildscape_vegetation": {
+      "label": "Wildscape vegetation",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/wildscape_vegetation/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -7.0312,
+        49.838,
+        2.1094,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_os": {
+      "label": "Os — 315 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/os/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_os.json",
+      "item_label": "Os",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "315 tilesets under `os/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 70%; sets below 15% are not offered."
+    },
+    "nls_25_inch": {
+      "label": "25 inch — 165 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_25_inch.json",
+      "item_label": "25 inch",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "165 tilesets under `25_inch/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 65%; sets below 15% are not offered."
+    },
+    "nls_lidar": {
+      "label": "Lidar — 9 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/lidar/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_lidar.json",
+      "item_label": "Lidar",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "9 tilesets under `lidar/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 75%; sets below 15% are not offered."
+    },
+    "nls_urbhist": {
+      "label": "Urbhist — 2 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/urbhist/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_urbhist.json",
+      "item_label": "Urbhist",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "2 tilesets under `urbhist/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 66%; sets below 15% are not offered."
+    },
+    "nls_geological": {
+      "label": "Geological — 6 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/geological/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_geological.json",
+      "item_label": "Geological",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "6 tilesets under `geological/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 72%; sets below 15% are not offered."
+    },
+    "nls_towns": {
+      "label": "Towns — 7 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/towns/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_towns.json",
+      "item_label": "Towns",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "7 tilesets under `towns/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 61%; sets below 15% are not offered."
+    },
+    "nls_ad_chart_2": {
+      "label": "Admiralty charts — 99 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/ad_chart_2/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_ad_chart_2.json",
+      "item_label": "Chart",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Admiralty charts — the only source found that DRAWS the water rather than stopping at it, which is what makes them useful for adjudicating a dead end at tidal water. MEASURED COVERAGE, so nobody plans around them as general: of a sample of 400 seed nodes, 20% have a chart tile; of 400 other tidal termini, 14%. FOUR SEEDS IN FIVE HAVE NO CHART. Individual sheets, not a series: two charts over one tile is normal, they overlap and disagree, and they are UNDATED — the identifier is an accession number, not a year. A chart surveyed over an estuary that has since silted is evidence about a coast that no longer exists, so this is a backdrop for a person to look at and never a source for a rule. Stage 1 takes its tidal test from the survey's own form = tidalRiver."
+    },
+    "nls_trench_101465332": {
+      "label": "101465332",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/trench/101465332/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 2,
+      "max_zoom": 17,
+      "bounds": [
+        1.4062,
+        49.838,
+        2.8125,
+        50.2893
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 2–17, and 56% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_25k_provisional_outline": {
+      "label": "25k provisional outline",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25k_provisional_outline/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -7.0312,
+        49.3824,
+        2.1094,
+        58.8137
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 63% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_bartholomew_great_britain": {
+      "label": "Bartholomew great britain",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/bartholomew_great_britain/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -8.4375,
+        49.838,
+        2.1094,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 45% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_roy": {
+      "label": "Roy — 2 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/roy/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_roy.json",
+      "item_label": "Roy",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "2 tilesets under `roy/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 48%; sets below 15% are not offered."
+    },
+    "nls_goad": {
+      "label": "Goad — 6 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/goad/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_goad.json",
+      "item_label": "Goad",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "6 tilesets under `goad/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 43%; sets below 15% are not offered."
+    },
+    "nls_air_photo": {
+      "label": "Air photo",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photo/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 17,
+      "bounds": [
+        -5.625,
+        54.5721,
+        -1.4062,
+        57.7041
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–17, and 42% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_1inch_2nd_ed": {
+      "label": "1inch 2nd ed",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/1inch_2nd_ed/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 16,
+      "bounds": [
+        -8.4375,
+        49.3824,
+        2.1094,
+        61.2702
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 43% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_gsgs3906": {
+      "label": "Gsgs3906",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/gsgs3906/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 16,
+      "bounds": [
+        -8.4375,
+        50.7365,
+        2.1094,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 42% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_bartholomew_great_britain_1940s": {
+      "label": "Great britain 1940s",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/bartholomew/great_britain_1940s/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 14,
+      "bounds": [
+        -9.1406,
+        49.838,
+        2.1094,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–14, and 42% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_ten_mile": {
+      "label": "Ten mile — 19 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/ten_mile/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_ten_mile.json",
+      "item_label": "Ten mile",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "19 tilesets under `ten_mile/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 40%; sets below 15% are not offered."
+    },
+    "nls_light_pollution": {
+      "label": "Light pollution",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/light-pollution/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 0,
+      "max_zoom": 9,
+      "bounds": [
+        -9.1406,
+        49.838,
+        2.1094,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 0–9, and 42% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_edinburgh_1250": {
+      "label": "Edinburgh 1250",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/edinburgh_1250/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 8,
+      "max_zoom": 20,
+      "bounds": [
+        -3.5156,
+        55.7766,
+        -2.8125,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 8–20, and 31% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_scotland_2500_doubles_boness_fix": {
+      "label": "Scotland 2500 doubles boness fix",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/scotland_2500_doubles_boness_fix/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 19,
+      "bounds": [
+        -4.2188,
+        55.7766,
+        -3.5156,
+        56.17
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–19, and 31% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_scotland_2500_doubles": {
+      "label": "Scotland 2500 doubles",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/scotland_2500_doubles/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 18,
+      "bounds": [
+        -7.0312,
+        54.1624,
+        -0.7031,
+        60.2398
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–18, and 27% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_scotland_2500_singles": {
+      "label": "Scotland 2500 singles",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/scotland_2500_singles/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 18,
+      "bounds": [
+        -7.0312,
+        54.5721,
+        -1.4062,
+        59.1759
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–18, and 27% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_land_uti2_scot": {
+      "label": "Land uti2 scot",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/land_uti2_scot/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 16,
+      "bounds": [
+        -7.0312,
+        54.5721,
+        -1.4062,
+        58.8137
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 29% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_soil": {
+      "label": "Soil",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/soil/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 16,
+      "bounds": [
+        -7.0312,
+        54.5721,
+        -1.4062,
+        58.8137
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 29% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_channel_islands": {
+      "label": "Channel islands — 7 sheets",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/channel-islands/{item}/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "collection",
+      "collection": "nls_channel_islands.json",
+      "item_label": "Channel islands",
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "7 tilesets under `channel-islands/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 24%; sets below 15% are not offered."
+    },
+    "nls_land_uti": {
+      "label": "Land uti",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/land_uti/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 2,
+      "max_zoom": 16,
+      "bounds": [
+        -8.4375,
+        54.5721,
+        0.0,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 2–16, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_1inch_3rd_col": {
+      "label": "1inch 3rd col",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/1inch_3rd_col/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -7.7344,
+        54.5721,
+        -0.7031,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 18% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_gsgs_3908": {
+      "label": "Gsgs 3908",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/gsgs_3908/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -9.1406,
+        54.5721,
+        0.0,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 15% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_mot": {
+      "label": "Mot",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/mot/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -8.4375,
+        54.5721,
+        0.0,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_popular": {
+      "label": "Popular",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/popular/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -9.1406,
+        54.5721,
+        0.0,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 15% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_popular_outline": {
+      "label": "Popular outline",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/popular_outline/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 15,
+      "bounds": [
+        -9.1406,
+        54.5721,
+        0.0,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 15% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_half_inch_hills": {
+      "label": "Half inch hills",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/half-inch-hills/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 13,
+      "bounds": [
+        -9.1406,
+        54.5721,
+        0.0,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–13, and 15% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_half_inch_layers": {
+      "label": "Half inch layers",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/half-inch-layers/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 13,
+      "bounds": [
+        -9.1406,
+        54.5721,
+        -1.4062,
+        59.1759
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–13, and 19% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_quarter": {
+      "label": "Quarter",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 12,
+      "bounds": [
+        -9.1406,
+        54.1624,
+        0.0,
+        61.2702
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 18% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_quarter_inch_first_hills": {
+      "label": "Quarter inch first hills",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter-inch-first-hills/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 12,
+      "bounds": [
+        -8.4375,
+        54.5721,
+        0.7031,
+        61.2702
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_quarter_inch_first_outline": {
+      "label": "Quarter inch first outline",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter_inch_first_outline/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 12,
+      "bounds": [
+        -8.4375,
+        54.5721,
+        0.0,
+        61.2702
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_quarter_inch_fourth": {
+      "label": "Quarter inch fourth",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter-inch-fourth/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 12,
+      "bounds": [
+        -8.4375,
+        54.5721,
+        0.0,
+        60.9304
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_quarter_inch_third_air": {
+      "label": "Quarter inch third air",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter-inch-third-air/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 12,
+      "bounds": [
+        -9.1406,
+        54.1624,
+        0.0,
+        61.2702
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 18% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "nls_quarter_inch_first": {
+      "label": "Quarter inch first",
+      "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter_inch_first/{z}/{x}/{y}.png",
+      "opacity": 0.9,
+      "historic": true,
+      "group": "seamless",
+      "min_zoom": 1,
+      "max_zoom": 12,
+      "bounds": [
+        -8.4375,
+        54.5721,
+        0.0,
+        61.2702
+      ],
+      "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
+      "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
+    },
+    "none": {
+      "label": "Nothing (the network alone)",
+      "tiles": null,
+      "opacity": 0,
+      "attribution": "",
+      "group": "modern"
+    }
+  },
+  "thinning": {
+    "note": "Least length drawn, in metres, by zoom. A link shorter than this is not drawn UNLESS it belongs to a class that is never thinned.",
+    "ladder": [
+      [
+        0,
+        5000
+      ],
+      [
+        8,
+        1200
+      ],
+      [
+        9,
+        600
+      ],
+      [
+        10,
+        250
+      ],
+      [
+        11,
+        100
+      ],
+      [
+        12,
+        0
+      ]
+    ],
+    "never_thinned": [
+      "in scope and not reaching tidal water — the defect",
+      "retired — the audit trail",
+      "geometry this project added (origin is not 'survey')",
+      "routing reversed by a correction"
+    ],
+    "max_features": 60000,
+    "overview_below_zoom": 8
+  },
+  "historic_warning": "A historic sheet under this network is a BACKDROP AND NOT EVIDENCE. Stage 1 is a modern river network and makes no historical claim whatever: nothing drawn on it is dated, and a channel lying over an 1890s sheet is not thereby attested in the 1890s. The backdrops are here to read the ground against, and for the stages that will make dated claims — not to let this one imply a claim it does not make. Re-use terms for these layers are not established and no sheet image may be published until they are.",
+  "_no_keys": "EVERY BACKDROP HERE IS KEYLESS, AND THAT IS A PROPERTY OF THE FILE RATHER THAN A CONFIGURATION. The local viewer injects a key from a gitignored .env at request time; a published site has no server to do that, so a keyed entry could only work by shipping the key — and Pages is public even though the repository is not, so a published key can be rotated but never withdrawn. The keyed options are therefore removed from this copy rather than left present and disabled: an entry that can only ever fail is an invitation to make it work. Dropped here: carto_dark, carto_light, nls_six_inch_maptiler."
+}

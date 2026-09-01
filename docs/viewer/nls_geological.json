@@ -1,0 +1,92 @@
+[
+ {
+  "id": "sixincheng",
+  "name": "Sixincheng \u2014 100% in E&W",
+  "zooms": [
+   1,
+   17
+  ],
+  "bounds": [
+   -4.9219,
+   50.2893,
+   0.7031,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "sixinch2025",
+  "name": "Sixinch2025 \u2014 92% in E&W",
+  "zooms": [
+   1,
+   17
+  ],
+  "bounds": [
+   -4.2188,
+   52.9089,
+   -0.7031,
+   56.17
+  ],
+  "england_wales_share": 0.917
+ },
+ {
+  "id": "oneincheng",
+  "name": "Oneincheng \u2014 87% in E&W",
+  "zooms": [
+   1,
+   16
+  ],
+  "bounds": [
+   -7.0312,
+   49.3824,
+   2.1094,
+   56.17
+  ],
+  "england_wales_share": 0.87
+ },
+ {
+  "id": "oneinch2025",
+  "name": "Oneinch2025 \u2014 69% in E&W",
+  "zooms": [
+   1,
+   16
+  ],
+  "bounds": [
+   -7.0312,
+   49.838,
+   0.0,
+   58.0779
+  ],
+  "england_wales_share": 0.691
+ },
+ {
+  "id": "sixinchscot",
+  "name": "Sixinchscot \u2014 58% in E&W",
+  "zooms": [
+   1,
+   16
+  ],
+  "bounds": [
+   -4.9219,
+   54.9776,
+   -2.8125,
+   56.5595
+  ],
+  "england_wales_share": 0.583
+ },
+ {
+  "id": "oneinchscot",
+  "name": "Oneinchscot \u2014 26% in E&W",
+  "zooms": [
+   1,
+   16
+  ],
+  "bounds": [
+   -7.7344,
+   54.1624,
+   -1.4062,
+   59.5343
+  ],
+  "england_wales_share": 0.265
+ }
+]

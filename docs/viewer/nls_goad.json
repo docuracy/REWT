@@ -1,0 +1,92 @@
+[
+ {
+  "id": "campbeltown",
+  "name": "Campbeltown \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -5.625,
+   55.3791,
+   -4.9219,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "edinburgh",
+  "name": "Edinburgh \u2014 31% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -3.5156,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "glasgow",
+  "name": "Glasgow \u2014 31% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "greenock",
+  "name": "Greenock \u2014 31% in E&W",
+  "zooms": [
+   1,
+   20
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "leith",
+  "name": "Leith \u2014 31% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -3.5156,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "paisley",
+  "name": "Paisley \u2014 31% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ }
+]

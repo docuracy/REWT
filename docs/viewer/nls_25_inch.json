@@ -1,0 +1,2477 @@
+[
+ {
+  "id": "Shrop_Derby",
+  "name": "Shrop Derby \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -3.5156,
+   52.0525,
+   -0.7031,
+   53.7487
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Worcestershire",
+  "name": "Worcestershire \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   51.618,
+   -1.4062,
+   52.9089
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "bedfordshire",
+  "name": "Bedfordshire \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -1.4062,
+   51.618,
+   0.0,
+   52.4828
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "berkshire",
+  "name": "Berkshire \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -2.1094,
+   51.1793,
+   0.0,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "buckingham",
+  "name": "Buckingham \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -1.4062,
+   51.1793,
+   0.0,
+   52.4828
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "cambridge",
+  "name": "Cambridge \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -0.7031,
+   51.618,
+   0.7031,
+   52.9089
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "cheshire",
+  "name": "Cheshire \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -3.5156,
+   52.9089,
+   -1.4062,
+   53.7487
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "cumberland",
+  "name": "Cumberland \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   54.1624,
+   -2.1094,
+   55.3791
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "devon",
+  "name": "Devon \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   49.838,
+   -2.8125,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "devon2nd",
+  "name": "Devon2nd \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   49.838,
+   -2.8125,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "dorset",
+  "name": "Dorset \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -3.5156,
+   50.2893,
+   -1.4062,
+   51.1793
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "durham",
+  "name": "Durham \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   54.1624,
+   -0.7031,
+   55.3791
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "essex",
+  "name": "Essex \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -0.7031,
+   51.1793,
+   1.4062,
+   52.4828
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "gloucester",
+  "name": "Gloucester \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -1.4062,
+   52.4828
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "gloucester2nd",
+  "name": "Gloucester2nd \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -1.4062,
+   52.4828
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "gloucester_3rd",
+  "name": "Gloucester 3rd \u2014 100% in E&W",
+  "zooms": [
+   1,
+   19
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -1.4062,
+   52.4828
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "gloucester_additions",
+  "name": "Gloucester additions \u2014 100% in E&W",
+  "zooms": [
+   9,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -1.4062,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "hampshire",
+  "name": "Hampshire \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -2.1094,
+   50.2893,
+   -0.7031,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "herefordshire",
+  "name": "Herefordshire \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -3.5156,
+   51.618,
+   -2.1094,
+   52.4828
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "hertfordshire",
+  "name": "Hertfordshire \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -1.4062,
+   51.1793,
+   0.7031,
+   52.4828
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "huntingdon",
+  "name": "Huntingdon \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -0.7031,
+   52.0525,
+   0.7031,
+   52.9089
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "kent",
+  "name": "Kent \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -0.7031,
+   50.7365,
+   2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "lancashire",
+  "name": "Lancashire \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -3.5156,
+   52.9089,
+   -1.4062,
+   54.5721
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "leicestershire",
+  "name": "Leicestershire \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -2.1094,
+   52.0525,
+   0.0,
+   53.3309
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "lincolnshire",
+  "name": "Lincolnshire \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -1.4062,
+   52.4828,
+   0.7031,
+   53.7487
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "london",
+  "name": "London \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -0.7031,
+   51.1793,
+   0.7031,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "middlesex",
+  "name": "Middlesex \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -0.7031,
+   51.1793,
+   0.7031,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "newcastle_addition",
+  "name": "Newcastle addition \u2014 100% in E&W",
+  "zooms": [
+   1,
+   19
+  ],
+  "bounds": [
+   -2.1094,
+   54.5721,
+   -1.4062,
+   55.3791
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "norfolk",
+  "name": "Norfolk \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   0.0,
+   52.0525,
+   2.1094,
+   53.3309
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "northampton",
+  "name": "Northampton \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -1.4062,
+   51.618,
+   0.0,
+   52.9089
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "nottinghamshire",
+  "name": "Nottinghamshire \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -1.4062,
+   52.4828,
+   0.0,
+   53.7487
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "oxford",
+  "name": "Oxford \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -2.1094,
+   51.1793,
+   -0.7031,
+   52.4828
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/avondale",
+  "name": "Avondale \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/berkshire",
+  "name": "Berkshire \u2014 100% in E&W",
+  "zooms": [
+   1,
+   17
+  ],
+  "bounds": [
+   -2.1094,
+   51.1793,
+   0.0,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/biggar",
+  "name": "Biggar \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -2.8125,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/carluke",
+  "name": "Carluke \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/carmichael",
+  "name": "Carmichael \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/carstairs",
+  "name": "Carstairs \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/covington",
+  "name": "Covington \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/crawford",
+  "name": "Crawford \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/crawfordjohn",
+  "name": "Crawfordjohn \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/culter",
+  "name": "Culter \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -2.8125,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/dalserf",
+  "name": "Dalserf \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/dolphinton",
+  "name": "Dolphinton \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -3.5156,
+   55.3791,
+   -2.8125,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/douglas",
+  "name": "Douglas \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/dunsyre",
+  "name": "Dunsyre \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -2.8125,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/eaglesham",
+  "name": "Eaglesham \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/glassford",
+  "name": "Glassford \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/lamington_and_wandell",
+  "name": "Lamington and wandell \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/lanark",
+  "name": "Lanark \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/lesmahagow",
+  "name": "Lesmahagow \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/liberton",
+  "name": "Liberton \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/pettinain",
+  "name": "Pettinain \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/somerset_correction_121160692",
+  "name": "Somerset correction 121160692 \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/stonehouse",
+  "name": "Stonehouse \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/symington",
+  "name": "Symington \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/walston",
+  "name": "Walston \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -2.8125,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "parishes/wiston_roberton",
+  "name": "Wiston roberton \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "rutland",
+  "name": "Rutland \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -1.4062,
+   52.4828,
+   0.0,
+   52.9089
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "scotland_lauder_correction",
+  "name": "Scotland lauder correction \u2014 100% in E&W",
+  "zooms": [
+   1,
+   19
+  ],
+  "bounds": [
+   -3.5156,
+   55.3791,
+   -2.1094,
+   55.7766
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "somerset",
+  "name": "Somerset \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   50.7365,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "somerset1",
+  "name": "Somerset1 \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   50.7365,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "stafford",
+  "name": "Stafford \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   52.0525,
+   -1.4062,
+   53.3309
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "suffolk",
+  "name": "Suffolk \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   0.0,
+   51.618,
+   2.1094,
+   52.9089
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "surrey",
+  "name": "Surrey \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -1.4062,
+   50.7365,
+   0.7031,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "sussex",
+  "name": "Sussex \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -1.4062,
+   50.2893,
+   1.4062,
+   51.1793
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "wales",
+  "name": "Wales \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -5.625,
+   51.1793,
+   -2.1094,
+   53.3309
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "warwick",
+  "name": "Warwick \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -2.1094,
+   51.618,
+   -0.7031,
+   52.9089
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "westmorland",
+  "name": "Westmorland \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -3.5156,
+   53.7487,
+   -2.1094,
+   54.9776
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "wiltshire",
+  "name": "Wiltshire \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   50.7365,
+   -1.4062,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "wiltshire2nd",
+  "name": "Wiltshire2nd \u2014 100% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   50.7365,
+   -1.4062,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "worcestershire",
+  "name": "Worcestershire \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   51.618,
+   -1.4062,
+   52.9089
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "yorkshire",
+  "name": "Yorkshire \u2014 100% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   52.9089,
+   0.7031,
+   54.9776
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "25_inch_holes_england",
+  "name": "25 inch holes england \u2014 91% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -7.0312,
+   49.838,
+   2.1094,
+   56.17
+  ],
+  "england_wales_share": 0.912
+ },
+ {
+  "id": "holes_england",
+  "name": "Holes england \u2014 91% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -7.0312,
+   49.838,
+   2.1094,
+   56.17
+  ],
+  "england_wales_share": 0.912
+ },
+ {
+  "id": "cornwall",
+  "name": "Cornwall \u2014 88% in E&W",
+  "zooms": [
+   2,
+   18
+  ],
+  "bounds": [
+   -7.0312,
+   49.838,
+   -3.5156,
+   51.1793
+  ],
+  "england_wales_share": 0.877
+ },
+ {
+  "id": "cornwall_1st",
+  "name": "Cornwall 1st \u2014 88% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -7.0312,
+   49.838,
+   -3.5156,
+   51.1793
+  ],
+  "england_wales_share": 0.877
+ },
+ {
+  "id": "northumberland",
+  "name": "Northumberland \u2014 83% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -2.8125,
+   54.5721,
+   -1.4062,
+   56.17
+  ],
+  "england_wales_share": 0.831
+ },
+ {
+  "id": "parishes/abbey",
+  "name": "Abbey \u2014 66% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.3791,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.659
+ },
+ {
+  "id": "parishes/blantyre",
+  "name": "Blantyre \u2014 66% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.659
+ },
+ {
+  "id": "parishes/cambusnethan",
+  "name": "Cambusnethan \u2014 66% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.659
+ },
+ {
+  "id": "parishes/carnwath",
+  "name": "Carnwath \u2014 66% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.659
+ },
+ {
+  "id": "parishes/dalziel",
+  "name": "Dalziel \u2014 66% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.659
+ },
+ {
+  "id": "parishes/east_kilbride",
+  "name": "East kilbride \u2014 66% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.3791,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.659
+ },
+ {
+  "id": "parishes/hamilton",
+  "name": "Hamilton \u2014 66% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.3791,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.659
+ },
+ {
+  "id": "parishes/lochwinnoch",
+  "name": "Lochwinnoch \u2014 66% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.3791,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.659
+ },
+ {
+  "id": "parishes/mearns",
+  "name": "Mearns \u2014 66% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.3791,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.659
+ },
+ {
+  "id": "parishes/neilston",
+  "name": "Neilston \u2014 66% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.3791,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.659
+ },
+ {
+  "id": "edinburgh_1914",
+  "name": "Edinburgh 1914 \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -3.5156,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/abercorn",
+  "name": "Abercorn \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/airth",
+  "name": "Airth \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/baldernock",
+  "name": "Baldernock \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/balfron",
+  "name": "Balfron \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/barony",
+  "name": "Barony \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/bathgate",
+  "name": "Bathgate \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/boness",
+  "name": "Boness \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/bonhill",
+  "name": "Bonhill \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/bothkennar",
+  "name": "Bothkennar \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/bothwell",
+  "name": "Bothwell \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/buchanan",
+  "name": "Buchanan \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/cadder",
+  "name": "Cadder \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/calton",
+  "name": "Calton \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/cambuslang",
+  "name": "Cambuslang \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/campsie",
+  "name": "Campsie \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/cardross",
+  "name": "Cardross \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/carmunnock",
+  "name": "Carmunnock \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/carriden",
+  "name": "Carriden \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/cathcart",
+  "name": "Cathcart \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/city_of_glasgow",
+  "name": "City of glasgow \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/cumbernauld",
+  "name": "Cumbernauld \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/dalmeny",
+  "name": "Dalmeny \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -3.5156,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/denny",
+  "name": "Denny \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/dumbarton",
+  "name": "Dumbarton \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/dunipace",
+  "name": "Dunipace \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/eastwood",
+  "name": "Eastwood \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/erskine",
+  "name": "Erskine \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/falkirk",
+  "name": "Falkirk \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/fintry",
+  "name": "Fintry \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/gargunnock",
+  "name": "Gargunnock \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/govan-tileset",
+  "name": "Govan tileset \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/greenock",
+  "name": "Greenock \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/houston",
+  "name": "Houston \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/inchinnan",
+  "name": "Inchinnan \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/innerkip",
+  "name": "Innerkip \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/kilbarchan",
+  "name": "Kilbarchan \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/killearn",
+  "name": "Killearn \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/kilmalcolm",
+  "name": "Kilmalcolm \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/kilmaronock",
+  "name": "Kilmaronock \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/kilsyth",
+  "name": "Kilsyth \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/kippen",
+  "name": "Kippen \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/kirkintilloch",
+  "name": "Kirkintilloch \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/kirkliston",
+  "name": "Kirkliston \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -3.5156,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/larbert",
+  "name": "Larbert \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/lecropt",
+  "name": "Lecropt \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/linlithgow",
+  "name": "Linlithgow \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/livingston",
+  "name": "Livingston \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/logie",
+  "name": "Logie \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/luss",
+  "name": "Luss \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/maryhill",
+  "name": "Maryhill \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/muiravonside",
+  "name": "Muiravonside \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/new_kilpatrick",
+  "name": "New kilpatrick \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/new_monkland",
+  "name": "New monkland \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/old_kilpatrick",
+  "name": "Old kilpatrick \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/old_monkland",
+  "name": "Old monkland \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/polmont",
+  "name": "Polmont \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/port_glasgow",
+  "name": "Port glasgow \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/renfrew",
+  "name": "Renfrew \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/rosneath",
+  "name": "Rosneath \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/row",
+  "name": "Row \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/rutherglen",
+  "name": "Rutherglen \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/shettleston",
+  "name": "Shettleston \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/shotts",
+  "name": "Shotts \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/slamannan",
+  "name": "Slamannan \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/springburn",
+  "name": "Springburn \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/st_ninians",
+  "name": "St ninians \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/stirling",
+  "name": "Stirling \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/strathblane",
+  "name": "Strathblane \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/torphichen",
+  "name": "Torphichen \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/uphall",
+  "name": "Uphall \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -2.8125,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "parishes/whitburn",
+  "name": "Whitburn \u2014 31% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.2188,
+   55.7766,
+   -3.5156,
+   56.17
+  ],
+  "england_wales_share": 0.314
+ },
+ {
+  "id": "scotland_1",
+  "name": "Scotland 1 \u2014 26% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -7.7344,
+   54.5721,
+   -1.4062,
+   58.8137
+  ],
+  "england_wales_share": 0.257
+ },
+ {
+  "id": "blue-and-blacks",
+  "name": "Blue and blacks \u2014 18% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   54.9776,
+   -0.7031,
+   60.2398
+  ],
+  "england_wales_share": 0.175
+ },
+ {
+  "id": "blue-and-blacks-os",
+  "name": "Blue and blacks os \u2014 18% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   54.9776,
+   -0.7031,
+   60.2398
+  ],
+  "england_wales_share": 0.175
+ },
+ {
+  "id": "scotland_2",
+  "name": "Scotland 2 \u2014 18% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -7.7344,
+   54.5721,
+   -0.7031,
+   60.9304
+  ],
+  "england_wales_share": 0.175
+ },
+ {
+  "id": "parishes/drymen",
+  "name": "Drymen \u2014 16% in E&W",
+  "zooms": [
+   1,
+   18
+  ],
+  "bounds": [
+   -4.9219,
+   55.7766,
+   -4.2188,
+   56.5595
+  ],
+  "england_wales_share": 0.158
+ }
+]

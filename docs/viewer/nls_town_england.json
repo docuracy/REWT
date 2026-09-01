@@ -1,0 +1,422 @@
+[
+ {
+  "id": "Accrington",
+  "name": "Accrington \u2014 100% in E&W",
+  "zooms": [
+   1,
+   20
+  ],
+  "bounds": [
+   -2.8125,
+   53.3309,
+   -2.1094,
+   54.1624
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Bacup",
+  "name": "Bacup \u2014 100% in E&W",
+  "zooms": [
+   1,
+   20
+  ],
+  "bounds": [
+   -2.8125,
+   53.3309,
+   -2.1094,
+   53.7487
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Bath",
+  "name": "Bath \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "BradfordonAvon",
+  "name": "BradfordonAvon \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Bridgwater",
+  "name": "Bridgwater \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -3.5156,
+   50.7365,
+   -2.8125,
+   51.1793
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Bristol",
+  "name": "Bristol \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Bury",
+  "name": "Bury \u2014 100% in E&W",
+  "zooms": [
+   1,
+   20
+  ],
+  "bounds": [
+   -2.8125,
+   53.3309,
+   -2.1094,
+   53.7487
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Cheltenham",
+  "name": "Cheltenham \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.618,
+   -1.4062,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Chippenham",
+  "name": "Chippenham \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -1.4062,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Cirencester",
+  "name": "Cirencester \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.1094,
+   51.618,
+   -1.4062,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Clevedon",
+  "name": "Clevedon \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -3.5156,
+   51.1793,
+   -2.8125,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Crewkerne",
+  "name": "Crewkerne \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   50.7365,
+   -2.1094,
+   51.1793
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Devizes",
+  "name": "Devizes \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.1094,
+   51.1793,
+   -1.4062,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Frome",
+  "name": "Frome \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Gloucester",
+  "name": "Gloucester \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.618,
+   -2.1094,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Salisbury",
+  "name": "Salisbury \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.1094,
+   50.7365,
+   -1.4062,
+   51.1793
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "SheptonMallet",
+  "name": "SheptonMallet \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Stroud",
+  "name": "Stroud \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.618,
+   -2.1094,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Swindon",
+  "name": "Swindon \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.1094,
+   51.1793,
+   -1.4062,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Taunton",
+  "name": "Taunton \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -3.5156,
+   50.7365,
+   -2.8125,
+   51.1793
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Tewkesbury",
+  "name": "Tewkesbury \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.618,
+   -2.1094,
+   52.0525
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Trowbridge",
+  "name": "Trowbridge \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Warminster",
+  "name": "Warminster \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Wellington",
+  "name": "Wellington \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -3.5156,
+   50.7365,
+   -2.8125,
+   51.1793
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Wells",
+  "name": "Wells \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   51.1793,
+   -2.1094,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "WestonsuperMare",
+  "name": "WestonsuperMare \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -3.5156,
+   51.1793,
+   -2.8125,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "Yeovil",
+  "name": "Yeovil \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -2.8125,
+   50.7365,
+   -2.1094,
+   51.1793
+  ],
+  "england_wales_share": 1.0
+ },
+ {
+  "id": "devon_towns",
+  "name": "Devon towns \u2014 100% in E&W",
+  "zooms": [
+   1,
+   21
+  ],
+  "bounds": [
+   -4.9219,
+   50.2893,
+   -2.8125,
+   51.618
+  ],
+  "england_wales_share": 1.0
+ }
+]
