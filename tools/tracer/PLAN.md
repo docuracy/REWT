@@ -1184,9 +1184,23 @@ lands. Checked against the file on the branch rather than against the tool's own
 every required field present, `synced` absent, CRS stated on every row, a coordinate on
 every row, uuids unique, and the file already in `(created, author, seq, uuid)` order.
 
-**Not yet exercised:** the offline flush on `online`, and the 409 conflict merge. The exit
-condition above is met except for the word *offline*, and that word is the reason the
-design exists.
+**Phase 1 is complete.** The offline flush and the 409 merge were the last two paths and
+both are proven — `f9e5e4a` and `8133b52` on the branch, the second of which records in its
+own message that it merged after a conflict.
+
+**Tested by failing the network at the app's boundary, not by unplugging anything.**
+`window.fetch` was made to reject for `api.github.com` only, which is what offline actually
+looks like to a page; then restored, with `online` dispatched and nothing clicked. The 409
+was a synthetic stale-sha response returned to the first `PUT` and no other. That is better
+than a real disconnection in three ways: it is repeatable, it isolates one dependency
+instead of the whole machine, and **the conflict case cannot be produced by unplugging at
+all** — it needs a second writer.
+
+What it established, each checked against the file on the branch rather than the tool's
+report: an event recorded offline is held and not lost; **the last-saved time does not
+falsely advance on a failed push**, which is the one thing a contributor would use to
+decide whether to redo work; the flush happens on reconnection with nothing clicked; and a
+conflict loses no event and duplicates none, with fold order surviving the merge.
 
 **Three defects found by building it, each worth more than the code.**
 
