@@ -691,35 +691,83 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
   depends on every drawn feature carrying an id they can send back.
 - **A tidal terminus that can later attach to something.** The sea is an abstraction in this
   stage: §1's traversability test ends at tidal water, and "reaches the sea" is true by
-  definition rather than by test. The design for fixing that is now settled, and it is
-  simpler than the sailing route earlier considered:
+  definition rather than by test. **This replaces the fixed-depth contour previously
+  specified here, and it is a change of method rather than of intent.**
 
-  1. **A fixed-depth contour**, derived from bathymetry — one closing line around the coast of
-     England and Wales at a stated depth below Lowest Astronomical Tide.
-  2. **That contour is the terminus** for every river now reaching the sea *and* for every
-     river now blocked at the coast. The second is the larger prize: it gives a blocked river
-     something to reach rather than a definition to satisfy.
-  3. **Each mouth joins it along the deepest available channel** — a least-cost path over the
-     bathymetric grid maximising depth, not a straight line to the nearest point.
+  **What was wrong with a stated contour.** A contour at a chosen depth is a *stipulation*, and
+  the sea does not oblige it. At 10 m below Lowest Astronomical Tide the line hugs the shore in
+  the Minch and stands 80 km out in the southern North Sea; it can fail to close where the
+  survey has holes, and a contour must close while a least-cost path cannot cross a hole. The
+  depth would have been chosen by us and then reported as if the sea had said it.
 
-  **This resolves a question this plan previously left open.** A contour at a fixed depth is a
-  geometric object carrying no year, so it is admissible beside a stage that makes no
-  historical claim. A path optimised for a particular vessel in a particular season is a
-  historical claim and is now out of scope rather than undecided — the loop is not a sailing
-  route, and the two would look alike on a map.
+  **The construction, which measures the route instead of drawing it.**
 
-  **Two things travel with the bathymetry, whichever source is registered.** Research
-  bathymetry carries `DO NOT USE FOR NAVIGATION`, and that is a constraint on *purpose* rather
-  than on redistribution: a topological terminus is not navigation, but nothing derived from
-  it may be presented as a route a vessel could follow. And **continuous coverage beats
-  resolution here** — the higher-resolution national holdings are individual surveys with gaps
-  between them, and a contour has to close while a least-cost path cannot cross a hole. It is
-  the same trade this project keeps meeting: the better-structured source answering a
-  different question.
+  1. **A cost surface over the sea**, from bathymetry. A cell shallower than `sea.clearance_m`
+     below Lowest Astronomical Tide is impassable; deeper cells cost less as they deepen. One
+     stated parameter, carrying a number and no adjective.
+  2. **Every tidal terminus is a source** — the `terminus` layer, which this stage already
+     publishes as first-class objects for exactly this join.
+  3. **Least-cost paths run between termini, not out to open water.** This is the point the
+     construction turns on. A path seaward would take each terminus to the nearest edge of the
+     survey by the cheapest route, and nothing would converge: east-coast mouths would run east
+     and west-coast mouths west, and no loop around Britain could emerge from it. **A coastal
+     route exists only as a relation between the mouths**, so the mouths are what the paths
+     connect.
+  4. **Cost-allocation partitions the sea.** Every passable cell belongs to whichever terminus
+     is cheapest to reach from it. Where two territories meet, the cheapest crossing gives the
+     cost of the deep-water route between that pair of mouths — so the pairs worth considering
+     are chosen by the bathymetry rather than by a distance rule we impose.
+  5. **The sea network is a minimum spanning tree over the termini in that metric**, and each
+     of its edges is the deepest available channel between its two mouths. Every terminus is
+     connected, by the cheapest water, with no cycles and no arbitrary choices. This is what
+     the previous text asked for as "the deepest available channel", delivered as a property
+     of the construction rather than as a second mechanism.
+  6. **The trunk is the segments that many of those routes share**, above `sea.trunk_share` of
+     all termini. The loop around the coast is not drawn in advance and is not a parameter: it
+     is what remains where the routes agree. If no continuous trunk emerges, that is a finding
+     about the bathymetry, and it must be reported rather than repaired by lowering the share
+     until a line appears.
 
-  **Nothing to build now.** What is wanted at this stage is that **every tidal terminus is
-  identified and kept as a first-class thing** rather than implied by the absence of an
-  outflow, so that attaching them later is a join and not a re-derivation.
+  **What keeps this admissible in a stage that makes no historical claim.** The artefact is
+  named by its parameter and not by its purpose: it is the connectivity structure of water
+  deeper than a stated clearance. **The words "plausible" and "sailing" are excluded
+  deliberately** — both import a vessel, a vessel imports a draught and a period, and a period
+  is a date. A route optimised for a particular hull in a particular season remains out of
+  scope. This distinction is the whole of what makes the object buildable now.
+
+  **Two things travel with the bathymetry, whichever source is registered.** Research bathymetry
+  carries `DO NOT USE FOR NAVIGATION`, and that is a constraint on *purpose* rather than on
+  redistribution: a topological terminus is not navigation, but **nothing derived from this may
+  be presented as a route a vessel could follow**, and the naming rule above is how that
+  constraint is kept rather than merely acknowledged. And **continuous coverage beats
+  resolution** — the higher-resolution national holdings are individual surveys with gaps
+  between them, and an accumulation cannot flow across a hole.
+
+  **One network, as everywhere else.** Sea segments are `link`s with a distinguishing `form`, in
+  the same network as the rivers. They do not get a second geometry table and they do not get a
+  routing graph of their own; the earlier work held two graphs for one geometry and could not
+  reconcile them.
+
+  **This changes what §1's headline number means, and both readings must be published.** Today
+  reachability ends at tidal water and "reaches the sea" cannot fail. With the trunk attached it
+  becomes a test that a terminus can fail. **Every figure measured before this change is
+  measured against the old definition**, so the change is reported with both numbers side by
+  side and never improved silently into the series. This is the difference between a project
+  that improved and a project that changed what it was measuring: **reachability moving because
+  the sea became a test it can fail is not progress and must never read as progress.** Remove
+  this clause and the series acquires a discontinuity no reader can see, with the numbers on
+  either side no longer comparable while still looking like a trend.
+
+  **What it is for, measured rather than asserted.** 245 of 968 outstanding in-scope dead ends
+  sit within 250 m of mean high water and more than 250 m from any `tidalRiver` link: they
+  arrive at the coast and stop, because the survey draws no tidal water there for them to join.
+  They cluster on ria and cliff coasts — Cornwall, Devon, Pembrokeshire, Caernarfonshire — which
+  is where the geography predicts rather than where a threshold happens to fall.
+
+  **What must fail loudly.** A terminus with no path to the trunk is a finding and is named, not
+  dropped. A trunk that does not close is a finding and is reported as one. A path longer than
+  `sea.max_path_km` is refused rather than drawn, because a least-cost path across an
+  unsurveyed hole will otherwise produce a confident line through water nobody has measured.
 
 - **Fall per link, sampled from the UNCONDITIONED terrain.** A later stage models water
   power potential, which is flow times head — and the flow half is already planned while the
