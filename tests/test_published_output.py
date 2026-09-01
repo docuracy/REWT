@@ -641,3 +641,75 @@ def test_the_national_reachability_reproduces_from_the_published_network(audit):
             f"{label}_km is {reachability[f'{label}_km']:,.1f} in the audit and "
             f"{reached_km:,.1f} reached in the published network"
         )
+
+
+def test_the_reachability_prose_says_something_true():
+    """*"93.28% of 97,786 km"* — a complete sentence, and a false one.
+
+    97,786 km is the length **reached**, not the length in scope. So the line
+    asserts that the in-scope network is 97,786 km and that about 91,200 km of it
+    reaches the sea, when the true statement is 93.28% of 104,829 km. Both figures
+    in the reader's hand are wrong, from a sentence that is internally consistent
+    and reads perfectly.
+
+    This is the Tweed rounding again in a different place: **the number is exact and
+    the sentence around it is false.** The author read the line a dozen times
+    without seeing it, because they already knew which figure was which — which is
+    what makes this class need a test rather than a proofread.
+
+    Nothing here is pinned to a value. Both sides are recomputed from the published
+    network, so this keeps working as the figures move.
+    """
+    import re
+
+    path = paths.PUBLISHED / "audit" / "audit.md"
+    if not path.exists():
+        pytest.skip(f"{paths.rel(path)} does not exist; the audit has not run")
+
+    frame = _read(
+        NETWORK, "link", ["in_scope", "reaches_tidal", "length_m", "retired"]
+    )
+    live = frame[~frame["retired"].astype(bool)]
+    scopes = {
+        "great britain": live,
+        "in scope": live[live["in_scope"].astype(bool)],
+    }
+
+    pattern = re.compile(
+        r"^-\s+(.+?):\s+\*\*([\d.]+)%\*\*\s+of\s+([\d,]+(?:\.\d+)?)\s*km",
+        re.MULTILINE | re.IGNORECASE,
+    )
+    claims = [
+        (m.group(1).strip().lower(), float(m.group(2)), float(m.group(3).replace(",", "")))
+        for m in pattern.finditer(path.read_text(encoding="utf-8"))
+    ]
+    if not claims:
+        pytest.skip("audit.md states no 'N% of M km' reachability claim")
+
+    wrong = []
+    for label, percent, stated_km in claims:
+        subset = scopes.get(label)
+        if subset is None:
+            continue
+        total_km = subset["length_m"].sum() / 1000.0
+        reached_km = (
+            subset[subset["reaches_tidal"].astype(bool)]["length_m"].sum() / 1000.0
+        )
+        # "P% of N km" says N is the whole and P% of it was reached.
+        if abs(stated_km - total_km) > max(1.0, total_km * 0.001):
+            wrong.append(
+                f"{label!r}: the line says {percent:.2f}% of {stated_km:,.0f} km, "
+                f"but {stated_km:,.0f} km is not the total — the total is "
+                f"{total_km:,.0f} km and {reached_km:,.0f} km of it is reached. "
+                f"As written the sentence claims {stated_km * percent / 100:,.0f} km "
+                "reaches the sea."
+            )
+        elif abs(percent - reached_km / total_km * 100) > 0.01:
+            wrong.append(
+                f"{label!r}: the line says {percent:.2f}% where the published "
+                f"network gives {reached_km / total_km * 100:.2f}%"
+            )
+    assert not wrong, (
+        "the audit's reachability prose does not describe the network it "
+        "published:\n  " + "\n  ".join(wrong)
+    )
