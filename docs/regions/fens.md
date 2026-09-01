@@ -75,6 +75,6 @@ confident number carried down a channel that did not yet exist.
 Note that this is one of the few places where the work may already exist: the [navigable
 waterways GIS](../evidence#1600-to-1948-and-the-problem-with-it) carries the Well Stream as a
 feature on its own course, a median 1.4 km from any modern watercourse — traced, though not
-openly published, and [not at the resolution a six-inch trace would give](../scale#part-of-this-has-been-done-already--and-it-is-the-hard-part-not-the-bulk).
+openly published, and [not at the resolution a six-inch trace would give](../scale#part-of-this-has-been-done-already-and-it-is-the-hard-part).
 They are the medieval outfall of the Great Ouse, the reason the seventeenth-century cuts
 have to be excluded, and the single largest hole in the reconstruction.

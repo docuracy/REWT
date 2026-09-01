@@ -273,7 +273,7 @@ boundary set, and cannot be published from.
 
 ---
 
-## Part of this has been done already — and it is the hard part, not the bulk
+## Part of this has been done already, and it is the hard part
 
 The counts above describe work as though it were all ahead of us. For one of the hardest
 regions it is not, and a scale page that does not say so is misleading about its own subject.
