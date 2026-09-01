@@ -474,6 +474,24 @@ def viewer_data_cmd(
         tiles.pack()
 
 
+@app.command("citation")
+def citation_cmd(tag: str = typer.Argument(..., help="the tag this edition carries")) -> None:
+    """Write `CITATION.cff`, at the repository root and beside the published data.
+
+    Two copies of one generated string, and they are for different readers: GitHub
+    renders the root one as *Cite this repository*, and the published one travels with
+    the release so that someone holding the GeoPackage can find out how to credit it.
+    Neither is hand-written — authorship is declared once, in `.zenodo.json`.
+    """
+    from . import release
+
+    text = release.citation_file(tag)
+    for target in (paths.ROOT / "CITATION.cff", paths.PUBLISHED / "CITATION.cff"):
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding="utf-8")
+    log.done(f"CITATION.cff written for {tag}, at the root and in published/")
+
+
 @app.command("release-notes")
 def release_notes_cmd(
     tag: str = typer.Argument(..., help="the tag this release will carry"),
@@ -558,6 +576,17 @@ def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) 
     problems += release.attribution_drift()
     # The map that ships and the data it was built from must be one pass.
     problems += release.viewer_data_drift()
+
+    # The citation must name the edition being cut, not the last one. It is generated,
+    # so a stale copy means someone released without running `rewt citation`.
+    want = release.citation_file(tag)
+    for where in (paths.ROOT / "CITATION.cff", paths.PUBLISHED / "CITATION.cff"):
+        if not where.exists():
+            problems.append(f"{where.name} is missing from {where.parent.name}/; "
+                            f"run `rewt citation {tag}`")
+        elif where.read_text() != want:
+            problems.append(f"{where.parent.name}/CITATION.cff does not match {tag}; "
+                            f"run `rewt citation {tag}`")
 
     # RELEASE-CHECK WAS BLOCKING ITS OWN TEST RUN. `stale_stages()` above opens the
     # database read-write and the connection is a module-level singleton, so the pytest
