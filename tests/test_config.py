@@ -222,3 +222,95 @@ def test_the_bathymetry_pin_is_compared_and_not_merely_declared():
     assert "raise AcquisitionError" in body.split('src.get("checksum"', 1)[1][:900], (
         "fetch_wcs reads the checksum but does not fail on a mismatch"
     )
+
+
+# --------------------------------------------------------------------------
+# Every declared source has a consumer, or says why it has none (D-059)
+# --------------------------------------------------------------------------
+
+
+def _read_by_a_stage() -> set[str]:
+    import rewt.stages  # noqa: F401  (registers every stage)
+
+    from rewt.pipeline import PIPELINE
+
+    return {sid for name in PIPELINE.names for sid in PIPELINE[name].sources}
+
+
+def test_every_stage_1_source_is_read_by_a_stage_or_says_why_not():
+    """*Resist adding a source that no stage reads* — D-059's rule, which is the
+    one with teeth.
+
+    §4 states it as a count: four OS products plus two LiDAR services. Measured,
+    the build read exactly six — **and not those six.** Both LiDAR services had
+    gone unread while CRT structures and EMODnet took their places, so a reader
+    checking the total would have found it correct and concluded nothing had
+    drifted. That is this repository's own recurring shape appearing in its own
+    specification: the figure exact, the sentence false.
+
+    A count cannot catch that and this can. The one distinction it needs is that
+    *unread* covers two different things — a source waiting for a stage that does
+    not exist yet, which is `stage: 2`, and a source consumed by something that is
+    not a stage at all, which is `per_section: true`. Neither is drift. Anything
+    else is.
+    """
+    unread = sorted(
+        src.id
+        for src in config.sources()
+        if src.get("stage", default=1) == 1
+        and not src.get("per_section", default=False)
+        and src.id not in _read_by_a_stage()
+    )
+    assert not unread, (
+        "sources declared for Stage 1 that no stage reads: " + ", ".join(unread)
+        + ". Either a stage should read it, or the declaration should say why "
+        "nothing does — `stage: 2` for one waiting on later work, `per_section: "
+        "true` for one fetched a place at a time. The sentence that was missing is "
+        "the point of this failing, not the flag."
+    )
+
+
+@pytest.mark.parametrize(
+    "source_id",
+    sorted(
+        src.id for src in config.sources() if src.get("per_section", default=False)
+    ),
+)
+def test_a_per_section_source_cannot_be_fetched_in_bulk(source_id):
+    """D-006: LiDAR is fetched **per section**, when a person is adjudicating a
+    place, and never nationally.
+
+    `per_section` is the declaration that stops the previous test reading these as
+    drift, so it has to mean something enforced rather than something asserted. A
+    national pass over a 1 m surface is a large expense for no gain — *LiDAR earns
+    its place per section, where the differences are decimetres* (§6).
+    """
+    from rewt import acquire
+
+    assert source_id not in acquire.national_sources(), (
+        f"{source_id} declares per_section and is fetched in bulk anyway"
+    )
+    with pytest.raises(acquire.AcquisitionError, match="per section|nationally"):
+        acquire.fetch(source_id)
+
+
+@pytest.mark.parametrize(
+    "source_id",
+    sorted(
+        src.id for src in config.sources() if src.get("per_section", default=False)
+    ),
+)
+def test_a_per_section_source_records_why_nothing_reads_it(source_id):
+    """The flag is the mechanism; the reasoning is what a reader needs.
+
+    A flag alone would make this pair of tests pass while leaving the next person
+    to work out why two declared sources have no consumer — which is the state
+    D-059 found and the reason it was hard to see.
+    """
+    src = config.source(source_id)
+    notes = str(src.get("notes") or "")
+    assert len(notes.strip()) > 40, (
+        f"{source_id} declares per_section and records no reasoning. The flag "
+        "stops a test failing; it does not tell anyone why the source has no "
+        "batch consumer."
+    )
