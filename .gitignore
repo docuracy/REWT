@@ -13,3 +13,4 @@ __pycache__/
 published/
 # Acquired by the viewer, never committed — same rule as data/raw/.
 tools/viewer/cache/
+vendor/

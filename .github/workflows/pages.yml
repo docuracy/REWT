@@ -56,16 +56,17 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
-          working-directory: docs
-          # Resolve and cache from docs/Gemfile, which pins the github-pages gem —
-          # the same Jekyll, themes and plugins GitHub's own builder used before this
-          # workflow replaced it. Installing bare Jekyll built nothing: _config.yml
-          # asks for jekyll-theme-primer and the theme is not in the base gem.
+          # Resolves from the ROOT Gemfile, which pins the github-pages gem — the same
+          # Jekyll, themes and plugins GitHub's own builder used before this workflow
+          # replaced it. Installing bare Jekyll built nothing, because _config.yml asks
+          # for jekyll-theme-primer and the base gem does not carry it.
+          #
+          # Root rather than docs/ because bundler installs into vendor/bundle beside
+          # the Gemfile, and inside the site source Jekyll tries to BUILD the gems.
           bundler-cache: true
 
       - name: Build the Jekyll site
-        working-directory: docs
-        run: bundle exec jekyll build --destination ../_site
+        run: bundle exec jekyll build --source docs --destination _site
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
