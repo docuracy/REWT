@@ -59,15 +59,19 @@ changed.
 
 ## Status
 
-**Stage 1 is built and the repository is public.** The first edition — the modern survey
-repaired into a network water can be followed through — is assembled and being prepared for
-release; the historic editions are not. It was built from a clean sheet after a scoping
-exercise that established the approach and, more usefully, [what goes wrong](background).
+**What exists is recorded with the releases**, on [the repository](https://github.com/docuracy/REWT){:target="_blank"}, and not restated here — a
+page that describes the state of a thing is wrong from the first time the thing changes, and
+goes on looking authoritative while it is. The shape of the plan is [editions and
+epochs](epochs): the first edition is the modern survey repaired into a network water can be
+followed through, and it makes no historical claim at all.
 
-**The figures on these pages are of the build they were taken from, and say so.** The audit
-published with the data is the authority for any of them, because a number written into a
-page drifts while continuing to look authoritative — which is this project's own recurring
-failure, and not one to reproduce in its documentation.
+**The same applies to every figure on these pages.** Each is of the build it was taken from
+and says so; the audit published with the data is the authority. A number written into a page
+drifts, and drifting while looking authoritative is this project's own recurring failure — not
+one to reproduce in its documentation.
+
+It was built from a clean sheet after a scoping exercise that established the approach and,
+more usefully, [what goes wrong](background).
 
 ---
 
