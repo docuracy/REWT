@@ -54,10 +54,9 @@ traversability is not. The open datasets that *are* routable at national scale a
 surface — which is a hydrological model of where water would run, not a record of the
 channels that are there.
 
-**The closed products are the other way round, and this is worth stating precisely because
-the opposite is often assumed.** The Environment Agency's Detailed River Network, its
-successor the OS MasterMap Water Network Layer, and the [UKCEH Digital River Network](https://www.ceh.ac.uk/data/15000-watercourse-network){:target="_blank"} are
-all **derived from survey**, not from a terrain model: the EA network was captured from OS
+**The closed products are the other way round.** The Environment Agency's Detailed River
+Network, its successor the OS MasterMap Water Network Layer, and the
+[UKCEH Digital River Network](https://www.ceh.ac.uk/data/15000-watercourse-network){:target="_blank"} are all **derived from survey**, not from a terrain model: the EA network was captured from OS
 MasterMap and built into a topologically correct network with automated rules and field
 survey, and the UKCEH network was digitised from OS 1:50,000 mapping and then used to *define
 the flow paths in* CEH's terrain model rather than being derived from it. So the gap this
