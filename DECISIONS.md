@@ -1892,3 +1892,29 @@ no longer exists, and the useful form of its rule is not a count: *resist adding
 source that no stage reads*. A count invites exactly the error above — satisfied in
 total, wrong in every particular. That is rewt-1d's to land in PLAN.md if Stephen wants
 it, and this entry is what it would rest on.
+
+**Amended, because "8 unread" was itself an aggregate hiding three different things.**
+Pressed on whether the rule could be put under test, the eight separate cleanly:
+
+| | |
+|---|---|
+| `stage: 2`, so no Stage 1 stage should read them — not drift | `gb1900_raw_dump`, `eidc_uk_reservoir_inventory`, `mills_of_britain`, `nrw_large_raised_reservoirs`, `hct_historic_counties`, `nls_historic_map_tilesets` |
+| `stage: 1` and unread — **the whole of the actual drift** | `ea_lidar_composite_dtm_1m`, `nrw_lidar_dtm_1m` |
+
+**And those two are not drift either, once the reason is visible.** D-006 has LiDAR
+fetched *per section* when a person is adjudicating a place, never nationally —
+`acquire.fetch` refuses a bulk request for it in terms. They are Stage 1 sources with
+**no batch consumer**, which is a different thing from a source nothing wants. Marking
+them `stage: 2` would have been wrong in the opposite direction, forbidding the Stage 1
+tool they exist for.
+
+The two states were indistinguishable until the declaration could say which, so they
+now carry `per_section: true` with that reasoning inline. The rule is then testable and
+passes today: **every source declaring `stage: 1` and not `per_section` is read by some
+stage.** It would not have failed on the LiDAR entries; it would have asked, at the
+moment they were registered, for the sentence explaining why nothing reads them — which
+is the sentence that was missing for four months.
+
+**Noting against myself that "8 unread" was the same error I had just written the entry
+about.** I checked declarations against consumers, found a gap, and reported the gap as
+a single number without asking whether it was one thing. It was three.
