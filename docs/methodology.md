@@ -132,54 +132,65 @@ the place. **Check at the place, never in the total.**
 >    is a road or railway crossing a modelled flow path. Most work, least certain, and it
 >    should follow the first two.
 
-### The sea is currently an abstraction, and it should be an object
+### The sea is a test, not a definition
 
-Every rule in this phase ends at the same place — *and then it reaches the tide* — and the
-tide is not modelled at all. A river mouth terminates in a patch of nowhere, each basin in its
-own separate patch, and "reaches the sea" is true by definition rather than by test. That is
-also why an estuary is the hardest thing here: the survey draws a river mouth as an **area**
-and offers the network no line to end on.
+Every rule above ends in the same place — *and then it reaches the tide* — and until now the
+tide was not modelled at all. A river mouth terminated in a patch of nowhere, each basin in
+its own separate patch, and **"reaches the sea" was true by definition rather than by test.**
+That is also why an estuary is the hardest thing here: the survey draws a river mouth as an
+**area** and offers the network no line to end on. Measured, 245 of 968 outstanding in-scope
+dead ends sit within 250 m of mean high water and more than 250 m from any tidal link — they
+arrive at the coast and stop, because there is nothing there for them to join.
 
-The proposal is to give the sea a geometry: **a single path around the coast of England and
-Wales at optimum sailing distance, with branches connecting it to each river — and the loop
-is the terminus.** Three things follow, and the third is why it works where an attested
-gazetteer of ports does not.
+So the sea is being given a geometry, in this phase rather than a later one. **The trunk is
+not drawn. It is what remains where the routes agree.**
 
-- **The audit gets an object to test against.** *No node has inflows and no outflow, except at
-  the sea* becomes *except where it joins the loop*, which is checkable rather than
-  definitional. A river that fails to reach the loop is a finding; today it is an assumption.
-- **Port to port becomes computable** — down one river, along the coast, up another. That is
-  the journey the [navigation evidence](evidence#navigation) is actually about, and no purely
-  fluvial network can express it.
-- **It is generated rather than attested**, so it exists at *every* river mouth. A corpus of
-  historical ports, however good, records where trade happened and not where rivers end; it is
-  a sample where this needs a structural feature.
+1. **A cost surface over the sea**, from bathymetry: water shallower than a stated clearance
+   is impassable, and deeper water costs less as it deepens. One parameter, carrying a number
+   and no adjective.
+2. **Least-cost paths run between the river mouths**, not out to open water. This is the step
+   the construction turns on. A path seaward would take each mouth to the nearest edge of the
+   survey by the cheapest route and nothing would converge — east-coast mouths would run east
+   and west-coast mouths west. **A coastal route exists only as a relation between the
+   mouths**, so the mouths are what the paths connect.
+3. **The cheapest crossings between mouths give a network over them**, each of its edges the
+   deepest available channel between two river mouths — which is what "follow the deepest
+   channel" turns out to mean once you stop drawing it and start measuring it.
+4. **The trunk is the segments that many of those routes share.** If no continuous trunk
+   emerges, that is a finding about the bathymetry and is reported as one, not repaired by
+   lowering the threshold until a line appears.
 
-**And it is a contour, not a sailing route.** That distinction was open for a while and is
-now settled, in favour of the simpler object: **a line at a fixed depth below Lowest
-Astronomical Tide**, derived from bathymetry, closing around the coast, with each river mouth
-joined to it **along the deepest available channel** rather than by the shortest line. A
-sailing route would have to be different for every class of vessel and every season; a depth
-contour is the same for all of them.
+**What this buys is a test.** *No node has inflows and no outflow, except at the sea* becomes
+*except where it joins the trunk* — checkable rather than definitional. A river that cannot
+reach the trunk is a **finding** and is named; today it is an assumption. It also makes port
+to port computable, down one river, along the coast and up another, which is the journey the
+[navigation evidence](evidence#navigation) is about and which no purely fluvial network can
+express.
 
-Which also settles what stage it belongs to, by the test of what it *consumes*: a fixed-depth
-contour reads bathymetry and nothing else — no wind, no current, no vessel — and therefore
-carries no year. A route optimised for a particular hull in a particular month reads
-environmental fields and is a **historical claim** the moment it does. The two would look
-alike on a map, and building the second while calling it the first is the drift this project
+**And it changes what a published number means, so both readings go out together.** Today
+reachability cannot fail at the coast. With the trunk attached it can. Every figure measured
+before that change is measured against the old definition — so the change is reported with
+both numbers side by side and never improved silently into the series. **Reachability moving
+because the sea became a test it can fail is not progress and must never read as progress.**
+
+**It carries no date, and the naming is what keeps it that way.** The artefact is named by
+its parameter and not by its purpose: it is the connectivity structure of water deeper than a
+stated clearance. The words *plausible* and *sailing* are excluded deliberately — a vessel
+implies a draught, a draught implies a period, and a period is a date. A route optimised for a
+particular hull in a particular season is a historical claim and stays out of scope; it would
+look much like this on a map, and building it while calling it this is the drift the project
 is arranged to prevent.
 
-**One sentence has to travel with it.** Research bathymetry is published `DO NOT USE FOR
-NAVIGATION` — a constraint on purpose rather than on redistribution, since these are surveys
-of varying age merged into a surface rather than a charted product. A topological terminus is
-not navigation. But nothing built on it may be offered as a route a vessel could follow, and
-a page describing a line around the coast without saying so invites precisely that reading.
+**One sentence travels with the bathymetry.** Research bathymetry is published `DO NOT USE FOR
+NAVIGATION` — a constraint on purpose rather than on redistribution, since it is surveys of
+varying age merged into a surface rather than a charted product. A topological terminus is not
+navigation. But **nothing built on it may be offered as a route a vessel could follow**, and
+the naming rule above is how that is kept rather than merely acknowledged.
 
-**And here continuous coverage beats resolution.** The national hydrographic holdings are
-far finer and are published as thousands of individual surveys with gaps between them — and a
-contour has to *close*, while a least-cost path cannot cross a hole. It is the same trade as
-[the Welsh leats](evidence#the-map-record): the
-better-structured source answering a different question.
+**And here continuous coverage beats resolution.** The national hydrographic holdings are far
+finer and are published as thousands of individual surveys with gaps between them — and an
+accumulation cannot flow across a hole. It is the same trade as [the Welsh leats](evidence#the-map-record):
+the better-structured source answering a different question.
 
 **Exit condition.** No node carries more than a nominal flow into nowhere; the unreached
 residue is *explained* rather than merely counted; and the audit runs clean or every
