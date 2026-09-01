@@ -1741,3 +1741,43 @@ other in a way arithmetic forbids.
 
 So the rule earned here: **when a result changes after a change that could only move it
 one way, the discrepancy is the finding.** Not the result.
+
+---
+
+**D-057 — `sea.clearance_m` was a guess that severed mouths from the sea; it is now
+measured.** *2026-09-01*
+
+I set it to 5.0 m before building anything, on reasoning about grid averaging and
+survey error. The reasoning was fine and the number was unexamined, and it turned out
+to be the single most consequential choice in the construction.
+
+| clearance | 0 m | 1 m | 2 m | **5 m** | 10 m |
+|---|---|---|---|---|---|
+| tidal termini with open sea within 5 km | 76.0% | 67.5% | 63.8% | **56.0%** | 48.6% |
+| coastal orphans, the same | 96.2% | 92.8% | 92.2% | **88.1%** | 80.3% |
+| passable cells | 52.25M | 52.01M | 51.84M | 51.44M | 50.70M |
+
+**The passable area moves 1.6% between 0 and 5 m while the connected share moves 20
+points.** The cells that differ are not open sea being trimmed at the margins — they
+*are* the coastal fringe, the strip that joins a mouth to the water. Around the Wash,
+the Humber, Morecambe Bay, the Severn and most of the southern North Sea coast, water
+5 m below Lowest Astronomical Tide lies kilometres offshore, so a terminus can sit
+exactly on the waterline with nothing to reach.
+
+**Set to 2.0 m.** It keeps a real margin for the 100 m cell averaging and the survey's
+vertical uncertainty, and strands about four mouths in a hundred fewer than 5.0 did.
+Not 0.0, which would admit water a hand's depth below the lowest tide and abandon the
+margin the parameter exists to provide.
+
+**The wrong explanation I carried for an hour is the part worth recording.** When 38%
+of termini failed to reach open sea at 5 m, I told rewt-86 the failures were estuarine
+nodes far inland where no sea exists — plausible, mechanistic, and consistent with its
+finding that the median terminus is 3,410 m from a real survey. Measured, the failures
+sit **97.1% within 500 m of mean high water and 0.0% more than 5 km inland**, and their
+distance distribution is indistinguishable from the successes'. They were never inland.
+
+rewt-86 had warned, before I measured, that distance from high water would not separate
+the two cases. I recorded that as a refinement rather than as the objection it was,
+because I already had an explanation I liked. **An explanation offered before its test
+does not become evidence when a different measurement turns out to be compatible with
+it** — and the CDI figure I leaned on was answering another question entirely.

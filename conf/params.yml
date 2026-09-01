@@ -230,9 +230,25 @@ sea:
   # permanently submerged by definition, so 0.0 would already be defensible; the margin
   # is for the two errors above and nothing else.
   #
+  # MEASURED, having first been guessed. 5.0 was chosen before any evidence and cost
+  # a great deal: the share of mouths with any open water within 5 km of them runs
+  #
+  #     clearance   0 m    1 m    2 m    5 m    10 m
+  #     termini    76.0%  67.5%  63.8%  56.0%  48.6%
+  #     orphans    96.2%  92.8%  92.2%  88.1%  80.3%
+  #
+  # while the passable area itself moves only 1.6% between 0 and 5 m. The cells that
+  # differ ARE the coastal fringe, so the parameter was not trimming the sea, it was
+  # severing mouths from it — around the Wash, the Humber, Morecambe Bay and most of
+  # the southern North Sea, water 5 m below LAT lies kilometres offshore.
+  #
+  # 2.0 m keeps a real margin for the 100 m cell averaging and the survey's own vertical
+  # uncertainty, while stranding 4 in 100 fewer mouths than 5.0 did. It is not 0.0,
+  # which would admit water a hand's depth below the lowest tide and claim the margin
+  # this parameter exists to provide.
   # Wrong if: the passable surface fragments around Britain at this value, or if raising
   # it to 10 m changes the trunk's course rather than only its edges.
-  clearance_m: 5.0
+  clearance_m: 2.0
 
   # Working resolution of the sea grid, and the resampling that goes with it.
   #
