@@ -107,12 +107,24 @@ national mosaic, and so slower.
 
 **How many there are is still not a figure this project can quote.** The scoping exercise
 reported 606 reservoirs marking 1,834 links, and did it by joining a *gazetteer* to the
-network. The network alone cannot do it: OS Open Rivers names 6,042 of its 24,146
-standing-water links, and **not one of those names contains the word "Reservoir"** — the
-name carried by a lake link is the river running through it, *River Darent*, *Mill Beck*.
-The best national inventory reaches about a quarter of the inherited figure: 493 of the
-24,146 standing-water links lie within 500 m of one of its entries. The count stays
-inherited rather than earned.
+network. The network alone cannot do it, and the reason is a naming convention rather than an
+absence. Of 24,146 standing-water links, **18,104 carry no name at all**; of the 6,042 that
+do, **68% carry a running-water name** — *Burn*, *Brook*, *River*, *Beck* — and under 5% a
+standing-water one. **Not one contains the word "Reservoir".** A lake link is named for the
+watercourse routed *through* the water body, not for the water body, so the absence of the
+word is evidence about how OS names things and not about what the network holds. The best
+national inventory reaches about a quarter of the inherited figure — 493 of the 24,146
+standing-water links lie within 500 m of one of its entries — so the count stays inherited
+rather than earned.
+
+**The reservoirs are there. They are under the names of the valleys they drowned.** Kielder
+Water is twelve lake links carrying *Belling Burn*, *Cranecleugh Burn*, *Hawkhirst Burn*,
+*Little Whickhope Burn* and *Mounces Burn*; Ladybower carries *River Ashop* and *Ladybower
+Brook*; Rutland Water is eight links and every one of them unnamed. That is a better fact
+than the one it replaces, and it points somewhere: **where a lake link still carries a
+watercourse name, the name of the drowned channel has survived the flooding of it.** Three
+reservoirs checked is not a sample, and whether it holds nationally is worth establishing
+before anything leans on it.
 
 **The list that would close that gap exists and is not published.** Every reservoir holding
 more than 25,000 m³ above the surrounding land is on a statutory register kept by the

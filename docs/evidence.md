@@ -181,10 +181,13 @@ to work and why its threshold has to be set above OS Open Rivers' own generalisa
 
 A **second population is not labelled at all: channels drowned by reservoirs.** A drowned
 valley is not a channel that ceased to exist — it is one that is under water, and its course
-is recoverable from a map made before the dam. **The network cannot find them by itself**:
-OS Open Rivers names 6,042 of its 24,146 standing-water links and not one of those names
-contains the word *Reservoir* — a lake link carries the name of the river running through
-it. A gazetteer of named places is needed, and has to be declared before any count from it
+is recoverable from a map made before the dam. **The network cannot find them by name**, which is not the same as
+their being absent from it. Of 24,146 standing-water links, 18,104 are unnamed; of the rest,
+about 68% carry a running-water name and fewer than 5% a standing-water one, and none at all
+contains the word *Reservoir*. A lake link is named for the watercourse routed *through* the
+water body rather than for the body itself — so **the reservoirs are in the network, under the
+names of the valleys they drowned**: Kielder Water's links are still *Belling Burn* and
+*Cranecleugh Burn*. A gazetteer of named places is needed, and has to be declared before any count from it
 can be quoted; the scoping exercise's 606 reservoirs over 1,834 links was obtained that way
 and is inherited here, not earned.
 
