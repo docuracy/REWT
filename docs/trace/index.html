@@ -1,0 +1,152 @@
+<!doctype html>
+<!-- NO YAML FRONT MATTER, EVER, in anything under docs/trace/.
+     Jekyll runs Liquid only over files that carry front matter and copies everything
+     else byte-for-byte. A `{{` or `{%` inside a JS template string would otherwise be
+     eaten. An empty `---`/`---` pair is the switch; do not add one. And `exclude:` is
+     the wrong tool if anyone proposes it — it means "do not publish", not "copy without
+     processing", and would delete this app from the built site. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>REWT Tracer</title>
+<style>
+  :root {
+    --paper:#f6f7f5; --card:#fff; --ink:#16211f; --soft:#4a5c59; --muted:#6e7c79;
+    --rule:#d8ded9; --water:#2f6f7e; --bad:#a8401f; --good:#2f7e5c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper:#111917; --card:#18221f; --ink:#e8eeeb; --soft:#a9bab6;
+            --muted:#869894; --rule:#2b3a36; --water:#7fc4d2; --bad:#e0855f; --good:#7fc9a4; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink);
+         font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  header { display:flex; gap:1rem; align-items:baseline; flex-wrap:wrap;
+           padding:.7rem 1rem; border-bottom:1px solid var(--rule); background:var(--card); }
+  header h1 { font-size:1rem; margin:0; font-weight:600; letter-spacing:.01em; }
+  header .grow { flex:1 1 auto; }
+  #status { font-size:.85rem; color:var(--muted); font-variant-numeric:tabular-nums; }
+  #status.bad { color:var(--bad); }
+  main { max-width:52rem; margin:0 auto; padding:1.25rem 1rem 4rem; }
+  section { background:var(--card); border:1px solid var(--rule); border-radius:6px;
+            padding:1rem 1.1rem; margin-bottom:1rem; }
+  h2 { font-size:.95rem; margin:0 0 .6rem; }
+  p, li { color:var(--soft); }
+  code, kbd { font:.85em ui-monospace,SFMono-Regular,Menlo,monospace;
+              background:rgba(127,127,127,.14); padding:.1em .35em; border-radius:3px; }
+  label { display:block; font-size:.8rem; color:var(--muted); margin:.6rem 0 .15rem; }
+  input, select, textarea { width:100%; padding:.45rem .55rem; font:inherit;
+    background:var(--paper); color:var(--ink); border:1px solid var(--rule); border-radius:4px; }
+  .row { display:flex; gap:.75rem; flex-wrap:wrap; }
+  .row > * { flex:1 1 12rem; }
+  button { font:inherit; padding:.45rem .9rem; border-radius:4px; cursor:pointer;
+           border:1px solid var(--water); background:var(--water); color:#fff; }
+  button.ghost { background:transparent; color:var(--water); }
+  button[disabled] { opacity:.5; cursor:not-allowed; }
+  .warn { border-left:3px solid var(--bad); padding-left:.8rem; }
+  #advice { background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--bad);
+            border-radius:6px; padding:.8rem 1rem; margin:0 0 1rem; color:var(--ink); }
+  #advice.good { border-left-color:var(--good); }
+  .note { font-size:.85rem; color:var(--muted); }
+  table { width:100%; border-collapse:collapse; font-size:.85rem; }
+  th, td { text-align:left; padding:.3rem .5rem; border-bottom:1px solid var(--rule);
+           vertical-align:top; }
+  th { color:var(--muted); font-weight:500; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>REWT Tracer</h1>
+  <span class="grow"></span>
+  <span id="status">starting…</span>
+  <button id="signout" class="ghost" hidden>Forget my token</button>
+</header>
+
+<main>
+
+  <!-- Long messages belong here and not in the header strip. The most important text
+       this tool will ever show is the one explaining why a token cannot see the
+       repository, and a message that has to wrap through a status bar to be read is a
+       message people stop reading. The header keeps the two facts that must always be
+       true — how much is held here, and when it last reached GitHub. -->
+  <p id="advice" class="warn" hidden></p>
+
+  <!-- THE WALL. Nothing beyond this point requests a historic tile or any project data
+       until a token has validated. The shell is public because GitHub Pages serves
+       docs/ publicly even from a private repository; it is inert, which is the part
+       that matters. -->
+  <section id="wall">
+    <h2>Sign in</h2>
+    <p>This tool records contributions to a research dataset. You need a GitHub account
+       that has been invited to collaborate on the repository, and a token for it.</p>
+
+    <div class="warn">
+      <p><strong>What the token grants, stated plainly.</strong>
+        It must be a <em>classic</em> token. Fine-grained tokens can only reach
+        repositories owned by your own account, so one will not work here however it is
+        configured — that is a gap in GitHub, not a setting you have missed.</p>
+      <p id="scopeline"></p>
+      <p><strong>Your GitHub username is recorded on every contribution</strong> and is
+        visible to everyone with access to this repository. Contributed work is published
+        under your name in later editions. That is the arrangement, not a side effect.</p>
+    </div>
+
+    <label for="token">Classic personal access token</label>
+    <input id="token" type="password" autocomplete="off" spellcheck="false"
+           placeholder="ghp_…">
+    <p class="note">Kept in this browser only, and sent to <code>api.github.com</code> and
+      nowhere else. There is no server here to send it to.
+      <br><strong>If your browser autofilled this field, check it.</strong> A password
+      manager will fill a masked field with an older saved value, and a stale token looks
+      exactly like a correct one.</p>
+    <p><button id="signin">Sign in</button></p>
+  </section>
+
+  <!-- PHASE 1 HAS NO MAP ON PURPOSE. It proves the one thing everything else rests on:
+       that an invited contributor can get work out of a browser and into the repository,
+       offline included. -->
+  <section id="workbench" hidden>
+    <h2>Record an event</h2>
+    <p class="note">Phase 1: no map yet. This emits the same event shape the tracer will,
+      so the path from a browser to the branch can be exercised end to end — including
+      with the network off.</p>
+    <div class="row">
+      <div>
+        <label for="act">What happened</label>
+        <select id="act"></select>
+      </div>
+      <div>
+        <label for="taskid">Task id</label>
+        <input id="taskid" placeholder="as00000">
+      </div>
+    </div>
+    <div class="row">
+      <div><label for="lon">Longitude</label><input id="lon" value="-0.0977"></div>
+      <div><label for="lat">Latitude</label><input id="lat" value="51.5308"></div>
+    </div>
+    <label for="reason">Reason, in words</label>
+    <input id="reason" placeholder="why this event exists">
+    <label for="evidence">Evidence</label>
+    <input id="evidence" placeholder="a sheet, a source, or a person and the date they looked">
+    <p>
+      <button id="emit">Record</button>
+      <button id="pushnow" class="ghost">Save now</button>
+      <button id="export" class="ghost">Export JSONL</button>
+    </p>
+    <p class="note" id="pathline"></p>
+  </section>
+
+  <section id="ledger" hidden>
+    <h2>Held in this browser</h2>
+    <table><thead><tr><th>when</th><th>act</th><th>task</th><th>reason</th><th>saved</th></tr></thead>
+      <tbody id="rows"></tbody></table>
+  </section>
+
+</main>
+
+<script type="module" src="./js/app.js?v=0.1.3-p1"></script>
+</body>
+</html>

@@ -1144,6 +1144,48 @@ any of it count. 7 is what makes it defensible.
 
 ---
 
+### Phase 1, as built — 1 Sep 2026
+
+`docs/trace/`, build `0.1.3-p1`. The `traces` branch exists (orphan, one file) and
+`8af5d7b` carries the first three contributed events.
+
+**Proven end to end:** sign-in; the tree and blob reads; the `PUT`; and the shape of what
+lands. Checked against the file on the branch rather than against the tool's own report —
+every required field present, `synced` absent, CRS stated on every row, a coordinate on
+every row, uuids unique, and the file already in `(created, author, seq, uuid)` order.
+
+**Not yet exercised:** the offline flush on `online`, and the 409 conflict merge. The exit
+condition above is met except for the word *offline*, and that word is the reason the
+design exists.
+
+**Three defects found by building it, each worth more than the code.**
+
+- **`Authorization: token …` is dead.** GitHub answers 401 *Bad credentials* to the legacy
+  scheme, which is indistinguishable from an expired token and sends you to mint a new one
+  that fails identically. Inherited from the London Customs Accounts editors, written when
+  it worked. `Bearer` throughout, with the measurement in the comment.
+- **A 404 on the branch tree has two causes and the API will not separate them** — the
+  token cannot see the repository, or the repository is visible and the branch does not
+  exist. The first version reported both as a token problem, which is the same
+  404-is-ambiguous trap the token advice exists to avoid, one level down, and it would have
+  greeted the first contributor with a message about their token when nothing was wrong
+  with it.
+- **The error path kept the advice and threw away the facts.** Messages written for a
+  contributor say what to do, and in saying it drop the status, the URL and GitHub's own
+  words. Two round trips were spent on that. Every failed request now logs one flat line:
+  which call, the status, GitHub's message, the scheme, the scopes carried against the
+  scopes wanted, SSO, and the rate limit.
+
+**And a fourth that was not in the code at all.** Four times in one day a confident
+negative came from a single unchecked instrument: a contamination figure that measured its
+own pattern, a basin count compared against the wrong quantity, a credential condemned by a
+diagnostic carrying the same bug, and a branch read as empty because the tree endpoint
+served a cached view. **When a check reports that something did not happen, that is the
+case needing a second and independent instrument** — absence is precisely what a stale or
+misconfigured reader returns.
+
+---
+
 ## 12. What would falsify this plan
 
 - **Snapped traces by two people do not agree.** Then contributed geometry cannot be
