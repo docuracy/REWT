@@ -129,6 +129,23 @@ sheet is coloured the water can be segmented on hue instead — but **which shee
 cannot be predicted from the scale**, and varies in both directions between the two series,
 so that too has to be decided from the pixels rather than assumed.
 
+<figure class="sheet-figure">
+  <div class="frames">
+    <img src="{{ '/assets/maps/tracer-lea-at-ware.jpg' | relative_url }}"
+         alt="The tracer on the six-inch second edition at Ware: fourteen vertices along the Lea past the wharves, ten solid pink where a hand placed them and four hollow and cyan-ringed where centring moved them, with the message: moved 0.4 m to the middle, the channel is 25.8 m wide here, measured across 7 transects.">
+  </div>
+  <figcaption><strong>Both operations, in one line, chosen vertex by vertex.</strong> The Lea
+  at Ware past the wharves, on the six-inch. Fourteen points: <strong>ten left where the hand
+  put them</strong>, four moved to the middle and drawn hollow. The tool decides from the ink
+  under each vertex, not from which sheet is loaded — and the ratio is the honest part. A
+  frame in which every vertex had been centred would be a frame of a tool that had stopped
+  discriminating. Traced by a contributor, not staged for the photograph.
+  <span class="credit">Reproduced with the permission of the National Library of
+  Scotland.</span></figcaption>
+</figure>
+
+**The 25-inch is where that goes wrong, and the pair below is why.**
+
 <figure class="sheet-figure pair">
   <div class="frames">
     <img src="{{ '/assets/maps/tracer-refusing.jpg' | relative_url }}"
@@ -165,7 +182,14 @@ carries the task is the right one.**
 **Which means both operations belong on the six-inch**, chosen per reach rather than per
 sheet: follow the ink where the channel is one line, find the middle where it is two banks.
 Neither is a property of the survey, and a tool that decides between them by which sheet is
-loaded will be wrong on every wide river.
+loaded will be wrong on every wide river. The interface says as much where a contributor will
+read it: *a leat is a single stroke and a navigable river is a pair of banks, often on the
+same sheet.*
+
+**What the assist is calibrated on is one trace of one reach**, and it says so in its own
+code. The constants that decide when a corridor counts as a channel rest on that single
+piece of evidence, so they are a starting point rather than a measurement — and the first
+thing a second reach may do is move them.
 
 **But the failure is not an artefact of the mistake, and it does not go away on the right
 sheet.** At 1:2,500 the town is full of things drawn as two roughly parallel lines a constant
