@@ -64,6 +64,13 @@ search is confined to a band around the straight line between the vertex just pl
 the cursor, so the algorithm may only choose among ink the contributor has already pointed
 at.
 
+**And a finer sheet is not automatically a better one to follow.** On the
+[25-inch](evidence#the-25-inch-is-not-a-better-six-inch) a channel above a modest width is
+drawn as two banks with the water between them, so ink-following locks to one bank and
+returns a line half a channel-width out — sharper raster, systematically wrong answer. Where
+those sheets are coloured the water can be segmented on hue instead, and where they are not
+the six-inch's single stroke is the better drawing to follow.
+
 **It is an assistant, not an interpreter**, and the interface says so rather than leaving it
 to be inferred. Three consequences follow, and they are design rules and not caveats:
 

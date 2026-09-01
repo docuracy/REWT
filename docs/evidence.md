@@ -277,12 +277,50 @@ before the dam" has to be answered below the six-inch, and this is what is on th
 | source | what it shows | state |
 |---|---|---|
 | **[OS six-inch County Series, 1st edition](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}** | the channel itself, 1:10,560 | georeferenced, national — **the default**, and the last survey before the dam almost everywhere |
+| **[OS County Series 25-inch](https://maps.nls.uk/os/25inch/){:target="_blank"}**, 1:2,500 | the channel's two *banks*, and its width | 165 county tilesets; a few per cent less complete than the six-inch, and a different question |
 | the same series, **2nd edition** | the channel where the dam came later still | often the lake instead; check the sheet's survey date, not the edition |
 | **[OS one-inch Old Series](https://maps.nls.uk/os/one-inch-england-wales/){:target="_blank"}**, 1801–1869 | the valley; rarely the channel, at 1:63,360 | georeferenced, 746 sheets — earlier than the six-inch over much of the country, and **untested for this purpose** |
 | **Pre-Ordnance-Survey county maps**, c.1729–1836 | valley and settlement at county-map scale | scattered across a dozen libraries; georeferencing is the tracer's problem |
 | **Tithe maps**, 1836–1852 | the best large-scale coverage before the six-inch | **Wales: 1,224 maps, over 95% of the country, georeferenced by volunteers.** England: no national equivalent |
 | **Enclosure maps and awards** | large scale, patchy by construction | county record offices; unassessed |
 | **Deposited plans for the waterworks Acts** | the works *and the ground taken* — the channel, not only the valley | indexed nationally and item by item; **nothing digitised** |
+
+### The 25-inch is not a better six-inch
+
+<figure class="sheet-figure">
+  <div class="frames">
+    <img src="{{ '/assets/maps/weaver-25-inch-banks.jpg' | relative_url }}"
+         alt="OS County Series 25-inch at Northwich: the River Weaver and the River Dane drawn as pairs of bank lines with a blue wash between them, roads washed yellow, Town Bridge and Dane Bridge lettered.">
+  </div>
+  <figcaption><strong>At 1:2,500 the surveyor draws the banks, not the course.</strong> The
+  Weaver and the Dane at Northwich: two bank lines with the water between them, tinted blue
+  on this sheet. <span class="credit">Reproduced with the permission of the National Library
+  of Scotland.</span></figcaption>
+</figure>
+
+The County Series **25-inch**, at 1:2,500, resolves an order of magnitude finer than the
+six-inch and is not simply a better version of it. Ordnance Survey draws a watercourse as a
+single line below a certain **ground** width and as two banks above it — so a finer sheet
+double-banks far more channels, and a mill leat that is one stroke at six-inch becomes a
+pair of lines with the water between them at 25-inch.
+
+**That changes the question the sheet answers.** The 25-inch says *how wide the channel was
+and where its edges ran*; the six-inch says *where it ran*. For [tracing a course](tracer)
+the coarser drawing is often the more directly useful one, because a single stroke is a line
+to follow and two banks are two lines with the answer in between — an ink-following tool
+locks to one bank and sits half a channel-width out. On the sheets looked at here the water
+between the banks carries a **blue wash**, which offers a way round; the scans are not
+uniformly coloured, and a tool must not assume it.
+
+Two practical notes. Coverage is a few points short of the six-inch — sampled against
+network midpoints inside three historic counties, 88–96% against the six-inch's 94–100% —
+and **the reason is not known**: the obvious hypothesis, that the gaps are uncultivated
+moorland where the 25-inch was not published, was tested and did not hold. And **there is no
+series date**: counties carry their editions as separate tilesets — Gloucestershire has
+four — so a date belongs to a sheet and never to the series.
+
+Its licence position is the six-inch's exactly, and was checked rather than assumed: same
+bucket, and absent from the same per-layer re-use table.
 
 ### Reach for the first edition, and check the sheet rather than the edition
 
