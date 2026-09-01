@@ -1,0 +1,32 @@
+# The published epochs, and the one-line reason for each.
+#
+# THIS FILE IS THE OWNER. docs/epochs.md renders its table from it and docs/epochs.json is
+# generated from it for anything outside the site — a selector in a viewer, most immediately.
+# Editing the table or the JSON instead of this file creates a second copy that can disagree
+# with the first, which is the failure this project keeps meeting.
+#
+# `why` is one sentence and has to work in two places: a column in a table that is read in
+# sequence, and a caption beside a control that is read alone. If a rationale will not do
+# both, the argument belongs in the page's prose and this stays the short form of it.
+
+- year: 1086
+  why: "Domesday — corroborated by independent evidence the project can hold: the coastline, and the mills"
+  brackets: "before almost all drainage"
+- year: 1300
+  why: "the high medieval maximum, before plague and the late-medieval retreat"
+  brackets: "monastic drainage; the Broads"
+- year: 1540
+  why: "the Dissolution; the legislative record begins in 1539"
+  brackets: "after decay, before statutory improvement"
+- year: 1600
+  why: "the eve of the great drainage"
+  brackets: "**the last state before the Level is rebuilt**"
+- year: 1700
+  why: "after Vermuyden and Hatfield, before the canals"
+  brackets: "the great drainage schemes"
+- year: 1830
+  why: "after canal mania and enclosure drainage, before the railways displace both"
+  brackets: "the canal age"
+- year: 1900
+  why: "the survey datum — the map the courses are traced *from*"
+  brackets: "Victorian reservoirs"

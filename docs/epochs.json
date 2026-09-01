@@ -1,0 +1,15 @@
+---
+# Generated from _data/epochs.yml. Do not edit: edit the data file.
+layout: null
+---
+{
+  "note": "The published epochs of REWT. Generated from _data/epochs.yml; see https://docuracy.github.io/REWT/epochs for the reasoning.",
+  "epochs": [
+{%- for e in site.data.epochs %}
+    {
+      "year": {{ e.year }},
+      "why": {{ e.why | strip_newlines | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+{%- endfor %}
+  ]
+}

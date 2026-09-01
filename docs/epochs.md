@@ -41,13 +41,15 @@ rather than a moment mid-transformation.
 
 | epoch | why this date | brackets |
 |---|---|---|
-| **1086** | Domesday — corroborated by independent evidence the project can hold: the coastline, and the mills | before almost all drainage |
-| **1300** | the high medieval maximum, before plague and the late-medieval retreat | monastic drainage; the Broads |
-| **1540** | the Dissolution; the legislative record begins in 1539 | after decay, before statutory improvement |
-| **1600** | the eve of the great drainage | **the last state before the Level is rebuilt** |
-| **1700** | after Vermuyden and Hatfield, before the canals | the great drainage schemes |
-| **1830** | after canal mania and enclosure drainage, before the railways displace both | the canal age |
-| **1900** | the survey datum — the map the courses are traced *from* | Victorian reservoirs |
+{% for e in site.data.epochs -%}
+| **{{ e.year }}** | {{ e.why }} | {{ e.brackets }} |
+{% endfor %}
+{: .epoch-set}
+
+<small>The middle column is also what a date selector shows beside each stop, taken from
+[the same file](https://github.com/docuracy/REWT/blob/main/docs/_data/epochs.yml){:target="_blank"} rather than retyped —
+served as [`epochs.json`]({{ '/epochs.json' | relative_url }}) for anything outside this
+site.</small>
 
 **And one that is not in the list.** The **modern network** is the datum the whole series is
 worked back from, and it is published as the first edition. It is not an epoch in the sense
