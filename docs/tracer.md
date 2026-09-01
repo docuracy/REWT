@@ -137,27 +137,36 @@ so that too has to be decided from the pixels rather than assumed.
          alt="The same sheet. Three vertices drawn hollow with cyan rings where the assist moved them, against solid pink where the tracer placed them, and the message: moved 1.1 m to the middle, the channel is 8.1 m wide here, measured across 3 transects.">
   </div>
   <figcaption><strong>Left: the assist refusing</strong> — <em>that point is on ink, so the
-  channel here is drawn as a single line. There is no width to find a middle of.</em> Refusing
-  is the common case and is not a failure. <strong>Right: the assist working, and wrong.</strong>
-  Three vertices moved and drawn hollow against the ones a hand placed, with the width reported
-  across three transects. It has centred perfectly — <strong>on the lane between two
-  malt-houses.</strong> Both frames are the tool as built, at Ware, on the 25-inch.
+  channel here is drawn as a single line. There is no width to find a middle of.</em>
+  <strong>Right: the assist working, and wrong.</strong> Three vertices moved and drawn hollow
+  against the ones a hand placed, the width reported across three transects. It has centred
+  perfectly — <strong>on the gap between two terraces of houses.</strong> Both frames are at
+  Ware on the <strong>25-inch</strong>, which is not the sheet this tool is meant for.
   <span class="credit">Reproduced with the permission of the National Library of
   Scotland.</span></figcaption>
 </figure>
 
-**Those two pictures are the whole argument, and there is no third.** We looked for a photograph
-of the assist working on genuine water at Ware and could not produce one: the strongest and
-most extensive feature the algorithm found anywhere in the town — 206 accepted points, a
-continuous 500 m run, a median width of 17.4 m — is **the railway**, running between the goods
-shed and the signal posts. The next strongest was the malt-house lane above.
+**The demonstration is on the wrong sheet, and that is worth saying rather than hiding.** This
+tool is meant for the **six-inch**, where a watercourse is drawn as a *single stroke* — which
+is why the left-hand frame refuses, and why refusing is the ordinary answer there. Centring
+between two sides is a **25-inch** operation, because that is the scale at which a channel is
+drawn as two banks. The pictures show a 25-inch experiment, and the intended operation on the
+six-inch is following ink rather than finding a middle.
 
-**So the image of it working and the image of it being wrong about the world are the same
-image.** The geometry in the right-hand frame is correct: there is a corridor, it has two
-sides, the middle is where the tool says and the width is what the tool says. What is wrong is
-everything else. Nothing on the screen distinguishes that from a success, and nothing in the
-raster can — which is precisely why the contributor is not an operator of this tool but the
-part of it that knows what a river is.
+**But the failure is not an artefact of the mistake, and it does not go away on the right
+sheet.** At 1:2,500 the town is full of things drawn as two roughly parallel lines a constant
+distance apart, and a corridor-finder cannot tell them from a channel. Asked for the strongest
+such feature anywhere in Ware, the algorithm returns — with 206 accepted points, a continuous
+500 m run and a median width of 17.4 m — **the railway**, between the goods shed and the signal
+posts. The terrace gap above was merely the next best.
+
+**Which makes these two frames one picture rather than two.** The geometry on the right is
+correct: there is a corridor, it has two sides, the middle is where the tool says and the width
+is what the tool says. Everything else is wrong, **nothing on the screen distinguishes that from
+a success**, and nothing in the raster can. That matters beyond this experiment, because
+reading channel *width* off the 25-inch is a thing [this project wants to do](evidence#the-25-inch-is-not-a-better-six-inch) — and these
+frames are what it looks like when that reading is confidently wrong. The contributor is not an
+operator of the tool; they are the part of it that knows a river from a railway.
 
 **And here is the limit, which is not a bug to be tuned away.** At 1:2,500 a *lane* with both
 its edges drawn is two roughly parallel lines a constant distance apart — and so is a
