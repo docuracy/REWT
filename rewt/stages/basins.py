@@ -367,9 +367,11 @@ def _check_northern_edge(band, measured) -> None:
         int(r) for r in measured.loc[measured["in_scope"], "raster_id"].tolist()
     )
     offenders = sorted(touching & in_scope_ids)
+    # Worded as a test result, not as a rule. "None of them may be in scope" reads as
+    # a finding that none are, which is how a failing run got misread as a passing one.
     log.detail(
-        f"    {len(touching):,} basins touch the clipped northern edge; none of them "
-        "may be in scope"
+        f"    {len(touching):,} basins touch the clipped northern edge, of which "
+        f"{len(offenders):,} are in scope (the rule allows none)"
     )
     if offenders:
         detail = measured[measured["raster_id"].isin(offenders)]

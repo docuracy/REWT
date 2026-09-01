@@ -358,6 +358,21 @@ def _whitebox():
     wbt = whitebox.WhiteboxTools()
     wbt.set_verbose_mode(False)
     wbt.set_working_dir(str(paths.INTERIM.resolve()))
+    # ONE PROCESS, AND THIS IS A CORRECTNESS SETTING RATHER THAN A TUNING ONE.
+    # `breach_depressions_least_cost` is not deterministic when it threads: measured on
+    # the burned national surface, two runs over a byte-identical input produced
+    # different rasters (sha 3b40f5b3… and 7b54eef1…), and a third, single-threaded,
+    # produced a third. Two single-threaded runs then agreed exactly (12bec237…).
+    #
+    # The cost is nothing. 452 s single-threaded against 451 s threaded — the tool was
+    # buying non-determinism for no speed whatever.
+    #
+    # It matters because the conditioning decides the delineation. One threaded run
+    # merged the Midlands and the Scottish border into a single 18,148 km² "basin",
+    # caught only because §1's northern-edge invariant refused it. And PLAN.md §9 asks
+    # for the same output from the same inputs twice, which nothing in a threaded run
+    # can promise.
+    wbt.set_max_procs(1)
     version = wbt.version().splitlines()[0]
     if WBT_VERSION not in version:
         raise StageError(

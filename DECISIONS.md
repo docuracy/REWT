@@ -966,3 +966,237 @@ in the ocean and the validation reported that this build had independently found
 them — which reads exactly like a substantive disagreement about method (D-026). That
 was caught only because 0 of 31 was too clean a result to believe. It is now caught by
 arithmetic.
+
+**D-036 — The Welsh-name hazard is a JOIN hazard, not a filter hazard, and the
+difference is measurable.** *2026-09-01*
+
+*The hazard is rewt-86's; the scoping method is rewt-1d's; the measurement is here.*
+
+D-032 recorded that OS Open Rivers puts the Welsh or Gaelic name in `watercourseName`
+and the English in `watercourseNameAlternative`, and warned that "any filter reading only
+the primary field under-finds Welsh watercourses". **Measured, that warning is wrong in
+its stated form and right in a narrower one.**
+
+**No link anywhere is findable only through the alternative field.** Every form returns
+zero: inlandRiver 0, tidalRiver 0, lake 0, canal 0. A *filter* over the primary field
+therefore loses nothing, and rewt-1d's check that the lake-name figures are unaffected
+generalises to the whole product.
+
+**What does fail is a MATCH BETWEEN TWO LINKS**, and that is what this project actually
+does. 5,335 links carry both names and **all 5,335 differ**. Worse, the same river takes
+different *primary* names on different links: **`Afon Gwy` is the primary name on 157
+links and `River Wye` on 32.** So a same-name join on the primary field alone treats the
+Welsh Wye and the English Wye as two rivers and declines to connect them — silently,
+because nothing is missing, only unmatched. `Afon Hafren` (257 links) and `Afon Wysg`
+(138) have no English-primary counterpart at all and would simply never match anything.
+
+The connector rule compares both fields on both sides, which is right for the join case
+and harmless for the filter case.
+
+**The transferable part is rewt-1d's, and it is about warnings rather than names: the
+scope of a warning is itself measurable.** A correct hazard stated one level too broadly
+gets applied where it does not bite, and then either wastes work or — worse — gets
+quietly discounted when it is found not to matter somewhere, taking its real
+applications with it. Measuring where a hazard is empty is as useful as raising it.
+
+**D-037 — The NLS tilesets are declared for provenance, with re-use recorded as not
+established.** *2026-09-01*
+
+*Identifiers and terms traced by rewt-fc and rewt-86.*
+
+Where a curated judgement's evidence says what a historic sheet shows — *"both channels
+drawn continuous through the crossing"*, which distinguishes a culvert from a confluence
+far more cheaply than a structure register — the sheet is an input to that judgement, and
+`conf/sources.yml` now declares it.
+
+**Declaring it is a provenance act, not a rights claim, and the two were conflated in
+getting here.** The argument that reading a sheet and citing what it shows is not
+reproducing it is sound, and no licence restricts facts or citations. But that settles
+whether the method is *permitted*; it does not settle whether a reader of a correction
+can find out what was looked at, and AGENTS.md's rule is about both. `redistribution:
+not_established` records the uncertainty rather than resolving it, and the exporter
+refuses the source outright — verified — so nothing traced from a tile can reach a
+published artefact.
+
+Three things the entry carries because each would otherwise be rediscovered:
+
+* **NLS state one condition**, and it is about their infrastructure: *"Re-use of these
+  layers is intended within a desktop or local environment... please use our Historic
+  Maps API layers, or contact us."* A localhost viewer is inside that and a published
+  site is not — **and the Historic Maps API carries no first-edition six-inch at all**,
+  so it is not a substitute for the layer the evidence method depends on.
+* **No date ranges are recorded.** NLS do not state the date spans of these layers, and
+  the figure in circulation comes from a different product's naming. Labelling them with
+  years we cannot source would be exactly the error D-023 exists to prevent, pointed at
+  a date instead of a licence.
+* **The first-edition county filenames are NLS's own** and differ from the Historic
+  Counties Standard in three places. D-034 governs: name counties by the Standard and
+  map to the filename at the point of use.
+
+**D-038 — Record the day the product was written, not only the month.** *2026-09-01*
+
+`conf/sources.yml` says of OS Open Rivers: *"Reissued twice a year. Record which issue
+was fetched: the network changes between them, and a result that cannot name its input
+cannot be reproduced."* The build recorded `2026-04` from the download API and stopped
+there. The GeoPackage itself records **2026-04-14** in `gpkg_contents.last_change`,
+which is a statement about the file in hand rather than about the release it belongs to.
+Both are now captured, and the precise one reaches `published/provenance.json`.
+
+The distinction matters for the same reason D-023's does: a month is a statement about a
+release, and a release can be re-cut. The file's own date is the narrowest statement
+available about the thing actually read, which is the standard this project already
+applies to licences.
+
+**D-039 — WhiteboxTools runs single-threaded, because threaded it is not
+deterministic.** *2026-09-01*
+
+`wbt.set_max_procs(1)` in `rewt/stages/terrain.py`. This is a correctness setting and
+not a tuning one.
+
+**Measured.** `breach_depressions_least_cost` over a byte-identical input produced
+`b40f5b39d137acab` on one run and `7b54eef1bb32d30a` on the next. Forced to one process
+it produced `12bec2378631fcec` twice.
+
+**The cost is nothing at all**: 452 seconds single-threaded against 451 threaded. The
+tool was buying non-determinism for no speed whatever, which is worth stating because
+the obvious objection to this change is a performance one and it does not exist.
+
+**What it cost before it was found** is the point. The conditioning decides the
+delineation, so an unstable conditioning is an unstable set of basins: one threaded run
+merged the Midlands and the Scottish border into a single **18,148 km²** "basin" — larger
+than any real British catchment, spanning 297,400–559,900 E and 269,900–700,000 N. It was
+caught by the northern-edge invariant of D-024, which refused it because an in-scope
+basin reached the clipped edge. Without that guard it would have shipped, and it would
+have looked like a delineation rather than an error.
+
+**And it makes a claim in §9 true that was not.** *One command, empty checkout to
+finished network, twice, identical output.* That was verified — and the verification was
+worthless, because the terrain stage was **cached in both builds compared**, so the one
+non-deterministic step in the pipeline never ran. A reproducibility check that skips the
+irreproducible stage confirms nothing. The check now has to be run with terrain forced,
+and that is the only way it means anything.
+
+**D-040 — `status:` in `conf/sources.yml` is a cached claim, and `rewt sources --verify`
+is what checks it.** *2026-09-01*
+
+*Swept by rewt-86, who found the class rather than the instance.*
+
+The field carried its own intent — *"set at first acquisition, then verified on every
+use"* — and **nothing implemented it**. It was stale in both directions at once: five
+genuinely acquired sources with real digests said `unverified`, and the only two saying
+`verified` were the two this repository had never derived.
+
+That is the shape of defect this project keeps finding, in a new place: a populated
+field, in the right-looking place, that nobody maintains. It is worse than an absent
+field, because it invites exactly the trust it was created to remove.
+
+**`verified` now means one thing: this repository digested the bytes it holds and they
+match either the declared checksum or the digest recorded at acquisition.** `rewt sources
+--verify` computes that and compares it with what the file claims, failing on a mismatch
+in **either** direction — an overstated claim and an understated one are both the field
+lying. The file's values have been corrected to the computed truth.
+
+The first thing it found was real: the `gb1900_raw_dump` checksum was wrong.
+
+**D-041 — Report what a difference costs, not that it exists.** *2026-09-01*
+
+*rewt-1d's formulation, from instances belonging to rewt-2b and rewt-86.*
+
+Repeatedly today the useful answer came from naming the **consequence** of a discrepancy
+rather than the discrepancy, and in each case the person holding the observation did not
+hold the generalisation.
+
+* Asked whether a tracing queue wanted 274 places or 335, rewt-2b did not answer the
+  arithmetic. It said that unioning the per-class files would send two contributors to
+  opposite ends of the same channel, and that accidental duplication contaminates the
+  deliberate overlap sample by which the tool's central claim is to be tested. The
+  arithmetic could not have supplied that reason.
+* Given a caution that a towing-path label proves traffic at the survey date and nothing
+  earlier, rewt-2b found two further mechanisms producing the same failure and made it a
+  constraint on its interface — **every historical label carries its date or says it has
+  none** — then applied the rule back and caught an undated caption of its author's.
+* Finding a tileset whose `attribution` field named the rendering software, rewt-86 did
+  not report a missing licence. It reported that **a populated field is not a rights
+  statement**: a well-formed value, in the right-looking place, answering a different
+  question. That is the same finding as D-040's, reached independently and stated better.
+
+**The practice: when reporting a discrepancy to another worker, say what it would cost to
+act on the wrong side of it.** The correction travels either way; the reason is what
+generalises. It is also an argument for asking rather than handing over, and a better one
+than anybody undertaking to be careful.
+
+**D-042 — Presentation outruns evidence, by at least four mechanisms.** *2026-09-01*
+
+*rewt-1d's family; the sharpest instance is rewt-2b's.*
+
+Distinct from the counting errors already recorded here. In each case the **evidence is
+sound** and its **presentation claims more than it holds**.
+
+| mechanism | instance |
+|---|---|
+| a label read as timeless | a towing path proves traffic in 1899, not navigability |
+| a control that invites a guess | asking a contributor to type a year |
+| a name read as a date | dating a tileset from the span its series is named for |
+| rendered confidence read as evidential weight | a snapped trace looks more authoritative than a hand-drawn one, and is a machine's reading of ink in a corridor a person pointed at |
+
+The last is the one whose remedy is not a caveat. The clicked-or-snapped distinction has
+to be **visible while tracing**, not merely recorded in the file, and `snap_mode: hand`
+has to be the honest value when snapping is off. **A provenance field that only a later
+reader sees does not stop the contributor over-trusting the line in front of them.**
+
+**The rule: anything shown to a person must carry the limit of what it shows, at the
+moment they act on it.** That constrains interfaces and captions, not only data models —
+which is why it is kept separate from D-041, whose remedy is a habit rather than a
+design constraint.
+
+**D-043 — Two readings of the National Library of Scotland's terms, both Stephen's,
+both recorded as readings.** *2026-09-01*
+
+*Ruled by Stephen on 2026-09-01, in answer to two questions put to him directly. Neither
+is a finding about NLS's terms; each is a decision about how to read them, and D-025's
+treatment applies: the project may choose a reading, and it records that it chose.*
+
+**A line traced from an NLS sheet is not a derivative of the scan.** Contributed geometry
+therefore reaches `data/curated/` and publishes openly under this project's own terms.
+Stephen's words: *"Nothing in the NLS documentation suggests restrictions on derivatives
+like this. Assume that they are freely allowed."*
+
+The supporting argument, which is rewt-86's, is that the 1840s–90s survey is out of Crown
+copyright, that NLS hold rights over their scans and georeferencing rather than over the
+ground, and that a traced line is a new record about the ground rather than a reproduction
+of the scan. **That is a good argument and it is still a reading**, and this entry does
+not upgrade it to a fact. What makes the reading defensible to act on is that it is
+recorded, attributed and reversible: if it is wrong, the remedy is to withdraw geometry
+from a repository, which is unpleasant but possible.
+
+**Gating the tracing tool to authorised users satisfies NLS's stated condition.**
+Stephen's words: *"My instruction stands: gating satisfies all of the limitations."* The
+condition, verbatim from NLS's georeferencing guide, is: *"Re-use of these layers is
+intended within a desktop or local environment. If you wish you present these layers
+online in a public website, please use our Historic Maps API layers, or contact us at
+maps@nls.uk."*
+
+**Three things this entry must not be read as saying**, all of which are true and none of
+which the ruling changes.
+
+*The gate does not restrict access to the sheets.* The NLS tile host is keyless and
+world-readable; anyone can fetch those tiles without coming near this project. What the
+gate restricts is who uses the tool and — the part that matters — where the traces go.
+An entry implying we are restricting access to the maps would be false, and rewt-2b
+established this rather than letting it pass.
+
+*The sanctioned alternative does not cover the case.* The Historic Maps API, the route
+NLS name for public sites, **carries no first-edition six-inch at all** — so it is not a
+substitute for the layer the tracing depends on. That is why an assumption is being made
+rather than the alternative taken, and it stops "we assumed it was fine" being read later
+as "there was no other way".
+
+*One email would settle both.* NLS name the route — `maps@nls.uk` — and neither ruling
+should be cited as though the question had been closed rather than decided. D-023's whole
+argument is that a licence is a claim about a specific thing traced to a statement about
+that thing; these are readings taken in the absence of such a statement, and they remain
+readings until someone asks.
+
+A further entry will describe the gate **as built** rather than as intended, once phase 1
+of the tracing tool exists. This entry records the rulings; that one will record the
+mechanism.

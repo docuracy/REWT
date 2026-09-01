@@ -20,7 +20,7 @@ sources:
     crs: "EPSG:27700"
     cache_path: "data/raw/os_open_rivers/"
     checksum: null
-    status: unverified          # set at first acquisition, then verified on every use
+    status: verified
     notes: >
       THE BASE NETWORK. WatercourseLink + HydroNode: roughly 144,000 km with flow
       direction, names, and ~197,000 explicit nodes — very nearly the only open British
@@ -54,7 +54,7 @@ sources:
     crs: "EPSG:27700"
     cache_path: "data/raw/os_open_map_local/"
     checksum: null
-    status: unverified
+    status: verified
     notes: >
       Surface water AREAS. A watercourse is drawn as a polygon once it is wide enough to
       show, and these are the only open source of channel width in Britain. Their medial
@@ -85,7 +85,7 @@ sources:
     crs: "EPSG:27700"
     cache_path: "data/raw/os_terrain50/"
     checksum: null
-    status: unverified
+    status: verified
     notes: >
       National 50 m DTM. Condition it (burn the network, then breach rather than fill)
       for basin delineation — but sample the UNCONDITIONED surface for any check on
@@ -110,7 +110,7 @@ sources:
     crs: "EPSG:27700"
     cache_path: "data/raw/os_boundary_line/"
     checksum: null
-    status: unverified
+    status: verified
     notes: >
       Country boundaries only. Used to ask whether a basin touches England or Wales,
       and never to clip the network: cutting at the political line strands the Tweed
@@ -200,7 +200,16 @@ sources:
     format: [csv]
     crs: "EPSG:4326"
     cache_path: "data/raw/gb1900/"
-    checksum: "526bc157def49e5ae9240ba029e9e53b9888b7bcc8443108e137765f5a430292"
+    # DERIVED HERE FROM THE PUBLISHER'S BYTES, 2026-09-01, not carried over. The value
+    # this entry first declared — 526bc157def49e5ae9240ba029e9e53b9888b7bcc8443108e137
+    # 765f5a430292 — came from the predecessor's manifest and had never been
+    # re-derived. It is wrong: a fresh download from visionofbritain.org.uk and the
+    # predecessor's own eleven-month-old copy are byte-identical to each other at
+    # 326,329,494 bytes with all 22 members passing CRC, and both digest to the value
+    # below. Two independent acquisitions agreeing against a recorded digest settle
+    # which side is at fault. A wrong checksum is worse than none: it fails on a good
+    # file and nobody can tell which end is broken.
+    checksum: "e29eca60885b5cc896a5d3ccdfd127dea3317b2d0bf7edc84a0be629b7dc61ae"
     status: verified
     notes: >
       THE RAW DUMP, NOT EITHER GAZETTEER. Vision of Britain publishes three GB1900 files
@@ -223,8 +232,20 @@ sources:
       Britain 1900". The raw dump is CC0 and carries no such term, but do not name a
       derived layer GB1900 regardless — the courtesy costs nothing.
 
-      TLS: the server sends an incomplete certificate chain. Integrity is pinned by the
-      checksum above, not by the chain. Do not disable verification globally.
+      TLS: the server presents an incomplete certificate chain — the leaf is a valid
+      Thawte certificate chaining to DigiCert Global Root G2, and only the intermediate
+      is omitted. DO NOT DISABLE VERIFICATION. Supply the missing intermediate instead;
+      this is tested and works:
+
+        openssl s_client -connect www.visionofbritain.org.uk:443 \
+          -servername www.visionofbritain.org.uk </dev/null | openssl x509 -out leaf.pem
+        # the leaf's Authority Information Access names the missing intermediate:
+        curl -sS -o i.crt http://cacerts.thawte.com/ThawteTLSRSACAG1.crt
+        openssl x509 -inform DER -in i.crt -out i.pem
+        cat /etc/ssl/certs/ca-certificates.crt i.pem > bundle.pem
+        curl --cacert bundle.pem <url>
+
+      A recipe is harder to get wrong than a caution.
 
   # NOT A STAGE 1 INPUT. Dated construction evidence, so stage 2 by
   # CLAUDE.md's first override. Its one possible Stage 1 use — earning the
@@ -573,3 +594,55 @@ sources:
       fetches and uses it, and nothing in the build reads it. It is declared here
       rather than in a second registry because two registries is what AGENTS.md warns
       against, and this file is the one that decides whether a thing may be published.
+
+  # NOT A STAGE 1 INPUT and NOT REDISTRIBUTABLE. Declared for PROVENANCE: where a
+  # curated judgement's evidence says what a historic sheet shows, this is what was
+  # looked at, and a reader of that judgement is entitled to know. Declaring it
+  # records the uncertainty about re-use rather than resolving it.
+  - id: nls_historic_map_tilesets
+    title: "National Library of Scotland historic OS map tilesets"
+    publisher: "National Library of Scotland"
+    url: "https://mapseries-tilesets.s3.amazonaws.com/{layer}/{z}/{x}/{y}.png"
+    homepage: "https://maps.nls.uk/"
+    licence: "Not established. NLS's per-layer re-use table lists 29 of 34 layers as
+      CC-BY; the England-and-Wales six-inch and one-inch layers are NOT on it, and no
+      term is stated for them elsewhere."
+    attribution: "Reproduced with the permission of the National Library of Scotland"
+    access: open
+    redistribution: not_established
+    used_by: viewer, curated evidence
+    stage: 2
+    format: [png]
+    crs: "EPSG:3857"
+    cache_path: "tools/viewer/cache"
+    checksum: null
+    status: unverified
+    tilesets:
+      six_inch_second_edition: "os/6inchsecond"      # z6-z17, seamless, GB
+      one_inch_revised: "os/1inch_revised"           # z6-z16, seamless, England and Wales
+      six_inch_first_edition: "os/six-inch-<county>" # z9-z17, 68 counties, not seamless
+    notes: >
+      REDISTRIBUTION IS "not_established", NOT "permitted", AND THE EXPORTER MUST NEVER
+      BE TOLD OTHERWISE. Nothing traced from these tiles, and no tile image, may reach a
+      published artefact. What may is a CITATION OF AN OBSERVED FACT — "both channels
+      drawn continuous through the crossing; OS six-inch, <county>, first edition" — in
+      a judgement's `evidence`. No licence restricts facts or citations; reproduction is
+      a different act from reading, and only the first is in question here.
+
+      THE ONE CONDITION NLS STATE, verbatim from their georeferencing guide: "Re-use of
+      these layers is intended within a desktop or local environment. If you wish you
+      present these layers online in a public website, please use our Historic Maps API
+      layers, or contact us at maps@nls.uk." A localhost viewer is inside that; a
+      published site is not. And the Historic Maps API — the sanctioned public route —
+      carries NO first-edition six-inch at all, so it is not a substitute for the layer
+      the evidence method depends on.
+
+      NO DATE RANGES ARE RECORDED HERE, deliberately. NLS do not state the date spans of
+      these layers, and a "1888-1913" in circulation comes from a different product's
+      naming. Labelling them with years we cannot source would be the same error as
+      asserting a licence we cannot source (D-023). A judgement citing a sheet should
+      name the sheet, not a date range inferred from the layer.
+
+      County names in the first-edition layer's URL are NLS's own filenames, which
+      differ from the Historic Counties Standard in three places. D-034 governs: refer
+      to counties by the Standard, and map to the filename at the point of use.

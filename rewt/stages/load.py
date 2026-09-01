@@ -49,6 +49,20 @@ CALIBRATION_AGAINST_LINE = 3
 TOLERANCE = 0.03
 
 
+def _geopackage_date(path) -> str | None:
+    """The date the GeoPackage itself records, from `gpkg_contents.last_change`."""
+    import sqlite3
+
+    try:
+        with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as con:
+            row = con.execute(
+                "SELECT max(last_change) FROM gpkg_contents"
+            ).fetchone()
+    except sqlite3.Error:
+        return None
+    return str(row[0])[:10] if row and row[0] else None
+
+
 def _resolve_direction(flow: pd.Series) -> tuple[pd.Series, pd.Series]:
     """Which rows are digitised against the flow, and which said nothing at all.
 
@@ -89,7 +103,17 @@ def run() -> dict:
     src = config.source("os_open_rivers")
     acq = acquire.require_acquisition("os_open_rivers")
     gpkg = acquire.one("os_open_rivers", "*.gpkg")
-    log.info(f"{src.title}, issue {acq.issue} — {gpkg.name}")
+    # conf/sources.yml: "Reissued twice a year. Record which issue was fetched: the
+    # network changes between them, and a result that cannot name its input cannot be
+    # reproduced." The API gives a month; the GeoPackage's own `gpkg_contents` gives
+    # the day the product was written, which is the more precise statement of what is
+    # in the file, so both are recorded.
+    issued_on = _geopackage_date(gpkg)
+    log.info(
+        f"{src.title}, issue {acq.issue}"
+        + (f" (written {issued_on})" if issued_on else "")
+        + f" — {gpkg.name}"
+    )
 
     working_crs = p("crs.working")
 
@@ -192,6 +216,7 @@ def run() -> dict:
     )
 
     detail = _integrity_and_calibration(acq.issue)
+    detail["issued_on"] = issued_on
     return detail
 
 

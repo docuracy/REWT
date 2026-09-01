@@ -62,7 +62,16 @@ terrain:
   # A clip drawn by hand is an assumption, and PLAN.md §1 is explicit that an exit
   # at the edge of the study area is a defect and not a terminus. So the basins
   # stage CHECKS that no in-scope basin touches this edge, and fails if one does.
-  northing_max_m: 700000
+  #
+  # RAISED FROM 700000 ON 2026-09-01, BY THE GUARD RATHER THAN BY ARGUMENT. The
+  # original value rested on a claim that the most northerly basin reaching England
+  # or Wales is the Tweed, whose head is around 665000 N. That was wrong: the
+  # delineation put a 1,467 km2 basin spanning 305,650-419,900 E and reaching 700000 N
+  # with 168 km2 of it in England or Wales — Solway and Cheviot border country whose
+  # headwaters lie north of the cut. The basins stage refused it, which is what the
+  # invariant is for, and the answer it prescribes is to move the clip rather than to
+  # accept the basin.
+  northing_max_m: 780000
   nominal_rmse_m: 4.0
   nodata: -9999.0
   # The screen's bands, from §5's table. A fall inside the error bar says nothing.

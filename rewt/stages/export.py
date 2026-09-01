@@ -293,6 +293,17 @@ def _write_provenance() -> None:
         "config_fingerprint": config.config_fingerprint(),
         "sources": {},
     }
+    # The publisher's own recorded date for the network, which is more precise than
+    # the API's month and is what conf/sources.yml means by "record which issue".
+    issued = db.query(
+        "SELECT detail FROM stage_run WHERE stage = 'load' AND status = 'ok'"
+    )
+    issued = issued[0] if issued else None
+    if issued and issued[0]:
+        try:
+            doc["os_open_rivers_written"] = json.loads(issued[0]).get("issued_on")
+        except (ValueError, TypeError):
+            pass
     for src in sorted(config.sources(), key=lambda s: s.id):
         acq = acquire.acquisition(src.id)
         if acq:

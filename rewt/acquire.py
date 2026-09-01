@@ -360,6 +360,79 @@ def fetch(source_id: str, *, force: bool = False) -> Acquisition:
     raise AcquisitionError(f"{source_id}: conf/sources.yml declares no way to fetch it")
 
 
+def verification(source_id: str) -> dict:
+    """What this repository can actually say about a source's bytes.
+
+    `conf/sources.yml` carries a `status:` field which nothing wrote — five genuinely
+    acquired sources said "unverified" and the only two saying "verified" were the two
+    nothing here had ever derived. A populated field in the right-looking place that
+    nobody maintains is the shape of defect this project keeps finding, so the claim is
+    computed here and the field is checked against it rather than believed.
+
+    "verified" means one thing only: **this repository digested the bytes it holds and
+    they match the declared checksum.**
+    """
+    src = config.source(source_id)
+    declared = src.get("checksum")
+    acq = acquisition(source_id)
+    cached = None
+    if acq and acq.file_name and not acq.file_name.startswith("["):
+        candidate = src.dir / "archive" / acq.file_name
+        if candidate.exists():
+            cached = candidate
+    if cached is None:
+        for pattern in ("*.zip", "*.gpkg"):
+            hits = sorted(src.dir.rglob(pattern))
+            if hits:
+                cached = hits[0]
+                break
+
+    state = {
+        "source_id": source_id,
+        "declared_checksum": declared,
+        "acquired": acq is not None,
+        "issue": acq.issue if acq else None,
+        "file": paths.rel(cached) if cached else None,
+        "computed": None,
+        "status": "unverified",
+        "why": "",
+    }
+    if cached is None:
+        state["why"] = "nothing cached to digest"
+        return state
+    state["computed"] = sha256_file(cached)
+    if not declared:
+        # The four OS products declare no checksum in conf/sources.yml because the
+        # publisher's own md5 is checked at fetch and the sha256 is recorded in
+        # data/raw/acquisitions.json instead. That record is this repository's own
+        # derivation, so it is evidence — just held elsewhere.
+        if acq and acq.sha256:
+            same = state["computed"] == acq.sha256
+            state["status"] = "verified" if same else "MISMATCH"
+            state["why"] = (
+                f"matches the digest recorded at acquisition ({acq.issue})"
+                if same
+                else f"recorded {acq.sha256[:16]}… at acquisition but the cached file "
+                f"now digests to {state['computed'][:16]}… — data/raw/ is meant to be "
+                "immutable"
+            )
+            return state
+        state["why"] = "no checksum declared and none recorded at acquisition"
+        state["status"] = "acquired"
+        return state
+    if state["computed"] == declared:
+        state["status"] = "verified"
+        state["why"] = "the cached bytes match the declared checksum"
+    else:
+        state["status"] = "MISMATCH"
+        state["why"] = (
+            f"declared {declared[:16]}… but the cached file digests to "
+            f"{state['computed'][:16]}… — a wrong checksum fails on a good file and "
+            "nobody can tell which end is broken"
+        )
+    return state
+
+
 def national_sources() -> list[str]:
     """The sources acquired in bulk. The two LiDAR products are not among them."""
     return [s.id for s in config.sources() if s.get("api") == "os_downloads"]

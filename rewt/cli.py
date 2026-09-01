@@ -96,8 +96,16 @@ def status() -> None:
 
 
 @app.command()
-def sources() -> None:
-    """The declared inputs, with their licences and required attribution."""
+def sources(
+    verify: bool = typer.Option(
+        False, "--verify", help="digest the cached bytes and check them against the file"
+    ),
+) -> None:
+    """The declared inputs, with their licences and required attribution.
+
+    With `--verify`, computes what this repository can actually say about each source's
+    bytes rather than repeating the `status:` field, which nothing writes.
+    """
     from . import acquire
 
     rows = []
@@ -113,6 +121,38 @@ def sources() -> None:
             )
         )
     log.table("conf/sources.yml", ["id", "publisher", "licence", "redistributable", "issue"], rows)
+
+    if verify:
+        checks = []
+        for src in config.sources():
+            v = acquire.verification(src.id)
+            checks.append((src.id, v["status"], v["why"] or "—",
+                           src.get("status", default="—")))
+        log.table(
+            "what this repository can actually say about each source's bytes",
+            ["id", "computed", "why", "the file claims"],
+            checks,
+        )
+        wrong = [c for c in checks if c[1] == "MISMATCH"]
+        drifted = [
+            c for c in checks
+            if c[3] == "verified" and c[1] != "verified"
+        ]
+        if wrong:
+            log.error(
+                f"{len(wrong)} source(s) do not match their declared checksum: "
+                + ", ".join(c[0] for c in wrong)
+            )
+        if drifted:
+            log.warn(
+                f"{len(drifted)} source(s) are recorded as 'verified' in the file but "
+                "this repository cannot confirm it: "
+                + ", ".join(c[0] for c in drifted)
+                + ". The field is a claim, not evidence."
+            )
+        if wrong or drifted:
+            raise typer.Exit(1)
+        return
     typer.echo(config.sources().attribution_block())
 
 
