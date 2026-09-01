@@ -1807,3 +1807,52 @@ the two cases. I recorded that as a refinement rather than as the objection it w
 because I already had an explanation I liked. **An explanation offered before its test
 does not become evidence when a different measurement turns out to be compatible with
 it** — and the CDI figure I leaned on was answering another question entirely.
+
+---
+
+**D-058 — The spanning tree *is* the sea network; the trunk step was left over from a
+construction I had already refuted.** *2026-09-01*
+
+§10 step 6 says the trunk is the segments many routes share, above `sea.trunk_share`.
+Built, it yields **nothing: 0 cells at a threshold of 38 routes, from 3,770 traced
+edges over 106,530 route cells.**
+
+**That is not a finding about the bathymetry, and §10 would have let me report it as
+one.** It is a defect in the specification, and mine. The usage-and-threshold step was
+written for the *first* construction, where every terminus ran a path seaward to open
+water: those paths would have converged, and a threshold would have found where. I
+then refuted that construction — east-coast mouths run east, west-coast mouths west,
+nothing converges — and replaced it with cost-allocation and a minimum spanning tree.
+**The threshold step survived the rewrite without being re-examined.** In a spanning
+tree over *adjacent* territories every edge is a short local hop between neighbours, so
+no cell can carry many routes, and the threshold can only ever return nothing.
+
+So it is vestigial and must come out of §10 rather than be tuned. Lowering
+`trunk_share` until a line appeared would have manufactured exactly what the parameter
+was written to forbid.
+
+**What the construction actually produces, which is the thing that was wanted.** A
+single connected network over all 3,771 sea entry points, 3,770 edges, traced into
+106,530 cells of real geometry. Its shape says it follows the coast:
+
+| degree | share | what it is |
+|---|---|---|
+| 1 | 25.2% | terminal mouths |
+| **2** | **56.2%** | **chain — the coastal run** |
+| 3+ | 18.6% | branch points, where an estuary's spur meets the chain |
+
+A pure path would be ~100% degree 2. This is a coastal chain with spurs up each estuary
+to the mouths inside it, which is what the geography implies and what a trunk-plus-
+tributaries object should look like.
+
+**One thing to be plain about: this is a tree, and a tree has no cycle, so it is not a
+"loop" in the topological sense.** For the question Stage 1 asks — can every mouth
+reach the sea and every other mouth — a tree is sufficient and a cycle adds nothing. A
+closed circuit would add a second way round, which is a navigational convenience rather
+than a connectivity fact, and this project has ruled navigation out of scope. If a
+cycle is wanted it is one further edge, and it should be asked for as such rather than
+arrived at by accident.
+
+**All 3,770 edges traced, none refused, none unterminated** — which also confirms the
+D8 backlink decoding, since a wrong direction convention would have sent walks off the
+grid instead of into their sources.
