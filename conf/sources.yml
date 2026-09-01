@@ -20,6 +20,20 @@ sources:
     crs: "EPSG:27700"
     cache_path: "data/raw/os_open_rivers/"
     checksum: null
+    # THE PIN (D-053). Stephen's ruling on the identifier card: freeze on this issue
+    # rather than mint our own identifiers. OS's specification says its GUIDs are not
+    # persistent *between product versions* — so with exactly one version there is no
+    # second version for them to be inconsistent with, and §10's stability requirement
+    # is satisfied by refusing reissues instead of by inventing a scheme.
+    #
+    # This value is therefore load-bearing, not documentation. `load` fails the build
+    # if the GeoPackage on disk was written on a different day, because a silently
+    # accepted reissue would renumber 195,689 links and 198,457 nodes and every
+    # judgement in data/curated/ keys on those numbers.
+    #
+    # Taken from the GeoPackage's own gpkg_contents.last_change (D-038), which states
+    # the day the product was written — more precise than the API's month.
+    frozen_issue: "2026-04-14"
     status: verified
     notes: >
       THE BASE NETWORK. WatercourseLink + HydroNode: roughly 144,000 km with flow

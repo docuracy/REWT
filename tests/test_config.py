@@ -133,3 +133,49 @@ def test_the_forms_are_the_survey_s_own():
             "breaks its findings down by the form of the water arriving, because the "
             "classes have different causes and different remedies (§6)."
         )
+
+
+# --------------------------------------------------------------------------
+# The pin (D-053)
+# --------------------------------------------------------------------------
+
+
+def test_os_open_rivers_is_pinned_to_a_single_issue():
+    """Stephen's ruling on the identifier card: freeze rather than mint our own.
+
+    OS's specification says its GUIDs are not persistent *between product
+    versions*. With exactly one version there is no second version for them to be
+    inconsistent with, so §10's stability requirement is bought by refusing
+    reissues. That makes the pin the mechanism the whole identifier scheme rests
+    on, rather than a note about provenance.
+    """
+    frozen = config.source("os_open_rivers").get("frozen_issue", default=None)
+    assert frozen, (
+        "os_open_rivers has no frozen_issue. The identifier scheme depends on the "
+        "input being pinned (D-053); without it, a reissue renumbers 195,689 links "
+        "and every judgement in data/curated/ that keys on them."
+    )
+    assert frozen == "2026-04-14", f"the pin moved to {frozen} — was that decided?"
+
+
+def test_the_pin_is_enforced_and_not_merely_declared():
+    """A pin nobody checks is a comment.
+
+    The reissue is twice a year, so the failure it guards against is one nobody is
+    present for: the file changes, the build goes green, and the first sign of
+    trouble is a curated correction that matches nothing. This test reads the
+    stage's own source for the comparison rather than trusting that it exists.
+    """
+    import inspect
+
+    from rewt.stages import load
+
+    src = inspect.getsource(load)
+    assert "frozen_issue" in src, (
+        "rewt/stages/load.py never reads frozen_issue, so the pin in "
+        "conf/sources.yml is a comment rather than a constraint"
+    )
+    assert "raise StageError" in src.split("frozen_issue", 1)[1][:1200], (
+        "load reads frozen_issue but does not fail on a mismatch. A warning on a "
+        "twice-yearly event is a warning nobody is present for."
+    )

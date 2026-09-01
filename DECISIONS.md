@@ -1549,3 +1549,104 @@ the same rivers.**
 97,746 of 104,785 — because `link_scope.in_scope` keys on the same node. The share is
 unchanged at **93.28%**, and the earlier figures were wrong in their third significant
 figure rather than in their meaning.
+
+**D-053 — Three UI modules are lifted from the scoping exercise, under a narrow exemption
+from the no-import rule.** *2026-09-01*
+
+*Granted by Stephen Gadd on the decision card `tracer-import`, 11:13, 1 Sep 2026, with no
+note. Requested by rewt-2b. The grant is recorded as the tick on the card rather than as
+the instruction that preceded it in conversation, because the card is the durable
+artefact and the instruction is not.*
+
+`AGENTS.md` says *do not import code or data from* `Premodern Rivers`, and D-001 says carry
+across no code and no data. Both stand. **This entry exempts three files and nothing
+else**: `docs/js/tracer.js`, `raster.js` and `anno.js`, now at `tools/tracer/js/`.
+
+**The reasoning behind D-001 does not reach them.** That entry's argument is about the
+audit — *an audit handed its answers is not an audit* — and about curated corrections made
+against another build's graph. A drawing tool carries no answers. `tracer.js`'s own header
+states the constraint it was written to: *this module knows nothing about rivers... everything
+about what a trace MEANS belongs to the caller*, and the annotation profile is a separate
+module for the same reason. Rewriting a working corridor livewire would buy no audit
+independence whatever, and would cost a week. **The exemption does not hollow out the rule;
+it marks where the rule's reason stops.**
+
+**What is exempted, precisely.** 1,011 lines across three files: a MapLibre tracing mode, a
+tile-mosaic-and-cost-surface reader, and a W3C Web Annotation profile. **No data. No curated
+corrections. No network logic. No `rivers/` module.** The scoping exercise's traced courses
+and its 73 corrections remain a validation set under D-001, unconsulted until this project's
+own work stands.
+
+**They are imported unmodified and adapted in a separate pass**, which is the part worth
+recording. An exemption has a boundary and a reviewer must be able to see it; adapting
+during the import would mix inherited code with new code in one commit and make the boundary
+unrecoverable afterwards. That is this repository's own rule that nothing is deleted to
+correct it, applied to an import: **an exemption whose boundary is unrecoverable is not an
+exemption, it is an erasure.** `tools/tracer/js/README.md` records what needs adapting and at
+which phase, and what must not be adapted away — the credential refusal, `conformsTo` being
+required rather than defaulted, and the per-vertex `clicked`/`snapped` distinction.
+
+**One thing the import does *not* need the exemption for, corrected before the card was put
+to him.** The draft credited the import with `raster.js`'s finding that these sheets are
+bimodal in blue content — median 0.000%, so a blue-water detector finds nothing on roughly
+nineteen sheets in twenty, but the sheet type can be decided from the pixels at runtime.
+That is a fact about NLS sheets, not about the predecessor's graph. It was never under
+D-001, needs no exemption, and including it overstated what the exemption buys. **Only the
+1,011 lines need it.**
+
+**And the import immediately earned its own scrutiny.** Applied to these three files,
+D-051's grep test — look for a composed scheme literal outside the module that owns the
+scheme — finds that **`anno.js` does not own its identifier scheme at all**: it takes
+`identifying` as an opaque `{source, label}` and leaves the caller to compose the URN, which
+the predecessor does in a single template literal 1,885 lines into a UI module. That is
+D-051's shape in JavaScript and worse in one respect, because **a wrong separator in a URN
+stays a legal URN and stops resolving** — no database to disagree, no schema to complain.
+The remedy is in `tools/tracer/PLAN.md` and belongs to phase 2, before the sites multiply.
+
+---
+
+**D-053 — The project keeps Ordnance Survey's identifiers and freezes the issue.**
+*2026-09-01. Stephen's ruling on the identifier card: rejected minting our own, with
+the note "Freeze on the 2026-04 issue".*
+
+D-045 recorded the problem and left it open. OS's specification says, verbatim: *"The
+identifier is not persistent between product versions; there is therefore no
+change-history information for features."* §10 requires that a stretch present in two
+published editions carries the same identifier in both, and borrowing a GUID that the
+publisher declines to keep stable fails that outright — for 195,689 links and 198,457
+nodes, measurably, since 12 of the predecessor's 73 corrections point at links absent
+from the current issue.
+
+**The ruling buys the guarantee with a policy rather than with a scheme.** With
+exactly one version there is no second version for the identifiers to be inconsistent
+with. The specification's warning is scoped to *between product versions*, so refusing
+reissues satisfies it exactly, and the alternative — minting our own from geometry —
+was never clean: OS re-generalises between issues, so a redrawn reach would take a new
+identifier and look like a different river.
+
+**The price is real and is the reason this was Stephen's to decide.** The project
+never takes a reissue: no corrections OS makes, no new channels, and a widening gap
+from the current survey. That is a cost paid indefinitely to buy stability, and it is
+the sort of trade an agent should not make on its own.
+
+**What makes it a mechanism rather than a note.** `conf/sources.yml` now carries
+`frozen_issue: "2026-04-14"`, taken from the GeoPackage's own
+`gpkg_contents.last_change` (D-038) because that states the day the product was
+written and the API only gives a month. `load` **fails the build** if the file on disk
+was written on a different day, and fails equally if the file records no date at all,
+because an input that cannot identify itself cannot be pinned.
+
+Failing rather than warning is the whole point. The reissue is a twice-yearly event,
+so it is exactly the failure nobody is present for: the file changes, the build goes
+green, 195,689 links are renumbered, and the first symptom is a curated correction
+that matches nothing. Two tests hold it — one that the pin exists and has not moved
+without a decision, and one that reads `load`'s own source to check the pin is
+compared and raised on, because **a pin nobody checks is a comment.**
+
+**One thing the freeze does not buy, recorded so nobody assumes it does.** It stops
+the *publisher* moving identifiers under us. It does nothing about *us* moving them:
+an anchored basin id is a digest of its outlet node id, so this morning's separator
+change turned `rewt:basin/d5921800ed` into `rewt:basin/000e9ed6b8` for the same basin,
+with no reissue involved. A derived identifier inherits every instability of its input,
+including instability we introduce. The pin guards one direction; D-051's one-owner
+rule and its test guard the other.

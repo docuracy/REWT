@@ -115,6 +115,35 @@ def run() -> dict:
         + f" — {gpkg.name}"
     )
 
+    # ------------------------------------------------------------------ the pin
+    # D-053. The project takes OS's identifiers and freezes the issue rather than
+    # minting its own. That is only a guarantee if the freeze is enforced: OS says
+    # its GUIDs are not persistent between product versions, so accepting a reissue
+    # silently would renumber 195,689 links and 198,457 nodes, and every judgement in
+    # data/curated/ keys on those numbers.
+    #
+    # Fail rather than warn. A warning on a twice-yearly event is a warning nobody is
+    # present for — the reissue lands, the build goes green, and the first sign of
+    # trouble is a curated correction that no longer matches anything.
+    frozen = src.get("frozen_issue", default=None)
+    if frozen and issued_on and issued_on != frozen:
+        raise StageError(
+            f"OS Open Rivers is pinned to the {frozen} issue (conf/sources.yml, "
+            f"D-053) and the file on disk was written {issued_on}. This is the "
+            "reissue the pin exists to catch.\n\n"
+            "A reissue renumbers every link and node, and data/curated/ keys on "
+            "those identifiers, so this is a decision and not a refresh. Either "
+            "restore the pinned issue, or take the decision to move the pin — which "
+            "means re-validating every curated judgement against the new numbering "
+            "and recording it in DECISIONS.md."
+        )
+    if frozen and not issued_on:
+        raise StageError(
+            f"OS Open Rivers is pinned to the {frozen} issue but the GeoPackage "
+            "records no write date in gpkg_contents, so the pin cannot be checked. "
+            "Refusing to build against an input that cannot identify itself."
+        )
+
     working_crs = p("crs.working")
 
     # ---------------------------------------------------------------- links
