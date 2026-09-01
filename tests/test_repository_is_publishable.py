@@ -224,3 +224,102 @@ def test_only_one_module_may_do_it(what, pattern, allowed, why):
         + ", ".join(offenders)
         + f". {why}"
     )
+
+
+def _configured_secrets() -> dict[str, str]:
+    """The real values, from the gitignored `.env`. Never printed."""
+    env = paths.ROOT / ".env"
+    if not env.exists():
+        return {}
+    out = {}
+    for line in env.read_text(encoding="utf-8").splitlines():
+        if "=" not in line or line.lstrip().startswith("#"):
+            continue
+        name, _, value = line.partition("=")
+        value = value.strip().strip("'\"")
+        if len(value) >= 12:
+            out[name.strip()] = value
+    return out
+
+
+def test_no_configured_secret_appears_in_a_tracked_file(tracked):
+    """The exact check, which the pattern check cannot be.
+
+    Patterns guess at the shape of a secret. This asks the only question that
+    matters: **is the key I actually hold present in a file that would be
+    published?** No false positives, no false negatives, and it needs no
+    imagination about what a provider calls its parameter.
+
+    It exists because the pattern check has a real gap. `_KEY` requires an `api`
+    prefix, so `api_key` matches and a bare `keys` does not — and the viewer's
+    server hands the browser exactly that shape:
+
+        {"basemap": ..., "keys": {"maptiler": "<the key>"}}
+
+    Correct while a server reads it from `.env`. Statically there is no server, so
+    that response becomes a committed file under `docs/`, which GitHub Pages
+    publishes — **public even though this repository is private.** A naive static
+    build would create the leak rather than inherit it. Found by rewt-fc in its own
+    code before any of it was written.
+
+    The failure names the variable and never the value: a test that prints a secret
+    to make its point has published it to every log that captures the run.
+    """
+    secrets = _configured_secrets()
+    if not secrets:
+        pytest.skip(
+            "no .env present, so there is no configured secret to search for; the "
+            "pattern check still runs over every tracked file"
+        )
+    findings = []
+    for name in tracked:
+        path = paths.ROOT / name
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        for var, value in secrets.items():
+            if value in text:
+                findings.append(f"{var} appears in {name}")
+    assert not findings, (
+        "a value from .env is present in a tracked file. It cannot be withdrawn "
+        "from a public history — it can only be rotated:\n  " + "\n  ".join(findings)
+    )
+
+
+_BASEMAP_PROVIDER = re.compile(
+    r"(maptiler|mapbox|thunderforest|stadiamaps|carto(?:cdn)?)\b[^\n]{0,40}?"
+    r"[\"']([A-Za-z0-9_\-]{16,})[\"']",
+    re.IGNORECASE,
+)
+
+
+
+def test_a_basemap_key_cannot_hide_under_a_bare_name(tracked):
+    """The pattern check, widened to the shape that slipped past it.
+
+    `_KEY` needs an `api` prefix, so a tile provider's key sitting under `keys`,
+    `token` or its own brand name is invisible to it. This looks for a provider's
+    name followed closely by an opaque value, which is what a published basemap
+    configuration looks like whatever the surrounding key is called.
+
+    Kept separate from the exact check above because the two fail for different
+    reasons: this one catches a key nobody has in `.env` — a collaborator's, a
+    provider's example that turns out to be live — and the exact one catches ours.
+    """
+    findings = []
+    for name in tracked:
+        path = paths.ROOT / name
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        for lineno, line in enumerate(text.splitlines(), 1):
+            m = _BASEMAP_PROVIDER.search(line)
+            if m and not _INNOCENT.match(m.group(2).strip()):
+                findings.append(f"{name}:{lineno}: {m.group(1)} … {m.group(2)[:6]}…")
+    assert not findings, (
+        f"{len(findings)} tracked line(s) put an opaque value beside a tile "
+        "provider's name. GitHub Pages serves docs/ publicly even from a private "
+        "repository:\n  " + "\n  ".join(findings[:10])
+    )
