@@ -495,13 +495,18 @@ def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) 
     if not network.exists():
         problems.append("published/rewt_stage1_network.gpkg does not exist; run `rewt build`")
     else:
-        newest_code = max(
-            (p.stat().st_mtime for p in (paths.ROOT / "rewt").rglob("*.py")), default=0
-        )
-        if network.stat().st_mtime < newest_code:
+        # ASK THE BUILD, NOT THE FILESYSTEM. The first version compared
+        # published/'s mtime against the newest rewt/*.py and was wrong for a reason
+        # worth keeping: `test_a_stage_fingerprint_covers_the_modules_the_stage_calls`
+        # perturbs rewt/ids.py and restores it, which leaves its mtime AFTER the
+        # export — so every green build looked stale for ever. A clock is a proxy;
+        # the fingerprint is the thing itself (D-049).
+        _import_stages()
+        stale = pipeline.stale_stages()
+        if stale:
             problems.append(
-                "published/ is older than rewt/*.py — the build does not correspond to "
-                "the code being released. Run `rewt build`."
+                "the build does not correspond to the code being released — these "
+                f"stages would re-run: {', '.join(stale)}. Run `rewt build`."
             )
 
     rc = subprocess.run(

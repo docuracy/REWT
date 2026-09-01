@@ -369,6 +369,33 @@ def ensure_ledger() -> None:
     db.get().execute(_LEDGER_DDL)
 
 
+def stale_stages() -> list[str]:
+    """Which stages `run` would re-execute, without executing them.
+
+    **Shares the build's own dependency arithmetic rather than restating it.** The
+    first version of this lived in the release check and reconstructed the upstream
+    dictionary by hand; it got the rule subtly wrong twice — once by treating a stage
+    as its own upstream, once by defaulting an absent dependency to the empty string —
+    and each time reported a green build as stale. A check that reimplements what it
+    verifies is not verifying it (D-062), so the arithmetic lives here and `run` and
+    this function read the same lines.
+    """
+    fps: dict[str, str] = {}
+    stale: list[str] = []
+    for name in PIPELINE.names:
+        st = PIPELINE[name]
+        deps = {
+            d: fps[d]
+            for d in PIPELINE.dependencies(name)
+            if d != name and d in fps
+        }
+        fp = st.fingerprint(deps)
+        fps[name] = fp
+        if not st.always and recorded_fingerprint(name) != fp:
+            stale.append(name)
+    return stale
+
+
 def recorded_fingerprint(stage_name: str) -> str | None:
     ensure_ledger()
     return db.scalar(
