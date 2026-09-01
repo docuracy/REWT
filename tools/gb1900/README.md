@@ -54,6 +54,13 @@ that what was counted is readable in one place.
 ## Outputs are not committed
 
 `--places DIR` writes `mill_channel_places.csv`, `old_course_places.csv`,
-`new_cut_places.csv` and `towing_path_places.csv`, each with
-`place_id,text,labels,easting,northing` in EPSG:27700. They are derived and regenerable;
+`new_cut_places.csv`, `towing_path_places.csv` and `assertion_places.csv`, each with
+`place_id,text,labels,easting,northing` in EPSG:27700.
+
+**Use `assertion_places.csv` as the tracing queue, not the two class files.** *Old Course*
+and *New Cut* describe one event from either side and frequently sit on the same reach, so
+the assertion file clusters them **together on position** — 274 places, the published
+figure. The per-class files cluster by caption and total 335; unioning them would send two
+contributors to opposite ends of the same channel, and accidental duplication is worse than
+useless to anyone trying to measure whether two tracings of the same reach agree. They are derived and regenerable;
 only the script is kept. Write them where you like — not into the repository.

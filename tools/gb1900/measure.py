@@ -238,6 +238,30 @@ def main() -> None:
                     w.writerow({"place_id": f"{prefix}{i:05d}", **r})
             print(f"wrote {len(rows_out):>6,} places to {path}")
 
+        # The assertion queue. Old Course and New Cut describe one event from either side
+        # and often sit on the same reach, so they are clustered TOGETHER on position and
+        # not per caption: a per-class queue would send two people to opposite ends of the
+        # same channel, and accidental duplication contaminates any deliberate measurement
+        # of whether two tracings of one reach agree. This is the published 274.
+        assertions = [r for r in ew
+                      if "old_course" in r["classes"] or "new_cut" in r["classes"]]
+        coords = [(r["easting"], r["northing"]) for r in assertions]
+        merged = []
+        for members in cluster(coords, CLUSTER_M):
+            texts = sorted({assertions[i]["text"] for i in members})
+            merged.append({"text": "; ".join(texts), "labels": len(members),
+                           "easting": round(sum(coords[i][0] for i in members) / len(members), 1),
+                           "northing": round(sum(coords[i][1] for i in members) / len(members), 1)})
+        merged.sort(key=lambda r: (r["easting"], r["northing"]))
+        path = args.places / "assertion_places.csv"
+        with path.open("w", newline="", encoding="utf-8") as fh:
+            w = csv.DictWriter(fh, ["place_id", "text", "labels", "easting", "northing"])
+            w.writeheader()
+            for i, r in enumerate(merged):
+                w.writerow({"place_id": f"as{i:05d}", **r})
+        print(f"wrote {len(merged):>6,} places to {path}"
+              "   (Old Course + New Cut merged on position — the published figure)")
+
 
 if __name__ == "__main__":
     main()
