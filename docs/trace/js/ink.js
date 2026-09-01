@@ -75,6 +75,23 @@
  * the width-agreement test, 0.9% with it.** Both figures are of a test allowed to shop for
  * a direction, so both overstate what a real trace would accept.
  *
+ * ── HOW WELL IT WORKS, ON ONE TRACE AT ONE PLACE ───────────────────────────────────
+ *
+ * On a hand trace of THE CUT at Ware, six-inch second edition, at the sheet's native z17:
+ * **4 of 7 vertices handled** — two centred by 0.4 m, one by 0.7 m, one already central —
+ * with widths of 11.8, 15.5, 25.1 and 26.6 m as the navigation widens toward the wharves.
+ * Of the three refusals, one was on ink and two were where the width changes by 9–11 m
+ * over a few metres, which at that end of the reach is the basins opening out and is
+ * arguably the right answer.
+ *
+ * Against a free-direction probe of the same ground — every eighth pixel, four directions,
+ * accept if any succeeds — **11.8% on the six-inch and 3.9% on the 25-inch**. That probe
+ * overstates: it shops for a direction, and a contributor does not.
+ *
+ * **This is calibration on a single trace of a single reach, and it should be read as
+ * provisional.** Nothing here has been tested against a body of sheets or a second pair of
+ * hands, and the numbers above are the only evidence any of these constants rest on.
+ *
  * EXPERIMENTAL, and the failure it guards against is the one it could itself produce: a
  * vertex placed with more apparent authority than it has earned. Every vertex it moves is
  * recorded as `centred`, distinctly from `clicked`, and the interface says which while
@@ -243,13 +260,44 @@ export const CENTRE_DEFAULTS = {
   maxWidthM: 30,          // wider than this and it is not a channel being traced by hand
   minWidthM: 1.5,         // narrower and the two banks are one line
   minTravelM: 4,          // below this the previous vertex gives no reliable bearing
-  transectSpacingM: 1.2,  // how far apart the parallel transects sit ALONG the channel
-  transectCount: 3,
+  /* ── BASELINE AND QUORUM ARE SEPARATE KNOBS, AND CONFLATING THEM MADE IT UNTUNABLE ──
+     What discriminates a channel from a gap between buildings is measuring the SAME width
+     over a decent LENGTH of river. What breaks that measurement is a bridge, a gate, a
+     lock, or a label crossing the channel — any one of which stops a single transect
+     finding both banks.
+     
+     Requiring every transect to succeed ties those together, and the result cannot be
+     tuned. Measured on a real six-inch trace of THE CUT at Ware against a free-direction
+     probe of the same sheet, varying only the baseline:
+     
+        baseline   vertices handled   probe falsely accepting
+          2.4 m         4 of 7                 26.5%
+          4.8 m         3 of 7                 15.0%
+          8.0 m         2 of 7                  8.7%
+         16.0 m         0 of 7                  3.9%
+     
+     Monotonic, with no setting that is both usable and selective. A QUORUM separates them:
+     span a long baseline for discrimination, and let a minority of transects fail for the
+     bridge. */
+  transectSpacingM: 2,    // how far apart the parallel transects sit ALONG the channel
+  transectCount: 7,       // 12 m of river
+  transectQuorum: 5,      // how many must find a cross-section — not all of them
 
-  /* IN PIXELS, AND DELIBERATELY. This is a property of the engraving and the scan, not of
-     the ground: how many pixels of ink make a bank rather than a stipple dot or the serif
-     of a letter. A bank line does not get wider in metres when the sheet is finer. */
-  inkRunPx: 2,
+  /* THE THIRD INSTANCE OF THE SAME CLASS ERROR, and this time the metre version predicts
+     the pixel values rather than merely replacing them.
+     
+     This was a constant 2 px, on the reasoning that a bank's thickness is a property of
+     the engraving and not of the ground. Half right: it is a property of the DRAWN LINE,
+     which is a roughly constant width on paper — and a constant width on paper is a
+     constant width in METRES at any one map scale, because the scale is what converts
+     them. Measured at each sheet's native resolution, a bank is 1 px on the six-inch at
+     0.738 m/px and 2 px on the 25-inch at 0.37 m/px. Both are 0.74 m.
+     
+     So one number in metres reproduces both, and the constant in pixels did not: at 2 px
+     it stepped straight over every one-pixel six-inch bank and refused every vertex on a
+     real trace of THE CUT at Ware. Floor of 1 px, because a bank cannot be thinner than
+     the raster can show. */
+  bankThicknessM: 0.7,
 
   /* THE DISCRIMINATOR THAT MAKES THIS SELECTIVE AT ALL. A channel has very nearly the same
      width a metre further along; a gap between buildings, a field corner or the space
@@ -331,6 +379,8 @@ export function centreOnTransect(patch, px, py, fromX, fromY, opts = {}) {
      least one pixel apart, or on a coarse sheet they collapse onto the same row and the
      agreement test becomes a test of nothing. */
   const spacingPx = Math.max(1, o.transectSpacingM / mPerPx);
+  /* A bank cannot be thinner than the raster can show it. */
+  const runPx = Math.max(1, Math.round((o.bankThicknessM ?? 0.7) / mPerPx));
   const half = (o.transectCount - 1) / 2;
   const alongs = [];
   for (let i = -half; i <= half; i += 1) alongs.push(i * spacingPx);
@@ -340,20 +390,22 @@ export function centreOnTransect(patch, px, py, fromX, fromY, opts = {}) {
     const ox = px + ux * along;
     const oy = py + uy * along;
     if (isInk(patch, Math.round(ox), Math.round(oy))) continue;
-    const plus = firstBank(patch, ox, oy, nx, ny, maxHalfPx, o.inkRunPx);
-    const minus = firstBank(patch, ox, oy, -nx, -ny, maxHalfPx, o.inkRunPx);
+    const plus = firstBank(patch, ox, oy, nx, ny, maxHalfPx, runPx);
+    const minus = firstBank(patch, ox, oy, -nx, -ny, maxHalfPx, runPx);
     if (plus === null || minus === null) continue;   // open on one side: no cross-section
     offsets.push((plus - minus) / 2);
     widths.push(plus + minus);
   }
 
-  /* EVERY transect must find a cross-section, not a majority. One or two is what a field
-     corner produces. */
-  if (offsets.length < alongs.length) {
+  /* A QUORUM, not unanimity — see CENTRE_DEFAULTS. Too few and a field corner qualifies;
+     all of them and a single bridge disqualifies a real reach. */
+  const quorum = Math.min(o.transectQuorum, alongs.length);
+  if (offsets.length < quorum) {
     return {
       moved: false,
-      why: 'no bank on both sides within a channel\'s width, all the way along — this is '
-        + 'open ground, or the channel runs a different way from the one you are tracing.',
+      why: `only ${offsets.length} of ${alongs.length} cross-sections found a bank on both `
+        + `sides within a channel's width — this is open ground, or the channel runs a `
+        + 'different way from the one you are tracing.',
       transectsAgreeing: offsets.length,
     };
   }
