@@ -13,7 +13,7 @@
 /* Must match the ?v= on the script tag in index.html. Browsers go on serving a cached
    module, and the page then reports the behaviour of code that is not deployed —
    which arrives as a bug report about something nobody can reproduce. */
-export const BUILD = '0.3.1-p3';
+export const BUILD = '0.3.2-p3';
 
 export const REPO = {
   owner: 'docuracy',
@@ -22,10 +22,17 @@ export const REPO = {
      saving every few minutes would fire a site rebuild each time, queue them serially,
      and bury main's history under thousands of commits. */
   branch: 'traces',
-  /* 'repo' while the target repository is private; 'public_repo' the moment it is not.
-     Stated here so the sign-in text and the token advice cannot disagree with reality. */
-  scope: 'repo',
-  private: true,
+  /* `docuracy/REWT` became public on 1 Sep 2026, so this is `public_repo` — which grants
+     read and write to PUBLIC repositories only and **no access to any private repository**
+     of the contributor's or of ours. That is a large reduction in what we ask a volunteer
+     to hand over, and it is the one good consequence of the change for this tool: while the
+     repository was private nothing narrower than `repo` could reach it, and `repo` is every
+     repository they can see.
+     
+     Stated here rather than written into the sign-in text, so the scope we ask for and the
+     scope we describe cannot drift apart. */
+  scope: 'public_repo',
+  private: false,
 };
 
 /* The whole Pages site shares one origin and therefore one localStorage. Read live

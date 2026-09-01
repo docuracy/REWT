@@ -81,7 +81,8 @@ function scopeLine() {
        it.`
     : `It needs the <code>public_repo</code> scope, which grants read and write to public
        repositories only and <strong>no access to any private repository</strong> of yours
-       or ours.`;
+       or ours. It is still a classic token — a fine-grained one cannot write to a
+       repository owned by another account, public or private.`;
 }
 
 async function signIn(token) {

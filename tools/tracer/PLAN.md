@@ -111,6 +111,27 @@ satisfies all of the limitations."* The entry records them **as readings rather 
 findings**, per D-025's treatment, attributed and dated, and carries the three caveats
 below unchanged — because none of them is altered by the ruling.
 
+**AND THE REPOSITORY IS NOW PUBLIC, WHICH RETIRES THE GATE THIS PLAN WAS BUILT AROUND.**
+1 Sep 2026: Zenodo will not mint a DOI for a private repository — verified, not taken from
+the notice — so a release meant public or no release. Stephen overrode his own earlier
+ruling that traces stay private until published, knowingly and naming the reversal.
+
+Three consequences, and the first two are improvements:
+
+* **The token ask narrows from `repo` to `public_repo`** — read and write to public
+  repositories only, and no access to any private repository of the contributor's or of
+  ours. While the repository was private nothing narrower could reach it. That is the whole
+  of the PAT problem this plan spent a section on, resolved by a decision taken for an
+  unrelated reason.
+* **The gate is now on the tool and on nothing else.** It never restricted the sheets, which
+  NLS serve keyless; it now does not restrict the traces either. What remains is that a
+  contributor must be a collaborator to write, which is access control and not concealment.
+* **The moment of contribution is the moment of publication**, and that is a real cost. The
+  earlier ruling rested on rewt-6a's asymmetry — private to public is one click, public to
+  private is impossible — which was correct and is now spent. Working notes, withdrawn
+  traces and a contributor's false starts are world-readable as they are committed. **The
+  sign-in says so before it is true rather than after**, which is the only remedy available.
+
 **Is a traced line a derivative of the tile? Settled: no — traces are open output.**
 rewt-d3, rewt-6a and rewt-1d each reached this question independently on the day the plan
 was written, because D-037 permits *citing what a sheet shows* and is silent on *tracing
