@@ -1972,3 +1972,52 @@ set by reasoning before anything was built, and both were wrong in ways that mov
 headline figure by tens of points. Neither was found by review. Both were found by
 sweeping the parameter and looking for a knee, which costs minutes and should have been
 done when they were written rather than after they had produced three different answers.
+
+---
+
+**D-061 — The sea test barely tests anything at the radius it is set to, and the
+number swings 16 points on one estuary.** *2026-09-01*
+
+§10's second reading is published as required, and **it is not yet a good test.** This
+entry says so rather than letting 93.55% stand as an independent confirmation of
+93.59%.
+
+Swept against the test actually shipped — mouth attachment **plus** propagation through
+tidal systems — the curve is not a knee but a cliff:
+
+| radius | 1 km | 5 km | 10 km | **15 km** | 20 km |
+|---|---|---|---|---|---|
+| share reaching the sea | 61.79% | 75.33% | 77.04% | **93.55%** | 93.57% |
+| km the test tells apart | 33,027 | 18,957 | 17,183 | **38** | 20 |
+
+**17,145 km flips between 10 and 15 km**, almost all of it the Humber and what drains
+into it. One mouth crossing one threshold attaches an entire tidal system, so the
+national figure is decided by whether the nearest qualifying water to one estuary is
+12 km away or 16 km. At 15 km the test separates **38 km of 97,195 — 0.04%** — which
+is a test in form and not in substance.
+
+**And I calibrated the radius on a different test from the one I shipped.** The 15 km
+knee in D-060 was measured on seed attachment alone. Tidal-system propagation was then
+added, which lengthens the effective reach, and the two changes were never swept
+together. **A parameter calibrated against one test and used in another is not
+calibrated**, and the resulting figure looked reassuring precisely because it agreed
+with the number it was supposed to be checking.
+
+**Not moving the radius to make the test look useful.** Choosing a threshold because it
+produces more disagreement is the same act as choosing one because it produces less.
+15 km is where the sweep on its own terms put it, and the cliff is a property of the
+construction rather than of the value.
+
+**What the construction actually needs**, recorded now while the reason is fresh: the
+attachment is a *proximity jump* — a mouth is attached if open water lies within a
+radius, with nothing said about what is in between. For the big estuaries the water in
+between is the Humber, the Solway, the Tay: real tidal water that OS Open Rivers does
+not draw and that this surface treats as impassable because it is shallower than
+2 m. **The honest connection is a path through that water, not a jump over it** — the
+estuary admitted to the cost surface as passable-but-expensive, so a mouth reaches the
+sea by going down its own estuary rather than by being near enough to somewhere that
+does. That would make the radius nearly irrelevant, which is the sign it is currently
+doing work it should not be.
+
+Until then the second figure should be read as *an upper bound with a known
+discontinuity*, and the first as what it has always been.

@@ -175,3 +175,35 @@ def walk(back: np.ndarray, r: int, c: int, max_steps: int):
             return out, False
         out.append((r, c))
     return out, False
+
+
+def systems_the_sea_can_take(con) -> set[str]:
+    """Tidal nodes whose own tidal system touches the sea network.
+
+    **Not the terminus's own attachment.** A basin's outlet is the tidal terminus with
+    the most water above it, which for the Humber sits 37 km up the estuary; its water
+    leaves at Spurn Head and the `tidalRiver` links between are already in the network.
+    Asking whether the *outlet* is attached tested the wrong node and cost six points
+    of the published figure (D-060).
+
+    Tidal water is continuous, so the question is whether any terminus in the same
+    tidal system reaches the sea — and if one does, they all do.
+    """
+    import numpy as np
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+
+    edges = con.execute(
+        "SELECT from_node, to_node FROM edge WHERE form = 'tidalRiver'"
+    ).fetchall()
+    if not edges:
+        return set()
+    nodes = sorted({n for pair in edges for n in pair})
+    idx = {n: i for i, n in enumerate(nodes)}
+    r = np.array([idx[a] for a, _ in edges])
+    c = np.array([idx[b] for _, b in edges])
+    g = coo_matrix((np.ones(len(r)), (r, c)), shape=(len(nodes),) * 2)
+    _, label = connected_components(g + g.T, directed=False)
+    attached = {x[0] for x in con.execute("SELECT DISTINCT node_id FROM sea_entry").fetchall()}
+    reached = {label[i] for n, i in idx.items() if n in attached}
+    return {n for n, i in idx.items() if label[i] in reached} | attached

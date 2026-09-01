@@ -26,7 +26,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from .. import config, db, graph, paths, topology
+from .. import config, db, graph, paths, sea, topology
 from ..pipeline import PIPELINE, StageError, artefact
 from ..report import Finding, Report, log
 
@@ -47,7 +47,8 @@ PLAN_BY_FORM = {
 @PIPELINE.stage(
     "audit",
     "the audit: dead ends, direction faults, cycles, reachability, per basin",
-    reads=["edge", "node", "link_reach", "link_scope", "basin", "node_basin"],
+    reads=["edge", "node", "link_reach", "link_scope", "basin", "node_basin",
+           "sea_entry", "sea_link"],
     writes=["audit_finding", "audit_basin"],
     params=["audit", "topology", "forms", "seeds"],
     always=True,
@@ -469,6 +470,63 @@ def run() -> dict:
         f"basin and cannot appear in a per-basin figure; {unplaced[1]:,} of them are "
         "crawl seeds. The delineation runs out at the coast, which is where termini are."
     )
+
+    # ------------------------------------ the sea, as a definition and as a test
+    # §10: attaching the sea network turns "reaches the sea" from true-by-definition
+    # into something a mouth can fail. **Both readings are published, side by side.**
+    # The point is not tidiness: reachability moving because the sea became a test it
+    # can fail is NOT the network improving or worsening, and a single number replacing
+    # the old one would put a discontinuity in the series that no reader could see —
+    # the figures either side would stop being comparable while still looking like a
+    # trend. rewt-1d wrote that clause into §10 and I would not remove it.
+    if db.table_exists("sea_entry"):
+        reachable_by_sea = sea.systems_the_sea_can_take(con)
+        con.execute("DROP TABLE IF EXISTS _sea_ok")
+        con.execute("CREATE TEMP TABLE _sea_ok (node_id VARCHAR)")
+        if reachable_by_sea:
+            con.executemany("INSERT INTO _sea_ok VALUES (?)",
+                            [(n,) for n in sorted(reachable_by_sea)])
+        tested = con.execute(
+            """
+            SELECT sum(l.length_m) / 1000.0 AS total_km,
+                   sum(CASE WHEN r.reaches_tidal THEN l.length_m ELSE 0 END) / 1000.0
+                       AS tidal_km,
+                   sum(CASE WHEN r.reaches_tidal
+                             AND r.seed_node IN (SELECT node_id FROM _sea_ok)
+                            THEN l.length_m ELSE 0 END) / 1000.0 AS sea_km
+            FROM link l
+            JOIN link_scope sc USING (link_id)
+            LEFT JOIN link_reach r USING (link_id)
+            LEFT JOIN retirement t USING (link_id)
+            WHERE sc.in_scope AND t.link_id IS NULL
+            """
+        ).fetchone()
+        total_km, tidal_km, sea_km = (float(x or 0) for x in tested)
+        report.add("reachability_tested_against_the_sea", {
+            "in_scope_total_km": round(total_km, 1),
+            "reaches_tidal_water_km": round(tidal_km, 1),
+            "reaches_tidal_water_share": round(tidal_km / (total_km or 1), 6),
+            "reaches_the_sea_km": round(sea_km, 1),
+            "reaches_the_sea_share": round(sea_km / (total_km or 1), 6),
+        })
+        log.rule("The sea as a definition, and the sea as a test (§10)")
+        log.table(
+            "in-scope reachability under both readings",
+            ["reading", "km", "share"],
+            [
+                ["reaches tidal water — true by definition",
+                 f"{tidal_km:,.0f}", _share(tidal_km / (total_km or 1))],
+                ["and that tidal water reaches the sea — tested",
+                 f"{sea_km:,.0f}", _share(sea_km / (total_km or 1))],
+            ],
+        )
+        log.info(
+            f"{tidal_km - sea_km:,.0f} km reaches tidal water that does not itself "
+            f"reach the sea — {(tidal_km - sea_km) / (total_km or 1):.2%} of the "
+            "in-scope network, and invisible until the sea became a test. "
+            "BOTH figures are published: the fall is a change of question, not of "
+            "network, and the series is not comparable across it."
+        )
 
     # --------------------------------------------- the survey's own generalisation
     gen = _generalisation()
