@@ -153,6 +153,14 @@ between two sides is a **25-inch** operation, because that is the scale at which
 drawn as two banks. The pictures show a 25-inch experiment, and the intended operation on the
 six-inch is following ink rather than finding a middle.
 
+**Two reasons the six-inch is the surface**, and neither is about resolution. The
+[work queue](scale#old-courses-the-victorian-surveyors-labelled) is a transcription of the
+six-inch's *own* labels, so every task points at something lettered on those sheets — send a
+contributor to a different survey and they are hunting for a caption that is not there. And
+the six-inch is served seamlessly across England and Wales where the 25-inch is county by
+county, so a national queue meets a national sheet. **Finer is the wrong axis; the sheet that
+carries the task is the right one.**
+
 **But the failure is not an artefact of the mistake, and it does not go away on the right
 sheet.** At 1:2,500 the town is full of things drawn as two roughly parallel lines a constant
 distance apart, and a corridor-finder cannot tell them from a channel. Asked for the strongest
