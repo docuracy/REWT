@@ -1,0 +1,29 @@
+# A credential must never be committed. See README.md.
+keys.local.json
+__pycache__/
+cache/
+
+# The NLS layer catalogues. Not committed, and the reason is a licence and not size:
+# the National Library of Scotland asks that these georeferenced layers be re-used
+# "within a desktop or local environment" and that a public site use their Historic
+# Maps API instead. This repository is intended to become public, and a ready-made
+# catalogue of the layers they ask not to be served publicly is the wrong thing to
+# publish even though it is only URLs. Rebuild with tools/nls_catalogue.py.
+nls_*.json
+
+# The first-edition compositor and its county index. Local only, and for the same
+# reason as the catalogues above rather than because of the Historic Counties data in
+# counties.json, which is freely usable: composite.js line 24 holds the base URL of the
+# NLS England-and-Wales six-inch bucket, and counties.json enumerates the 53 slugs that
+# complete it. Together they are an index — plus a working fetcher — to layers whose
+# addresses the Library does not itself publish and asks not to be served publicly.
+# Separately harmless; published together they are the thing the catalogues were
+# gitignored to avoid. Found by rewt-86.
+composite.js
+counties.json
+
+# The local viewer's own backdrop list. Same reason again: 67 filled-in bucket URLs.
+# The published viewer's docs/viewer/backdrops.json is a different file and is
+# committed — it offers OpenStreetMap and nothing else, and its `_removed_nls` note is
+# the record of why.
+backdrops.json

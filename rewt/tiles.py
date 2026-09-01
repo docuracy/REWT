@@ -135,12 +135,14 @@ def build_tiles() -> None:
     """
     OUT.mkdir(parents=True, exist_ok=True)
 
+    basin_src = _basins_on_land()
     main = [
         ("link", f"SELECT geom, {LINK_COLUMNS} FROM link", NETWORK),
         ("sea_route", "SELECT geom, link_id, from_node, to_node, length_m, "
                       "min_depth_m, median_depth_m FROM sea_route", NETWORK),
         ("basin", "SELECT geom, basin_id, label, area_km2, in_scope, scope_reason, "
-                  "england_wales_area_km2, outlet_node, provisional FROM basin", NETWORK),
+                  "england_wales_area_km2, outlet_node, provisional FROM basin",
+         basin_src),
     ]
     kept = [("link_kept", f"SELECT geom, {LINK_COLUMNS} FROM link WHERE {KEPT}", NETWORK)]
 
@@ -148,6 +150,72 @@ def build_tiles() -> None:
              "REWT Stage 1", with_points=False)
     _archive(OUT / "rewt_kept.pmtiles", OUT / "_stage_kept.gpkg", kept,
              "REWT Stage 1 — the classes that are never thinned", with_points=True)
+
+
+# In data/interim/ and not in published/: published/ is the release payload, and a
+# derived convenience for one map layer is not part of it.
+BASIN_LAND = paths.INTERIM / "viewer_basin_on_land.gpkg"
+
+
+def _basins_on_land() -> pathlib.Path:
+    """The basin polygons with the sea taken out of them — FOR DRAWING, and only that.
+
+    A basin is delineated on a flow-direction raster, which does not stop at the shore:
+    every coastal basin came out with a rectangle of sea attached, and 194,664 km2 of
+    basin covered ground of which 15,312 km2 is water. Drawn, that reads as a claim that
+    the catchment extends offshore, which it does not.
+
+    The clip is against Boundary-Line's `country_region` polygons for England, Wales and
+    Scotland — the same source, and the same layer, already used to decide scope. NOT
+    against `high_water`, whose one recorded use is a later stage's coastal work
+    (D-029), and not against OpenStreetMap land polygons, which are ODbL and would
+    propagate share-alike into everything published here (D-004's situation).
+
+    GB rather than England-and-Wales, because a basin that straddles the border really
+    does extend into Scotland and clipping it at the border would delete ground rather
+    than water. The clip empties nothing: 0 of 1,049 basins, 0 of the 334 in scope.
+
+    **NOTHING UPSTREAM READS THIS.** `basin.geom` in the network GeoPackage is
+    untouched, `area_km2` still measures the unclipped basin, and the scope decision is
+    still made on the unclipped overlap — so no figure on the page moves because the map
+    got tidier. It costs about four and a half minutes, so it is cached against the
+    network's own mtime.
+    """
+    if (BASIN_LAND.exists()
+            and BASIN_LAND.stat().st_mtime >= NETWORK.stat().st_mtime):
+        log.detail(f"basin polygons on land — cached, {BASIN_LAND.name}")
+        return BASIN_LAND
+
+    import geopandas as gpd
+    import shapely
+
+    from .basins import country_polygon
+
+    land = country_polygon(["England", "Wales", "Scotland"])
+    frame = gpd.read_file(NETWORK, layer="basin")
+    before = frame.area.sum() / 1e6
+    frame["geometry"] = frame.geometry.intersection(land)
+    # An intersection can hand back a GeometryCollection where a boundary grazes a
+    # polygon edge; a GeoPackage layer holds one geometry type, so anything that is not
+    # a surface is dropped from the piece rather than the piece from the layer.
+    mixed = frame.geometry.geom_type == "GeometryCollection"
+    if mixed.any():
+        frame.loc[mixed, "geometry"] = frame.loc[mixed, "geometry"].apply(
+            lambda g: shapely.union_all([p for p in g.geoms if p.area > 0]))
+    empty = int(frame.geometry.is_empty.sum())
+    if empty:
+        raise RuntimeError(
+            f"clipping the basins to land emptied {empty} of them; the clip is for "
+            "drawing and must not remove a basin from the map")
+
+    BASIN_LAND.parent.mkdir(parents=True, exist_ok=True)
+    BASIN_LAND.unlink(missing_ok=True)
+    frame.to_file(BASIN_LAND, layer="basin", driver="GPKG")
+    after = frame.area.sum() / 1e6
+    log.detail(f"basin polygons clipped to land for drawing — {before:,.0f} km2 to "
+               f"{after:,.0f} km2, {before - after:,.0f} km2 of sea and foreshore out, "
+               f"none emptied")
+    return BASIN_LAND
 
 
 def _archive(out: pathlib.Path, stage: pathlib.Path,
@@ -302,8 +370,27 @@ def _summary() -> None:
             "lon": lon, "lat": lat,
         })
 
+    # The audit's own findings, which the panel lists and flies to. They arrive in
+    # EPSG:27700, like everything else in this project; 4326 happens here, at export,
+    # and nowhere earlier. `detail` is the audit's sentence, printed verbatim — this
+    # panel reports what the audit said, so rewording it here would be a second opinion
+    # wearing the audit's name.
+    findings = [f for f in audit.get("findings", [])
+                if f.get("easting") is not None and f.get("northing") is not None]
+    if findings:
+        fp = gpd.GeoSeries(gpd.points_from_xy([f["easting"] for f in findings],
+                                              [f["northing"] for f in findings]),
+                           crs=27700).to_crs(4326)
+        for f, pt in zip(findings, fp):
+            f["lon"], f["lat"] = round(pt.x, 5), round(pt.y, 5)
+    findings = [{"kind": f["kind"], "detail": f["detail"], "subject": f.get("subject"),
+                 "basin_id": f.get("basin_id"), "lon": f["lon"], "lat": f["lat"]}
+                for f in findings]
+
     summary = {
         "counts": counts,
+        "citation": _citation(),
+        "findings": findings,
         "reachability": reach,
         "reachability_tested_against_the_sea": sea,
         "basins": table,
@@ -313,8 +400,45 @@ def _summary() -> None:
         "attribution": _attribution(prov),
     }
     (OUT / "summary.json").write_text(json.dumps(summary, indent=1, allow_nan=False))
+    kinds = len({f["kind"] for f in findings})
     log.detail(f"summary.json — {len(table):,} in-scope basins, each with a point to "
-               f"fly to, and {len(counts)} counts")
+               f"fly to, {len(counts)} counts, and {len(findings):,} audit findings "
+               f"across {kinds} kinds")
+
+
+def _citation() -> dict:
+    """What to cite, READ FROM CITATION.cff rather than written out again here.
+
+    The first draft of the viewer's citation box was typed by hand and got the publisher
+    wrong, invented nothing else only because there was nothing else to invent, and
+    would have gone on being wrong through every version bump. CITATION.cff is itself
+    generated from .zenodo.json for exactly that reason — authorship is declared once —
+    and a third copy in a JavaScript template string would have been the drift the
+    generation exists to prevent.
+
+    The file is not under docs/, so the page cannot fetch it; it is carried into
+    summary.json here, at the same build that reads the audit.
+    """
+    import yaml
+
+    cff = yaml.safe_load((paths.ROOT / "CITATION.cff").read_text())
+    doi = next((i for i in cff.get("identifiers", [])
+                if i.get("type") == "doi"), {})
+    return {
+        "title": " ".join(cff["title"].split()),
+        "version": cff.get("version"),
+        "licence": cff.get("license"),
+        "authors": [f"{a['family-names']}, {a['given-names']}"
+                    for a in cff.get("authors", [])],
+        "orcids": [a["orcid"] for a in cff.get("authors", []) if a.get("orcid")],
+        "affiliations": [a["affiliation"] for a in cff.get("authors", [])
+                         if a.get("affiliation")],
+        "doi": doi.get("value"),
+        "doi_note": doi.get("description"),
+        # The .cff's own warning about citing the concept DOI rather than the edition.
+        # Carried whole: it is the point of the box, not a caption on it.
+        "message": " ".join(cff.get("message", "").split()),
+    }
 
 
 def _attribution(prov: dict) -> str:

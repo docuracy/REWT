@@ -10,6 +10,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>REWT Tracer</title>
+<!-- The site's mark, linked by hand. Every other page gets this from
+     docs/_layouts/default.html, but this page carries no YAML front matter — on
+     purpose, so that Jekyll copies it byte-for-byte instead of running Liquid over
+     the JavaScript — and a page without front matter gets no layout, so it got no
+     icon either. A plain relative path rather than a `relative_url` filter, for the
+     same reason. -->
+<link rel="icon" href="../assets/rewt-mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
   :root {

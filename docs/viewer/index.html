@@ -11,6 +11,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>REWT — the network as currently assembled</title>
+<!-- The site's mark, linked by hand. Every other page gets this from
+     docs/_layouts/default.html, but this page carries no YAML front matter — on
+     purpose, so that Jekyll copies it byte-for-byte instead of running Liquid over
+     the JavaScript — and a page without front matter gets no layout, so it got no
+     icon either. A plain relative path rather than a `relative_url` filter, for the
+     same reason. -->
+<link rel="icon" href="../assets/rewt-mark.svg" type="image/svg+xml">
 <!-- SUBRESOURCE INTEGRITY. The version tag pins WHICH release; the digest pins the
      BYTES. That is the same distinction that made the build pin EMODnet by manifest
      digest rather than by coverage id — an identifier cannot say what you actually
@@ -33,7 +40,6 @@
     <p class="sub" id="built">reading…</p>
   </header>
 
-  <div id="stale" class="banner" hidden></div>
   <div id="warn" class="banner bad" hidden></div>
 
   <section class="block" id="figures">
@@ -71,7 +77,6 @@
         <option value="scope">why it is in scope</option>
         <option value="lake">lakes, named and unnamed</option>
       </select></label>
-    <p class="note" id="thinning">…</p>
   </section>
 
   <section class="block">
@@ -79,34 +84,53 @@
     <div id="layers"></div>
   </section>
 
-  <section class="block">
-    <h2>Basins <span class="hint">least reaching the sea first — click to fly</span></h2>
+  <!-- Collapsed by default: it is a list of 334 and it was pushing the layers, which
+       are what most readers came for, below the fold. -->
+  <details class="block" id="basin-block">
+    <summary><h2>Basins <span class="hint">least reaching the sea first</span></h2></summary>
     <input type="search" id="basin-filter" placeholder="Filter by name…">
     <ul id="basin-list" class="rows"></ul>
-  </section>
+  </details>
 
-  <section class="block">
-    <h2>The audit's own findings <span class="hint">click to fly</span></h2>
+  <!-- Hidden unless the audit actually published findings; an empty list headed
+       "The audit's own findings" reads as "the audit found nothing", and it found 232.
+       Collapsed for the same reason the basin list is: it is a long list, and it was
+       pushing the layer switches — what most readers came for — below the fold. -->
+  <details class="block" id="findings-block" hidden>
+    <summary><h2>The audit's own findings <span class="hint">worst first</span></h2></summary>
     <select id="finding-kind"></select>
     <ul id="finding-list" class="rows"></ul>
-  </section>
-
-  <section class="block" id="detail-block" hidden>
-    <h2>Under the cursor</h2>
-    <div id="detail"></div>
-  </section>
+  </details>
 
   <footer>
     <button type="button" id="copy-link">Copy a link to this view</button>
     <p class="note" id="copied" hidden></p>
-    <p class="note" id="attribution">…</p>
-    <p class="note">A demonstrator. <a href="../">About this project</a> ·
-      <a href="../epochs">Why these dates</a></p>
+    <p class="note links">
+      <a href="../" target="_blank" rel="noopener">About this project</a> ·
+      <a href="../epochs" target="_blank" rel="noopener">Why these dates</a> ·
+      <a href="https://github.com/docuracy/REWT" target="_blank" rel="noopener">Code on GitHub</a> ·
+      <!-- A button, not an <a href="#">: this page keeps its whole state in the hash,
+           and a link to "#" would overwrite the reader's view with an empty one on any
+           path where preventDefault did not run first. -->
+      <button type="button" class="linkish" id="open-about">How to read this map</button>
+    </p>
   </footer>
 </aside>
 
 <div id="map"></div>
 <div id="legend"></div>
+
+<!-- The loading state. Painting 195,690 links takes long enough that a reader cannot
+     tell a slow map from a broken one, and twenty seconds of a blank country is
+     indistinguishable from a crash. -->
+<div id="loading"><div class="spin"></div><p id="loading-what">Fetching the network…</p></div>
+
+<div id="about" hidden>
+  <div class="sheet">
+    <button type="button" id="about-close" aria-label="Close">×</button>
+    <div id="about-body"></div>
+  </div>
+</div>
 
 <!-- Classic scripts, so both arrive as globals. pmtiles' ESM build has a bare `fflate`
      import that no bundler-less page can resolve; maplibre is loaded the same way for

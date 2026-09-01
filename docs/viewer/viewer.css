@@ -116,7 +116,7 @@ button:hover { border-color: var(--accent); }
      short window the form theme plus an overlay key plus the never-thinned block is
      taller than the map. It scrolls rather than being clipped, because a key with its
      first rows cut off is worse than one you have to scroll. */
-  position: absolute; right: 10px; bottom: 30px;
+  position: absolute; right: 10px; bottom: 10px;
   max-height: calc(100vh - 150px); overflow-y: auto; background: rgba(23,28,36,.93);
   border: 1px solid var(--edge); border-radius: 6px; padding: 9px 11px; font-size: 11px;
   max-width: 230px;
@@ -142,11 +142,6 @@ button:hover { border-color: var(--accent); }
 .maplibregl-popup-content dt { color: var(--ink-dim); }
 .maplibregl-popup-content dd { margin: 0; word-break: break-word; }
 .maplibregl-popup-close-button { color: var(--ink-dim); font-size: 16px; }
-.maplibregl-ctrl-attrib { font-size: 10px; }
-/* Attribution is not decoration here — it is a licence condition — so the legend
-   clears it rather than sitting over it. The scale has moved to the top right, under
-   the zoom buttons, so nothing else competes for this corner. */
-.maplibregl-ctrl-bottom-right { z-index: 3; }
 .maplibregl-ctrl-top-right .maplibregl-ctrl-scale { margin-top: 4px; clear: both; }
 #legend { z-index: 2; }
 
@@ -173,3 +168,104 @@ button:hover { border-color: var(--accent); }
 .steps button[data-state="planned"] { opacity: .55; border-style: dashed; }
 .steps button[data-state="planned"]:hover { opacity: .85; border-color: var(--warn); }
 #epoch-note { min-height: 2.4em; }
+
+/* ── Links ─────────────────────────────────────────────────────────────────
+   The browser default visited-purple is unreadable on this ground: #551a8b against
+   #171c24 is barely above the background. Both states are set explicitly, because
+   leaving :visited to the browser is what produced the illegible one. */
+/* Scoped to nothing in particular ON PURPOSE. Scoping these to #panel and #legend is
+   what left the browser default in place everywhere else — the modal, the popups and
+   the map's own attribution control, all of which sit on the same dark ground. */
+a { color: #6fc8ff; text-decoration: underline; text-underline-offset: 2px; }
+a:visited { color: #a99bff; }
+a:hover { color: #a8e0ff; }
+.links { line-height: 1.9; }
+
+/* A control that opens a box, wearing a link's clothes because it sits in a row of
+   links. A real <a href="#"> there would overwrite the view this page keeps in its hash. */
+.linkish {
+  border: 0; background: none; padding: 0; font: inherit; cursor: pointer;
+  color: #6fc8ff; text-decoration: underline; text-underline-offset: 2px;
+}
+.linkish:hover { color: #a8e0ff; }
+
+/* ── The loading state ─────────────────────────────────────────────────────
+   Twenty seconds of empty country is indistinguishable from a crash. */
+#loading {
+  position: absolute; inset: 0 0 0 var(--panel-w); display: grid; place-content: center;
+  gap: 14px; justify-items: center; background: rgba(13, 17, 23, .72);
+  z-index: 5; pointer-events: none; transition: opacity .35s;
+}
+#loading[hidden] { display: none !important; }
+#loading p { margin: 0; color: var(--ink-dim); font-size: 12px; }
+.spin {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 3px solid var(--edge); border-top-color: var(--accent);
+  animation: spin 900ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation-duration: 3s; } }
+
+/* ── The modal ─────────────────────────────────────────────────────────────
+   Where the long explanatory prose went, so the panel can be a set of controls. */
+#about { position: absolute; inset: 0; z-index: 20; background: rgba(0, 0, 0, .55);
+         display: grid; place-content: center; padding: 24px; }
+#about[hidden] { display: none !important; }
+#about .sheet {
+  position: relative; max-width: 620px; max-height: 82vh; overflow-y: auto;
+  background: var(--panel); border: 1px solid var(--edge); border-radius: 8px;
+  padding: 22px 26px; font-size: 12.5px; line-height: 1.55;
+}
+#about h3 { margin: 18px 0 6px; font-size: 12px; text-transform: uppercase;
+            letter-spacing: .07em; color: var(--ink-dim); }
+#about h3:first-child { margin-top: 0; }
+#about p { margin: 0 0 8px; }
+#about-close { position: absolute; top: 10px; right: 12px; border: 0; background: none;
+               color: var(--ink-dim); font-size: 22px; line-height: 1; cursor: pointer; }
+#about-close:hover { color: var(--ink); }
+#about code { background: var(--panel-2); padding: 1px 4px; border-radius: 3px; }
+
+/* ── Collapsible blocks ────────────────────────────────────────────────── */
+details.block > summary { cursor: pointer; list-style: none; }
+details.block > summary::-webkit-details-marker { display: none; }
+details.block > summary h2 { display: inline; }
+details.block > summary::before { content: '▸ '; color: var(--ink-dim); }
+details.block[open] > summary::before { content: '▾ '; }
+
+/* ── The attribution control ───────────────────────────────────────────────
+   It carries what the page footer used to — a licence condition, not decoration — so
+   it has to be readable rather than a hairline, and it is in the BOTTOM-LEFT corner,
+   because the bottom-right one is the legend's and a banner over the legend was the
+   complaint that moved it here in the first place.
+
+   TWO CLASSES IN THE SELECTOR, DELIBERATELY. MapLibre's own rule is
+   `.maplibregl-ctrl.maplibregl-ctrl-attrib`, which outranks a single class however
+   late it is loaded; with one class the max-width applied, the colour applied, and the
+   background silently did not — leaving grey text on half-opaque white over a dark
+   sea, which is the exact illegibility this block exists to fix. The link rule needs
+   the same treatment for the same reason. */
+.maplibregl-ctrl.maplibregl-ctrl-attrib,
+.maplibregl-ctrl.maplibregl-ctrl-attrib.maplibregl-compact,
+.maplibregl-ctrl.maplibregl-ctrl-attrib.maplibregl-compact-show {
+  max-width: min(52ch, calc(100vw - var(--panel-w) - 270px));
+  font-size: 10.5px; line-height: 1.45;
+  background-color: rgba(23, 28, 36, .93); color: var(--ink-dim);
+  border: 1px solid var(--edge);
+}
+/* COLOURS ONLY. The padding, the radius and which side the button sits on are all set
+   by MapLibre per corner — in the bottom-left the toggle goes on the LEFT and the
+   padding flips to suit — so overriding the geometry here would put the ⓘ on top of
+   the first word in one corner and nowhere near it in another. */
+.maplibregl-ctrl.maplibregl-ctrl-attrib a { color: #6fc8ff; text-decoration: underline; }
+.maplibregl-ctrl.maplibregl-ctrl-attrib a:hover { color: #a8e0ff; }
+
+/* THE TOGGLE HAS TO STAY VISIBLE WHILE THE PANEL IS OPEN. MapLibre gives the button a
+   5%-black wash once open, which is designed against its white default and disappears
+   completely on this dark ground — leaving an attribution that can be opened but, to
+   the eye, not closed again. Both states get a wash that shows. */
+.maplibregl-ctrl-attrib-button,
+.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button {
+  background-color: rgba(255, 255, 255, .82); border-radius: 12px;
+}
+.maplibregl-ctrl-attrib-button:hover { background-color: #fff; }
+.maplibregl-ctrl-bottom-left { z-index: 2; }

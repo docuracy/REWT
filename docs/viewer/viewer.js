@@ -65,6 +65,19 @@ function readHash() {
 }
 const HASH = readHash();
 
+/* A remembered view fills in only what the link did not say. A link is an instruction
+   from a person; storage is a convenience for the same person returning. */
+function stored() {
+  try { return JSON.parse(localStorage.getItem('rewt-viewer/v1') || 'null'); }
+  catch (e) { return null; }
+}
+const SAVED = stored() || {};
+for (const k of ['zoom', 'lat', 'lon', 'b', 'o', 't', 'l']) {
+  if (HASH[k] === undefined && SAVED[k] !== undefined) {
+    HASH[k] = k === 'l' ? (SAVED[k].length ? SAVED[k].join(',') : '-') : SAVED[k];
+  }
+}
+
 const [summary, backdrops] = await Promise.all([
   grab('summary.json', 'the headline figures and the basin table'),
   fetch('backdrops.json').then((r) => r.json()),
@@ -96,8 +109,10 @@ if (summary && summary.provenance) {
   $('#built').innerHTML = `Built ${esc((summary.provenance.built_at || '').slice(0, 16)
     .replace('T', ' '))}, fingerprint <code>${esc(summary.provenance.config_fingerprint)}</code>.`;
 }
-$('#attribution').innerHTML = (summary && summary.attribution)
-  || 'Contains OS data © Crown Copyright and database rights 2026.';
+/* The attribution used to have a block of its own in the side panel. It is now the
+   map's own attribution control, open rather than compact, and repeated in the
+   "How to read this map" box — so there is nothing here to fill, and the line that
+   tried threw on a null and stopped the whole boot before the network was fetched. */
 
 /* ── Backdrops ────────────────────────────────────────────────────────────── */
 
@@ -142,21 +157,29 @@ const tilesFor = (o) => {
   return [t];
 };
 
-/* ── The first edition, composited in the browser ──────────────────────────
- * The compositor lives in `composite.js` with no side effects, so anything needing the
- * PIXELS rather than a map layer can call it directly — `addProtocol` registers a
- * scheme with MapLibre and not with the browser, so `img.src = 'firsted://…'` fetches
- * nothing. The tracer reads ink that way, and two compositors would eventually disagree
- * about which county's survey a given pixel came from.
+/* NO NATIONAL LIBRARY OF SCOTLAND LAYER IS DRAWN HERE, and `composite.js` and
+ * `counties.json` are no longer published beside this file either. The Library asks
+ * that its georeferenced layers be re-used "within a desktop or local environment" and
+ * that a public website use their Historic Maps API or write to them; this site is
+ * public, so the layers went.
+ *
+ * REMOVING THE LAYERS WAS NOT ENOUGH, and that is the part worth remembering.
+ * `composite.js` held the base URL of the six-inch bucket and `counties.json`
+ * enumerated the 53 slugs that complete it, so the two of them together were still a
+ * published index to the layers — with a working fetcher attached — after every layer
+ * had gone from `backdrops.json`. Separately each looked harmless, which is why it
+ * survived the first pass. Both now live in `tools/viewer/`, gitignored, which is the
+ * desktop environment the Library's sentence describes. Found by rewt-86.
+ *
+ * The backdrop machinery below still understands `counties` and `collection` options.
+ * It is kept because it is generic and a future keyless mosaic would use it, not
+ * because anything in this build does.
  */
-
-import { registerProtocol } from './composite.js';
 
 /* ── Map ──────────────────────────────────────────────────────────────────── */
 
 const pm = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', pm.tile);
-registerProtocol(maplibregl);
 
 const b0raw = opts[backdropId];
 const b0 = (b0raw && (b0raw.counties || b0raw.collection)) ? { tiles: null } : b0raw;
@@ -176,11 +199,30 @@ const map = new maplibregl.Map({
   center: [HASH.lon ?? -2.2, HASH.lat ?? 52.7],
   zoom: HASH.zoom ?? 5.7,
   maxZoom: 18,
-  attributionControl: { customAttribution: (summary && summary.attribution) || '' },
+  // The page footer used to carry a banner of licence text across the bottom, over the
+  // legend. It belongs in the map's own attribution control, which is what that control
+  // is for, and it opens rather than starting collapsed because an attribution nobody
+  // can see is not an attribution. Added below rather than here, so it can be given a
+  // corner: MapLibre puts it bottom-right by default, which is the legend's corner, and
+  // moving the banner from over the legend to over the legend would fix nothing.
+  attributionControl: false,
 });
 window.map = map;
 map.addControl(new maplibregl.NavigationControl({ visualizePitch: false }), 'top-right');
 map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'top-right');
+/* COMPACT, AND OPENED — not `compact: false`, which is a different thing that looks
+   the same on a wide screen. `compact: false` renders the text permanently with no
+   button, so a reader who has read it once can never put it away; `compact: true`
+   gives the ⓘ button and starts collapsed. What is wanted is the button AND the text
+   showing, which is the state MapLibre's own toggle produces, so it is set by adding
+   the class its toggle adds rather than by faking the appearance. */
+const attrib = new maplibregl.AttributionControl({ compact: true,
+  customAttribution: (summary && summary.attribution) || '' });
+map.addControl(attrib, 'bottom-left');
+map.once('load', () => {
+  const el = document.querySelector('.maplibregl-ctrl-attrib.maplibregl-compact');
+  if (el) el.classList.add('maplibregl-compact-show');
+});
 $('#backdrop-opacity').value = Math.round((b0.opacity ?? 0.5) * 100);
 
 /* ── Colouring ────────────────────────────────────────────────────────────── */
@@ -238,14 +280,36 @@ const OVERLAYS = [
     colour: ['match', ['get', 'kind'], 'connector', C.add, 'reversal', C.rev,
       'junction', C.warn, '#ffffff'],
     note: 'click one and ask whether a person would have drawn it there' },
-  { id: 'refused_crossings', label: 'Refused 0 m crossings', file: 'refused_crossings.geojson',
-    kind: 'point',
+  /* WHERE TWO WATERCOURSES CROSS AND DO NOT JOIN — an aqueduct or a culvert, one
+     carried over or under the other. Drawn as a crossing glyph rather than a circle,
+     because it is the one layer here that describes a RELATIONSHIP between two channels
+     rather than a property of one, and a dot says nothing about that. */
+  { id: 'refused_crossings', label: 'Crossings that do not join — aqueducts and culverts',
+    file: 'refused_crossings.geojson', kind: 'symbol', on: true,
+    icon: ['case', ['get', 'corroborated'], 'crossing-corroborated',
+      ['get', 'in_trust_country'], 'crossing-untrusted', 'crossing-outside'],
     colour: ['case', ['get', 'corroborated'], '#5a8fb8', ['get', 'in_trust_country'],
       C.unreached, C.warn],
     legend: [['corroborated — a Trust structure within 150 m', '#5a8fb8'],
       ['NOT corroborated, and in Trust country — the register could have recorded one '
        + 'and did not', C.unreached],
       ['not corroborated, outside Trust country', C.warn]] },
+  /* Not GeoJSON overlays — these two live in the tiles — but they are toggles like the
+     rest and belong in the same list, so that one mechanism handles the panel, the
+     legend, the URL and what is remembered. They were special-cased before and that is
+     why they could not be defaulted on or persisted. */
+  { id: 'sea_route', label: 'The sea network — routes, a tree not a loop', tiled: true,
+    on: true, swatch: '#1f6fc4', count: c.sea_routes,
+    legend: [['shallow — under 10 m', '#9fe8ff'], ['about 40 m', '#1f6fc4'],
+             ['deep — 120 m and over', '#123f8a']] },
+  { id: 'basins-fill', label: 'Basins, by share reaching the sea', tiled: true,
+    on: true, swatch: '#ff9f1c', count: c.basins, also: ['basins-line'],
+    legend: [['none of it reaches the sea', '#ff2d55'],
+             ['about three quarters', '#ff9f1c'],
+             ['nearly all — 95%', '#ffe066'],
+             ['all but a fraction — 99%', '#7cb342'],
+             ['all of it, exactly', '#1b5e20'],
+             ['grey — out of scope, or no watercourse in it at all', '#39414d']] },
   { id: 'sea_entry', label: 'Sea entries', file: 'sea_entry.geojson', kind: 'point',
     count: c.sea_entries,
     colour: ['case', ['==', ['get', 'kind'], 'blocked'], C.warn, '#5ce1e6'],
@@ -267,6 +331,36 @@ const loaded = new Set();
  * reversed. A defect that vanished when you zoomed out would make the map look tidier
  * and be a lie, and it is the failure the promise exists to prevent.
  */
+
+/* Two channels crossing without joining: a ring with a cross in it. Drawn rather than
+   loaded, so there is no sprite sheet and no third-party asset to pin.
+
+   ONE GLYPH PER CLASS, not one glyph tinted three ways. `icon-color` and
+   `icon-halo-color` apply only to SDF images, and this is an ordinary raster one, so a
+   tint would have been silently ignored and all three classes would have come out
+   identical — the corroborated crossing and the one the Trust register could have
+   recorded and did not, indistinguishable. Three images, matched on the same property
+   the legend names. */
+const CROSSING_CLASSES = [
+  ['crossing-corroborated', '#5a8fb8'],
+  ['crossing-untrusted', C.unreached],
+  ['crossing-outside', C.warn],
+];
+
+function crossingImage(ring) {
+  const s = 20, r = 7.5, c = s / 2, cv = document.createElement('canvas');
+  cv.width = cv.height = s;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#0d1117';
+  g.beginPath(); g.arc(c, c, r + 1.5, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = ring; g.lineWidth = 2.4;
+  g.beginPath(); g.arc(c, c, r, 0, Math.PI * 2); g.stroke();
+  g.strokeStyle = '#ffffff'; g.lineWidth = 1.8; g.lineCap = 'round';
+  const d = r * 0.62;
+  g.beginPath(); g.moveTo(c - d, c - d); g.lineTo(c + d, c + d);
+  g.moveTo(c + d, c - d); g.lineTo(c - d, c + d); g.stroke();
+  return g.getImageData(0, 0, s, s);
+}
 
 function arrowImage(fill) {
   const s = 14, cv = document.createElement('canvas');
@@ -373,16 +467,39 @@ async function addNetwork() {
     paint: { 'line-width': 1.6,
       'line-color': ['interpolate', ['linear'], ['coalesce', ['get', 'median_depth_m'], 0],
         0, '#9fe8ff', 10, '#37b6e8', 40, '#1f6fc4', 120, '#123f8a'] } }, 'network-out');
+  /* THE BASIN TILES CARRY NO `share`, which is why every basin drew red: the ramp read
+     `coalesce(share, 0)` and got 0 for all 1,049 of them. The reached share lives in
+     summary.json, so the colour is joined here on `basin_id` rather than waiting for a
+     rebuild. A basin with no share — out of scope, or with no watercourse in it at all
+     — is grey, which is a third state and not the bottom of the ramp. */
+  const shares = Object.fromEntries(((summary && summary.basins) || [])
+    .filter((b) => b.share != null).map((b) => [b.basin_id, b.share]));
+  const byId = ['match', ['get', 'basin_id']];
+  for (const [id, sh] of Object.entries(shares)) byId.push(id, sh);
+  byId.push(-1);                                  // no share: not zero, unknown
+  /* COMPLETE IS A STEP, NOT THE TOP OF THE RAMP. 205 of the 319 basins with a share
+     reach the sea entirely and another 73 fall between 0.95 and 1, so a ramp running
+     smoothly to 1 painted both groups the same green and hid the only distinction
+     anyone is looking for: a basin that is whole against one that is nearly whole. The
+     `==` case takes the complete ones out first; the ramp then has 0 to 0.99 to itself
+     and can spend its range where the variation is. */
   map.addLayer({ id: 'basins-fill', type: 'fill', source: 'rewt', 'source-layer': 'basin',
     layout: { visibility: 'none' },
-    paint: { 'fill-opacity': 0.35, 'fill-color': ['case',
-      ['!', ['get', 'in_scope']], '#3a424f',
-      ['interpolate', ['linear'], ['coalesce', ['get', 'share'], 0],
-        0, '#ff2d55', 0.6, '#ff9f1c', 0.9, '#3b7d3b', 1, '#1b5e20']] } }, 'network-out');
+    paint: { 'fill-opacity': 0.4, 'fill-color': ['case',
+      ['<', byId, 0], '#39414d',
+      ['>=', byId, 0.9999], '#1b5e20',
+      ['interpolate', ['linear'], byId,
+        0, '#ff2d55', 0.4, '#ff6b35', 0.75, '#ff9f1c', 0.95, '#ffe066', 0.99, '#7cb342']] } },
+    'network-out');
+  map.addLayer({ id: 'basins-line', type: 'line', source: 'rewt', 'source-layer': 'basin',
+    layout: { visibility: 'none' },
+    paint: { 'line-color': '#8fa0b8', 'line-width': 0.6, 'line-opacity': 0.45 } },
+    'network-out');
   return true;
 }
 
 async function ensure(o) {
+  if (o.tiled) return;                 // already in the style, from the tile archives
   if (loaded.has(o.id)) return;
   loaded.add(o.id);
   const data = await grab(o.file, o.label.toLowerCase());
@@ -403,6 +520,11 @@ async function ensure(o) {
         layout: { 'symbol-placement': 'line', 'icon-image': 'arrow-reversed',
           'icon-size': 0.9, 'icon-allow-overlap': true, 'icon-rotation-alignment': 'map' } });
     }
+  } else if (o.kind === 'symbol') {
+    map.addLayer({ id: o.id, type: 'symbol', source: o.id,
+      layout: { 'icon-image': o.icon, 'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-size': ['interpolate', ['linear'], ['zoom'], 6, 0.55, 12, 0.9, 16, 1.2] } });
   } else {
     map.addLayer({ id: o.id, type: 'circle', source: o.id,
       paint: { 'circle-color': o.colour,
@@ -413,7 +535,7 @@ async function ensure(o) {
 }
 
 function setVisible(o, on) {
-  for (const id of [o.id, o.id + '-casing', o.id + '-arrows']) {
+  for (const id of [o.id, o.id + '-casing', o.id + '-arrows', ...(o.also || [])]) {
     if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
   }
 }
@@ -428,14 +550,15 @@ function buildLayerPanel() {
     /* A layer coloured by its data has no one colour; showing white for it made four
        different layers carry the same blank swatch, which reads as a key and is not
        one. Such a layer gets a band of the colours it actually uses. */
-    const hues = typeof o.colour === 'string' ? [o.colour]
-      : ((o.colour ? JSON.stringify(o.colour).match(/#[0-9a-fA-F]{6}/g) : null) || ['#8a93a0']);
+    const source = o.colour ?? o.swatch ?? (o.legend ? o.legend.map((l) => l[1]) : null);
+    const hues = typeof source === 'string' ? [source]
+      : ((source ? JSON.stringify(source).match(/#[0-9a-fA-F]{6}/g) : null) || ['#8a93a0']);
     const uniq = [...new Set(hues)];
     const sw = uniq.length === 1 ? uniq[0]
       : `linear-gradient(90deg, ${uniq.map((h, n) =>
           `${h} ${Math.round(n * 100 / uniq.length)}% ${Math.round((n + 1) * 100 / uniq.length)}%`).join(', ')})`;
     row.innerHTML = `<input type="checkbox" ${o.on ? 'checked' : ''}>
-      <i class="sw ${o.kind === 'point' ? 'dot' : ''}" style="background:${sw}"
+      <i class="sw ${o.kind === 'point' || o.kind === 'symbol' ? 'dot' : ''}" style="background:${sw}"
          title="${esc(uniq.join(' · '))}"></i>
       <span>${esc(o.label)}</span><em>${o.count != null ? fmt(o.count) : ''}</em>`;
     row.querySelector('input').onchange = async (e) => {
@@ -449,19 +572,6 @@ function buildLayerPanel() {
       host.append(n);
     }
   }
-  for (const [id, label, colour] of [
-    ['sea_route', 'The sea network — routes, a tree not a loop', '#1f6fc4'],
-    ['basins-fill', 'Basins, by share reaching the sea', '#3b4a5e']]) {
-    const row = document.createElement('label');
-    row.className = 'switch';
-    row.innerHTML = `<input type="checkbox"><i class="sw" style="background:${colour}"></i>
-      <span>${esc(label)}</span><em>${id === 'sea_route' ? fmt(c.sea_routes) : fmt(c.basins)}</em>`;
-    row.querySelector('input').onchange = (e) => {
-      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', e.target.checked ? 'visible' : 'none');
-      writeHash();
-    };
-    host.append(row);
-  }
 }
 
 function applyTheme() {
@@ -469,8 +579,11 @@ function applyTheme() {
     if (map.getLayer(id)) map.setPaintProperty(id, 'line-color', THEMES[theme].colour);
   }
   if (map.getLayer('kept-pt')) map.setPaintProperty('kept-pt', 'circle-color', THEMES[theme].colour);
-  const extra = OVERLAYS.filter((o) => o.legend && loaded.has(o.id) && map.getLayer(o.id)
-      && map.getLayoutProperty(o.id, 'visibility') !== 'none')
+  /* `loaded` records a fetch, and a tiled layer never has one — it arrives with the
+     style. Gating the legend on it kept the sea and basin keys off the map for exactly
+     the two layers that are now on by default. */
+  const extra = OVERLAYS.filter((o) => o.legend && (o.tiled || loaded.has(o.id))
+      && map.getLayer(o.id) && map.getLayoutProperty(o.id, 'visibility') !== 'none')
     .flatMap((o) => [[o.label, null], ...o.legend]);
   const rows = [...THEMES[theme].legend];
   if (extra.length) rows.push(['Drawn on top', null], ...extra);
@@ -559,6 +672,19 @@ $('#backdrop-opacity').oninput = (e) => {
 
 /* ── Hash, clicks, lists, epochs ──────────────────────────────────────────── */
 
+const STORE = 'rewt-viewer/v1';
+/* THE HASH IS FOR SENDING, LOCAL STORAGE IS FOR RETURNING. A link carries a view to
+   somebody else; storage brings a reader back to where they were. The link wins when
+   there is one, because a shared view that quietly reopened somewhere else would be
+   the more surprising failure. Wrapped because a private window throws on access
+   rather than returning null. */
+function remember(state) {
+  try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { /* private */ }
+}
+function recall() {
+  try { return JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { return null; }
+}
+
 let hashTimer, hashReady = false;
 function writeHash() {
   if (!hashReady) return;
@@ -577,9 +703,24 @@ function writeHash() {
     const dflt = OVERLAYS.filter((x) => x.on).map((x) => x.id);
     if (on.join() !== dflt.join()) parts.push(`l=${on.join(',') || '-'}`);
     history.replaceState(null, '', '#' + parts.join('&'));
+    remember({ zoom: map.getZoom(), lat: ctr.lat, lon: ctr.lng,
+      b: backdropId, o: op, t: theme, l: on });
   }, 250);
 }
 map.on('moveend', writeHash);
+
+/* PASTING A SHARED LINK INTO A TAB THAT ALREADY HAS THE MAP OPEN did nothing at all:
+   changing only the fragment is a same-document navigation, so boot never re-ran, the
+   hash was never re-read, and the first `moveend` overwrote the pasted link with the
+   view already on screen. The reader watched their colleague's link erase itself.
+
+   Reloading is the honest fix rather than a lazy one. Restoring a view means centre,
+   zoom, backdrop, opacity, theme, county sheet and an async `ensure()` per layer — the
+   whole of boot — and a second implementation of boot that ran only on paste is a
+   second implementation to keep in step. `writeHash` uses replaceState, which does not
+   fire this event, so anything arriving here came from outside: a paste, or the back
+   button. Both want the state in the bar. */
+addEventListener('hashchange', () => location.reload());
 /* The legend's own heading changes at z9 — marks below, geometry above — so it has to
    follow the zoom rather than only the controls. */
 map.on('zoomend', () => { if (hashReady) applyTheme(); });
@@ -626,6 +767,8 @@ function wireNetwork() {
   }
 }
 
+const FINDINGS = (summary && summary.findings) || [];
+
 function renderBasins(filter = '') {
   const host = $('#basin-list');
   host.innerHTML = '';
@@ -647,12 +790,69 @@ function renderBasins(filter = '') {
 }
 $('#basin-filter').oninput = (e) => renderBasins(e.target.value);
 
+/* ── The audit's own findings ──────────────────────────────────────────────
+ * This block was rendering empty, under a heading reading "The audit's own findings" —
+ * which says the audit found nothing, and it found 232. The list was never absent from
+ * the audit; it was absent from summary.json, so the fix belongs in the build
+ * (rewt/tiles.py) and not in a fallback here. If it is still empty the block hides
+ * itself, because an empty list under that heading is a false statement about the
+ * audit rather than a cosmetic blemish. */
+
+const FINDING_LABEL = {
+  dead_end: 'Dead ends',
+  direction_fault: 'Direction faults',
+  stranded_component: 'Stranded components',
+  refused_crossing: 'Refused crossings',
+  touching_not_joined: 'Touching, not joined',
+  cycle: 'Cycles',
+};
+
+function renderFindings() {
+  const host = $('#finding-list');
+  const kind = $('#finding-kind').value;
+  host.innerHTML = '';
+  const rows = FINDINGS.filter((f) => !kind || f.kind === kind);
+  for (const f of rows.slice(0, 250)) {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="t">${esc(FINDING_LABEL[f.kind] || f.kind)}</span>
+      <span class="cap">${esc(f.detail || '')}</span>`;
+    li.onclick = () => { if (f.lon != null) map.flyTo({ center: [f.lon, f.lat], zoom: 14 }); };
+    host.append(li);
+  }
+  if (!rows.length) host.innerHTML = '<li><span class="t">none of this kind</span></li>';
+}
+
+function buildFindings() {
+  /* The audit publishes the worst N of each kind, not all of them, so the count in the
+     option is the count of what is listed here — not of what exists. Saying "50" where
+     the network has 1,195 dead ends would be the more misleading number. */
+  const sel = $('#finding-kind');
+  $('#findings-block').hidden = FINDINGS.length === 0;
+  if (!FINDINGS.length) return;
+  const kinds = [...new Set(FINDINGS.map((f) => f.kind))];
+  sel.innerHTML = `<option value="">All ${FINDINGS.length} listed</option>`
+    + kinds.map((k) => {
+      const n = FINDINGS.filter((f) => f.kind === k).length;
+      return `<option value="${esc(k)}">${esc(FINDING_LABEL[k] || k)} — ${n}</option>`;
+    }).join('');
+  sel.onchange = renderFindings;
+  $('#findings-block').querySelector('.hint').textContent =
+    `${FINDINGS.length} listed, worst first — click to fly`;
+  renderFindings();
+}
+
 /* ── Epochs ────────────────────────────────────────────────────────────────
  * The rationale for each date is NOT copied here, not even as an illustration in this
  * comment — an illustrative quotation is still a second copy and drifts the same way
  * while looking harmless because it does not render. `docs/_data/epochs.yml` owns it,
  * Jekyll publishes it as epochs.json, and the temporality page and this control render
  * the same string. A bare year is the one thing this control must never show. */
+
+/* The epoch rationales are written as table cells — "the high medieval maximum…",
+   "the Dissolution; …" — so they read as fragments when a control puts them after a
+   full stop. Capitalised for display only; the source string is rewt-1d's and is not
+   edited here, which is the point of fetching rather than copying it. */
+const sentence = (t) => (t ? t.charAt(0).toUpperCase() + t.slice(1) : t);
 
 const DATUM_NOTE = 'The datum, and what you are looking at: the present-day network '
   + 'made traversable. It is NOT an epoch in the series — the dated cross-sections are '
@@ -662,7 +862,10 @@ async function buildEpochs() {
   const host = $('#epoch-steps'), note = $('#epoch-note');
   const table = await fetch('../epochs.json').then((r) => (r.ok ? r.json() : null))
     .then((d) => (d && d.epochs) || null).catch(() => null);
-  const link = '<a href="../epochs">Why these dates</a>';
+  /* _blank like every other link on this page: the map holds a view the reader has
+     usually spent a while arranging, and navigating away from it in the same tab
+     throws that away for the sake of a footnote. */
+  const link = '<a href="../epochs" target="_blank" rel="noopener">Why these dates</a>';
   const datum = `${esc(DATUM_NOTE)} ${link}`;
   const say = (h) => { note.innerHTML = h; };
   say(datum);
@@ -676,15 +879,81 @@ async function buildEpochs() {
     b.dataset.state = built ? 'built' : 'planned';
     b.innerHTML = `<span class="yr">${esc(e.year)}</span>`;
     b.disabled = !built;
-    b.title = built ? DATUM_NOTE : `${e.year} — not built yet.${e.why ? ' ' + e.why : ''}`;
+    b.title = built ? DATUM_NOTE
+      : `${e.year} — not built yet.${e.why ? ' ' + sentence(e.why) : ''}`;
     b.addEventListener('mouseenter', () => say(built ? datum
-      : `<b>${esc(e.year)} — not built.</b> ${e.why ? esc(e.why) + ' ' : ''}`
+      : `<b>${esc(e.year)} — not built.</b> ${e.why ? esc(sentence(e.why)) + ' ' : ''}`
         + 'The selector switches between separately modelled networks; it does not '
         + `animate one, so nothing is interpolated between stops. ${link}`));
     host.append(b);
   }
   host.addEventListener('mouseleave', () => say(datum));
 }
+
+/* ── How to read this map ──────────────────────────────────────────────────
+ * Where the long prose went. It was in the side panel, above the layer switches, and
+ * it pushed what most readers came for below the fold. It is not decoration — the
+ * thinning rule and the licence position are both things a reader has to be able to
+ * find — so it moves rather than going. */
+
+function buildAbout() {
+  const prov = (summary && summary.provenance) || {};
+  const cite = summary && summary.citation;
+  const year = (prov.built_at || '').slice(0, 4) || '2026';
+  $('#about-body').innerHTML = `
+    <h3>What this is</h3>
+    <p>The river network of England and Wales, made traversable, as it is now.
+    <b>Stage 1 makes no historical claim whatever</b> — nothing here is dated, and the
+    epoch selector shows the seven dated cross-sections as unbuilt because they are.</p>
+
+    <h3>How the network is drawn</h3>
+    <p>Served as vector tiles and fetched a viewport at a time, so every one of its
+    ${fmt(c.links)} links is reachable by zooming in. <b>Below zoom 9 four classes
+    appear as marks rather than as geometry</b> — one dot per link — because at that
+    scale a pixel is kilometres wide and a short channel has no drawable length. The
+    mark says a defect is <em>there</em>; the line appears when there is a pixel to draw
+    it in. <b>Nothing is omitted at any zoom</b>, and a channel not drawn is
+    <em>not</em> a channel that is missing.</p>
+    <p>Those four classes are the ones it would be worst to lose: water that does not
+    reach the sea, links retired and kept for the audit trail, geometry this project
+    added, and anything whose routing direction was corrected.</p>
+
+    <h3>What is not here</h3>
+    <p>No historic backdrop. The National Library of Scotland asks that its
+    georeferenced layers be re-used <q>within a desktop or local environment</q> and
+    that a public website use their Historic Maps API or contact them; this site is
+    public, so those layers are drawn only in the local viewer in the repository.</p>
+
+    <h3>Sources and attribution</h3>
+    <p>${(summary && summary.attribution) || ''}</p>
+
+    ${cite ? `<h3>Citing this</h3>
+    <p><code>${esc(cite.authors.join('; '))} (${esc(year)}).
+    ${esc(cite.title)}. Version ${esc(cite.version)}.
+    ${esc(cite.affiliations.join('; '))}. doi:${esc(cite.doi)}</code></p>
+    <p>${esc(cite.message)}</p>
+    <p><a href="https://doi.org/${esc(cite.doi)}" target="_blank" rel="noopener">${esc(cite.doi)}</a>
+    — ${esc(cite.doi_note || '')}. Licensed ${esc(cite.licence)}.
+    ${cite.orcids.map((o) => `<a href="${esc(o)}" target="_blank" rel="noopener">ORCID</a>`).join(' ')}</p>
+    <p>This is generated from the repository's <code>CITATION.cff</code>, which is
+    itself generated from <code>.zenodo.json</code>, so that whom to credit is declared
+    once and this box cannot drift away from it.</p>` : ''}
+
+    <h3>This build</h3>
+    <p>Built ${esc((prov.built_at || '').slice(0, 16).replace('T', ' '))}, configuration
+    fingerprint <code>${esc(prov.config_fingerprint || '—')}</code>.</p>
+
+    <h3>Elsewhere</h3>
+    <p><a href="../" target="_blank" rel="noopener">The project site</a> ·
+    <a href="../evidence" target="_blank" rel="noopener">Evidence and its licensing</a> ·
+    <a href="../epochs" target="_blank" rel="noopener">Why these dates</a> ·
+    <a href="https://github.com/docuracy/REWT" target="_blank" rel="noopener">Code on GitHub</a></p>`;
+}
+const showAbout = (on) => { $('#about').hidden = !on; };
+$('#open-about').onclick = (e) => { e.preventDefault(); showAbout(true); };
+$('#about-close').onclick = () => showAbout(false);
+$('#about').onclick = (e) => { if (e.target.id === 'about') showAbout(false); };
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') showAbout(false); });
 
 $('#copy-link').onclick = async () => {
   writeHash();
@@ -697,13 +966,28 @@ $('#copy-link').onclick = async () => {
 
 /* ── Boot ─────────────────────────────────────────────────────────────────── */
 
+/* Named `progress`, not `say`: there are already two local `say`s in this file — one
+   writes the epoch note, one flashes the copy-link confirmation — and a third at module
+   scope reads at a glance like the same function doing a third thing. */
+const progress = (t) => { const el = $('#loading-what'); if (el) el.textContent = t; };
+const doneLoading = () => {
+  const el = $('#loading');
+  if (!el || el.hidden) return;
+  el.style.opacity = '0';
+  setTimeout(() => { el.hidden = true; }, 350);
+};
+
 map.on('load', async () => {
   map.addImage('arrow-reversed', arrowImage(C.rev));
+  for (const [name, ring] of CROSSING_CLASSES) map.addImage(name, crossingImage(ring));
+  progress('Fetching the network…');
   await addNetwork();
   wireNetwork();
   buildLayerPanel();
+  buildAbout();
   await applyBackdrop();
 
+  progress('Drawing the layers…');
   const wanted = HASH.l === undefined ? null : (HASH.l === '-' ? [] : HASH.l.split(','));
   const boxes = [...document.querySelectorAll('#layers .switch')];
   for (const [i, o] of OVERLAYS.entries()) {
@@ -712,7 +996,7 @@ map.on('load', async () => {
       if (want) await ensure(o);
       const box = boxes[i]?.querySelector('input');
       if (box) box.checked = want;
-      if (loaded.has(o.id)) setVisible(o, want);
+      if (o.tiled || loaded.has(o.id)) setVisible(o, want);
     } catch (err) { console.warn(`layer ${o.id} could not be restored:`, err); }
   }
   if (HASH.o !== undefined) {
@@ -722,6 +1006,7 @@ map.on('load', async () => {
   $('#theme').value = theme;
   applyTheme();
   renderBasins();
+  buildFindings();
   await buildEpochs();
 
   /* THE OLD WORDING PROMISED SOMETHING GEOMETRY CANNOT GIVE. It said the four classes
@@ -730,15 +1015,6 @@ map.on('load', async () => {
      shorter than one unit — 184 m at z5, against a median kept link of 394 m — has no
      length left and cannot be drawn at all. The claim that survives is narrower and
      true: below z9 the four classes are MARKED, not drawn. */
-  $('#thinning').innerHTML = map.getSource('rewt')
-    ? 'The network is served as vector tiles and fetched a viewport at a time, so every '
-      + 'one of its links is reachable by zooming in. <b>Below zoom 9 the four classes '
-      + 'the legend names appear as marks rather than as geometry</b> — one dot per '
-      + 'link, because at that scale a pixel is kilometres wide and a short channel has '
-      + 'no drawable length. The mark says a defect is <em>there</em>; the line appears '
-      + 'when there is a pixel to draw it in. <b>Nothing is omitted at any zoom</b>, and '
-      + 'a channel not drawn here is <em>not</em> a channel that is missing.'
-    : 'The network is not loaded — see the notice above.';
 
   if (problems.length || missing.length) {
     $('#warn').hidden = false;
@@ -749,4 +1025,13 @@ map.on('load', async () => {
   if (HASH.zoom !== undefined) map.jumpTo({ center: [HASH.lon, HASH.lat], zoom: HASH.zoom });
   hashReady = true;
   writeHash();
+
+  /* THE SPINNER GOES WHEN THE MAP IS ACTUALLY PAINTED, not when the fetches return.
+     `idle` fires once the style is loaded and every visible tile has been rendered,
+     which is the moment a reader can tell the map is working — twenty seconds earlier
+     it is indistinguishable from a crash. The timeout is a backstop: if `idle` never
+     comes, a spinner that spins for ever is its own kind of lie. */
+  progress('Painting…');
+  map.once('idle', doneLoading);
+  setTimeout(doneLoading, 30000);
 });

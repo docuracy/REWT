@@ -19,3 +19,10 @@ tools/viewer/cache/
 # while the whole network is still served.
 docs/viewer/data/
 vendor/
+
+# The National Library of Scotland tileset catalogue: 2,016 layers, one filled-in
+# bucket URL each. Harvested by enumerating a bucket that permits ListBucket, for
+# layers whose addresses the Library does not publish itself and asks not to be served
+# on a public website. Committing an index it declined to publish is not something to
+# do while a letter to maps@nls.uk is unanswered. Local only; see tools/viewer/.gitignore.
+tools/nls_layers.json
