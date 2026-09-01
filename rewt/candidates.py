@@ -516,6 +516,11 @@ def propose_connectors(
 
         gap = float(row.drain_gap_m)
         name = row.name if isinstance(row.name, str) else "an unnamed watercourse"
+        corroboration = (
+            structure_near(float(row.sink_e), float(row.sink_n))
+            if row.form == "canal"
+            else None
+        )
         drafts.append(
             {
                 "geometry": connector,
@@ -563,12 +568,22 @@ def propose_connectors(
                     )
                     + "; the line between them crosses no other watercourse. "
                     + (
-                        "THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED "
-                        "STRUCTURE. D-011 asks for the connection to be made where the "
-                        "lock or weir actually is; no open dataset of canal structures "
-                        "is registered here, so the nearest approach stands in for it. "
-                        "That is the weakest evidence in this file and each of these "
-                        "should be checked at the place. "
+                        (
+                            "D-011 asks for the connection where the lock or weir "
+                            "actually is: " + corroboration + ". The POSITION is still "
+                            "the nearest approach between the two waters, because a "
+                            "located structure sits a median 11.5 m and up to 298 m "
+                            "from the survey's own line and is evidence rather than a "
+                            "coordinate (D-030). "
+                            if corroboration
+                            else "THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED "
+                            "STRUCTURE, and no lock, weir or boat lift is recorded "
+                            "within 150 m of it. The Canal & River Trust covers its "
+                            "own 101 waterways only, so that is not evidence there is "
+                            "no structure — but it is not evidence there is one. This "
+                            "is the weakest class in this file and should be checked "
+                            "at the place. "
+                        )
                         if row.form == "canal" else ""
                     )
                     + "JUDGED BY RULE, not by a person looking at the place: see "
@@ -583,6 +598,37 @@ def propose_connectors(
             }
         )
     return drafts, rejected
+
+
+def structure_near(easting: float, northing: float, radius_m: float = 150.0) -> str | None:
+    """A located lock, weir or feeder near a place — D-011's corroboration.
+
+    Returns a phrase naming the nearest one, or None. **Never a coordinate.** A Canal &
+    River Trust structure sits a median 11.5 m from the nearest OS watercourse but a
+    90th percentile of 108 m, so it says *something was built near here* and not *the
+    connection belongs at this point* (D-030).
+    """
+    if not db.table_exists("structure"):
+        return None
+    row = db.query(
+        f"""
+        SELECT kind, description, waterway,
+               sqrt(pow(easting - {easting}, 2) + pow(northing - {northing}, 2)) AS d
+        FROM structure
+        WHERE easting BETWEEN {easting - radius_m} AND {easting + radius_m}
+          AND northing BETWEEN {northing - radius_m} AND {northing + radius_m}
+          AND kind IN ('locks', 'weirs', 'boat_lifts')
+        ORDER BY d, reference LIMIT 1
+        """
+    )
+    if not row:
+        return None
+    kind, description, waterway, d = row[0]
+    return (
+        f"a {kind.rstrip('s')} is recorded {d:,.0f} m away — "
+        f"{description or 'unnamed'} on the {waterway or 'unnamed waterway'} "
+        f"(Canal & River Trust)"
+    )
 
 
 def _issue() -> str:

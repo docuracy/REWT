@@ -750,3 +750,56 @@ same provenance as `ea_lidar_composite_dtm_1m` at a fortieth of the resolution, 
 not a substitute for per-section LiDAR (D-006). Its one advantage is that it is seamless
 and so has no coverage-boundary trap — no equivalent of the 0.0-m-over-Wales behaviour
 that entry warns about. Worth knowing; not worth switching to.
+
+**D-030 — A seventh source the build reads: the Canal & River Trust's navigation
+structures. They are evidence of a structure, never a coordinate.** *2026-09-01*
+
+*Found and licence-checked by rewt-86; verified, measured and landed here.*
+
+D-004 fixed the input list at six and said that **adding a seventh is a decision to be
+recorded here, not a convenience**. This is the seventh, and it is the first source
+since that decision that the Stage 1 build actually reads.
+
+**What licenses it is that PLAN.md asks for it by name.** D-011: *a canal reaches the
+sea through a structure — a lock, an overflow weir, a feeder — that the survey does not
+draw. Connect it to the receiving watercourse **where the structure actually is**.*
+Until now nothing supplied where that was, and the canal connectors in `data/curated/`
+admitted it in their own evidence: *the position is the nearest approach, not a surveyed
+structure. That is the weakest evidence in this file.* 1,722 locks, 1,108 weirs, 329
+aqueducts, 2,962 culverts, 103 tunnel portals and one boat lift now answer it.
+
+**The licence is D-023's shape for the sixth time.** The Trust's portal licenses **per
+dataset**: of 30 datasets, 13 are OGL v3, 14 carry a bespoke Canal & River Trust licence
+and 2 an INSPIRE end-user licence. The six point-structure layers are the open ones; the
+**canal geometry is not** — "Canals By Navigation View", "Canals By KM Length View",
+"Canal Reference Map" and "Tunnels View" are all bespoke, Docks and Embankments INSPIRE.
+Fortunately the encumbered half is the half we do not need: OS Open Rivers already gives
+canal geometry as `form = canal`. The excluded layers are named in the entry so nobody
+adds them back.
+
+**The measurement that decides how they may be used, and it is the whole of this
+entry.** A Canal & River Trust lock and an OS Open Rivers canal line are two independent
+products and they do not coincide. Measured against issue 2026-04: of 1,722 locks, 1,607
+have any OS watercourse within 300 m; the median offset is **11.5 m**, the 90th
+percentile **108.1 m**, the maximum **297.6 m**, and for **28%** the nearest OS link is
+not even a canal.
+
+So a structure here says *something was built near this place* and never *the connection
+belongs at this point*. Connector geometry keeps coming from the network, where it is
+precise; the structure supplies the corroboration D-011 asks for and nothing else. Every
+canal connector now records which of the two it has: a named lock or weir and its
+distance, or an explicit statement that none is recorded within 150 m — **and that
+second case is not evidence of absence**, because the Trust manages 101 waterways and
+not all navigable water in England and Wales.
+
+**It also confirms D-016, which was decided on reasoning alone.** That entry refuses a
+connector where two lines touch at exactly 0 m, on the argument that such a crossing is
+an aqueduct or a culvert far more often than a confluence. Of the 88 refusals with a
+locatable touch point, **68 — 77% — have a recorded aqueduct or culvert within 150 m**.
+Three had been checked by hand; sixty-eight is a different quality of answer.
+
+**One trap in the service, and it is silent.** An ArcGIS FeatureServer caps a response
+at its own `maxRecordCount` and reports it only in `exceededTransferLimit`. Asked for
+the culverts unpaged it returns **2,000 of 2,962 with an HTTP 200 and no error**.
+`rewt.acquire.fetch_arcgis` reads the flag and pages; a caller that does not will get a
+third of the layer missing and nothing will say so.

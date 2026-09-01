@@ -12,6 +12,7 @@ from . import (  # noqa: F401  (imported to register)
     census,
     terrain,
     basins,
+    structures,
     curated_stage,
     repair,
     screen,

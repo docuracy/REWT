@@ -451,3 +451,77 @@ sources:
       shows their valley at all. For those the pre-Ordnance-Survey county maps are the
       primary cartographic recourse rather than a fallback, and they are the same corpus
       `mills_of_britain` was compiled from.
+
+  # Point structures on the Canal & River Trust network: locks, aqueducts,
+  # culverts, weirs, tunnel portals, boat lifts. Needed for the stranded canal
+  # components of PLAN.md §5 — the survey draws the channel but not the works
+  # that connect it, so 1,212 components strand with no modelled outlet.
+  - id: crt_navigation_structures
+    title: "Canal & River Trust navigation structures (locks, aqueducts, culverts, weirs)"
+    publisher: "Canal & River Trust"
+    url: "https://data-canalrivertrust.opendata.arcgis.com/"
+    licence: "Open Government Licence v3"
+    attribution: "Contains Canal & River Trust information licensed under the Open
+      Government Licence v3.0."
+    access: open
+    redistribution: permitted
+    stage: 1
+    format: [geojson, csv]
+    crs: "EPSG:4326"          # ArcGIS FeatureServer default; reproject to 27700 on load
+    cache_path: "data/raw/crt_structures/"
+    checksum: null
+    status: unverified
+    api: arcgis
+    arcgis:
+      base: "https://services.arcgis.com/DknzyjEEie5tEW0u/arcgis/rest/services"
+      layers:
+        locks: "Canal_And_River_Trust_Locks_View/FeatureServer/0"
+        aqueducts: "Canal_And_River_Trust_Aqueducts_view/FeatureServer/0"
+        culverts: "Canal_And_River_Trust_Culverts_View/FeatureServer/0"
+        weirs: "Canal_And_River_Trust_Weirs_View/FeatureServer/0"
+        tunnel_portals: "Canal_And_River_Trust_Tunnel_Portals_View/FeatureServer/0"
+        boat_lifts: "Canal_And_River_Trust_Boat_Lifts_View/FeatureServer/0"
+      query: "/query?where=1%3D1&outFields=*&f=geojson"
+      page_size: 2000
+    notes: >
+      TAKE THE STRUCTURES, NOT THE NETWORK. The Canal & River Trust portal licenses
+      PER DATASET and the licences differ — of 30 datasets, 13 are OGL v3, 14 carry a
+      bespoke "Canal & River Trust data licence", and 2 are under an INSPIRE end-user
+      licence. The six point-structure layers above are the OGL ones and are safe. The
+      CANAL GEOMETRY IS NOT: "Canals By Navigation View", "Canals By KM Length View",
+      "Canal Reference Map" and "Tunnels View" all carry the bespoke licence, and
+      "Docks" and "Embankments" the INSPIRE one. Do not fetch those; OS Open Rivers
+      already supplies canal geometry as `form = canal`. This is D-023's shape again —
+      one publisher, one portal, three licences, and the useful-looking layer is the
+      encumbered one. Verified from the portal's own DCAT feed, 2026-09-01.
+
+      WHAT IT CARRIES, counted from the services: locks 1,722, culverts 2,962, weirs
+      1,108, aqueducts 329, tunnel portals 103, boat lifts 1. Fields are
+      `sap_func_loc`, `sap_description`, `sap_object_type`, `waterway_name`, and on
+      locks an `angle`. Locks, weirs and aqueducts each return in a single request;
+      CULVERTS DO NOT. The service caps a response at 2,000 and says so only in
+      `exceededTransferLimit`, so an unpaged fetch returns 2,000 of the 2,962 with an
+      HTTP 200 and no error. `rewt.acquire.fetch_arcgis` reads that flag and pages.
+
+      THE POSITIONS ARE NOT A SNAPPING TARGET, and this is the most important thing to
+      know before using them. Measured here against OS Open Rivers issue 2026-04: of
+      1,722 locks, 1,607 have any OS watercourse within 300 m, the median offset is
+      11.5 m, the 90th percentile 108.1 m and the maximum 297.6 m; for 28% of them the
+      nearest OS link is not even `form = canal`. These are two independent products
+      and they do not coincide. So a lock is EVIDENCE THAT A STRUCTURE EXISTS NEAR A
+      PLACE, and is not a coordinate to move a connector to. Geometry keeps coming
+      from the network, where it is precise; this source supplies the corroboration
+      that D-011 asks for and nothing else.
+
+      COVERAGE IS THE TRUST'S OWN NETWORK, 101 named waterways, and NOT all navigable
+      water in England and Wales. The Environment Agency, the Broads Authority and
+      several independent trusts manage the rest, so absence here is not evidence that
+      no structure exists. Of the three largest stranded components measured in this
+      build, the Weaver IS covered ("Weaver Navigation" and "Frodsham Cut"); the Culm
+      and the North Tyne are NOT, and neither is a canal — so the canal-outlet
+      diagnosis does not fit them and they need a different explanation.
+
+      THE AQUEDUCT AND CULVERT LAYERS ARE EVIDENCE FOR D-016. That decision refuses a
+      connector at a 0 m crossing on the reasoning that it is far more often an
+      aqueduct or a culvert than a confluence. There are 329 aqueducts and 2,962
+      culverts here, located. The rule can be checked against them rather than argued.

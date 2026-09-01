@@ -22901,6 +22901,1788 @@
         "upstream_km": 1.912
       },
       "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            452909.76,
+            321631.58
+          ],
+          [
+            452785.75,
+            321699.59
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 452,909.8 E 321,631.6 N with 604.9 km of catchment above it and no outflow; the nearest link that reaches tidal water is 7494C7F4-C439-457A-A092-22ECDCBCA2E6 (Willow Brook), 141.4 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 11 m away \u2014 Lock 54 - Bishop Meadow Lock on the River Soar (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 141.435,
+        "name": "Grand Union Canal at 452,910 321,632",
+        "reason": "Grand Union Canal is a canal, and it arrives at a node with no outflow and stops. 141.4 m away is Willow Brook (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "7494C7F4-C439-457A-A092-22ECDCBCA2E6",
+        "sink_publisher_id": "D9FD263C-13E7-4362-9D36-D1A99A431260",
+        "upstream_km": 604.892
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            351969.14,
+            473540.74
+          ],
+          [
+            351850.57724198245,
+            473544.44200864155
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 351,969.1 E 473,540.7 N with 53.1 km of catchment above it and no outflow; the nearest link that reaches tidal water is 31DC19FE-EA6B-40D5-B505-C2FE8BF0F875 (White Beck), 118.6 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE, and no lock, weir or boat lift is recorded within 150 m of it. The Canal & River Trust covers its own 101 waterways only, so that is not evidence there is no structure \u2014 but it is not evidence there is one. This is the weakest class in this file and should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 118.621,
+        "name": "Lancaster Canal at 351,969 473,541",
+        "reason": "Lancaster Canal is a canal, and it arrives at a node with no outflow and stops. 118.6 m away is White Beck (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "31DC19FE-EA6B-40D5-B505-C2FE8BF0F875",
+        "sink_publisher_id": "E32169DF-A688-433E-88B8-305031542050",
+        "upstream_km": 53.122
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            332873.35,
+            334783.25
+          ],
+          [
+            332997.68576369225,
+            334752.3712857056
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 332,873.3 E 334,783.2 N with 21.3 km of catchment above it and no outflow; the nearest link that reaches tidal water is D51F8BF8-F72D-4A02-8E7D-D9D72BACFE7C (None), 128.1 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 13 m away \u2014 Lock 1, New Marton Locks on the Llangollen Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 128.113,
+        "name": "Llangollen Canal at 332,873 334,783",
+        "reason": "Llangollen Canal is a canal, and it arrives at a node with no outflow and stops. 128.1 m away is a watercourse (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "D51F8BF8-F72D-4A02-8E7D-D9D72BACFE7C",
+        "sink_publisher_id": "4DC44CB6-4182-4BB4-BA5D-A5F6D38278D5",
+        "upstream_km": 21.323
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            307113.52,
+            118111.0
+          ],
+          [
+            307059.6593921548,
+            118117.08685667012
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 307,113.5 E 118,111.0 N with 16.7 km of catchment above it and no outflow; the nearest link that reaches tidal water is 58542506-AC0D-4552-8CF0-7FD404D27A10 (None), 54.2 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE, and no lock, weir or boat lift is recorded within 150 m of it. The Canal & River Trust covers its own 101 waterways only, so that is not evidence there is no structure \u2014 but it is not evidence there is one. This is the weakest class in this file and should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 54.203,
+        "name": "Grand Western Canal at 307,114 118,111",
+        "reason": "Grand Western Canal is a canal, and it arrives at a node with no outflow and stops. 54.2 m away is a watercourse (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "58542506-AC0D-4552-8CF0-7FD404D27A10",
+        "sink_publisher_id": "6121472C-9C0F-48B6-9BE2-7A3CBCB0496B",
+        "upstream_km": 16.673
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            400909.5,
+            321110.01
+          ],
+          [
+            401021.89,
+            321026.99
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 400,909.5 E 321,110.0 N with 10.2 km of catchment above it and no outflow; the nearest link that reaches tidal water is C73297F4-CE7F-4B3A-AC5F-C5B10D36B634 (River Trent), 139.7 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 13 m away \u2014 Lock 21, Colwich Lock on the Trent & Mersey Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 139.728,
+        "name": "Trent and Mersey Canal at 400,910 321,110",
+        "reason": "Trent and Mersey Canal is a canal, and it arrives at a node with no outflow and stops. 139.7 m away is River Trent (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "C73297F4-CE7F-4B3A-AC5F-C5B10D36B634",
+        "sink_publisher_id": "FA3C0C46-E330-49E1-AC3B-DDBEC40EE5B1",
+        "upstream_km": 10.175
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            394620.34,
+            329050.09
+          ],
+          [
+            394573.89115867205,
+            328946.44885955856
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 394,620.3 E 329,050.1 N with 7.8 km of catchment above it and no outflow; the nearest link that reaches tidal water is 739F3CAC-256D-4063-A790-D028DD1BEA3A (River Trent), 113.6 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 13 m away \u2014 Lock 25, Sandon Lock on the Trent & Mersey Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 113.574,
+        "name": "Trent and Mersey Canal at 394,620 329,050",
+        "reason": "Trent and Mersey Canal is a canal, and it arrives at a node with no outflow and stops. 113.6 m away is River Trent (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "739F3CAC-256D-4063-A790-D028DD1BEA3A",
+        "sink_publisher_id": "FAF9E84E-6A1B-4B9F-82A6-B4F8CA53C425",
+        "upstream_km": 7.78
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            390014.68,
+            351349.09
+          ],
+          [
+            390128.58976958774,
+            351327.59458639316
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 390,014.7 E 351,349.1 N with 7.6 km of catchment above it and no outflow; the nearest link that reaches tidal water is 59B52C9A-B389-4E7E-8603-F7E8EB06B559 (Head of Trent), 115.9 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 13 m away \u2014 Lock 4 Engine Lock on the Caldon Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 115.92,
+        "name": "Caldon Canal at 390,015 351,349",
+        "reason": "Caldon Canal is a canal, and it arrives at a node with no outflow and stops. 115.9 m away is Head of Trent (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "59B52C9A-B389-4E7E-8603-F7E8EB06B559",
+        "sink_publisher_id": "281B5404-1819-4549-9856-7A7D1D30E18C",
+        "upstream_km": 7.583
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            441038.93,
+            402180.98
+          ],
+          [
+            441114.9653975226,
+            402077.47058259003
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 441,038.9 E 402,181.0 N with 6.7 km of catchment above it and no outflow; the nearest link that reaches tidal water is CE317575-FE72-4FF0-BDD3-DCB61B3B15FF (Knoll Beck), 128.4 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE, and no lock, weir or boat lift is recorded within 150 m of it. The Canal & River Trust covers its own 101 waterways only, so that is not evidence there is no structure \u2014 but it is not evidence there is one. This is the weakest class in this file and should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 128.435,
+        "name": "Dearne and Dove Canal at 441,039 402,181",
+        "reason": "Dearne and Dove Canal is a canal, and it arrives at a node with no outflow and stops. 128.4 m away is Knoll Beck (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "CE317575-FE72-4FF0-BDD3-DCB61B3B15FF",
+        "sink_publisher_id": "E9DF9666-2ABC-4D03-B9A8-20D222604A61",
+        "upstream_km": 6.661
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            463176.95,
+            380049.1
+          ],
+          [
+            463309.0607839621,
+            380078.44070290093
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 463,177.0 E 380,049.1 N with 5.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is 17343FE7-3569-4C57-8457-4AFE9F79ED41 (None), 135.3 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 12 m away \u2014 Lock 53, Osberton Lock on the Chesterfield Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 135.33,
+        "name": "Chesterfield Canal at 463,177 380,049",
+        "reason": "Chesterfield Canal is a canal, and it arrives at a node with no outflow and stops. 135.3 m away is a watercourse (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "17343FE7-3569-4C57-8457-4AFE9F79ED41",
+        "sink_publisher_id": "1F26611C-BE2F-4678-A3E6-8723AE19828F",
+        "upstream_km": 5.542
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            394639.36,
+            329036.64
+          ],
+          [
+            394594.7495127603,
+            328937.1007727343
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 394,639.4 E 329,036.6 N with 4.6 km of catchment above it and no outflow; the nearest link that reaches tidal water is 739F3CAC-256D-4063-A790-D028DD1BEA3A (River Trent), 109.1 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 11 m away \u2014 Lock 25, Sandon Lock on the Trent & Mersey Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 109.079,
+        "name": "Trent and Mersey Canal at 394,639 329,037",
+        "reason": "Trent and Mersey Canal is a canal, and it arrives at a node with no outflow and stops. 109.1 m away is River Trent (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "739F3CAC-256D-4063-A790-D028DD1BEA3A",
+        "sink_publisher_id": "8A73A1CD-7BDD-4FE1-868F-1FFAA6F61E70",
+        "upstream_km": 4.568
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            448675.67,
+            222651.63
+          ],
+          [
+            448554.7,
+            222733.4
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 448,675.7 E 222,651.6 N with 4.4 km of catchment above it and no outflow; the nearest link that reaches tidal water is 89A7CC65-523E-42BE-8294-906D3CCFCA98 (None), 146.0 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 12 m away \u2014 Lock 37, Dashwood Lock on the Oxford Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 146.014,
+        "name": "Oxford Canal at 448,676 222,652",
+        "reason": "Oxford Canal is a canal, and it arrives at a node with no outflow and stops. 146.0 m away is a watercourse (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "89A7CC65-523E-42BE-8294-906D3CCFCA98",
+        "sink_publisher_id": "6119425C-7039-450D-B4F3-FA575961D86B",
+        "upstream_km": 4.382
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            470009.19,
+            381031.32
+          ],
+          [
+            470120.7,
+            380962.76
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 470,009.2 E 381,031.3 N with 3.2 km of catchment above it and no outflow; the nearest link that reaches tidal water is 6F915AF2-CAED-4A8D-9A03-10F3B06D9B46 (Carr Dyke), 130.9 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 10 m away \u2014 Lock 58, Retford West Town Lock on the Chesterfield Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 130.901,
+        "name": "Chesterfield Canal at 470,009 381,031",
+        "reason": "Chesterfield Canal is a canal, and it arrives at a node with no outflow and stops. 130.9 m away is Carr Dyke (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "6F915AF2-CAED-4A8D-9A03-10F3B06D9B46",
+        "sink_publisher_id": "28194B03-586A-4547-A8DC-F4A28CDDFB94",
+        "upstream_km": 3.243
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            487214.52,
+            213971.64
+          ],
+          [
+            487204.09855928534,
+            213973.30169841708
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 487,214.5 E 213,971.6 N with 3.0 km of catchment above it and no outflow; the nearest link that reaches tidal water is E7A5DAA3-1980-46D9-A03A-6407E358EC38 (Draytonmead Brook), 10.6 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 13 m away \u2014 Lock 13 on the Aylesbury Arm (Grand Union Canal) (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 10.553,
+        "name": "Grand Union Canal at 487,215 213,972",
+        "reason": "Grand Union Canal is a canal, and it arrives at a node with no outflow and stops. 10.6 m away is Draytonmead Brook (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "E7A5DAA3-1980-46D9-A03A-6407E358EC38",
+        "sink_publisher_id": "65F9930F-1AEB-4695-8F79-18AFA496246A",
+        "upstream_km": 2.966
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            397831.51,
+            326127.71
+          ],
+          [
+            397697.27119041176,
+            326079.4021495169
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 397,831.5 E 326,127.7 N with 2.9 km of catchment above it and no outflow; the nearest link that reaches tidal water is 6629ACAC-FDB5-47B4-9257-2719FE232596 (River Trent), 142.7 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 14 m away \u2014 Lock 24, Weston Lock on the Trent & Mersey Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 142.666,
+        "name": "Trent and Mersey Canal at 397,832 326,128",
+        "reason": "Trent and Mersey Canal is a canal, and it arrives at a node with no outflow and stops. 142.7 m away is River Trent (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "6629ACAC-FDB5-47B4-9257-2719FE232596",
+        "sink_publisher_id": "BE3A522B-E7E3-4610-9998-BA40CEDA992C",
+        "upstream_km": 2.902
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            391660.11,
+            331935.89
+          ],
+          [
+            391577.552191628,
+            331841.03122359293
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 391,660.1 E 331,935.9 N with 2.7 km of catchment above it and no outflow; the nearest link that reaches tidal water is E7F496DF-8CE6-4AF5-9643-F3B33A1296B5 (River Trent), 125.8 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 14 m away \u2014 Lock 26, Aston Lock on the Trent & Mersey Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 125.754,
+        "name": "Trent and Mersey Canal at 391,660 331,936",
+        "reason": "Trent and Mersey Canal is a canal, and it arrives at a node with no outflow and stops. 125.8 m away is River Trent (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "E7F496DF-8CE6-4AF5-9643-F3B33A1296B5",
+        "sink_publisher_id": "3FDA966A-9CD0-4ED0-A0D5-090881B9DF08",
+        "upstream_km": 2.7
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            391639.34,
+            331950.1
+          ],
+          [
+            391558.6970010687,
+            331857.4413362675
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 391,639.3 E 331,950.1 N with 2.3 km of catchment above it and no outflow; the nearest link that reaches tidal water is E7F496DF-8CE6-4AF5-9643-F3B33A1296B5 (River Trent), 122.8 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 11 m away \u2014 Lock 26, Aston Lock on the Trent & Mersey Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 122.837,
+        "name": "Trent and Mersey Canal at 391,639 331,950",
+        "reason": "Trent and Mersey Canal is a canal, and it arrives at a node with no outflow and stops. 122.8 m away is River Trent (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "E7F496DF-8CE6-4AF5-9643-F3B33A1296B5",
+        "sink_publisher_id": "A4CB90FC-1D8D-4071-A834-4D0E87EAA591",
+        "upstream_km": 2.346
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            465743.75,
+            294430.29
+          ],
+          [
+            465632.5120115723,
+            294473.8377940013
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 465,743.8 E 294,430.3 N with 2.1 km of catchment above it and no outflow; the nearest link that reaches tidal water is E099E00C-CCA5-4745-A626-ED63D1B36F32 (None), 119.5 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 15 m away \u2014 Lock 18 - Kibworth Top Lock on the Leicester Line (Grand Union Canal) (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 119.458,
+        "name": "Grand Union Canal at 465,744 294,430",
+        "reason": "Grand Union Canal is a canal, and it arrives at a node with no outflow and stops. 119.5 m away is a watercourse (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "E099E00C-CCA5-4745-A626-ED63D1B36F32",
+        "sink_publisher_id": "9109DAE8-2ECA-40AA-AEF5-58FAC48BFF48",
+        "upstream_km": 2.137
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            399600.96,
+            322646.99
+          ],
+          [
+            399499.49602050224,
+            322598.2542886339
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 399,601.0 E 322,647.0 N with 1.6 km of catchment above it and no outflow; the nearest link that reaches tidal water is DA721F7D-6BC6-422C-802E-A4CAA5CC7408 (River Trent), 112.6 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 13 m away \u2014 Lock 22, Haywood Lock on the Trent & Mersey Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 112.562,
+        "name": "Trent and Mersey Canal at 399,601 322,647",
+        "reason": "Trent and Mersey Canal is a canal, and it arrives at a node with no outflow and stops. 112.6 m away is River Trent (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "DA721F7D-6BC6-422C-802E-A4CAA5CC7408",
+        "sink_publisher_id": "D3F129C9-6046-4238-BC95-F5F1E3C5D817",
+        "upstream_km": 1.589
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            398155.46,
+            351422.5
+          ],
+          [
+            398129.6963402829,
+            351279.8118513596
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 398,155.5 E 351,422.5 N with 1.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is 31C4185C-5344-4888-BAE4-1D2E0CBB7E8B (None), 145.0 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 13 m away \u2014 Lock 15 Woods Lock on the Caldon Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 144.995,
+        "name": "Caldon Canal at 398,155 351,422",
+        "reason": "Caldon Canal is a canal, and it arrives at a node with no outflow and stops. 145.0 m away is a watercourse (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "31C4185C-5344-4888-BAE4-1D2E0CBB7E8B",
+        "sink_publisher_id": "D5F330DE-F43A-4464-89E1-4EAA2B4D6CB7",
+        "upstream_km": 1.484
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            446490.64,
+            258532.87
+          ],
+          [
+            446424.85,
+            258627.57
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 446,490.6 E 258,532.9 N with 1.2 km of catchment above it and no outflow; the nearest link that reaches tidal water is DCDBA0E8-14AF-46A3-8A53-515BBFEFE46F (None), 115.3 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 12 m away \u2014 Lock 15, Marston Doles Bottom Lock on the Oxford Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 115.31,
+        "name": "Oxford Canal at 446,491 258,533",
+        "reason": "Oxford Canal is a canal, and it arrives at a node with no outflow and stops. 115.3 m away is a watercourse (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "DCDBA0E8-14AF-46A3-8A53-515BBFEFE46F",
+        "sink_publisher_id": "A617D067-891B-4359-A6BA-F04DB7421683",
+        "upstream_km": 1.245
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            281610.78,
+            202191.97
+          ],
+          [
+            281730.69,
+            202180.57
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 281,610.8 E 202,192.0 N with 1.2 km of catchment above it and no outflow; the nearest link that reaches tidal water is 765E914D-2032-4806-82D0-5228F3960E3D (Afon Nedd), 120.5 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE, and no lock, weir or boat lift is recorded within 150 m of it. The Canal & River Trust covers its own 101 waterways only, so that is not evidence there is no structure \u2014 but it is not evidence there is one. This is the weakest class in this file and should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 120.451,
+        "name": "Neath Canal at 281,611 202,192",
+        "reason": "Neath Canal is a canal, and it arrives at a node with no outflow and stops. 120.5 m away is Afon Nedd (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "765E914D-2032-4806-82D0-5228F3960E3D",
+        "sink_publisher_id": "EA1A0F96-021D-431B-BB8D-A5E99E433349",
+        "upstream_km": 1.204
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            459433.44,
+            297725.47
+          ],
+          [
+            459306.68308039993,
+            297771.9254520746
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 459,433.4 E 297,725.5 N with 1.2 km of catchment above it and no outflow; the nearest link that reaches tidal water is 370D7605-856B-48AE-89E3-E32CDC519E72 (None), 135.0 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 10 m away \u2014 Lock 32 - Ervins Lock on the Leicester Line (Grand Union Canal) (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 135.002,
+        "name": "Grand Union Canal at 459,433 297,725",
+        "reason": "Grand Union Canal is a canal, and it arrives at a node with no outflow and stops. 135.0 m away is a watercourse (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "370D7605-856B-48AE-89E3-E32CDC519E72",
+        "sink_publisher_id": "D7DB6CE2-D699-4642-B42B-33641969A738",
+        "upstream_km": 1.176
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            488900.35,
+            214026.04
+          ],
+          [
+            488878.61624687543,
+            214018.33442480888
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 488,900.3 E 214,026.0 N with 1.2 km of catchment above it and no outflow; the nearest link that reaches tidal water is 251C7636-708A-4E7D-94CE-D698167B3E0F (Buckland Brook), 23.1 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 9 m away \u2014 Lock 11 on the Aylesbury Arm (Grand Union Canal) (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 23.059,
+        "name": "Grand Union Canal at 488,900 214,026",
+        "reason": "Grand Union Canal is a canal, and it arrives at a node with no outflow and stops. 23.1 m away is Buckland Brook (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "251C7636-708A-4E7D-94CE-D698167B3E0F",
+        "sink_publisher_id": "82653BCC-0A17-41D3-9620-8BF8B8995CCE",
+        "upstream_km": 1.172
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            449319.95,
+            226130.41
+          ],
+          [
+            449232.6,
+            226036.56
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 449,320.0 E 226,130.4 N with 1.1 km of catchment above it and no outflow; the nearest link that reaches tidal water is 851EBDFE-D9F0-404C-9219-83F23C51D465 (River Cherwell), 128.2 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 11 m away \u2014 Lock 36, Allens Lock on the Oxford Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 128.21,
+        "name": "Oxford Canal at 449,320 226,130",
+        "reason": "Oxford Canal is a canal, and it arrives at a node with no outflow and stops. 128.2 m away is River Cherwell (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "851EBDFE-D9F0-404C-9219-83F23C51D465",
+        "sink_publisher_id": "38F39E32-D7F8-4C0E-A54B-42DC72CBC0C0",
+        "upstream_km": 1.122
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            396147.13,
+            356123.1
+          ],
+          [
+            396261.47,
+            356120.84
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 396,147.1 E 356,123.1 N with 1.0 km of catchment above it and no outflow; the nearest link that reaches tidal water is 69219AA9-D0DD-442D-8773-BB777AB9B97D (River Churnet), 114.4 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE, and no lock, weir or boat lift is recorded within 150 m of it. The Canal & River Trust covers its own 101 waterways only, so that is not evidence there is no structure \u2014 but it is not evidence there is one. This is the weakest class in this file and should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 114.362,
+        "name": "an unnamed watercourse at 396,147 356,123",
+        "reason": "an unnamed watercourse is a canal, and it arrives at a node with no outflow and stops. 114.4 m away is River Churnet (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "69219AA9-D0DD-442D-8773-BB777AB9B97D",
+        "sink_publisher_id": "20201A0D-9390-4152-9A78-653494C31697",
+        "upstream_km": 0.959
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            490120.65,
+            214325.71
+          ],
+          [
+            490142.57036970666,
+            214319.5032611435
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 490,120.7 E 214,325.7 N with 0.9 km of catchment above it and no outflow; the nearest link that reaches tidal water is 67923F51-E448-449F-B859-E77484C8F594 (Gudgeon Stream), 22.8 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 14 m away \u2014 Lock 9 on the Aylesbury Arm (Grand Union Canal) (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 22.782,
+        "name": "Grand Union Canal at 490,121 214,326",
+        "reason": "Grand Union Canal is a canal, and it arrives at a node with no outflow and stops. 22.8 m away is Gudgeon Stream (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "67923F51-E448-449F-B859-E77484C8F594",
+        "sink_publisher_id": "C115FACF-A2E4-4878-AC7C-76C40563864B",
+        "upstream_km": 0.914
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            387833.2,
+            257679.0
+          ],
+          [
+            387940.87,
+            257773.36
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 387,833.2 E 257,679.0 N with 0.9 km of catchment above it and no outflow; the nearest link that reaches tidal water is 9AEF2CDE-F5CA-4EB5-81D1-0DA875FD22AB (Barbourne Brook), 143.2 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 12 m away \u2014 Lock 10, Tolladine on the Worcester & Birmingham Canal. (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 143.166,
+        "name": "Worcester and Birmingham Canal at 387,833 257,679",
+        "reason": "Worcester and Birmingham Canal is a canal, and it arrives at a node with no outflow and stops. 143.2 m away is Barbourne Brook (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "9AEF2CDE-F5CA-4EB5-81D1-0DA875FD22AB",
+        "sink_publisher_id": "310C86AC-A8B6-4C7A-9478-8C77C32D3823",
+        "upstream_km": 0.88
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            413162.79,
+            438231.53
+          ],
+          [
+            413187.7442446095,
+            438341.8869507814
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 413,162.8 E 438,231.5 N with 0.9 km of catchment above it and no outflow; the nearest link that reaches tidal water is 1A236C61-6A31-4801-A984-9DD886694551 (River Aire), 113.1 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 9 m away \u2014 Lock 19, Hirst Lock on the Leeds & Liverpool Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 113.143,
+        "name": "Leeds and Liverpool Canal at 413,163 438,232",
+        "reason": "Leeds and Liverpool Canal is a canal, and it arrives at a node with no outflow and stops. 113.1 m away is River Aire (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "1A236C61-6A31-4801-A984-9DD886694551",
+        "sink_publisher_id": "93D7F862-803B-49E4-916F-F3540F382B4C",
+        "upstream_km": 0.861
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            491513.52,
+            222997.12
+          ],
+          [
+            491609.82,
+            223074.31
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 491,513.5 E 222,997.1 N with 0.8 km of catchment above it and no outflow; the nearest link that reaches tidal water is F09DA46A-AC44-4379-87B3-F93563E3B233 (River Ouzel), 123.4 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 16 m away \u2014 Lock 28, Grove Lock on the Grand Union Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 123.418,
+        "name": "Grand Union Canal at 491,514 222,997",
+        "reason": "Grand Union Canal is a canal, and it arrives at a node with no outflow and stops. 123.4 m away is River Ouzel (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "F09DA46A-AC44-4379-87B3-F93563E3B233",
+        "sink_publisher_id": "49ACEFDC-2520-4DE8-80F8-1EA3C2F4067A",
+        "upstream_km": 0.812
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            429637.5,
+            433060.5
+          ],
+          [
+            429643.69584816246,
+            432934.19751308265
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 429,637.5 E 433,060.5 N with 0.7 km of catchment above it and no outflow; the nearest link that reaches tidal water is F987C8E5-31F1-4EF9-A043-42AD72236479 (Hol Beck), 126.5 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 10 m away \u2014 Lock 2, Office Lock on the Leeds & Liverpool Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 126.454,
+        "name": "Leeds and Liverpool Canal at 429,638 433,060",
+        "reason": "Leeds and Liverpool Canal is a canal, and it arrives at a node with no outflow and stops. 126.5 m away is Hol Beck (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "F987C8E5-31F1-4EF9-A043-42AD72236479",
+        "sink_publisher_id": "54CBD20A-6E41-412C-A876-9AC1FE1C068E",
+        "upstream_km": 0.737
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            470028.95,
+            381018.33
+          ],
+          [
+            470120.7,
+            380962.76
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 470,029.0 E 381,018.3 N with 0.7 km of catchment above it and no outflow; the nearest link that reaches tidal water is 6F915AF2-CAED-4A8D-9A03-10F3B06D9B46 (Carr Dyke), 107.3 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 14 m away \u2014 Lock 58, Retford West Town Lock on the Chesterfield Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 107.266,
+        "name": "Chesterfield Canal at 470,029 381,018",
+        "reason": "Chesterfield Canal is a canal, and it arrives at a node with no outflow and stops. 107.3 m away is Carr Dyke (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "6F915AF2-CAED-4A8D-9A03-10F3B06D9B46",
+        "sink_publisher_id": "57C3D8B1-4AF7-4E2B-B951-6E1F79A7B8B6",
+        "upstream_km": 0.657
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            332884.76,
+            334762.15
+          ],
+          [
+            332982.8470400397,
+            334711.85504169826
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 332,884.8 E 334,762.2 N with 0.6 km of catchment above it and no outflow; the nearest link that reaches tidal water is D51F8BF8-F72D-4A02-8E7D-D9D72BACFE7C (None), 110.2 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 11 m away \u2014 Lock 1, New Marton Locks on the Llangollen Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 110.23,
+        "name": "Llangollen Canal at 332,885 334,762",
+        "reason": "Llangollen Canal is a canal, and it arrives at a node with no outflow and stops. 110.2 m away is a watercourse (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "D51F8BF8-F72D-4A02-8E7D-D9D72BACFE7C",
+        "sink_publisher_id": "109CBA68-A5AF-4E3D-AABF-58E72D8A9A69",
+        "upstream_km": 0.614
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            459886.84,
+            297055.17
+          ],
+          [
+            459893.74,
+            296938.93
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 459,886.8 E 297,055.2 N with 0.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is 6CD68FA0-67EC-48F9-ABC8-A84AA4E55520 (River Sence), 116.4 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 17 m away \u2014 Lock 31 - Double Rail Lock on the Leicester Line (Grand Union Canal) (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 116.445,
+        "name": "Grand Union Canal at 459,887 297,055",
+        "reason": "Grand Union Canal is a canal, and it arrives at a node with no outflow and stops. 116.4 m away is River Sence (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "6CD68FA0-67EC-48F9-ABC8-A84AA4E55520",
+        "sink_publisher_id": "D4F342BA-9CEE-4AE4-82E2-1B4EE8FBA06B",
+        "upstream_km": 0.543
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            405987.67,
+            412813.27
+          ],
+          [
+            406079.01,
+            412751.84
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 405,987.7 E 412,813.3 N with 0.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is 1BA68273-A501-4648-AE31-88CB111794BA (River Colne), 110.1 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 12 m away \u2014 Lock 31 East on the Huddersfield Narrow Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 110.076,
+        "name": "Huddersfield Narrow Canal at 405,988 412,813",
+        "reason": "Huddersfield Narrow Canal is a canal, and it arrives at a node with no outflow and stops. 110.1 m away is River Colne (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "1BA68273-A501-4648-AE31-88CB111794BA",
+        "sink_publisher_id": "F873D5C8-045A-4A11-8922-86F236101FE6",
+        "upstream_km": 0.541
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            411584.55,
+            415825.72
+          ],
+          [
+            411468.94,
+            415837.14
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 411,584.5 E 415,825.7 N with 0.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is BAA89CA1-35BC-42FD-919A-D5CCB57C363C (None), 116.2 m away, carrying no name that contradicts it; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 8 m away \u2014 Lock 11 East, Library Lock on the Huddersfield Narrow Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 116.173,
+        "name": "Huddersfield Narrow Canal at 411,585 415,826",
+        "reason": "Huddersfield Narrow Canal is a canal, and it arrives at a node with no outflow and stops. 116.2 m away is a watercourse (inlandRiver), which does reach tidal water. D-011: a canal does not reach the sea down its own channel \u2014 it reaches it through a lock, an overflow weir or a feeder that the survey does not draw \u2014 so it is attached to the receiving watercourse rather than being reversed until the total improves.",
+        "resumes_as": "BAA89CA1-35BC-42FD-919A-D5CCB57C363C",
+        "sink_publisher_id": "E1DB4BBB-3B7F-4CFB-9DE5-97D27CE6477A",
+        "upstream_km": 0.503
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            408347.9126889243,
+            291290.96161752846
+          ],
+          [
+            408195.15,
+            291206.8
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 174.4 m, at 408,347.9 E 291,291.0 N, to 3E41CAFC-11B0-4C2B-8F52-799A573E55DE. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 174.412,
+        "name": "Tame Valley Canal to River Tame at 408,348 291,291",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 174.4 m, between Tame Valley Canal (canal) and River Tame (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "3E41CAFC-11B0-4C2B-8F52-799A573E55DE",
+        "sink_publisher_id": null,
+        "upstream_km": 1.897
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            446504.35,
+            258513.45
+          ],
+          [
+            446490.64,
+            258532.87
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 446,504.3 E 258,513.5 N with 18.9 km of catchment above it and no outflow; the nearest link that reaches tidal water is A760B561-7153-4C14-8F86-1465FE737E7A (Oxford Canal), 23.8 m away, carrying the same watercourse name; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 12 m away \u2014 Lock 15, Marston Doles Bottom Lock on the Oxford Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 23.772,
+        "name": "Oxford Canal at 446,504 258,513",
+        "reason": "Oxford Canal arrives at a node with no outflow and stops. 23.8 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "A760B561-7153-4C14-8F86-1465FE737E7A",
+        "sink_publisher_id": "0B328A6A-127A-4ABB-893E-4E150E266FB9",
+        "upstream_km": 18.887
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            460421.94,
+            297081.09
+          ],
+          [
+            460397.65,
+            297072.83
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 460,421.9 E 297,081.1 N with 4.1 km of catchment above it and no outflow; the nearest link that reaches tidal water is 467EB91A-3BE5-45EA-BDCB-48C009A8FAFF (Grand Union Canal), 25.7 m away, carrying the same watercourse name; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 15 m away \u2014 Lock 30 - Kilby Lock on the Leicester Line (Grand Union Canal) (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 25.656,
+        "name": "Grand Union Canal at 460,422 297,081",
+        "reason": "Grand Union Canal arrives at a node with no outflow and stops. 25.7 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "467EB91A-3BE5-45EA-BDCB-48C009A8FAFF",
+        "sink_publisher_id": "9E059C44-7548-422D-80FE-62D4A016702F",
+        "upstream_km": 4.061
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            281511.94,
+            202141.69
+          ],
+          [
+            281610.78,
+            202191.97
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 281,511.9 E 202,141.7 N with 2.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is 971DE45C-D20D-4BA8-8D00-2C3CF48720E8 (Neath Canal), 110.9 m away, carrying the same watercourse name; the line between them crosses no other watercourse. THE POSITION IS THE NEAREST APPROACH, NOT A SURVEYED STRUCTURE, and no lock, weir or boat lift is recorded within 150 m of it. The Canal & River Trust covers its own 101 waterways only, so that is not evidence there is no structure \u2014 but it is not evidence there is one. This is the weakest class in this file and should be checked at the place. JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 110.894,
+        "name": "Neath Canal at 281,512 202,142",
+        "reason": "Neath Canal arrives at a node with no outflow and stops. 110.9 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "971DE45C-D20D-4BA8-8D00-2C3CF48720E8",
+        "sink_publisher_id": "F94F6004-D8F3-4BCC-B807-7998E243D97F",
+        "upstream_km": 2.522
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            400890.52,
+            321123.14
+          ],
+          [
+            400909.5,
+            321110.01
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 400,890.5 E 321,123.1 N with 2.2 km of catchment above it and no outflow; the nearest link that reaches tidal water is 232A8C3B-2F0A-4351-BB2A-70C7614062F0 (Trent and Mersey Canal), 23.1 m away, carrying the same watercourse name; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 10 m away \u2014 Lock 21, Colwich Lock on the Trent & Mersey Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 23.079,
+        "name": "Trent and Mersey Canal at 400,891 321,123",
+        "reason": "Trent and Mersey Canal arrives at a node with no outflow and stops. 23.1 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "232A8C3B-2F0A-4351-BB2A-70C7614062F0",
+        "sink_publisher_id": "CEF8EC97-B4A2-4954-BD20-0345A818E47F",
+        "upstream_km": 2.158
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            398149.19,
+            351445.73
+          ],
+          [
+            398155.46,
+            351422.5
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 398,149.2 E 351,445.7 N with 1.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is 8496036E-B242-4E68-9413-CE55B7538303 (Caldon Canal), 24.1 m away, carrying the same watercourse name; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 11 m away \u2014 Lock 15 Woods Lock on the Caldon Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 24.061,
+        "name": "Caldon Canal at 398,149 351,446",
+        "reason": "Caldon Canal arrives at a node with no outflow and stops. 24.1 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "8496036E-B242-4E68-9413-CE55B7538303",
+        "sink_publisher_id": "D47B377B-76D6-420D-BD08-6CD302286A65",
+        "upstream_km": 1.53
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            452920.97,
+            321609.99
+          ],
+          [
+            452909.76,
+            321631.58
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 452,921.0 E 321,610.0 N with 1.0 km of catchment above it and no outflow; the nearest link that reaches tidal water is FCC7FF71-71C7-4DD1-B60A-7D32DCC99B6C (Grand Union Canal), 24.3 m away, carrying the same watercourse name; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 13 m away \u2014 Lock 54 - Bishop Meadow Lock on the River Soar (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 24.327,
+        "name": "Grand Union Canal at 452,921 321,610",
+        "reason": "Grand Union Canal arrives at a node with no outflow and stops. 24.3 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "FCC7FF71-71C7-4DD1-B60A-7D32DCC99B6C",
+        "sink_publisher_id": "D7355C18-3BCF-4AA8-8657-B97EB631D654",
+        "upstream_km": 1.032
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            459450.5,
+            297704.89
+          ],
+          [
+            459433.44,
+            297725.47
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 459,450.5 E 297,704.9 N with 0.8 km of catchment above it and no outflow; the nearest link that reaches tidal water is 0685E1C0-DD1B-460A-BBBD-CA2DB0414C2A (Grand Union Canal), 26.7 m away, carrying the same watercourse name; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 17 m away \u2014 Lock 32 - Ervins Lock on the Leicester Line (Grand Union Canal) (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 26.732,
+        "name": "Grand Union Canal at 459,450 297,705",
+        "reason": "Grand Union Canal arrives at a node with no outflow and stops. 26.7 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "0685E1C0-DD1B-460A-BBBD-CA2DB0414C2A",
+        "sink_publisher_id": "C73A5CE0-2A41-4C01-9E9D-18EB068B3670",
+        "upstream_km": 0.763
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            445858.92,
+            259239.67
+          ],
+          [
+            445849.99,
+            259218.65
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 445,858.9 E 259,239.7 N with 0.6 km of catchment above it and no outflow; the nearest link that reaches tidal water is A760B561-7153-4C14-8F86-1465FE737E7A (Oxford Canal), 22.8 m away, carrying the same watercourse name; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 9 m away \u2014 Lock 14, Adkins Lock on the Oxford Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 22.838,
+        "name": "Oxford Canal at 445,859 259,240",
+        "reason": "Oxford Canal arrives at a node with no outflow and stops. 22.8 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "A760B561-7153-4C14-8F86-1465FE737E7A",
+        "sink_publisher_id": "102A2DA4-9BA6-4C9E-B894-156EA43E721B",
+        "upstream_km": 0.559
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            467572.11,
+            382737.82
+          ],
+          [
+            467584.78,
+            382718.11
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 467,572.1 E 382,737.8 N with 0.5 km of catchment above it and no outflow; the nearest link that reaches tidal water is F9ED7603-371F-40CC-B2B1-9455D5D78DE1 (Chesterfield Canal), 23.4 m away, carrying the same watercourse name; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 10 m away \u2014 Lock 57, Forest Bottom Lock on the Chesterfield Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 23.431,
+        "name": "Chesterfield Canal at 467,572 382,738",
+        "reason": "Chesterfield Canal arrives at a node with no outflow and stops. 23.4 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "F9ED7603-371F-40CC-B2B1-9455D5D78DE1",
+        "sink_publisher_id": "F8E32C5E-0B65-43CC-B385-E021328592C6",
+        "upstream_km": 0.501
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            302382.27,
+            107799.25
+          ],
+          [
+            302478.68,
+            107823.17
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 99.3 m, at 302,382.3 E 107,799.2 N, to B6946968-98ED-4722-BCBC-4FD66DF66A76. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 99.333,
+        "name": "a stranded watercourse to Spratford Stream at 302,382 107,799",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 99.3 m, between an unnamed watercourse (inlandRiver) and Spratford Stream (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "B6946968-98ED-4722-BCBC-4FD66DF66A76",
+        "sink_publisher_id": null,
+        "upstream_km": 1.857
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            254132.9,
+            52866.6
+          ],
+          [
+            254096.6,
+            52845.9
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 41.8 m, at 254,132.9 E 52,866.6 N, to 2F301F8F-59C0-4EA2-94A8-E82FE43D5F49. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 41.787,
+        "name": "a stranded watercourse to draining water at 254,133 52,867",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 41.8 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "2F301F8F-59C0-4EA2-94A8-E82FE43D5F49",
+        "sink_publisher_id": null,
+        "upstream_km": 1.853
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            280676.59,
+            82421.28
+          ],
+          [
+            280653.17002036783,
+            82387.02427795125
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.9 km and not one of its links reaches tidal water; the closest approach to a link that does is 41.5 m, at 280,676.6 E 82,421.3 N, to C79EEC7E-36BE-49AA-A399-32E4754F3239. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 41.496,
+        "name": "a stranded watercourse to draining water at 280,677 82,421",
+        "reason": "A component holding 1.9 km has no way to tidal water at all. Its closest approach to water that does drain is 41.5 m, between an unnamed watercourse (lake) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "C79EEC7E-36BE-49AA-A399-32E4754F3239",
+        "sink_publisher_id": null,
+        "upstream_km": 1.852
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            168871.87,
+            34757.44
+          ],
+          [
+            168899.93148687482,
+            34730.64764203383
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 38.8 m, at 168,871.9 E 34,757.4 N, to 1F26D4ED-5552-4BA2-AF41-68153882BE1B. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 38.798,
+        "name": "a stranded watercourse to draining water at 168,872 34,757",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 38.8 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "1F26D4ED-5552-4BA2-AF41-68153882BE1B",
+        "sink_publisher_id": null,
+        "upstream_km": 1.849
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            358876.71958989196,
+            402356.73523731565
+          ],
+          [
+            358757.74,
+            402417.99
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 133.8 m, at 358,876.7 E 402,356.7 N, to 15E48C8E-20BC-495C-8DC3-ED3801882E42. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 133.822,
+        "name": "a stranded watercourse to draining water at 358,877 402,357",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 133.8 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "15E48C8E-20BC-495C-8DC3-ED3801882E42",
+        "sink_publisher_id": null,
+        "upstream_km": 1.837
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            186130.32,
+            213962.71
+          ],
+          [
+            186079.41,
+            213672.47
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 294.7 m, at 186,130.3 E 213,962.7 N, to CB251F65-65AB-4889-85C0-FD28E219A7F6. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 294.671,
+        "name": "a stranded watercourse to draining water at 186,130 213,963",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 294.7 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "CB251F65-65AB-4889-85C0-FD28E219A7F6",
+        "sink_publisher_id": null,
+        "upstream_km": 1.829
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            362732.25,
+            421093.39
+          ],
+          [
+            362710.93,
+            421079.84
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 25.3 m, at 362,732.2 E 421,093.4 N, to ADFD7539-425D-4FCC-BA32-BF6DBA7E94B2. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 25.262,
+        "name": "a stranded watercourse to draining water at 362,732 421,093",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 25.3 m, between an unnamed watercourse (lake) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "ADFD7539-425D-4FCC-BA32-BF6DBA7E94B2",
+        "sink_publisher_id": null,
+        "upstream_km": 1.818
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            321291.74,
+            557442.22
+          ],
+          [
+            321307.77164230135,
+            557470.0674050624
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 32.1 m, at 321,291.7 E 557,442.2 N, to 252E6CFD-B949-4412-91CA-C6C64C04156E. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 32.132,
+        "name": "a stranded watercourse to River Wampool at 321,292 557,442",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 32.1 m, between an unnamed watercourse (inlandRiver) and River Wampool (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "252E6CFD-B949-4412-91CA-C6C64C04156E",
+        "sink_publisher_id": null,
+        "upstream_km": 1.806
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            502852.83,
+            245255.16
+          ],
+          [
+            502815.6648255215,
+            245271.04453487528
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 40.4 m, at 502,852.8 E 245,255.2 N, to EF0B4E17-2DF8-48D0-BC88-17707BDE267E. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 40.417,
+        "name": "a stranded watercourse to draining water at 502,853 245,255",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 40.4 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "EF0B4E17-2DF8-48D0-BC88-17707BDE267E",
+        "sink_publisher_id": null,
+        "upstream_km": 1.801
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            452963.28,
+            320577.98
+          ],
+          [
+            452956.36,
+            320604.21
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 452,963.3 E 320,578.0 N with 4.9 km of catchment above it and no outflow; the nearest link that reaches tidal water is B8D718CD-7EDA-4AD7-813D-F339C50C23E2 (Grand Union Canal), 27.1 m away, carrying the same watercourse name; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 17 m away \u2014 Lock 53 - Loughborough Lock on the River Soar (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 27.127,
+        "name": "Grand Union Canal at 452,963 320,578",
+        "reason": "Grand Union Canal arrives at a node with no outflow and stops. 27.1 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "B8D718CD-7EDA-4AD7-813D-F339C50C23E2",
+        "sink_publisher_id": "DC99D09C-9E3F-4125-ACBD-855C3E60FFE6",
+        "upstream_km": 4.895
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            467189.09,
+            383085.07
+          ],
+          [
+            467209.67,
+            383072.64
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the dead end is at 467,189.1 E 383,085.1 N with 1.2 km of catchment above it and no outflow; the nearest link that reaches tidal water is C57E4D35-B552-48B5-A0E0-264B84B93B55 (Chesterfield Canal), 24.0 m away, carrying the same watercourse name; the line between them crosses no other watercourse. D-011 asks for the connection where the lock or weir actually is: a lock is recorded 13 m away \u2014 Lock 56, Forest Middle Bottom Lock on the Chesterfield Canal (Canal & River Trust). The POSITION is still the nearest approach between the two waters, because a located structure sits a median 11.5 m and up to 298 m from the survey's own line and is evidence rather than a coordinate (D-030). JUDGED BY RULE, not by a person looking at the place: see rewt/candidates.py propose_connectors.",
+        "gap_m": 24.042,
+        "name": "Chesterfield Canal at 467,189 383,085",
+        "reason": "Chesterfield Canal arrives at a node with no outflow and stops. 24.0 m away the same watercourse resumes and does reach tidal water. One river drawn in two pieces is a gap in the survey's topology, not a feature of the river, so the two pieces are joined where they come closest.",
+        "resumes_as": "C57E4D35-B552-48B5-A0E0-264B84B93B55",
+        "sink_publisher_id": "9A9CBE82-0772-444B-A1BC-59109D19FBA5",
+        "upstream_km": 1.216
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            243270.41,
+            352054.62
+          ],
+          [
+            243401.58,
+            352355.84
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 328.5 m, at 243,270.4 E 352,054.6 N, to 1B26D61B-62FD-43EE-AE36-691773A86907. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 328.541,
+        "name": "a stranded watercourse to draining water at 243,270 352,055",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 328.5 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "1B26D61B-62FD-43EE-AE36-691773A86907",
+        "sink_publisher_id": null,
+        "upstream_km": 1.801
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            553653.68,
+            134155.24
+          ],
+          [
+            553698.9,
+            134221.09
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 79.9 m, at 553,653.7 E 134,155.2 N, to 550D2591-8B04-4011-8878-CAC651721523. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 79.882,
+        "name": "a stranded watercourse to draining water at 553,654 134,155",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 79.9 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "550D2591-8B04-4011-8878-CAC651721523",
+        "sink_publisher_id": null,
+        "upstream_km": 1.789
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            394618.9,
+            419967.3
+          ],
+          [
+            394555.53,
+            420136.26
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 180.5 m, at 394,618.9 E 419,967.3 N, to F37354BE-8BC8-4D61-BB8C-879C9ADD25F6. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 180.453,
+        "name": "Rochdale Canal to Warland Draw at 394,619 419,967",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 180.5 m, between Rochdale Canal (canal) and Warland Draw (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "F37354BE-8BC8-4D61-BB8C-879C9ADD25F6",
+        "sink_publisher_id": null,
+        "upstream_km": 1.783
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            379972.83,
+            300253.32
+          ],
+          [
+            380013.52,
+            300245.96
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 41.4 m, at 379,972.8 E 300,253.3 N, to 2EA0FB1A-A85B-49A0-91B0-58FF66D63B5B. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 41.35,
+        "name": "a stranded watercourse to draining water at 379,973 300,253",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 41.4 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "2EA0FB1A-A85B-49A0-91B0-58FF66D63B5B",
+        "sink_publisher_id": null,
+        "upstream_km": 1.782
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            469246.61,
+            429192.43
+          ],
+          [
+            469273.2659816959,
+            429133.8117857065
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 64.4 m, at 469,246.6 E 429,192.4 N, to E46F19C0-A779-49A1-BEA3-DAC649669619. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 64.394,
+        "name": "a stranded watercourse to River Derwent at 469,247 429,192",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 64.4 m, between an unnamed watercourse (inlandRiver) and River Derwent (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "E46F19C0-A779-49A1-BEA3-DAC649669619",
+        "sink_publisher_id": null,
+        "upstream_km": 1.779
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            333613.28,
+            478767.08
+          ],
+          [
+            333508.75634841254,
+            479010.2429416092
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 264.7 m, at 333,613.3 E 478,767.1 N, to DAA0E066-5D3B-4060-AB7A-943E693A999B. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 264.676,
+        "name": "a stranded watercourse to draining water at 333,613 478,767",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 264.7 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "DAA0E066-5D3B-4060-AB7A-943E693A999B",
+        "sink_publisher_id": null,
+        "upstream_km": 1.767
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            317691.08,
+            213789.06
+          ],
+          [
+            317770.32,
+            213661.58
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.8 km and not one of its links reaches tidal water; the closest approach to a link that does is 150.1 m, at 317,691.1 E 213,789.1 N, to ADDE59B2-B753-47B8-9C72-9D495F7CFCB2. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 150.1,
+        "name": "a stranded watercourse to draining water at 317,691 213,789",
+        "reason": "A component holding 1.8 km has no way to tidal water at all. Its closest approach to water that does drain is 150.1 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (lake). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "ADDE59B2-B753-47B8-9C72-9D495F7CFCB2",
+        "sink_publisher_id": null,
+        "upstream_km": 1.763
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            348491.7,
+            471561.09
+          ],
+          [
+            348789.53651085205,
+            471291.4235668186
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.7 km and not one of its links reaches tidal water; the closest approach to a link that does is 401.8 m, at 348,491.7 E 471,561.1 N, to 0EA617B8-9FD7-47E0-99A2-41B42616C228. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 401.779,
+        "name": "a stranded watercourse to River Keer at 348,492 471,561",
+        "reason": "A component holding 1.7 km has no way to tidal water at all. Its closest approach to water that does drain is 401.8 m, between an unnamed watercourse (inlandRiver) and River Keer (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "0EA617B8-9FD7-47E0-99A2-41B42616C228",
+        "sink_publisher_id": null,
+        "upstream_km": 1.739
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            354119.7,
+            424871.55
+          ],
+          [
+            354130.56069234037,
+            424928.26376066235
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.7 km and not one of its links reaches tidal water; the closest approach to a link that does is 57.7 m, at 354,119.7 E 424,871.5 N, to 2615DECE-3C61-467A-84B5-1562CDC5390A. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 57.744,
+        "name": "a stranded watercourse to River Lostock at 354,120 424,872",
+        "reason": "A component holding 1.7 km has no way to tidal water at all. Its closest approach to water that does drain is 57.7 m, between an unnamed watercourse (inlandRiver) and River Lostock (inlandRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "2615DECE-3C61-467A-84B5-1562CDC5390A",
+        "sink_publisher_id": null,
+        "upstream_km": 1.731
+      },
+      "type": "Feature"
+    },
+    {
+      "geometry": {
+        "coordinates": [
+          [
+            240523.11,
+            367092.88
+          ],
+          [
+            240225.63,
+            367121.69
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "author": "rewt candidates (rule), reviewed by Claude",
+        "dated": "2026-08-31",
+        "evidence": "Measured on OS Open Rivers issue 2026-04: the component holds 1.7 km and not one of its links reaches tidal water; the closest approach to a link that does is 298.9 m, at 240,523.1 E 367,092.9 N, to 3B8EBC70-707C-44C5-8D77-3105FD1043CB. The approach is greater than zero, so this is a gap rather than a crossing \u2014 a 0 m crossing with both ends elsewhere is an aqueduct or culvert and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, NOT A SURVEYED STRUCTURE, and should be checked at the place. JUDGED BY RULE: see rewt/candidates.py propose_component_outlets.",
+        "gap_m": 298.872,
+        "name": "a stranded watercourse to draining water at 240,523 367,093",
+        "reason": "A component holding 1.7 km has no way to tidal water at all. Its closest approach to water that does drain is 298.9 m, between an unnamed watercourse (inlandRiver) and an unnamed watercourse (tidalRiver). D-011: a canal reaches the sea through a structure the survey does not draw, and the structure is where the two waters come closest \u2014 which is not, in general, at the end of either line.",
+        "resumes_as": "3B8EBC70-707C-44C5-8D77-3105FD1043CB",
+        "sink_publisher_id": null,
+        "upstream_km": 1.722
+      },
+      "type": "Feature"
     }
   ],
   "name": "connectors",

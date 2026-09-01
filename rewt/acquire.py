@@ -243,12 +243,87 @@ def fetch_os_downloads(source_id: str, *, force: bool = False) -> Acquisition:
     return acq
 
 
+def fetch_arcgis(source_id: str, *, force: bool = False) -> Acquisition:
+    """Fetch every declared layer of an ArcGIS FeatureServer, paging as needed.
+
+    **Paging is not optional and the absence of it is silent.** A FeatureServer caps a
+    response at its own `maxRecordCount` and says so only in `exceededTransferLimit`,
+    which is a field most callers never read: ask for 2,962 culverts and you are handed
+    2,000 and an HTTP 200. The loop below reads that flag and keeps asking.
+    """
+    src = config.source(source_id)
+    base = src.require("arcgis", "base")
+    layers = src.require("arcgis", "layers")
+    query = src.get("arcgis", "query", default="/query?where=1%3D1&outFields=*&f=geojson")
+    page_size = int(src.get("arcgis", "page_size", default=2000))
+
+    dest = src.dir / "extracted"
+    ledger = _load_ledger()
+    prior = ledger.get(source_id)
+    if not force and prior and dest.is_dir():
+        acq = Acquisition(**prior)
+        if all((dest / f"{name}.geojson").exists() for name in layers):
+            log.skip(f"{source_id}: already acquired ({acq.members} layers)")
+            return acq
+
+    dest.mkdir(parents=True, exist_ok=True)
+    counts: dict[str, int] = {}
+    for name, path in layers.items():
+        features: list[dict] = []
+        offset = 0
+        while True:
+            url = f"{base}/{path}{query}&resultOffset={offset}&resultRecordCount={page_size}"
+            resp = requests.get(url, timeout=_TIMEOUT)
+            resp.raise_for_status()
+            doc = resp.json()
+            batch = doc.get("features", [])
+            features.extend(batch)
+            exceeded = doc.get("exceededTransferLimit") or doc.get(
+                "properties", {}
+            ).get("exceededTransferLimit")
+            if not exceeded or not batch:
+                break
+            offset += len(batch)
+        out = dest / f"{name}.geojson"
+        out.write_text(
+            json.dumps(
+                {"type": "FeatureCollection", "name": name, "features": features},
+                sort_keys=True,
+            ),
+            encoding="utf-8",
+        )
+        counts[name] = len(features)
+        log.detail(f"    {name}: {len(features):,} features")
+
+    digest = hashlib.sha256()
+    for name in sorted(layers):
+        digest.update(sha256_file(dest / f"{name}.geojson").encode())
+    acq = Acquisition(
+        source_id=source_id,
+        issue=datetime.now(timezone.utc).date().isoformat(),
+        file_name=", ".join(f"{k}.geojson" for k in sorted(layers)),
+        url=base,
+        bytes=sum((dest / f"{n}.geojson").stat().st_size for n in layers),
+        md5=None,
+        sha256=digest.hexdigest(),
+        acquired_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        extracted_to=paths.rel(dest),
+        members=len(layers),
+    )
+    ledger[source_id] = acq.to_dict()
+    _save_ledger(ledger)
+    log.done(f"{source_id}: {sum(counts.values()):,} features in {len(counts)} layers")
+    return acq
+
+
 def fetch(source_id: str, *, force: bool = False) -> Acquisition:
     """Fetch one declared source by whatever route its declaration names."""
     src = config.source(source_id)
     api = src.get("api")
     if api == "os_downloads":
         return fetch_os_downloads(source_id, force=force)
+    if api == "arcgis":
+        return fetch_arcgis(source_id, force=force)
     if src.get("wcs") or src.get("tile_index"):
         raise AcquisitionError(
             f"{source_id} is fetched per section, never nationally (PLAN.md §4, D-006). "
