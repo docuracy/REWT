@@ -54,6 +54,7 @@ changed.
 | [The rebuilt landscapes](regions/) | the Fens, the Humber, Somerset and the rest — where the modern channel is worthless, and what records survive |
 | [Temporality](epochs) | which dates get published, and why an epoch is a build rather than a filter |
 | [The scale of the work](scale) | how much can be done in house, and where volunteers become necessary |
+| [The tracer](tracer) | the tool contributors will draw with, and why it is built that way |
 | [Background](background) | the proof-of-concept that preceded this, and what it established |
 
 ## Status

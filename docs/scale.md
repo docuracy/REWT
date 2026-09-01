@@ -487,7 +487,7 @@ deployed:
 - **A correction-request tool.** A reader selects the stretch that is wrong, says what is
   wrong with it, and the report carries the identifiers needed to act on it. Feedback
   against a *specific line* is worth far more than feedback about a map.
-- **A snap-to-ink tracer.** A traced segment is fitted to the printed ink of a historic
+- **[A snap-to-ink tracer](tracer).** A traced segment is fitted to the printed ink of a historic
   sheet rather than clicked freehand, so two people tracing the same channel produce
   substantially the same line. It records which vertices were placed by hand and which by
   the algorithm, and on which sheet — so a contributed trace carries its own provenance.

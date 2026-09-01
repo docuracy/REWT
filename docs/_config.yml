@@ -30,6 +30,8 @@ nav:
     url: /epochs
   - title: Scale
     url: /scale
+  - title: Tracer
+    url: /tracer
   - title: Background
     url: /background
 

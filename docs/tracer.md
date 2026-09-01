@@ -1,0 +1,117 @@
+# The tracer
+
+**The tool that lets a reader draw a channel off a Victorian sheet, and the reasons it is
+built the way it is.** [The scale of the work](scale) says why it has to exist: the
+labelled mill channels alone are some 4,068 places, an order of magnitude larger than
+everything above them on that page, and there is no route to finishing them that does not
+involve many hands.
+
+> **Not yet built, and this page carries no screenshots for that reason.** The design is
+> settled and the work is under way. Pictures will follow when there is something real to
+> photograph — a snapped trace with its clicked and its snapped vertices visibly different —
+> rather than a mock-up of one. This site has already had to correct a sentence that
+> described tooling as existing when it existed somewhere else, and a picture makes that
+> mistake harder to notice, not easier.
+
+## What a contributor actually does
+
+One place, one sheet, one channel. The tool hands out a task from a [work
+queue](scale#old-courses-the-victorian-surveyors-labelled) — a place where the Ordnance
+Survey lettered *Old Course*, *New Cut* or a mill leat — shows the historic sheet for that
+place, and asks for two things: the line the sheet draws, and a statement of what it
+replaces.
+
+**It is not an editor of the modern network, and must never become one.** A contributor
+draws a channel that a sheet shows. They cannot move, delete or re-attribute anything in
+the network the first edition publishes. Correcting the modern survey is a different job
+with a different failure mode and a different tool, and conflating the two would put a
+volunteer's mouse on the output of a stage that makes no historical claim at all.
+
+**Nobody types a year.** The tool computes the bound the evidence actually supports — a
+sheet surveyed in 1885 establishes that a channel was there *by* 1885, and nothing about
+when it began — and shows that back in words for confirmation. A free-text year field
+invites a guess, and a guess is indistinguishable from evidence once it is in the file.
+[How a date is recorded](epochs#how-a-date-is-recorded) is the model behind that.
+
+## Why snapping exists, and what it is not
+
+**So that two people tracing the same channel produce substantially the same line.** That
+is the whole reason the tool is a tool rather than a form. Without it, contributed geometry
+from different hands is not comparable and cannot be pooled.
+
+**That is a claim, and it is currently untested.** It is also the load-bearing claim under
+the entire volunteer strand, so the tool is built to test it rather than assert it: a
+proportion of tasks is assigned twice, **blind**, and the distance between the resulting
+pairs of traces is measured. Blindness is arranged by how the work is handed out rather
+than by asking people to tick a box, because an agreement figure is worthless if half the
+contributors forgot. That distribution is a publishable result in its own right, and a
+precondition for trusting anything else contributed.
+
+## How the ink is followed
+
+The obvious approach does not work. **On these sheets the median blue fraction is 0.000%**
+— roughly one in twenty is a coloured printing and the rest are monochrome outline
+editions, where a blue-water detector finds nothing at all. What makes it tractable is that
+the distribution is *bimodal*: a tile reads either exactly zero or several per cent, with
+almost nothing between, so the sheet type can be decided from the pixels at the moment of
+use and the right method chosen — follow blue where it exists, follow ink darkness where it
+does not.
+
+**On a monochrome sheet, ink darkness describes roads, railways, contours and parish
+boundaries just as well as it describes rivers.** A shortest path across such a sheet will
+set off down a turnpike without hesitation. What makes it usable is a **corridor**: the
+search is confined to a band around the straight line between the vertex just placed and
+the cursor, so the algorithm may only choose among ink the contributor has already pointed
+at.
+
+**It is an assistant, not an interpreter**, and the interface says so rather than leaving it
+to be inferred. Three consequences follow, and they are design rules and not caveats:
+
+- **Snapping is a separate switch from tracing.** Ink runs out, forks, and is crossed by
+  roads. Where it does, the only honest line is one a person draws, and the tool must let
+  them draw it without pretending otherwise.
+- **Blank paper is never snapped to.** Outside coverage, or where a tile is refused, a
+  uniform field produces a confident-looking line and a false account of how it was made.
+  The classifier refuses rather than obliges.
+- **Which vertices were placed by hand and which by the algorithm is visible while
+  tracing**, not only recorded in the file. A snapped line looks more authoritative than a
+  drawn one and is not — it is a machine's reading of ink in a corridor a person pointed
+  at. The person most likely to over-trust it is the contributor, in the moment, and a
+  provenance field only a later reader sees does nothing for them.
+
+## What the gate is, and what it is not
+
+Access to the tool is controlled: invited contributors, and their traces recorded to this
+project under their own names.
+
+**It does not restrict access to the maps.** The historic sheets are served by the National
+Library of Scotland and anyone at all can fetch them, without a key and without asking us.
+The gate governs **who uses this tool and where the traces go** — nothing more. A page
+implying that the gate protects the sheets would be false, and it is the easiest false
+thing to imply by accident on a page about a tool that shows them.
+
+The terms on which those sheets are served [could not be traced](evidence#maps-that-show-the-valley-before-the-dam),
+and what this project does about that is recorded rather than assumed.
+
+## What a trace carries
+
+Every contributed line records the sheet it was read from, which vertices a hand placed and
+which the algorithm did, who drew it, and when. That is partly so a reader can weigh it —
+and partly because [this project's reading of what a traced line
+is](evidence#licensing-and-why-this-repository-is-structured-as-it-is) is a ruling rather
+than a settled question, and those fields are what would let a source-restricted version of
+the dataset be extracted later without re-tracing anything.
+
+Contributions reach the dataset as [curated files](methodology#principles) in the
+repository's existing idiom — diffable, each with a reason in words and its evidence — and
+under the ordinary rule: **nothing is deleted to correct it.** A trace supersedes; the line
+it replaces stays in the record, marked as superseded, because a reader has to be able to
+tell a correction from an omission.
+
+---
+
+| | |
+|---|---|
+| [The scale of the work](scale) | why the tool exists, and how much there is |
+| [Evidence](evidence) | what the sheets can say, and on what terms |
+| [Temporality](epochs) | how a date is recorded, and why nobody types one |
