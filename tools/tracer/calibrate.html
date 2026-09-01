@@ -1,0 +1,42 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Tracer calibration — centring</title>
+<style>body{margin:0;font:13px sans-serif;background:#111;color:#eee}
+#out{padding:6px;white-space:pre;font:12px monospace}</style></head><body>
+<p style="padding:6px;margin:0">Calibration harness for the experimental centring mode.
+Serve the repository root and open this page:
+<code>python3 -m http.server 8011 --directory .</code> then
+<code>/tools/tracer/calibrate.html#lon=-0.0290&amp;lat=51.8080&amp;z=17</code>.
+It is here rather than under <code>docs/</code> so it is not published: it fetches NLS
+tiles, and the gate is on the tool.</p>
+<canvas id="c"></canvas><div id="out">loading…</div>
+<script type="module">
+import { loadPatch, classifyPatch, metresPerPixel, centreOnTransect, isInk } from '../../docs/trace/js/ink.js';
+const q = new URLSearchParams(location.hash.slice(1));
+const TEMPLATE = 'https://mapseries-tilesets.s3.amazonaws.com/25_inch/hertfordshire/{z}/{x}/{y}.png';
+const LON = Number(q.get('lon') ?? -0.0290), LAT = Number(q.get('lat') ?? 51.8080), Z = Number(q.get('z') ?? 17);
+const patch = await loadPatch({ template: TEMPLATE, zoom: Z, lon: LON, lat: LAT, radiusPx: 200 });
+window.__patch = patch;
+const c = document.getElementById('c'); c.width = patch.width; c.height = patch.height;
+const ctx = c.getContext('2d'); ctx.putImageData(patch.data, 0, 0);
+// grid so I can read coordinates off a screenshot
+ctx.font = '9px monospace';
+for (let x = 0; x < patch.width; x += 64) {
+  ctx.strokeStyle = 'rgba(0,140,255,0.35)'; ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,patch.height); ctx.stroke();
+  ctx.fillStyle = '#06c'; ctx.fillText(x, x+2, 10);
+}
+for (let y = 0; y < patch.height; y += 64) {
+  ctx.strokeStyle = 'rgba(0,140,255,0.35)'; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(patch.width,y); ctx.stroke();
+  ctx.fillStyle = '#06c'; ctx.fillText(y, 2, y+10);
+}
+const info = classifyPatch(patch);
+document.getElementById('out').textContent =
+ `${patch.width}x${patch.height}  tiles ${patch.tilesReturned}/${patch.tilesRequested}  m/px ${metresPerPixel(LAT,Z).toFixed(3)}\n`+
+ `coloured=${info.coloured} usable=${info.usable} ink=${(info.inkFraction*100).toFixed(1)}%\n`+
+ `probe:  __probe(px,py,fromx,fromy)`;
+window.__probe = (px,py,fx,fy) => {
+  const r = centreOnTransect(patch, px, py, fx, fy);
+  ctx.strokeStyle='rgba(255,0,90,0.9)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(fx,fy); ctx.lineTo(px,py); ctx.stroke();
+  if (r.moved) { ctx.fillStyle='rgba(255,0,90,0.95)'; ctx.beginPath(); ctx.arc(r.x,r.y,3,0,7); ctx.fill(); }
+  return { ...r, mPerPx: metresPerPixel(LAT,Z), widthM: r.widthPx ? +(r.widthPx*metresPerPixel(LAT,Z)).toFixed(1) : null };
+};
+</script></body></html>
