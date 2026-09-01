@@ -6,18 +6,19 @@ labelled mill channels alone are some 4,068 places, an order of magnitude larger
 everything above them on that page, and there is no route to finishing them that does not
 involve many hands.
 
-> **Part-built, not deployed, and carrying no screenshots yet.** What exists is the
-> machinery for getting work out of a browser and into this repository: a contributor signs
-> in, and what they record arrives as an append-only log, offline-tolerant, in the
-> repository's own history. **What does not exist is the map** — the snapping, the sheets,
-> the work queue and the basin hold described below are still to come, so nobody can yet
-> trace a channel with it, and there is no public address to visit.
+> **Part-built and not deployed.** What exists: a contributor signs in, a historic sheet is
+> drawn, a line can be traced on it by hand, and what they record arrives as an append-only
+> log in this repository's own history. An assist that **centres a vertex in the channel** and
+> reports its width is working, and shows its own work while tracing.
 >
-> Pictures follow when there is something real to photograph — a snapped trace with its
-> clicked and its snapped vertices visibly different — rather than a mock-up of one. This
-> site has already had to correct a sentence that described tooling as existing when it
-> existed somewhere else; the remedy is not to overstate in the other direction now, so the
-> rest of this page describes a **settled design**, and says what is built only here.
+> **What does not exist:** fitting a line to the printed ink, the work queue, and the basin
+> hold. So the *centring* described below is an artefact and **snapping to ink is still a
+> design**, which matters because the argument for pooling contributed geometry rests on the
+> second. There is no public address to visit.
+>
+> This site has already had to correct a sentence that described tooling as existing when it
+> existed somewhere else; the remedy is not to overstate in the other direction now. Where a
+> section below describes something not yet built, it says so.
 
 ## What a contributor actually does
 
@@ -128,6 +129,14 @@ sheet is coloured the water can be segmented on hue instead — but **which shee
 cannot be predicted from the scale**, and varies in both directions between the two series,
 so that too has to be decided from the pixels rather than assumed.
 
+**And here is the limit, which is not a bug to be tuned away.** At 1:2,500 a *lane* with both
+its edges drawn is two roughly parallel lines a constant distance apart — and so is a
+channel. **No test of the local pixels can separate them.** An assist asked to find the
+middle of a corridor will centre itself just as confidently between two malt-house walls as
+between two banks, and be just as right about the geometry and just as wrong about the world.
+What supplies the missing knowledge is the contributor, who knows they are following a
+watercourse; nothing in the raster does.
+
 **It is an assistant, not an interpreter**, and the interface says so rather than leaving it
 to be inferred. Three consequences follow, and they are design rules and not caveats:
 
@@ -138,10 +147,12 @@ to be inferred. Three consequences follow, and they are design rules and not cav
   uniform field produces a confident-looking line and a false account of how it was made.
   The classifier refuses rather than obliges.
 - **Which vertices were placed by hand and which by the algorithm is visible while
-  tracing**, not only recorded in the file. A snapped line looks more authoritative than a
-  drawn one and is not — it is a machine's reading of ink in a corridor a person pointed
-  at. The person most likely to over-trust it is the contributor, in the moment, and a
-  provenance field only a later reader sees does nothing for them.
+  tracing**, not only recorded in the file. A machine-placed vertex looks more authoritative
+  than a drawn one and is not — it is a reading of ink in a corridor a person pointed at. The
+  person most likely to over-trust it is the contributor, in the moment, and a provenance
+  field only a later reader sees does nothing for them. **This one is built**: a moved vertex
+  draws hollow and ringed where a placed one is solid, with a line of text saying how far it
+  moved and how wide the channel was found to be.
 
 ## What the gate is, and what it is not
 
