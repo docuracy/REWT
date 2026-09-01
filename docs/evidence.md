@@ -726,6 +726,11 @@ The rule is simple and enforced in code rather than remembered: **a feature whos
 is not openly licensed cannot reach the published site or any exported product.** The
 build refuses to write it.
 
+**What that leaves is listed in full on [Sources](sources)** — every dataset registered,
+its licence, and the exact attribution its publisher requires. That page is generated
+from the manifest the code reads, so it cannot credit something this project has stopped
+using or omit something it has started.
+
 **This repository is now public, and it opened without anything having to be removed from
 it** — which was the point of the rule rather than a happy outcome. The history was scanned
 before it opened: **167 commits and every branch, clean** — no value from an environment file

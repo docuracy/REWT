@@ -32,6 +32,8 @@ nav:
     url: /scale
   - title: Tracer
     url: /tracer
+  - title: Sources
+    url: /sources
   - title: Background
     url: /background
 

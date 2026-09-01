@@ -1,0 +1,228 @@
+# GENERATED FILE -- do not edit.
+#
+# Written by tools/docs/sources_page.py from conf/sources.yml, which is the
+# authority. Edit the manifest and regenerate; an edit made here is lost at the
+# next run and, worse, silently credits the wrong terms in the meantime.
+#
+# `notes` is not projected: it is written for the implementer. See /evidence.
+generated_from: conf/sources.yml
+generator: tools/docs/sources_page.py
+count: 14
+unsettled_count: 1
+unsettled:
+- &id001
+  id: nls_historic_map_tilesets
+  title: National Library of Scotland historic OS map tilesets
+  publisher: National Library of Scotland
+  url: https://mapseries-tilesets.s3.amazonaws.com/{layer}/{z}/{x}/{y}.png
+  homepage: https://maps.nls.uk/
+  licence: Not established. NLS's per-layer re-use table lists 29 of 34 layers as CC-BY; the
+    England-and-Wales six-inch and one-inch layers are NOT on it, and no term is stated for
+    them elsewhere.
+  attribution: Reproduced with the permission of the National Library of Scotland
+  access: open
+  redistribution: not_established
+  status: unverified
+  stage: 2
+  used_by: viewer, curated evidence
+  format: png
+  crs: EPSG:3857
+  redistribution_label: not established
+sources:
+- id: crt_navigation_structures
+  title: Canal & River Trust navigation structures (locks, aqueducts, culverts, weirs)
+  publisher: Canal & River Trust
+  url: https://data-canalrivertrust.opendata.arcgis.com/
+  licence: Open Government Licence v3
+  attribution: Contains Canal & River Trust information licensed under the Open Government
+    Licence v3.0.
+  access: open
+  redistribution: permitted
+  status: unverified
+  stage: 1
+  format: geojson, csv
+  crs: EPSG:4326
+  redistribution_label: permitted
+- id: emodnet_bathymetry
+  title: EMODnet Digital Bathymetry (DTM)
+  publisher: EMODnet Bathymetry Consortium
+  url: https://ows.emodnet-bathymetry.eu/wcs
+  licence: Creative Commons Attribution 4.0 International (CC BY 4.0)
+  attribution: 'Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet
+    Digital Bathymetry (DTM 2024), licensed CC BY 4.0.'
+  attribution_constructed: true
+  use_constraint: DO NOT USE FOR NAVIGATION
+  access: open
+  redistribution: permitted
+  status: verified
+  stage: 1
+  format: geotiff
+  crs: EPSG:4326
+  checksum: 33255844e907362085647fea70a72c3638f3a8e01bce735527cb19faed8e7bfa
+  redistribution_label: permitted
+- id: gb1900_raw_dump
+  title: GB1900 Gazetteer — final raw dump
+  author: Southall, Humphrey; Aucott, Paula; and the GB1900 volunteers
+  year: 2018
+  publisher: Great Britain Historical GIS Project, University of Portsmouth
+  url: https://www.visionofbritain.org.uk/downloads/GB1900_final_raw_dump_july_2018.zip
+  licence: CC0 1.0 Universal (public domain dedication)
+  attribution: GB1900 Gazetteer, Great Britain Historical GIS Project (University of Portsmouth),
+    the GB1900 partners and volunteers. CC0.
+  access: open
+  redistribution: permitted
+  status: verified
+  stage: 2
+  used_by: docs
+  format: csv
+  crs: EPSG:4326
+  checksum: e29eca60885b5cc896a5d3ccdfd127dea3317b2d0bf7edc84a0be629b7dc61ae
+  redistribution_label: permitted
+- id: hct_historic_counties
+  title: Historic County Borders Project — UK Definition A, simplified
+  publisher: Historic Counties Trust
+  url: https://county-borders.co.uk/UKDefinitionA_WG84_Simplified.zip
+  homepage: https://county-borders.co.uk/
+  licence: Free of charge for all personal, educational, non-commercial and commercial use;
+    no specific permission required. Acknowledgement requested, not required.
+  attribution: This mapping made use of data provided by the Historic County Borders Project,
+    https://www.county-borders.co.uk
+  access: open
+  redistribution: permitted
+  status: verified
+  stage: 2
+  used_by: viewer
+  format: shapefile
+  crs: EPSG:4326
+  checksum: c830da98ec7cbac480c9b97ba3b6831ff19d457d8b8f6351073145897abcfdd9
+  redistribution_label: permitted
+- id: eidc_uk_reservoir_inventory
+  title: Inventory of reservoirs amounting to 90% of total UK storage
+  author: Durant, M.J.; Counsell, C.J.
+  year: 2018
+  publisher: NERC Environmental Information Data Centre
+  url: https://catalogue.ceh.ac.uk/id/f5a7d56c-cea0-4f00-b159-c3788a3b2b38
+  doi: 10.5285/f5a7d56c-cea0-4f00-b159-c3788a3b2b38
+  licence: Open Government Licence v3.0 (SPDX ogl-uk-3.0)
+  attribution: Durant, M.J.; Counsell, C.J. (2018). Inventory of reservoirs amounting to 90%
+    of total UK storage. NERC Environmental Information Data Centre. https://doi.org/10.5285/f5a7d56c-cea0-4f00-b159-c3788a3b2b38
+  access: open
+  redistribution: permitted
+  status: unverified
+  stage: 2
+  used_by: docs
+  format: csv
+  crs: EPSG:27700
+  redistribution_label: permitted
+- id: nrw_large_raised_reservoirs
+  title: Large Raised Reservoir (Registered information)
+  publisher: Natural Resources Wales
+  url: https://datamap.gov.wales/layers/geonode:nrw_large_raised_reservoirs_registered_information
+  licence: Open Government Licence v3, with NRW copyright acknowledged
+  attribution: © CNC/NRW. Contains Natural Resources Wales information © Natural Resources
+    Wales and Database Right. All rights Reserved.
+  access: open
+  redistribution: permitted
+  status: unverified
+  stage: 2
+  used_by: docs
+  format: geojson, shapefile, csv, geopackage
+  crs: EPSG:27700
+  redistribution_label: permitted
+- id: ea_lidar_composite_dtm_1m
+  title: LIDAR Composite DTM 2022 - 1m
+  publisher: Environment Agency / Defra
+  url: https://environment.data.gov.uk/survey
+  licence: Open Government Licence v3
+  attribution: © Environment Agency copyright and/or database right 2026
+  access: open
+  redistribution: permitted
+  status: unverified
+  format: geotiff
+  crs: EPSG:27700
+  redistribution_label: permitted
+- id: mills_of_britain
+  title: Mills of Britain (Historic Waterpower Britain, Data S1)
+  author: Jonell, Tara N.; Jones, Peter; Lucas, Adam; Naylor, Simon
+  year: 2024
+  publisher: figshare, for the University of Glasgow / University of Wollongong / National
+    Library of Scotland
+  url: https://figshare.com/collections/Historic_Waterpower_Britain/6806952
+  doi: 10.6084/m9.figshare.24042087
+  licence: CC BY 4.0 for the mill point layers; the 1893-1914 layer is GB1900-derived and
+    its authors require redistribution under CC0 1.0
+  attribution: Jonell, T.N., Jones, P., Lucas, A., Naylor, S. (2024). Limited waterpower contributed
+    to rise of steam power in British 'Cottonopolis'. PNAS Nexus. https://doi.org/10.1093/pnasnexus/pgae251
+    — data CC BY 4.0. Records in the 1893-1914 layer derive from the GB1900 Gazetteer (Great
+    Britain Historical GIS Project, University of Portsmouth, the GB1900 partners and volunteers,
+    CC0).
+  access: open
+  redistribution: permitted
+  status: unverified
+  stage: 2
+  used_by: docs
+  format: shapefile
+  crs: EPSG:32630
+  redistribution_label: permitted
+- *id001
+- id: os_boundary_line
+  title: OS Boundary-Line
+  publisher: Ordnance Survey
+  url: https://api.os.uk/downloads/v1/products/BoundaryLine
+  licence: OS OpenData licence (os.uk/opendata/licence) — OGL-equivalent, attribution required
+  attribution: Contains OS data © Crown Copyright and database rights 2026.
+  access: open
+  redistribution: permitted
+  status: verified
+  format: geopackage
+  crs: EPSG:27700
+  redistribution_label: permitted
+- id: os_open_rivers
+  title: OS Open Rivers
+  publisher: Ordnance Survey
+  url: https://api.os.uk/downloads/v1/products/OpenRivers
+  licence: Open Government Licence v3 — attribution required
+  attribution: Contains OS data © Crown Copyright and database rights 2026.
+  access: open
+  redistribution: permitted
+  status: verified
+  format: geopackage
+  crs: EPSG:27700
+  redistribution_label: permitted
+- id: os_open_map_local
+  title: OS OpenMap - Local
+  publisher: Ordnance Survey
+  url: https://api.os.uk/downloads/v1/products/OpenMapLocal
+  licence: Open Government Licence v3 — attribution required
+  attribution: Contains OS data © Crown Copyright and database rights 2026.
+  access: open
+  redistribution: permitted
+  status: verified
+  format: geopackage
+  crs: EPSG:27700
+  redistribution_label: permitted
+- id: os_terrain_50
+  title: OS Terrain 50
+  publisher: Ordnance Survey
+  url: https://api.os.uk/downloads/v1/products/Terrain50
+  licence: OS OpenData licence (os.uk/opendata/licence) — OGL-equivalent, attribution required
+  attribution: Contains OS data © Crown Copyright and database rights 2026.
+  access: open
+  redistribution: permitted
+  status: verified
+  format: asc, geotiff
+  crs: EPSG:27700
+  redistribution_label: permitted
+- id: nrw_lidar_dtm_1m
+  title: Welsh Government / NRW LiDAR DTM 1m (2020-23)
+  publisher: Welsh Government / Natural Resources Wales
+  url: https://datamap.gov.wales/maps/lidar-data-download/
+  licence: Open Government Licence v3, with NRW copyright acknowledged
+  attribution: © CNC/NRW. Contains Natural Resources Wales information © Natural Resources
+    Wales and database right. All rights reserved.
+  access: open
+  redistribution: permitted
+  status: unverified
+  format: geotiff
+  crs: EPSG:27700
+  redistribution_label: permitted

@@ -55,6 +55,7 @@ changed.
 | [Temporality](epochs) | which dates get published, and why an epoch is a build rather than a filter |
 | [The scale of the work](scale) | how much can be done in house, and where volunteers become necessary |
 | [The tracer](tracer) | the tool contributors will draw with, and why it is built that way |
+| [Sources](sources) | every dataset used, its licence, and the credit it requires |
 | [Background](background) | the proof-of-concept that preceded this, and what it established |
 
 ## Status

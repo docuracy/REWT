@@ -12,7 +12,11 @@ name: Publish the site
 on:
   push:
     branches: [main]
-    paths: ['docs/**', '.github/workflows/pages.yml']
+    # conf/sources.yml and the projector are here because the citations page is
+    # GENERATED from the manifest. A manifest edit that did not rebuild the site
+    # would leave the published page crediting last month's terms, and a licence
+    # page that is quietly out of date is worse than no page at all.
+    paths: ['docs/**', 'conf/sources.yml', 'tools/docs/**', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:
@@ -52,6 +56,23 @@ jobs:
             exit 1
           fi
           echo "no provider credential found in docs/"
+
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+
+      - name: Refuse to publish a stale citations page
+        run: |
+          # docs/_data/sources.yml is a PROJECTION of conf/sources.yml, committed
+          # because Pages runs Jekyll in safe mode: the site cannot read conf/, and a
+          # symlink out of the source is ignored rather than followed. So the copy is
+          # written by a script somebody has to remember to run, and this is what
+          # happens when they do not.
+          #
+          # It fails the deploy rather than regenerating in place. A workflow that
+          # quietly fixed it would publish an attribution nobody had reviewed, which is
+          # the same fault in a more confident voice.
+          pip install --quiet pyyaml
+          python tools/docs/sources_page.py --check
 
       - uses: ruby/setup-ruby@v1
         with:
