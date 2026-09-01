@@ -1655,3 +1655,50 @@ change turned `rewt:basin/d5921800ed` into `rewt:basin/000e9ed6b8` for the same 
 with no reissue involved. A derived identifier inherits every instability of its input,
 including instability we introduce. The pin guards one direction; D-051's one-owner
 rule and its test guard the other.
+
+---
+
+**D-055 — A test that fails when the method is right is not a falsification test.**
+*2026-09-01*
+
+`conf/params.yml` states, for each of the sea parameters, what would show it wrong.
+Two of those clauses fired within an hour of being written, which is the first time in
+this project that a stated falsification criterion has caught anything. One caught the
+method. The other caught itself.
+
+**The one that worked: resampling by maximum was wrong, and it closed the Solent.**
+Taking the shallowest point in each cell looks like the conservative choice. It is not:
+a 100 m cell holding one rock and 9,900 m² of deep water is still connected water, and
+taking the rock erodes every channel until the coast is a wall. Resampling is by
+**average**, and that also repairs `sea.clearance_m`'s own justification, which is
+written as a margin against the cell *averaging* over its footprint — true of average
+and false of max. **A parameter whose stated reasoning depends silently on a choice
+made elsewhere** is the same shape §10 now warns about for identifiers, which is why
+that one fact is in the plan and the rest of this entry is not.
+
+**The one that caught itself: the Menai Strait test was mis-specified.** The comment
+said the resolution was wrong if the Menai Strait closed. It closes at 100 m and at
+200 m — **and it should.** The Swellies are rock and shallows that nearly dry, so a
+surface of water 5 m below Lowest Astronomical Tide excludes them correctly. The test
+would have failed on a working method, and passing it would have required breaking the
+clearance rule.
+
+So the general form, which is the part worth keeping and which is not about tidal
+straits: **a falsification test must be something that fails only if the method is
+wrong.** A test that a correct method fails is worse than no test, because the obvious
+way to make it pass is to break the thing it was watching. The Solent is the control
+now: a genuinely deep, wide channel that a correct surface keeps open.
+
+**And state it so that it cannot be wrong about something else.** My first attempt
+probed named coordinates and read depths off them. *"Solent off Cowes"* returned
+**+35.2 m** — the Isle of Wight, because I had guessed the easting. A well-formed
+number answering a question nobody asked, which is the day's recurring shape. The test
+is now topological: **is the Isle of Wight a separate land mass in the passable
+surface?** It needs no coordinate precision, both probes sit far from any shore, and it
+cannot be quietly wrong in that way. It passes at 100 m and at 200 m.
+
+**A note on where this is recorded.** rewt-1d took the average-versus-max fact into
+PLAN.md §10 and declined the rest, on the grounds that a specification records what
+must be true rather than what was tried, and that a plan which grows a paragraph
+whenever something is found becomes a diary and stops being checkable. That is right,
+and the boundary is worth having in writing.
