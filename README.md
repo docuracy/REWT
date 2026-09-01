@@ -4,6 +4,15 @@
 
 **Rivers of England and Wales, Temporally.**
 
+[![DOI](https://zenodo.org/badge/1352512416.svg)](https://zenodo.org/badge/latestdoi/1352512416)
+
+<!-- The badge resolves to the CONCEPT DOI — always the newest edition — which is what
+     a paper about the project cites. A result computed from a particular edition must
+     cite that edition's VERSION DOI instead, or it becomes uncheckable the moment the
+     next edition lands. Both are in the release notes.
+     This form takes the repository id rather than a DOI, so it never needs editing:
+     it is minted at the first release and follows every one after. -->
+
 A routable reconstruction of the river network of England and Wales, built so that the
 water in it can reach the sea, and worked backwards from the present-day channel to a
 series of dated cross-sections between Domesday and 1900.
