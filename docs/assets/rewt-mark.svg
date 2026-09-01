@@ -1,5 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="REWT">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="12.5 2.5 38 60" role="img" aria-label="REWT">
   <title>REWT</title>
+  <!-- The viewBox is the ink's own bounding box plus a unit of margin. It was 0 0 64 64
+       while the mark sat on a rounded square; with the square gone that left the glyph
+       filling 56% of the width and floating in the middle of nothing. -->
   <!-- An R drawn as two watercourses. They leave one head at an acute fork; the left
        runs on down, the right sweeps the bowl and turns smoothly into the leg without
        rejoining. A divergence, which is most of what this project is about. -->

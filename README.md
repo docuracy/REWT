@@ -1,4 +1,4 @@
-<img src="docs/assets/rewt-mark.svg" alt="" width="72" align="left" hspace="16">
+<img src="docs/assets/rewt-mark.svg" alt="" width="46" align="left" hspace="18">
 
 # REWT
 
