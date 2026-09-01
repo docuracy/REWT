@@ -197,8 +197,30 @@ def polygonise(basin_band: np.ndarray, transform, keep: np.ndarray) -> pd.DataFr
 
 
 def sample_basin_at_nodes(basin_band: np.ndarray, dataset) -> pd.DataFrame:
-    """Which basin each node stands in, or none where it stands on tidal water."""
-    nodes = db.df("SELECT node_id, easting, northing, terminus FROM node ORDER BY node_id")
+    """Which basin each node stands in, or none where it stands on tidal water.
+
+    **Repair nodes are sampled too, and were not.** `node_basin` covered the 197,734
+    survey nodes and none of the 723 this project creates when a connector splits a
+    link. Anything whose oriented downstream end is one of those — 1,172 edges,
+    952.6 km — was then invisible to every join that goes through `node_basin`,
+    including the audit's per-basin sum.
+
+    It stayed invisible because a split normally leaves the *upstream* child ending at
+    a repair node and the downstream child ending at a survey node, so the link that
+    carries the basin still has a home. A reversal breaks that symmetry: turning the
+    Manchester Ship Canal round at Weston Point made a repair node the downstream end
+    of an 8.1 km reach, and the audit and the published file stopped agreeing about
+    which basin it was in. Caught by the cross-check that compares them, which is the
+    only thing that could have caught it — both sides were internally consistent.
+    """
+    nodes = db.df(
+        """
+        SELECT node_id, easting, northing, terminus FROM node
+        UNION ALL
+        SELECT node_id, easting, northing, NULL AS terminus FROM repair_node
+        ORDER BY node_id
+        """
+    )
     rows, cols = raster.grid_indices(
         dataset, nodes["easting"].to_numpy(), nodes["northing"].to_numpy()
     )

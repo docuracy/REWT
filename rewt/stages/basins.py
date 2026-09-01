@@ -74,7 +74,8 @@ def _outlets(node_basin: pd.DataFrame) -> pd.DataFrame:
 @PIPELINE.stage(
     "basins",
     "delineate basins from the terrain, and decide scope on them",
-    reads=["terrain50_basins", "raw_os_boundary_line", "link", "node", "edge"],
+    reads=["terrain50_basins", "raw_os_boundary_line", "link", "node", "edge",
+           "repair_node", "repair_link"],
     writes=["basin", "node_basin", "link_scope"],
     params=["basins", "scope", "crs", "terrain"],
     sources=["os_terrain_50", "os_boundary_line"],

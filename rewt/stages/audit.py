@@ -66,7 +66,28 @@ def run() -> dict:
     # ------------------------------------------------------------- dead ends
     sink_ids = [str(g.nodes[i]) for i in sinks]
     upstream_m = g.upstream_length(sinks)
-    sink_frame = pd.DataFrame({"node_id": sink_ids, "upstream_m": upstream_m})
+
+    # HOW MUCH OF THAT IS ACTUALLY STRANDED, which is not the same number and is the
+    # one a reader should work down. A dead end can sit on water that leaves by another
+    # route: Stanlow Pool, on the Manchester Ship Canal, tops the Cheshire list with
+    # **1,514.5 km upstream and nothing stranded at all** — all three links arriving
+    # there reach the sea, because the node above it also drains west to Eastham. It is
+    # a cul-de-sac off a working drain, not a defect.
+    #
+    # Ranking by upstream length therefore puts a non-defect first in the list §6 asks
+    # someone to work down, which is the most expensive place to be wrong: the reader
+    # spends their attention where there is nothing to find. Both figures are reported;
+    # the ranking uses the stranded one.
+    unreached = {
+        r[0] for r in con.execute(
+            "SELECT link_id FROM link_reach WHERE NOT reaches_tidal"
+        ).fetchall()
+    }
+    mask = np.array([str(lid) in unreached for lid in g.link_ids], dtype=bool)
+    stranded_m = g.upstream_length(sinks, mask=mask)
+    sink_frame = pd.DataFrame({
+        "node_id": sink_ids, "upstream_m": upstream_m, "stranded_m": stranded_m,
+    })
 
     con.execute("DROP TABLE IF EXISTS _sink")
     with db.registered("_sink_in", sink_frame):
@@ -74,6 +95,7 @@ def run() -> dict:
             """
             CREATE TEMP TABLE _sink AS
             SELECT s.node_id, s.upstream_m, n.terminus, n.easting, n.northing,
+                   s.stranded_m,
                    coalesce(sc.in_scope, false) AS in_scope,
                    nb.basin_id,
                    (SELECT any_value(e.form) FROM edge e WHERE e.to_node = s.node_id) AS form,
@@ -151,10 +173,11 @@ def run() -> dict:
     # The largest by catchment: how much water stands above each dead end.
     worst = con.execute(
         f"""
-        SELECT node_id, name, form, upstream_m / 1000.0 AS upstream_km, inflows,
+        SELECT node_id, name, form, upstream_m / 1000.0 AS upstream_km,
+               stranded_m / 1000.0 AS stranded_km, inflows,
                easting, northing, basin_id
         FROM _sink WHERE in_scope AND terminus <> 'tidal'
-        ORDER BY upstream_m DESC, node_id LIMIT {int(p('audit.report_top_n'))}
+        ORDER BY stranded_m DESC, upstream_m DESC, node_id LIMIT {int(p('audit.report_top_n'))}
         """
     ).df()
     log.frame(
@@ -977,15 +1000,24 @@ def _write_human_report(report: Report, ranked, by_form, worst) -> None:
         lines.append(f"- **{r.label or r.basin_id}** ({share} reached) — {reason}")
     lines += [
         "",
-        "## The largest dead ends, by the catchment standing above them",
+        "## The largest dead ends, by the length actually stranded above them",
         "",
-        "| name | form | upstream km | easting | northing |",
-        "|---|---|---:|---:|---:|",
+        "**Ranked on `stranded km`, not `upstream km`, and the difference matters.**",
+        "A dead end can sit on water that leaves by another route: Stanlow Pool, on the",
+        "Manchester Ship Canal, stood at the top of the Cheshire list with 1,514.5 km",
+        "above it and *nothing stranded at all*, because the node above it also drains",
+        "west to Eastham. It is a cul-de-sac off a working drain. Ranking by catchment",
+        "put a non-defect first in the list this section asks someone to work down,",
+        "which is the most expensive place to be wrong — the reader spends their",
+        "attention where there is nothing to find.",
+        "",
+        "| name | form | stranded km | upstream km | easting | northing |",
+        "|---|---|---:|---:|---:|---:|",
     ]
     for r in worst.head(40).itertuples():
         lines.append(
-            f"| {r.name or '—'} | {r.form or '—'} | {r.upstream_km:,.1f} | "
-            f"{r.easting:,.0f} | {r.northing:,.0f} |"
+            f"| {r.name or '—'} | {r.form or '—'} | {r.stranded_km:,.1f} | "
+            f"{r.upstream_km:,.1f} | {r.easting:,.0f} | {r.northing:,.0f} |"
         )
     from ..report import write_text
 

@@ -2061,3 +2061,53 @@ choice of 15 km would have needed remaking; it did not.
 prints `max snap` beside each radius. If it ever exceeds the radius again, the
 parameter has stopped meaning what it says, and the table shows it without anyone
 having to suspect it.
+
+---
+
+**D-063 — The Weaver drains, and the faults above it were undiagnosable until it did.**
+*2026-09-01. Stephen: "It is obvious from satellite imagery that the River Weaver
+empties into the Manchester Ship Canal, and so should share the same connection to the
+sea — at Eastham Lock."*
+
+He was right, and the fix was one reversal. The Manchester Ship Canal's 8,711 m reach
+below Weston Point was digitised **eastward** along its whole length, so the canal
+carried water inland: three links arrived at Weston Point and none left, with 1,178 km
+above it. Turned round — keyed on the retired parent so it reached both children of the
+Eastham split — the canal drains west through Stanlow and Ellesmere Port to Eastham
+Locks and out to the tidal Mersey, every link on the chain reached, and the Weaver
+leaves with it.
+
+**Five further orientation faults then became provable, and could not have been
+before.** `propose_reversals` requires the far end of a candidate to lie in the
+*reached* set. While everything below Weston Point was stranded, no reversal upstream
+could be justified — and the rule was right to refuse, because a reversal that points
+water at a place which does not drain is not a fix. Once the canal opened, the rule
+proposed the Wheelock (212.2 km), the Dane (75.7), Marbury Brook (50.4), an unnamed
+watercourse beside the Dane (19.2) and a reach of the Macclesfield Canal. The Dane and
+Wheelock now drain completely.
+
+**So: a defect inside a stranded system is undiagnosable until the system's outlet is
+fixed.** Not hidden by a weak rule — *unprovable*, because the evidence a reversal
+needs does not exist yet. The audit's 953 stranded regions should be expected to hide a
+similar tail, each openable only from its own outlet, and the corpus will grow in bursts
+after each outlet is cleared rather than smoothly.
+
+In-scope reachability moved **93.57% → 93.80%**; the Weaver work added about 1,950 km
+across both steps.
+
+**And chasing it exposed a flaw in the audit's own defect list.** It ranked dead ends by
+the catchment standing above them, which counts water that has another way out.
+**Stanlow Pool topped the Cheshire list with 1,514.5 km above it and nothing stranded
+at all** — all three links arriving there reach the sea, because the node above also
+drains west. A cul-de-sac off a working drain, ranked first in the list §6 asks a person
+to work down. That is the most expensive place for a list to be wrong: the reader spends
+their attention where there is nothing to find. The audit now computes stranded length
+with a mask over the unreached links, publishes both figures, and ranks on the honest
+one.
+
+**One defect deliberately not fixed.** The largest remaining Weaver dead end is 356.6 km
+at Northwich, where a reached Weaver link begins as a source **70.45 m away**. It has
+the shape of a textbook connector — but the straight line between the two crosses **two
+other watercourses**, and every one of the 1,204 connectors in the corpus was required
+to cross none. It wants a person at the place, not a rule, and it is left on the list
+rather than forced.
