@@ -284,3 +284,49 @@ def test_no_module_but_ids_mints_an_identifier():
     assert not offenders, (
         "identifiers composed outside rewt/ids.py:\n  " + "\n  ".join(offenders)
     )
+
+
+# --------------------------------------------------------------------------
+# The scheme itself, pinned (PLAN.md §10)
+# --------------------------------------------------------------------------
+
+SCHEME = {
+    "publisher":  ("os:link/watercourse_link.1234",   lambda i: i.publisher("link", "watercourse_link.1234")),
+    "point":      ("rewt:node/0598edb94450",          lambda i: i.point(412345.678, 287654.321)),
+    "line":       ("rewt:link/a5f165434027",          lambda i: i.line([[400000.0, 300000.0], [400100.0, 300100.0]])),
+    "basin":      ("rewt:basin/000e9ed6b8",           lambda i: i.basin("os:node/C8DD2B03-5398-4053-9767-A8D5ABD58F4B")),
+    "unanchored": ("rewt:basin-unanchored/1002",      lambda i: i.basin_unanchored(1002)),
+    "derived":    ("rewt:link/58f95877bcd6",          lambda i: i.derived("os:link/1", "link", "0.000,0.000;5.000,5.000")),
+    "correction": ("rewt:correction-reversal/bb343b1986", lambda i: i.correction("reversal", "os:link/1", "because")),
+}
+
+
+def test_the_identifier_scheme_has_not_moved():
+    """§10: *a derived identifier inherits every instability of what it was
+    derived from* — including instability we introduce.
+
+    The freeze (D-054) stops Ordnance Survey moving identifiers under us. Nothing
+    stopped *us*. Changing `ids.publisher` from `os:link:` to `os:link/` this
+    morning also changed every anchored basin id, because a basin id is a digest
+    of its outlet node's id: `rewt:basin/d5921800ed` became `rewt:basin/000e9ed6b8`
+    for the same basin. Not a rename — a different value, with nothing about the
+    new string to say the old one ever meant anything.
+
+    That went unnoticed through a full build. These golden values make the next
+    one loud: change a composition rule and this fails, naming what moved, before
+    the renumbering reaches a published file or anybody's stored reference.
+
+    **A failure here is not a bug in this test.** It means the scheme changed. If
+    that was deliberate, update the value and record the change as a decision —
+    every identifier this project has ever published is now different.
+    """
+    from rewt import ids
+
+    moved = {
+        name: (expected, fn(ids))
+        for name, (expected, fn) in SCHEME.items()
+        if fn(ids) != expected
+    }
+    assert not moved, "the identifier scheme moved:\n" + "\n".join(
+        f"  {name}: was {was!r}, now {now!r}" for name, (was, now) in moved.items()
+    )
