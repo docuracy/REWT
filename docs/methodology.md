@@ -138,12 +138,18 @@ Every rule above ends in the same place — *and then it reaches the tide* — a
 tide was not modelled at all. A river mouth terminated in a patch of nowhere, each basin in
 its own separate patch, and **"reaches the sea" was true by definition rather than by test.**
 That is also why an estuary is the hardest thing here: the survey draws a river mouth as an
-**area** and offers the network no line to end on. Measured when this construction was
-specified, **245 of the then 968 outstanding in-scope dead ends** sat within 250 m of mean
-high water and more than 250 m from any tidal link — they arrive at the coast and stop,
-because there is nothing there for them to join. That count moves as the repair proceeds and
-the audit published with the data is the authority for what it is now; what the measurement
-established is the *kind* of defect, and that does not move.
+**area** and offers the network no line to end on. Measured against this build, **511 of the
+1,281 outstanding in-scope dead ends** sit within 250 m of mean high water and more than
+250 m from any `tidalRiver` link — they arrive at the coast and stop, because there is
+nothing there for them to join.
+
+**The share has risen, and that is the part worth noticing.** When the construction was
+first specified the measurement was 245 of 968: the denominators belong to different builds
+and are not comparable as counts, but the proportions are — **a quarter has become two
+fifths.** So the case for giving the sea a geometry is stronger than the sentence that used
+to argue it, which had been quoting the older pair. A stale figure that supports the
+conclusion it was written for reads exactly like a current one, and nothing about it invites
+a check.
 
 So the sea is being given a geometry, in this phase rather than a later one. **The trunk is
 not drawn. It is what remains where the routes agree.**
