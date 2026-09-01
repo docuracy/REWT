@@ -129,6 +129,36 @@ sheet is coloured the water can be segmented on hue instead — but **which shee
 cannot be predicted from the scale**, and varies in both directions between the two series,
 so that too has to be decided from the pixels rather than assumed.
 
+<figure class="sheet-figure pair">
+  <div class="frames">
+    <img src="{{ '/assets/maps/tracer-refusing.jpg' | relative_url }}"
+         alt="The tracer on a 25-inch sheet lettered Malthouse. Two vertices, both solid pink, and the message: left where you put it — that point is on ink, so the channel here is drawn as a single line.">
+    <img src="{{ '/assets/maps/tracer-working-and-wrong.jpg' | relative_url }}"
+         alt="The same sheet. Three vertices drawn hollow with cyan rings where the assist moved them, against solid pink where the tracer placed them, and the message: moved 1.1 m to the middle, the channel is 8.1 m wide here, measured across 3 transects.">
+  </div>
+  <figcaption><strong>Left: the assist refusing</strong> — <em>that point is on ink, so the
+  channel here is drawn as a single line. There is no width to find a middle of.</em> Refusing
+  is the common case and is not a failure. <strong>Right: the assist working, and wrong.</strong>
+  Three vertices moved and drawn hollow against the ones a hand placed, with the width reported
+  across three transects. It has centred perfectly — <strong>on the lane between two
+  malt-houses.</strong> Both frames are the tool as built, at Ware, on the 25-inch.
+  <span class="credit">Reproduced with the permission of the National Library of
+  Scotland.</span></figcaption>
+</figure>
+
+**Those two pictures are the whole argument, and there is no third.** We looked for a photograph
+of the assist working on genuine water at Ware and could not produce one: the strongest and
+most extensive feature the algorithm found anywhere in the town — 206 accepted points, a
+continuous 500 m run, a median width of 17.4 m — is **the railway**, running between the goods
+shed and the signal posts. The next strongest was the malt-house lane above.
+
+**So the image of it working and the image of it being wrong about the world are the same
+image.** The geometry in the right-hand frame is correct: there is a corridor, it has two
+sides, the middle is where the tool says and the width is what the tool says. What is wrong is
+everything else. Nothing on the screen distinguishes that from a success, and nothing in the
+raster can — which is precisely why the contributor is not an operator of this tool but the
+part of it that knows what a river is.
+
 **And here is the limit, which is not a bug to be tuned away.** At 1:2,500 a *lane* with both
 its edges drawn is two roughly parallel lines a constant distance apart — and so is a
 channel. **No test of the local pixels can separate them.** An assist asked to find the
