@@ -4,14 +4,27 @@
 
 **Rivers of England and Wales, Temporally.**
 
-[![DOI](https://zenodo.org/badge/1352512416.svg)](https://zenodo.org/badge/latestdoi/1352512416)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22238250.svg)](https://doi.org/10.5281/zenodo.22238250)
 
-<!-- The badge resolves to the CONCEPT DOI — always the newest edition — which is what
-     a paper about the project cites. A result computed from a particular edition must
-     cite that edition's VERSION DOI instead, or it becomes uncheckable the moment the
-     next edition lands. Both are in the release notes.
-     This form takes the repository id rather than a DOI, so it never needs editing:
-     it is minted at the first release and follows every one after. -->
+<!-- THE REPOSITORY-ID BADGE POINTED AT THE WRONG RECORD, and the wrong record was the
+     exact failure this project set out to avoid.
+
+     `zenodo.org/badge/latestdoi/<repo id>` resolves to whatever the GitHub–Zenodo HOOK
+     deposited, and the hook archives the source zipball and nothing else. This
+     repository commits nothing acquired, derived or built, so that record holds the
+     code and the curated judgements and NO RIVERS AT ALL. `.github/workflows/zenodo.yml`
+     exists precisely because of this, and deposits the built network explicitly — but
+     the badge went on pointing past it to the hook's record. At v0.1.0-alpha the hook
+     minted 10.5281/zenodo.22238174 (one file) beside the real deposit's
+     10.5281/zenodo.22238251 (seven), and the badge resolved to the former.
+
+     So the badge now names the CONCEPT DOI of the explicit deposit directly. It always
+     resolves to the newest edition, which is what a paper about the project cites; a
+     result computed from a particular edition must cite that edition's VERSION DOI
+     instead, or it becomes uncheckable the moment the next edition lands.
+
+     It is a literal DOI rather than a repository id, so it needs editing if the concept
+     ever changes — which is the cost of it pointing where it is supposed to. -->
 
 A routable reconstruction of the river network of England and Wales, built so that the
 water in it can reach the sea, and worked backwards from the present-day channel to a

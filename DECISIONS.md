@@ -2295,3 +2295,38 @@ the thing itself.
 and no gate of this kind will. The only thing that finds that class is a person or an agent
 reading the artefact — which is why the release was held while four peers read it, and
 why the value of that reading was highest exactly where the build was greenest.
+
+---
+
+**D-068 — The DOI badge resolved to a record containing no rivers.**
+
+*Found by checking where the badge actually went, minutes after the first DOI was
+minted. `zenodo.org/badge/latestdoi/<repo id>` redirected to `10.5281/zenodo.22238174`
+— **one file, the source zipball** — while the deposit this project builds and checks
+sat at `10.5281/zenodo.22238251` with all seven.*
+
+**Both records are real and the hook made the other one.** Enabling the GitHub–Zenodo
+integration means every published release is archived by the hook as well, and the hook
+takes the source zipball only. `.github/workflows/zenodo.yml` exists *because* of that
+— its opening comment says a hook-only record would resolve to a river project
+containing no rivers — and the badge then pointed past the workflow to exactly the
+record the workflow was written to replace. **The reasoning was right, was written down,
+and the badge had not been checked against it.**
+
+**Why the repository-id form was chosen, and why that was the mistake.** It never needs
+editing: minted at the first release, follows every one after. That convenience is
+precisely what binds it to the hook, because the repository id is the hook's handle and
+there is no version of that URL that can point anywhere else. The badge now names the
+concept DOI literally. It must be edited if the concept ever changes, and that is the
+cost of it pointing where it is meant to.
+
+**The duplicate cannot be withdrawn, only explained.** Both DOIs are permanent. The
+remedy is to disable the hook so later releases mint one record rather than two, and to
+say here which is which: **the citable record is `10.5281/zenodo.22238250`** (concept)
+and its versions; `…22238174` is a source-only archive of the same tag.
+
+**And it is D-067 once more, at the last possible moment.** Two artefacts, each
+internally consistent — a correct deposit and a correct badge — produced by different
+mechanisms, never compared. Every gate passed: the assets were verified byte-for-byte,
+the record was checked file by file, and nothing asked whether the link a reader would
+click led to the thing that had been checked.
