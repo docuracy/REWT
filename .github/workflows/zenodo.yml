@@ -21,6 +21,20 @@ name: Deposit the release to Zenodo, with the data
 on:
   release:
     types: [published]
+  # RE-RUNNABLE FOR A TAG THAT IS ALREADY OUT, and it exists because the first deposit
+  # needed exactly that. It failed on missing metadata AFTER uploading 523 MB, and
+  # re-running the failed run was no use: a release run checks out the TAG, so it would
+  # have replayed the same code that failed. The choice was then between deleting a
+  # published release to re-cut it and being unable to finish the deposit at all.
+  #
+  # Dispatching runs on whichever branch is chosen, so the fix is picked up while the
+  # tag and its assets stay exactly as they were. The deposit reads the release by name
+  # through the API and does not care which tree it is running from.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "The release tag to deposit"
+        required: true
 
 permissions:
   contents: read
@@ -47,10 +61,23 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - name: Resolve which release is being deposited
+        id: rel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          if [ -z "$TAG" ]; then echo "::error::no tag given"; exit 1; fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          # The notes are read back from the release rather than regenerated, so the
+          # Zenodo description is the text that was actually published on GitHub.
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json body -q .body > body.md
+          echo "depositing $TAG ($(wc -l < body.md) lines of notes)"
+
       - name: Fetch the release assets
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.event.release.tag_name }}
+          TAG: ${{ steps.rel.outputs.tag }}
         run: |
           mkdir -p assets
           gh release download "$TAG" --dir assets --repo "$GITHUB_REPOSITORY"
@@ -64,6 +91,9 @@ jobs:
       - name: Deposit to Zenodo
         env:
           ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
-          TAG: ${{ github.event.release.tag_name }}
-          BODY: ${{ github.event.release.body }}
-        run: python .github/scripts/zenodo_deposit.py
+          TAG: ${{ steps.rel.outputs.tag }}
+        run: |
+          # Via a file, not an env var: the notes carry backticks, asterisks and
+          # newlines, and passing 1,200 words of Markdown through the shell is a
+          # quoting bug waiting for the one release whose text happens to break it.
+          BODY="$(cat body.md)" python .github/scripts/zenodo_deposit.py
