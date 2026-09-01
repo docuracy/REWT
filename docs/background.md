@@ -5,16 +5,27 @@
 REWT follows a scoping exercise carried out in 2026 under the name **Premodern Rivers**,
 which produced a working reconstruction, two delivered datasets, and a map.
 
-**It began as a favour.** Justin Colson ([Institute of Historical Research](https://www.history.ac.uk/){:target="_blank"}) asked for a
-GIS of rivers to support a Domesday mapping project, and suggested the obvious way to build
-one: take [Oksanen's routes](evidence#before-1348) and splice them into the modern
-[OS Open Rivers](https://www.ordnancesurvey.co.uk/products/os-open-rivers){:target="_blank"} network. It sounded like an afternoon's work.
+**It began as a commission of three or four days.** Justin Colson ([Institute of Historical Research](https://www.history.ac.uk/){:target="_blank"})
+wanted a GIS of rivers for a Domesday mapping project, and proposed the obvious
+construction: take [Oksanen's routes](evidence#before-1348) and splice them into the modern
+[OS Open Rivers](https://www.ordnancesurvey.co.uk/products/os-open-rivers){:target="_blank"} network.
 
-**It was not, and the reasons it was not are this project.** The modern network turned out
-not to be traversable — water could not be followed from every stretch to the sea — so there
-was nothing sound to splice *onto*; and the synthesis turned out to sit a median 236 m from
-the modern channel where its courses are derived from parish boundaries, so splicing it on
-would have reconciled two orders of accuracy silently, at every junction. The project now
+**What grew it was a cartographic decision, not a difficulty.** A national river map is
+unreadable and enormous unless the smallest streams are dropped, and it is uninformative
+unless a river is drawn at a width that means something — so flow had to be *computed*,
+first to clip low-flow channels reliably and second to give every drawn line a width
+indicative of what it carried. That is a modest requirement with an immodest consequence:
+**flow is modelled on the network, so the water has to be able to move through it.** The
+modern survey, it turned out, does not let it — water cannot be followed from every stretch
+to the sea — and a flow model over a network the water cannot leave returns confident
+numbers about nothing.
+
+So the three or four days became the finding that
+[sets the order of everything since](methodology#the-finding-that-sets-the-order): repair the
+modern network first, because nothing downstream of it means anything until it is sound. The
+splice itself was dropped for a separate reason — where the synthesis's courses are derived
+from parish boundaries they sit a median 236 m from the modern channel, so merging them would
+have reconciled two orders of accuracy silently at every junction. The project now
 [declines to do the thing it was asked for](methodology#go-to-the-sources-not-to-the-synthesis),
 and the reasoning behind that refusal is most of what it has to offer.
 
