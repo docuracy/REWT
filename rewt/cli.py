@@ -559,6 +559,13 @@ def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) 
     # The map that ships and the data it was built from must be one pass.
     problems += release.viewer_data_drift()
 
+    # RELEASE-CHECK WAS BLOCKING ITS OWN TEST RUN. `stale_stages()` above opens the
+    # database read-write and the connection is a module-level singleton, so the pytest
+    # subprocess could not take even a read lock — 18 tests skipped themselves, pytest
+    # exited 0, and the guard below reported "a build holds its lock" when the holder
+    # was this very command. Released before the suite runs, and nothing after this
+    # point needs it.
+    db.close()
     rc = subprocess.run(
         [sys.executable, "-m", "pytest", "tests", "-q", "-rs"],
         capture_output=True, text=True, cwd=paths.ROOT,
@@ -573,9 +580,10 @@ def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) 
     locked = [l for l in rc.stdout.splitlines() if "Conflicting lock is held" in l]
     if locked:
         problems.append(
-            f"{len(locked)} test(s) could not read the database because a build holds "
-            "its lock, and pytest still exited 0. Wait for the build and re-run: a "
-            "release must not be cut on a suite that skipped the database."
+            f"{len(locked)} test(s) could not read the database because something "
+            "holds its lock, and pytest still exited 0. A release must not be cut on a "
+            "suite that skipped the database. If no build is running, the holder is "
+            "another agent's query — wait and re-run."
         )
 
     if problems:
