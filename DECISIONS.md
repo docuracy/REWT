@@ -803,3 +803,37 @@ at its own `maxRecordCount` and reports it only in `exceededTransferLimit`. Aske
 the culverts unpaged it returns **2,000 of 2,962 with an HTTP 200 and no error**.
 `rewt.acquire.fetch_arcgis` reads the flag and pages; a caller that does not will get a
 third of the layer missing and nothing will say so.
+
+**D-031 — An acquisition verifies its own completeness. Success is not completeness.**
+*2026-09-01*
+
+*The case is rewt-86's; the guard is the response to it.*
+
+`rewt.acquire.fetch_arcgis` now asks each layer how many features it holds, using
+`returnCountOnly=true`, and **fails if the paged fetch returns a different number**.
+
+The case that produced it is nastier than the silent failures already recorded here, and
+worth stating precisely. An ArcGIS FeatureServer caps a response at its own
+`maxRecordCount` and reports the truncation only in `exceededTransferLimit` — HTTP 200
+either way. So an unpaged fetch of the 2,962 culverts returns 2,000 and looks like a
+success.
+
+**What made it invisible is that the count was right.** `returnCountOnly` is not subject
+to the transfer cap, so a verification that queried the count got 2,962 — the true
+figure — while an actual fetch would have delivered 2,000. *The query that told the
+truth is a different query from the one that would have lied, and nothing connected
+them.* There was no wrong number anywhere to notice: no aggregate looked odd, no
+distribution looked skewed, and re-running either query would have reproduced its own
+answer exactly. **Re-running is no defence against this shape**, which is what
+distinguishes it from most of what this project has caught.
+
+The guard works by pointing the two queries at each other. That is the general form:
+where a service will state what it holds as well as hand it over, ask for both and
+compare. Where it will not, the acquisition says so rather than assuming.
+
+This joins two others of the same family already recorded: a geoprocessing tool that
+returns 0 while writing a raster of NaN (D-017), and a correction that reports itself
+applied while resolving to nothing (§8, and the test that now runs in the build). In all
+three the operation reports success and the artefact is wrong, and in all three the only
+defence is to check the artefact against something that was not produced by the same
+call.

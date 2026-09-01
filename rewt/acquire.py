@@ -269,6 +269,23 @@ def fetch_arcgis(source_id: str, *, force: bool = False) -> Acquisition:
     dest.mkdir(parents=True, exist_ok=True)
     counts: dict[str, int] = {}
     for name, path in layers.items():
+        # Ask the service how many features there ARE before asking for them.
+        # `returnCountOnly` is not subject to the transfer cap, so it answers 2,962
+        # for a layer that a plain fetch truncates to 2,000 — which is why the trap is
+        # invisible: the query that tells the truth is a different query from the one
+        # that lies, and nothing connects them. Asking both, and comparing, is what
+        # turns that into a check rather than a hazard.
+        expected: int | None = None
+        try:
+            resp = requests.get(
+                f"{base}/{path}/query?where=1%3D1&returnCountOnly=true&f=json",
+                timeout=_TIMEOUT,
+            )
+            resp.raise_for_status()
+            expected = int(resp.json().get("count"))
+        except Exception as exc:  # a service that will not count is not a failure
+            log.detail(f"    {name}: no feature count available ({exc})")
+
         features: list[dict] = []
         offset = 0
         while True:
@@ -293,7 +310,18 @@ def fetch_arcgis(source_id: str, *, force: bool = False) -> Acquisition:
             encoding="utf-8",
         )
         counts[name] = len(features)
-        log.detail(f"    {name}: {len(features):,} features")
+        if expected is not None and len(features) != expected:
+            raise AcquisitionError(
+                f"{source_id}/{name}: the service holds {expected:,} features and the "
+                f"paged fetch returned {len(features):,}. An ArcGIS FeatureServer "
+                "truncates at its own maxRecordCount and reports it only in "
+                "`exceededTransferLimit`, with an HTTP 200 either way — so a short "
+                "answer is not an error unless something checks. This is that check."
+            )
+        log.detail(
+            f"    {name}: {len(features):,} features"
+            + (" (matches the service's own count)" if expected is not None else "")
+        )
 
     digest = hashlib.sha256()
     for name in sorted(layers):
