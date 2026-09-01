@@ -452,6 +452,25 @@ def run() -> dict:
     }
 
 
+def _share(value) -> str:
+    """Format a reached share so that only a complete basin can read as complete.
+
+    A basin at 0.99794 with 6.57 km of river still stranded printed as "100% reached"
+    under a plain round, in a section headed "Every basin short of 100%". Seventeen
+    basins did, holding about 34 km between them. **A reader quotes the number and not
+    the clause after it**, and §9 is the one place this project may not be loose: *every
+    basin either reaches 100% reachable, or its shortfall is named with a reason.* So
+    the format floors instead of rounding, and 100% is reserved for exactly 1.0.
+    """
+    if value is None or pd.isna(value):
+        return "—"
+    if value >= 1.0:
+        return "100%"
+    import math
+
+    return f"{math.floor(float(value) * 1000) / 10:.1f}%"
+
+
 def _stranded_components(g, labels) -> pd.DataFrame:
     """In-scope components from which the sea cannot be reached at all."""
     reach = db.df("SELECT link_id, reaches_tidal FROM link_reach")
@@ -625,7 +644,7 @@ def _write_human_report(report: Report, ranked, by_form, worst) -> None:
         "|---|---:|---:|---:|---:|",
     ]
     for r in ranked.head(40).itertuples():
-        share = "—" if pd.isna(r.share) else f"{r.share:.1%}"
+        share = _share(r.share)
         lines.append(
             f"| {r.label or r.basin_id} | {r.km:,.1f} | {r.reached_km:,.1f} | "
             f"{r.unreached_km:,.1f} | {share} |"
@@ -642,7 +661,7 @@ def _write_human_report(report: Report, ranked, by_form, worst) -> None:
         reason = getattr(r, "shortfall_reason", "")
         if not reason or reason == "reaches tidal water in full":
             continue
-        share = "—" if pd.isna(r.share) else f"{r.share:.0%}"
+        share = _share(r.share)
         lines.append(f"- **{r.label or r.basin_id}** ({share} reached) — {reason}")
     lines += [
         "",

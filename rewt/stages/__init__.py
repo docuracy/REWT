@@ -13,6 +13,7 @@ from . import (  # noqa: F401  (imported to register)
     terrain,
     basins,
     structures,
+    water,
     curated_stage,
     repair,
     screen,

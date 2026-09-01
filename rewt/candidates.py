@@ -76,6 +76,7 @@ def _defect_inflows() -> pd.DataFrame:
                e.form,
                l.publisher_id,
                l.name,
+               l.name_alt,
                n.easting                AS sink_e,
                n.northing               AS sink_n,
                un.easting               AS up_e,
@@ -157,7 +158,8 @@ def _nearest_draining_link(inflows: pd.DataFrame, radius_m: float) -> pd.DataFra
         frame = db.df(
             f"""
             WITH cand AS (
-                SELECT s.sink_node, l.link_id, l.publisher_id, l.name, l.form,
+                SELECT s.sink_node, l.link_id, l.publisher_id, l.name, l.name_alt,
+                       l.form,
                        ST_Distance(l.geom, ST_Point(s.sink_e, s.sink_n)) AS gap_m
                 FROM _dsink_in s
                 JOIN link l
@@ -184,9 +186,10 @@ def _nearest_draining_link(inflows: pd.DataFrame, radius_m: float) -> pd.DataFra
         )
     return frame.rename(
         columns={"link_id": "drain_link", "publisher_id": "drain_publisher",
-                 "name": "drain_name", "form": "drain_form", "gap_m": "drain_gap_m"}
-    )[["sink_node", "drain_link", "drain_publisher", "drain_name", "drain_form",
-       "drain_gap_m"]]
+                 "name": "drain_name", "name_alt": "drain_name_alt",
+                 "form": "drain_form", "gap_m": "drain_gap_m"}
+    )[["sink_node", "drain_link", "drain_publisher", "drain_name", "drain_name_alt",
+       "drain_form", "drain_gap_m"]]
 
 
 def _connector_evidence(inflows: pd.DataFrame, reached: set[str], radius_m: float) -> pd.DataFrame:
@@ -274,11 +277,29 @@ def build(radius_m: float | None = None) -> pd.DataFrame:
     )
     # The name comparison is on the inflow's own name against the draining link's:
     # "does this river stop and resume?", not "is there any river nearby?".
+    #
+    # BOTH name fields on BOTH sides. OS Open Rivers' specification says that where a
+    # watercourse has a name in more than one language, `watercourseName` carries the
+    # Welsh or Gaelic and `watercourseNameAlternative` the English — the opposite of
+    # the natural reading. Comparing primary names alone would fail to match `Afon
+    # Tawe` against `River Tawe`, systematically under-finding Welsh watercourses in a
+    # project whose scope is England AND Wales. 5,335 links carry an alternative name
+    # and every one differs from its primary; 4,311 of them are in scope. The pairs
+    # are not all bilingual either — `Waterbarn Channel` / `River Frome` is a local
+    # name beside a river name — so matching on either field is right for more reasons
+    # than the specification gives.
+    def _names(frame, primary: str, alternative: str):
+        a = frame[primary].astype("string").str.strip().str.lower()
+        b = frame[alternative].astype("string").str.strip().str.lower()
+        return a, b
+
+    mine_a, mine_b = _names(inflows, "name", "name_alt")
+    theirs_a, theirs_b = _names(inflows, "drain_name", "drain_name_alt")
     inflows["drain_same_name"] = (
-        inflows["name"].notna()
-        & inflows["drain_name"].notna()
-        & (inflows["name"].astype(str).str.strip().str.lower()
-           == inflows["drain_name"].astype(str).str.strip().str.lower())
+        (mine_a.notna() & theirs_a.notna() & (mine_a == theirs_a))
+        | (mine_a.notna() & theirs_b.notna() & (mine_a == theirs_b))
+        | (mine_b.notna() & theirs_a.notna() & (mine_b == theirs_a))
+        | (mine_b.notna() & theirs_b.notna() & (mine_b == theirs_b))
     )
 
     # The shape each row's evidence points to. Recorded as a reading of the evidence,
@@ -825,10 +846,32 @@ def propose_component_outlets(
     from . import graph
 
     g = graph.load("edge")
-    labels = g.weak_components()
-    edge_component = labels[g.u]
     reach = db.df("SELECT link_id, reaches_tidal FROM link_reach")
     reached = set(reach.loc[reach["reaches_tidal"], "link_id"])
+
+    # Components of the UNREACHED SUBGRAPH, not of the whole graph. A stranded region
+    # does not have to be a whole component: the Manchester Ship Canal's 1,141 km sits
+    # inside a component of 16,787 km of which 16,348 links do reach the sea, because
+    # the survey draws the canal in three pieces and one of them shares a node with
+    # tidal water. Grouping by whole components made that region invisible to this
+    # rule, and its dead end is 14 km from the join it needs, so the dead-end rules
+    # could not see it either. The unreached subgraph is the right unit: it is exactly
+    # "the water that cannot get out", which is what the crawl reports and what §5 says
+    # to work from.
+    import numpy as np
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components as _cc
+
+    unreached = np.array([lid not in reached for lid in g.link_ids])
+    if not unreached.any():
+        return [], []
+    m = coo_matrix(
+        (np.ones(int(unreached.sum()), dtype=np.int8),
+         (g.u[unreached], g.v[unreached])),
+        shape=(g.n_nodes, g.n_nodes),
+    )
+    _, labels = _cc(m, directed=True, connection="weak")
+    edge_component = np.where(unreached, labels[g.u], -1)
 
     frame = pd.DataFrame(
         {
@@ -838,6 +881,7 @@ def propose_component_outlets(
             "reached": [lid in reached for lid in g.link_ids],
         }
     )
+    frame = frame[frame["component"] >= 0]
     # Only components holding in-scope water. Out of scope means out of scope: a
     # correction there would add geometry to the published network for ground the
     # project does not claim, and nothing is deleted to correct it afterwards.
@@ -850,22 +894,26 @@ def propose_component_outlets(
         any_reached=("reached", "any"),
         any_in_scope=("in_scope", "any"),
     )
+    # Every group here is unreached by construction, so `any_reached` is always false;
+    # it is kept as an assertion rather than a filter.
+    assert not per_component["any_reached"].any(), "a reached link entered the subgraph"
     stranded = per_component[
-        (~per_component["any_reached"])
-        & per_component["any_in_scope"]
-        & (per_component["km"] >= min_component_km)
+        per_component["any_in_scope"] & (per_component["km"] >= min_component_km)
     ].sort_values("km", ascending=False).head(limit)
 
     log.info(
-        f"  {len(stranded):,} stranded components of {min_component_km:g} km or more, "
-        f"holding {stranded['km'].sum():,.0f} km with no way to the sea"
+        f"  {len(stranded):,} stranded REGIONS of {min_component_km:g} km or more "
+        f"(connected runs of unreached water, not whole components), holding "
+        f"{stranded['km'].sum():,.0f} km with no way to the sea"
     )
 
     drafts: list[dict] = []
     rejected: list[tuple[str, str]] = []
     for component, row in stranded.iterrows():
         members = frame.loc[frame["component"] == component, "link_id"].tolist()
-        with db.registered("_comp", pd.DataFrame({"link_id": members})):
+        with db.registered("_comp", pd.DataFrame({"link_id": members})), db.registered(
+            "_wc0", pd.DataFrame({"link_id": members})
+        ):
             near = db.query(
                 f"""
                 WITH mine AS (SELECT l.link_id, l.geom, l.name, l.form
@@ -889,24 +937,57 @@ def propose_component_outlets(
                        ST_AsWKB(m.geom), ST_AsWKB(t.geom)
                 FROM mine m JOIN theirs t
                   ON ST_Distance(m.geom, t.geom) <= {max_gap_m}
+                 AND ST_Distance(m.geom, t.geom) > 0
                 ORDER BY gap_m LIMIT 1
                 """
+            )
+            # The zero-metre touches are asked for SEPARATELY rather than filtered out
+            # of a limited result. Taking the closest twelve and discarding the zeros
+            # worked until a region had more than twelve of them: the Manchester Ship
+            # Canal's stranded 32 km touches reached water at exactly 0 m in at least
+            # five places — Rivacre Brook, Hoolpool Gutter, the Gowy, an unnamed
+            # channel and another Ship Canal link — so the list never reached the
+            # 184 m gap at Eastham that is the actual join. A LIMIT is not a filter.
+            zero = db.query(
+                f"""
+                WITH mine AS (SELECT l.link_id, l.geom, l.name, l.form
+                              FROM link l JOIN _wc0 USING (link_id)
+                              UNION ALL
+                              SELECT rl.link_id, rl.geom, rl.name, rl.form
+                              FROM repair_link rl JOIN _wc0 USING (link_id)),
+                     box AS (SELECT min(ST_XMin(geom)) AS x0, max(ST_XMax(geom)) AS x1,
+                                    min(ST_YMin(geom)) AS y0, max(ST_YMax(geom)) AS y1
+                             FROM mine)
+                SELECT m.name, t.name FROM mine m
+                JOIN link t ON ST_Intersects(m.geom, t.geom)
+                JOIN link_reach r ON r.link_id = t.link_id
+                WHERE r.reaches_tidal LIMIT 1
+                """
+            )
+        # A 0 m crossing is refused (D-016) but it must not MASK the real join behind
+        # it. Taking the component's minimum distance and rejecting on it meant that a
+        # canal culverted under a river somewhere along its length was never offered
+        # the genuine gap at its end: the Manchester Ship Canal crosses the tidal Gowy
+        # at 0 m near Stanlow, and that hid a 184.5 m hole at Eastham where OS has
+        # drawn a tidal stub and simply not joined it. So a zero is stepped over, and
+        # recorded, rather than ending the search.
+        if zero:
+            rejected.append(
+                (
+                    f"component {component}",
+                    f"{zero[0][0] or 'an unnamed watercourse'} and "
+                    f"{zero[0][1] or 'a watercourse'} cross at exactly 0 m with their "
+                    f"ends elsewhere — an aqueduct or a culvert far more often than a "
+                    f"confluence (D-016), so not joined"
+                    + (
+                        f"; the search continued and found a {near[0][5]:,.1f} m gap "
+                        "instead" if near else " and nothing else is within reach"
+                    ),
+                )
             )
         if not near:
             continue
         my_name, my_form, their_pub, their_name, their_form, gap, mw, tw = near[0]
-        if gap <= 0.0:
-            rejected.append(
-                (
-                    f"component {component}",
-                    f"{my_name or 'an unnamed watercourse'} and "
-                    f"{their_name or 'a watercourse'} cross at exactly 0 m with their "
-                    f"ends elsewhere. That is an aqueduct or a culvert far more often "
-                    f"than a confluence (D-016); joining it would route one water down "
-                    f"the other. Adjudicate at the place",
-                )
-            )
-            continue
 
         mine = shapely.from_wkb(bytes(mw))
         theirs = shapely.from_wkb(bytes(tw))
@@ -944,6 +1025,164 @@ def propose_component_outlets(
                 "gap_m": round(float(gap), 3),
                 "sink_publisher_id": None,
                 "resumes_as": their_pub,
+            }
+        )
+    return drafts, rejected
+
+
+def propose_water_crossings(
+    max_gap_m: float = 2000.0,
+    min_component_km: float = 0.5,
+    limit: int = 400,
+) -> tuple[list[dict], list[tuple[str, str]]]:
+    """Cross a water body that the survey routes through with nothing (PLAN.md §5).
+
+    > Where a watercourse meets a lake, reservoir or broad, OS Open Rivers either draws
+    > a **schematic straight line** across it — some 2,300 km of the network is routed
+    > this way — or **draws nothing, and the network is severed**.
+
+    This is the second case. A stranded component and draining water, with a mapped
+    water body lying between them, is a network severed by a lake — and the fact that
+    OS routes *through* other water bodies with a straight line is what says a straight
+    line is admissible here: it is the survey's own convention, not an invention of
+    this project's.
+
+    **The line is flagged `schematic` because it is a routing device and not a
+    channel** (D-008). Stage 1 makes no historical claim so either is admissible, but a
+    later stage must not mistake this for a surveyed course — and where the water body
+    is a modern impoundment, the line runs where a valley used to be.
+
+    A longer reach is allowed than for a connector on dry land, and the water body is
+    what licenses it: the gap is not open ground the water would have to cross, it is
+    water. The line must lie **inside** the polygon for its whole length, so a 2 km
+    crossing of a broad is admissible and a 2 km line over fields is not.
+    """
+    import shapely
+    from shapely.ops import nearest_points
+
+    from . import graph
+
+    if not db.table_exists("water_body"):
+        return [], [("water_body", "the water_bodies stage has not run")]
+
+    g = graph.load("edge")
+    labels = g.weak_components()
+    reach = db.df("SELECT link_id, reaches_tidal FROM link_reach")
+    reached = set(reach.loc[reach["reaches_tidal"], "link_id"])
+    scope = db.df("SELECT link_id, in_scope FROM link_scope")
+    in_scope_links = set(scope.loc[scope["in_scope"], "link_id"])
+
+    frame = pd.DataFrame(
+        {
+            "link_id": g.link_ids,
+            "component": labels[g.u].astype(int),
+            "length_m": g.length,
+            "reached": [lid in reached for lid in g.link_ids],
+            "in_scope": [lid in in_scope_links for lid in g.link_ids],
+        }
+    )
+    per = frame.groupby("component").agg(
+        km=("length_m", lambda x: x.sum() / 1000.0),
+        any_reached=("reached", "any"),
+        any_scope=("in_scope", "any"),
+    )
+    stranded = per[
+        (~per["any_reached"]) & per["any_scope"] & (per["km"] >= min_component_km)
+    ].sort_values("km", ascending=False).head(limit)
+
+    drafts: list[dict] = []
+    rejected: list[tuple[str, str]] = []
+    for component, row in stranded.iterrows():
+        members = frame.loc[frame["component"] == component, "link_id"].tolist()
+        with db.registered("_wc", pd.DataFrame({"link_id": members})):
+            near = db.query(
+                f"""
+                WITH mine AS (SELECT l.link_id, l.geom, l.name FROM link l JOIN _wc USING (link_id)
+                              UNION ALL
+                              SELECT rl.link_id, rl.geom, rl.name FROM repair_link rl JOIN _wc USING (link_id)),
+                     box AS (SELECT min(ST_XMin(geom)) x0, max(ST_XMax(geom)) x1,
+                                    min(ST_YMin(geom)) y0, max(ST_YMax(geom)) y1 FROM mine)
+                SELECT m.name, t.name, t.publisher_id,
+                       ST_Distance(m.geom, t.geom) AS gap_m,
+                       ST_AsWKB(m.geom), ST_AsWKB(t.geom)
+                FROM mine m, link t JOIN link_reach r USING (link_id), box
+                WHERE r.reaches_tidal
+                  AND ST_XMax(t.geom) >= box.x0 - {max_gap_m}
+                  AND ST_XMin(t.geom) <= box.x1 + {max_gap_m}
+                  AND ST_YMax(t.geom) >= box.y0 - {max_gap_m}
+                  AND ST_YMin(t.geom) <= box.y1 + {max_gap_m}
+                  AND ST_Distance(m.geom, t.geom) BETWEEN 0.001 AND {max_gap_m}
+                ORDER BY gap_m LIMIT 1
+                """
+            )
+        if not near:
+            continue
+        my_name, their_name, their_pub, gap, mw, tw = near[0]
+        a, b = nearest_points(
+            shapely.from_wkb(bytes(mw)), shapely.from_wkb(bytes(tw))
+        )
+        line = shapely.LineString([(a.x, a.y), (b.x, b.y)])
+
+        # The whole line must lie in ONE water body. A line that merely clips a corner
+        # is crossing land, and this rule has nothing to say about land.
+        # Bounding boxes before geometry, as everywhere else in this project: a bare
+        # ST_Contains over 34,848 polygons is a full scan per candidate.
+        x0, y0, x1, y1 = shapely.bounds(line)
+        body = db.query(
+            f"""
+            SELECT publisher_id, area_m2
+            FROM water_body
+            WHERE ST_XMax(geom) >= {x0} AND ST_XMin(geom) <= {x1}
+              AND ST_YMax(geom) >= {y0} AND ST_YMin(geom) <= {y1}
+              AND ST_Contains(geom, ST_GeomFromWKB(?))
+            ORDER BY area_m2 DESC LIMIT 1
+            """,
+            [shapely.to_wkb(line)],
+        )
+        if not body:
+            rejected.append(
+                (
+                    f"component {component}",
+                    f"the {gap:,.0f} m approach does not lie inside a mapped water "
+                    "body, so this is a gap over land and not a severed crossing",
+                )
+            )
+            continue
+
+        drafts.append(
+            {
+                "geometry": line,
+                "name": f"{my_name or 'a stranded watercourse'} across water at "
+                        f"{a.x:,.0f} {a.y:,.0f}",
+                "reason": (
+                    f"A component holding {row['km']:,.1f} km has no way to tidal "
+                    f"water, and the {gap:,.0f} m between it and water that does drain "
+                    f"lies wholly inside a mapped water body of "
+                    f"{body[0][1] / 10000:,.1f} ha. The survey has routed through this "
+                    f"one with nothing at all. §5: where OS draws no route across a "
+                    f"lake, broad or reservoir the network is severed there, and a "
+                    f"straight line across standing water is the survey's OWN "
+                    f"convention — it uses one for some 2,300 km elsewhere."
+                ),
+                "evidence": (
+                    f"Measured on OS Open Rivers issue {_issue()} against OS OpenMap - "
+                    f"Local: the component holds {row['km']:,.1f} km and not one of its "
+                    f"links reaches tidal water; the nearest link that does is "
+                    f"{their_pub} ({their_name}) at {gap:,.0f} m; and the line between "
+                    f"them is CONTAINED by surface water polygon {body[0][0]}. "
+                    f"THIS LINE IS A ROUTING DEVICE AND NOT A CHANNEL and is flagged "
+                    f"`schematic` (D-008): where the water body is a modern "
+                    f"impoundment it runs where a valley used to be, and a later stage "
+                    f"must not read it as a surveyed course. JUDGED BY RULE: see "
+                    f"rewt/candidates.py propose_water_crossings."
+                ),
+                "author": "rewt candidates (rule), reviewed by Claude",
+                "dated": "2026-09-01",
+                "upstream_km": round(float(row["km"]), 3),
+                "gap_m": round(float(gap), 3),
+                "sink_publisher_id": None,
+                "resumes_as": their_pub,
+                "schematic": True,
             }
         )
     return drafts, rejected

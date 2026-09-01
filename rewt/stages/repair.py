@@ -391,6 +391,28 @@ def run() -> dict:
     if counts:
         log.table("judgements applied", ["class", "applied", "authored"], counts)
 
+    # Every applied correction must be VISIBLE in the graph it claims to have changed.
+    # A stage that reports success while the artefact is unchanged is the failure this
+    # project has met more often than any other (§8, D-017, D-031).
+    unseen = db.query(
+        """
+        SELECT c.correction_id, c.kind, c.subject
+        FROM correction c
+        WHERE c.applied AND c.kind = 'reversal'
+          AND c.correction_id NOT IN (
+              SELECT reversed_by FROM edge WHERE reversed_by IS NOT NULL
+          )
+        ORDER BY c.subject
+        """
+    )
+    if unseen:
+        raise StageError(
+            f"{len(unseen)} reversal(s) are recorded as applied but do not appear in "
+            "the routing graph. A correction that reports success while changing "
+            "nothing is the failure PLAN.md §8 names twice. Named:\n  "
+            + "\n  ".join(f"{k} {subj} ({cid})" for cid, k, subj in unseen[:20])
+        )
+
     edges = db.count("edge")
     log.done(
         f"routing graph: {edges:,} edges "
@@ -516,18 +538,30 @@ def _build_edge(reversed_by, mode_by, merged_nodes, excluded, new_links) -> None
             """
             INSERT INTO edge
             WITH all_links AS (
-                SELECT link_id, from_node, to_node, length_m, form, origin
+                SELECT link_id, from_node, to_node, length_m, form, origin,
+                       NULL AS parent_link_id
                 FROM link
                 WHERE link_id NOT IN (SELECT link_id FROM retirement)
                 UNION ALL
-                SELECT link_id, from_node, to_node, length_m, form, origin
+                SELECT link_id, from_node, to_node, length_m, form, origin,
+                       parent_link_id
                 FROM repair_link
             ),
             merged AS (
                 SELECT a.link_id,
                        coalesce(mf.to_node_id, a.from_node) AS from_node,
                        coalesce(mt.to_node_id, a.to_node)   AS to_node,
-                       a.length_m, a.form, a.origin
+                       a.length_m, a.form, a.origin,
+                       -- A link that was reversed and LATER SPLIT by a connector or a
+                       -- junction becomes two children with new identifiers, and a
+                       -- reversal keyed on the parent then matches neither. Eleven
+                       -- reversals were silently lost that way: `correction.applied`
+                       -- said true, `edge.reversed` said false, and the published
+                       -- network carried no trace of them. That is precisely §8's
+                       -- "a correction that references a feature by id does nothing,
+                       -- silently, while the stage reports it applied". The parent's
+                       -- identity is carried here so a reversal reaches its children.
+                       coalesce(a.parent_link_id, a.link_id) AS reversal_key
                 FROM all_links a
                 LEFT JOIN _merge_in mf ON mf.from_node_id = a.from_node
                 LEFT JOIN _merge_in mt ON mt.from_node_id = a.to_node
@@ -541,7 +575,7 @@ def _build_edge(reversed_by, mode_by, merged_nodes, excluded, new_links) -> None
                    r.link_id IS NOT NULL,
                    r.correction_id
             FROM merged m
-            LEFT JOIN _rev_in  r  ON r.link_id  = m.link_id
+            LEFT JOIN _rev_in  r  ON r.link_id  = m.reversal_key
             LEFT JOIN _mode_in md ON md.link_id = m.link_id
             WHERE m.link_id NOT IN (SELECT link_id FROM _excl_in)
             ORDER BY m.link_id

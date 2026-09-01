@@ -169,6 +169,47 @@ def run() -> dict:
     # ---------------------------------------------------------- corrections
     # Their own file, so the difference between the survey and the published network
     # is a thing you can open.
+    # A junction, a reversal, an exclusion and a mode act on a feature that already
+    # exists, so they carry no geometry of their own — and were therefore published
+    # with no position at all, which put 332 of 1,246 judgements nowhere on a map.
+    # AGENTS.md asks for a coordinate with EVERY finding. The midpoint of the link a
+    # judgement acts on is that coordinate, and it is marked as derived so it is never
+    # read as a surveyed position.
+    con.execute(
+        """
+        UPDATE correction SET
+            easting = coalesce(easting, (
+                SELECT ST_X(ST_Centroid(l.geom)) FROM link l
+                WHERE l.link_id = correction.resolved_to
+                   OR l.publisher_id = correction.subject LIMIT 1)),
+            northing = coalesce(northing, (
+                SELECT ST_Y(ST_Centroid(l.geom)) FROM link l
+                WHERE l.link_id = correction.resolved_to
+                   OR l.publisher_id = correction.subject LIMIT 1))
+        WHERE easting IS NULL OR northing IS NULL
+        """
+    )
+    # A junction acts on a NODE, so its subject is a node's publisher id and the link
+    # lookup above finds nothing for it. Ten judgements were left unplaced by that.
+    con.execute(
+        """
+        UPDATE correction SET
+            easting = coalesce(easting, (
+                SELECT n.easting FROM node n
+                WHERE n.node_id = correction.resolved_to
+                   OR n.publisher_id = correction.subject LIMIT 1)),
+            northing = coalesce(northing, (
+                SELECT n.northing FROM node n
+                WHERE n.node_id = correction.resolved_to
+                   OR n.publisher_id = correction.subject LIMIT 1))
+        WHERE easting IS NULL OR northing IS NULL
+        """
+    )
+    placed = con.execute(
+        "SELECT count(*) FILTER (WHERE easting IS NOT NULL), count(*) FROM correction"
+    ).fetchone()
+    log.detail(f"    {placed[0]:,} of {placed[1]:,} judgements carry a position")
+
     corrections = con.execute(
         "SELECT correction_id, kind, subject, resolved_to, applied, skip_reason, "
         "reason, evidence, detail, author, dated, source_file, source_row, "
@@ -177,6 +218,9 @@ def run() -> dict:
         "FROM correction ORDER BY kind, source_file, source_row"
     ).df()
     CORRECTIONS_GPKG.unlink(missing_ok=True)
+    # An empty CSV left behind by an earlier build is worse than no file: it says
+    # there are no corrections while the GeoPackage beside it holds 1,246.
+    (paths.PUBLISHED / "corrections.csv").unlink(missing_ok=True)
     if len(corrections):
         # A junction, a reversal and an exclusion have no geometry of their own — they
         # act on features that already exist — so they are published at the place they

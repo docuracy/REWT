@@ -837,3 +837,67 @@ applied while resolving to nothing (§8, and the test that now runs in the build
 three the operation reports success and the artefact is wrong, and in all three the only
 defence is to check the artefact against something that was not produced by the same
 call.
+
+**D-032 — Match on both name fields. `watercourseName` is the WELSH name where one
+exists.** *2026-09-01*
+
+*The specification finding is rewt-86's; the bug it exposed was in this project's
+connector rules.*
+
+OS Open Rivers' specification says of `watercourseName`: *"Where a watercourse has a
+name in more than one language, this attribute will be the Welsh or Gaelic version"* —
+and of `watercourseNameAlternative`: *"this attribute will be the English version."*
+
+That is the opposite of the natural reading. `watercourseName` is not "the name, with an
+alternative beside it"; for a bilingual watercourse it is specifically the Welsh or
+Gaelic one. **Any rule matching on `watercourseName` alone under-finds Welsh
+watercourses systematically, in a project whose scope is England *and* Wales.**
+
+The same-name connector rule did exactly that. It would not have matched `Afon Tawe`
+against `River Tawe`, and the failure would have been invisible: a Welsh river that
+stops and resumes would simply not appear among the candidates, and no count would look
+wrong. Both name fields on both sides are now compared.
+
+**Measured here, the field is doing more than the specification describes.** 5,335 links
+carry an alternative name and **every one differs from its primary**; 4,311 of those are
+in scope. The pairs are not all bilingual — `Waterbarn Channel` / `River Frome` and
+`Woodbridge Haven` / `River Deben` are a local name beside a river name — so matching on
+either field is right for more reasons than the specification gives. Some pairs put the
+Welsh first (`Afon Tawe` / `River Tawe`) and others the English (`River Dovey` / `Afon
+Dyfi`), so the specification's rule is not even applied consistently, which is a second
+reason not to rely on which field is which.
+
+**D-033 — A stranded canal is a severed channel, not a misdirected one, and the unit of
+repair is the stranded region rather than the dead end.** *2026-09-01*
+
+*Measured by rewt-86 on OS Open Rivers directly; the rule change is the response.*
+
+Of 569 sinks with canal arriving, **8 — 1% — can reach tidal water even when flow
+direction is ignored entirely.** Canals in this product are not pointed the wrong way;
+they are *cut off* from the water they lock into. That is one structural fact about how
+the survey renders canals — it draws the channel and omits the works — and it is why
+D-011's remedy is a connector at a structure and never a reversal.
+
+It also explains a class this project had been solving with the wrong instrument. The
+Manchester Ship Canal is drawn in **three disconnected pieces**, and OS *asserts* the
+tidal connection at Eastham by drawing a stub that shares a node with the tidal Rivacre
+Brook — then leaves a hole between that stub and the canal. **The survey's own geometry
+is the evidence for the join**, which is a stronger footing than the structure
+corroboration of D-030 and needs no external source at all.
+
+**Two rule changes follow, and both were bugs rather than settings.**
+
+*The unit is the stranded region, not the whole component.* The Ship Canal's stranded
+1,141 km sits inside a weakly connected component of 16,787 km of which 16,348 links do
+reach the sea — because one of its three pieces shares a node with tidal water. A rule
+that grouped by whole components could not see it, and the dead-end rules could not
+either, because the join it needs is 14 km from its dead end. The rule now works on
+connected runs of *unreached* links, which is exactly "the water that cannot get out" —
+the thing the crawl reports and the thing §5 says to work from. That change alone moved
+in-scope reachability from 92.60% to 93.44%.
+
+*And a limit is not a filter.* The rule asked for the twelve closest approaches and
+discarded those at exactly 0 m (D-016's aqueducts and culverts). The stranded Ship Canal
+touches reached water at 0 m in at least five places, so on a bad region the list filled
+with zeros and the real gap was never reached. The closest strictly-positive approach is
+now asked for in SQL rather than filtered out of a limited result.
