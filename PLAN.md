@@ -762,11 +762,20 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
   this clause and the series acquires a discontinuity no reader can see, with the numbers on
   either side no longer comparable while still looking like a trend.
 
-  **What it is for, measured rather than asserted.** 245 of 968 outstanding in-scope dead ends
-  sit within 250 m of mean high water and more than 250 m from any `tidalRiver` link: they
-  arrive at the coast and stop, because the survey draws no tidal water there for them to join.
-  They cluster on ria and cliff coasts — Cornwall, Devon, Pembrokeshire, Caernarfonshire — which
-  is where the geography predicts rather than where a threshold happens to fall.
+  **What it is for, measured rather than asserted.** **511 of the 1,281 outstanding in-scope
+  dead ends — two in five — sit within 250 m of mean high water and more than 250 m from any
+  `tidalRiver` link**: they arrive at the coast and stop, because the survey draws no tidal
+  water there for them to join. They cluster on ria and cliff coasts — Cornwall, Devon,
+  Pembrokeshire, Caernarfonshire — which is where the geography predicts rather than where a
+  threshold happens to fall.
+
+  *This paragraph said 245 of 968 until v0.1.0-alpha, which was the measurement taken when this
+  section was written and was never retaken. Both numbers moved and the share moved with them,
+  from a quarter to two fifths — so the case for the sea terminus is stronger than the sentence
+  arguing for it claimed, and nobody would have noticed, because a stale figure that supports
+  the conclusion it was written to support reads exactly like a current one. The denominators
+  are not comparable: `audit.json` is the authority for the count, and this is measured against
+  it and against Boundary-Line's `high_water`.*
 
   **What must fail loudly.** A terminus with no path to the trunk is a finding and is named, not
   dropped. A trunk that does not close is a finding and is reported as one. A path longer than
