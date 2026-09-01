@@ -691,8 +691,8 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
   depends on every drawn feature carrying an id they can send back.
 - **The sea is a test, not a definition.** It is an abstraction in this stage: §1's
   traversability test ends at tidal water, and "reaches the sea" is true by definition rather
-  than by test. **This replaces the fixed-depth contour previously
-  specified here, and it is a change of method rather than of intent.**
+  than by test. **This replaces the fixed-depth contour previously specified here, and it is
+  a change of method rather than of intent.**
 
   **What was wrong with a stated contour.** A contour at a chosen depth is a *stipulation*, and
   the sea does not oblige it. At 10 m below Lowest Astronomical Tide the line hugs the shore in
