@@ -1,14 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="12.5 2.5 38 60" role="img" aria-label="REWT">
   <title>REWT</title>
-  <!-- The viewBox is the ink's own bounding box plus a unit of margin. It was 0 0 64 64
+  <!-- An R drawn as two watercourses leaving one head at an acute fork. The solid left
+       stroke is the channel as it runs now; the dashed right sweep is the course it
+       replaced. A divergence and an improvement, which between them are most of what
+       this project is about.
+
+       The viewBox is the ink's own bounding box plus a unit of margin. It was 0 0 64 64
        while the mark sat on a rounded square; with the square gone that left the glyph
        filling 56% of the width and floating in the middle of nothing. -->
-  <!-- An R drawn as two watercourses. They leave one head at an acute fork; the left
-       runs on down, the right sweeps the bowl and turns smoothly into the leg without
-       rejoining. A divergence, which is most of what this project is about. -->
-  <g fill="none" stroke="#14608A" stroke-linecap="round">
-    <path d="M19 7 C19 18 24 28 19 38 C14 48 21 52 19 58" stroke-width="7"/>
+  <g fill="none" stroke="#14608A">
+    <path d="M19 7 C19 18 24 28 19 38 C14 48 21 52 19 58"
+          stroke-width="7" stroke-linecap="round"/>
     <path d="M19 7 C28 13.3 47 15 45 26 C43 34 33 33 29 38 C26 42 30 46 34 50 C38 54 41 55 46 58"
-          stroke-width="6.5"/>
+          stroke-width="6.5" stroke-linecap="butt" stroke-dasharray="8 3"/>
   </g>
 </svg>
