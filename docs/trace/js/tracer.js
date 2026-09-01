@@ -216,13 +216,29 @@ export function createTracer({ map, backdrop, onChange, centring = false, snappi
         const p = patchPixel(patch, to[0], to[1]);
         const q = patchPixel(patch, prev[0], prev[1]);
         centre = centreOnTransect(patch, p.x, p.y, q.x, q.y, { mPerPx });
-        if (centre.moved) { push([...toLonLatOf(patch, centre)], 'centred', centre, null); return; }
-        if (centre.why === 'already in the middle') { push(to, 'clicked', centre, null); return; }
+        if (centre.code === 'moved') { push([...toLonLatOf(patch, centre)], 'centred', centre, null); return; }
+        if (centre.code === 'central') { push(to, 'clicked', centre, null); return; }
       }
 
-      /* Two banks were not found, so this is a single-stroke reach — or centring is off.
-         Follow the ink between the last vertex and this one. */
-      if (state.snapping) {
+      /**
+       * FOLLOWING THE INK IS THE ANSWER FOR A SINGLE-STROKE REACH, NOT FOR EVERY REACH
+       * CENTRING DECLINED.
+       *
+       * An earlier version fell through to the livewire on any refusal, and the comment
+       * here claimed that a refusal meant a single stroke. It does not. `no-banks` means
+       * open ground and `width-disagrees` means a channel WAS found and its two sides did
+       * not stay parallel — and on a two-bank reach the livewire follows whichever bank is
+       * cheaper, which is precisely the half-width offset this whole design exists to
+       * avoid. Falling through there would have used the wrong assist at exactly the place
+       * the right one had just failed.
+       *
+       * So the ink is followed when centring is OFF — the contributor's own choice — or
+       * when centring reports `on-ink`, which is the pixels saying the channel here is one
+       * stroke. Any other refusal means neither assist fits, and a straight line between
+       * two clicks is the honest answer.
+       */
+      const inkIsTheChannel = !state.centring || centre?.code === 'on-ink';
+      if (state.snapping && inkIsTheChannel) {
         const snap = snapSegment(patch, prev, to);
         state.lastSnap = snap;
         if (snap.snapped && snap.coordinates.length > 2) {

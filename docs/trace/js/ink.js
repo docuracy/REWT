@@ -388,7 +388,7 @@ export function centreOnTransect(patch, px, py, fromX, fromY, opts = {}) {
   const travel = Math.hypot(dx, dy);
   if (!Number.isFinite(travel) || travel * mPerPx < o.minTravelM) {
     return {
-      moved: false,
+      moved: false, code: 'no-bearing',
       why: 'there is no direction of travel yet — centring measures the channel ACROSS the '
         + 'way you are going, so it needs a previous vertex far enough back to give a '
         + 'bearing. Place this one by hand.',
@@ -396,7 +396,7 @@ export function centreOnTransect(patch, px, py, fromX, fromY, opts = {}) {
   }
   if (isInk(patch, Math.round(px), Math.round(py))) {
     return {
-      moved: false,
+      moved: false, code: 'on-ink',
       why: 'that point is on ink, so the channel here is drawn as a single line. There is '
         + 'no width to find a middle of, and the vertex is already on the feature.',
     };
@@ -432,7 +432,7 @@ export function centreOnTransect(patch, px, py, fromX, fromY, opts = {}) {
   const quorum = Math.min(o.transectQuorum, alongs.length);
   if (offsets.length < quorum) {
     return {
-      moved: false,
+      moved: false, code: 'no-banks',
       why: `only ${offsets.length} of ${alongs.length} cross-sections found a bank on both `
         + `sides within a channel's width — this is open ground, or the channel runs a `
         + 'different way from the one you are tracing.',
@@ -445,16 +445,17 @@ export function centreOnTransect(patch, px, py, fromX, fromY, opts = {}) {
   const spreadM = (Math.max(...widths) - Math.min(...widths)) * mPerPx;
 
   if (widthM > o.maxWidthM) {
-    return { moved: false, widthM,
+    return { moved: false, code: 'too-wide', widthM,
              why: `that opening is ${widthM.toFixed(0)} m across — too wide for a channel `
                + 'being traced by hand. A field, a park, or open water.' };
   }
   if (widthM < o.minWidthM) {
-    return { moved: false, widthM, why: 'the two banks are too close together to be distinct' };
+    return { moved: false, code: 'too-narrow', widthM,
+             why: 'the two banks are too close together to be distinct' };
   }
   if (spreadM > o.widthAgreementM) {
     return {
-      moved: false, widthM, spreadM,
+      moved: false, code: 'width-disagrees', widthM, spreadM,
       why: `the width changes by ${spreadM.toFixed(1)} m over a few pixels, so these are `
         + 'not two banks of one channel — more likely a gap between buildings, or a '
         + 'boundary crossing at an angle.',
@@ -464,6 +465,7 @@ export function centreOnTransect(patch, px, py, fromX, fromY, opts = {}) {
   const shift = median(offsets);
   return {
     moved: Math.abs(shift) >= 0.5,
+    code: Math.abs(shift) >= 0.5 ? 'moved' : 'central',
     x: px + nx * shift,
     y: py + ny * shift,
     widthPx, widthM, spreadM,
