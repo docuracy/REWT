@@ -82,7 +82,9 @@ to be inferred. Three consequences follow, and they are design rules and not cav
 ## What the gate is, and what it is not
 
 Access to the tool is controlled: invited contributors, and their traces recorded to this
-project under their own names.
+project under their own names. **How a contributor is admitted is not settled**, and this
+page will say what it actually asks of them when it is — including the cost, if there is
+one. It should not be read as *sign in with an account you already have* until it says so.
 
 **It does not restrict access to the maps.** The historic sheets are served by the National
 Library of Scotland and anyone at all can fetch them, without a key and without asking us.
