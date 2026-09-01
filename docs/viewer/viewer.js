@@ -281,24 +281,93 @@ function arrowImage(fill) {
 }
 
 async function addNetwork() {
-  const head = await fetch(DATA + 'rewt.pmtiles', { method: 'HEAD' }).catch(() => null);
-  if (!head || !head.ok) {
+  const has = async (f) => {
+    const r = await fetch(DATA + f, { method: 'HEAD' }).catch(() => null);
+    return !!(r && r.ok);
+  };
+
+  if (!await has('rewt.pmtiles')) {
     problems.push('<code>data/rewt.pmtiles</code> — the network, the sea routes and the '
       + 'basins. Until the release that carries it is built, this map can draw the '
       + 'historic sheets and nothing of its own.');
     return false;
   }
   map.addSource('rewt', { type: 'vector', url: 'pmtiles://' + DATA + 'rewt.pmtiles' });
-  for (const [id, src] of [['network-out', 'link'], ['network', 'link'],
-                           ['kept-out', 'link_kept'], ['kept', 'link_kept']]) {
-    const inScope = id.endsWith('-out') ? ['!', ['get', 'in_scope']] : ['get', 'in_scope'];
+
+  /* TWO ARCHIVES, AND THE SPLIT IS STRUCTURAL RATHER THAN A TUNING. Tiled beside the
+     195,690 lines of `link`, the four never-thinned classes came out at 1,317 of 10,229
+     at z5 — and at exactly 1,317 with the size budget raised twenty-five fold, so the
+     budget was never what bound them: they were being evicted from a tile they shared.
+     Tiled alone the whole kept archive is 4 MB and complete. So they live apart. */
+  const keptOk = await has('rewt_kept.pmtiles');
+  if (keptOk) {
+    map.addSource('rewt_kept',
+      { type: 'vector', url: 'pmtiles://' + DATA + 'rewt_kept.pmtiles' });
+  } else {
+    /* NOT FATAL, AND WORTH SAYING WHY. `link_kept` is a duplicate subset of `link`, not
+       an exclusive one, so losing this archive does not remove the unreached, the
+       retired, our own geometry or the reversals from the map — it removes the
+       GUARANTEE that they survive to low zoom. They still draw wherever `link` draws
+       them. What is lost is the promise, and a promise silently withdrawn is the thing
+       this layer exists to prevent. */
+    problems.push('<code>data/rewt_kept.pmtiles</code> — the four never-thinned classes, '
+      + 'tiled apart so they cannot be evicted by the rest of the network. Without it '
+      + 'the unreached, the retired, this project\'s own geometry and the reversals are '
+      + 'still drawn, but only as part of the general network: <b>at low zoom they thin '
+      + 'with everything else, and a defect can vanish when you zoom out.</b>');
+  }
+
+  for (const [id, src] of [['network-out', 'link'], ['network', 'link']]) {
     map.addLayer({
-      id, type: 'line', source: 'rewt', 'source-layer': src, filter: inScope,
+      id, type: 'line', source: 'rewt', 'source-layer': src,
+      filter: id.endsWith('-out') ? ['!', ['get', 'in_scope']] : ['get', 'in_scope'],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': THEMES[theme].colour, 'line-width': WIDTH,
         ...(id.endsWith('-out') ? { 'line-opacity': 0.5 } : {}) },
     });
   }
+
+  if (keptOk) {
+    const layers = map.getSource('rewt_kept')?.vectorLayerIds || [];
+    /* `vectorLayerIds` is empty until the archive's metadata has been read, so an
+       absent name here means "not yet" as often as it means "not there". The marks
+       are added regardless and the crossover only applied when the layer is known to
+       exist — a dot layer over a missing source layer draws nothing and costs nothing,
+       whereas holding the lines back on a false negative would empty the map. */
+    const havePoints = layers.length === 0 || layers.includes('link_kept_pt');
+
+    for (const [id, filt] of [['kept-out', ['!', ['get', 'in_scope']]],
+                              ['kept', ['get', 'in_scope']]]) {
+      map.addLayer({
+        id, type: 'line', source: 'rewt_kept', 'source-layer': 'link_kept', filter: filt,
+        // Lines from z9. Below that they are not thinned, they are UNDRAWABLE: a vector
+        // tile quantises coordinates to EXTENT units across the tile, so at z5 one unit
+        // is 184 m against a median kept link of 394 m and a quarter under 80 m. They
+        // collapse to zero length and are dropped as degenerate. No flag changes that.
+        minzoom: havePoints ? 9 : 0,
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': THEMES[theme].colour, 'line-width': WIDTH,
+          ...(id.endsWith('-out') ? { 'line-opacity': 0.5 } : {}) },
+      });
+    }
+
+    /* ONE POINT PER KEPT LINK, on the line at its midpoint, same attributes. A point
+       has no length to lose, so all 10,229 reach z5 where a quarter of the lines
+       cannot. Below z9 this is what the promise actually rests on, and it is a weaker
+       claim than the lines make — honestly so: the mark says a defect is THERE, and
+       the geometry appears when there is a pixel to draw it in. */
+    map.addLayer({
+      id: 'kept-pt', type: 'circle', source: 'rewt_kept', 'source-layer': 'link_kept_pt',
+      maxzoom: 10,
+      paint: {
+        'circle-color': THEMES[theme].colour,
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 1.6, 8, 2.6, 10, 4],
+        'circle-opacity': 0.9,
+        'circle-stroke-color': '#0d1117', 'circle-stroke-width': 0.5,
+      },
+    });
+  }
+
   map.addLayer({ id: 'sea_route', type: 'line', source: 'rewt', 'source-layer': 'sea_route',
     layout: { visibility: 'none', 'line-cap': 'round' },
     paint: { 'line-width': 1.6,
@@ -399,12 +468,14 @@ function applyTheme() {
   for (const id of ['network', 'network-out', 'kept', 'kept-out']) {
     if (map.getLayer(id)) map.setPaintProperty(id, 'line-color', THEMES[theme].colour);
   }
+  if (map.getLayer('kept-pt')) map.setPaintProperty('kept-pt', 'circle-color', THEMES[theme].colour);
   const extra = OVERLAYS.filter((o) => o.legend && loaded.has(o.id) && map.getLayer(o.id)
       && map.getLayoutProperty(o.id, 'visibility') !== 'none')
     .flatMap((o) => [[o.label, null], ...o.legend]);
   const rows = [...THEMES[theme].legend];
   if (extra.length) rows.push(['Drawn on top', null], ...extra);
-  rows.push(['Never thinned, at any zoom', null],
+  rows.push([map.getZoom() < 9 ? 'Marked at this zoom, not drawn — a dot each'
+    : 'Never thinned, at any zoom', null],
     ...(thin?.never_thinned || []).map((t) => [t, null]));
   $('#legend').innerHTML = rows.map(([text, colour], i) => colour
     ? `<span><i style="background:${colour}"></i>${esc(text)}</span>`
@@ -509,6 +580,9 @@ function writeHash() {
   }, 250);
 }
 map.on('moveend', writeHash);
+/* The legend's own heading changes at z9 — marks below, geometry above — so it has to
+   follow the zoom rather than only the controls. */
+map.on('zoomend', () => { if (hashReady) applyTheme(); });
 
 function dl(obj) {
   return '<dl>' + Object.keys(obj).filter((k) => obj[k] != null && obj[k] !== '')
@@ -535,7 +609,10 @@ function wireClicks(o) {
 
 /* The network's own click detail comes out of the tile — there is no /api/link here. */
 function wireNetwork() {
-  for (const id of ['network', 'kept']) {
+  /* `kept-pt` is clickable too. At national view the mark is the only thing standing
+     for a defect, and a mark you cannot interrogate is a dot on a map — it carries the
+     same attributes as the line it stands for, so it answers the same question. */
+  for (const id of ['network', 'kept', 'kept-pt']) {
     if (!map.getLayer(id)) continue;
     map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer'; });
     map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
@@ -647,11 +724,20 @@ map.on('load', async () => {
   renderBasins();
   await buildEpochs();
 
+  /* THE OLD WORDING PROMISED SOMETHING GEOMETRY CANNOT GIVE. It said the four classes
+     were "drawn at every zoom whatever their length", which implied their shape was
+     there, and below z9 it is not: a vector tile quantises coordinates, so a line
+     shorter than one unit — 184 m at z5, against a median kept link of 394 m — has no
+     length left and cannot be drawn at all. The claim that survives is narrower and
+     true: below z9 the four classes are MARKED, not drawn. */
   $('#thinning').innerHTML = map.getSource('rewt')
     ? 'The network is served as vector tiles and fetched a viewport at a time, so every '
-      + 'one of its links is reachable by zooming in. <b>Four classes are drawn at every '
-      + 'zoom whatever their length</b>; the legend names them. A channel not drawn here '
-      + 'is <em>not</em> a channel that is missing.'
+      + 'one of its links is reachable by zooming in. <b>Below zoom 9 the four classes '
+      + 'the legend names appear as marks rather than as geometry</b> — one dot per '
+      + 'link, because at that scale a pixel is kilometres wide and a short channel has '
+      + 'no drawable length. The mark says a defect is <em>there</em>; the line appears '
+      + 'when there is a pixel to draw it in. <b>Nothing is omitted at any zoom</b>, and '
+      + 'a channel not drawn here is <em>not</em> a channel that is missing.'
     : 'The network is not loaded — see the notice above.';
 
   if (problems.length || missing.length) {

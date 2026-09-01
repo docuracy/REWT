@@ -158,6 +158,12 @@ def notes(tag: str) -> str:
                 "",
             ]
     L += [
+        "**The map has been tested in one browser.** The historic-sheet compositor uses",
+        "`OffscreenCanvas` and `createImageBitmap`, which are the parts most likely to",
+        "behave differently elsewhere — Safari above all. The network, the defects and",
+        "every figure on the page are independent of it; it is the historic backdrops that",
+        "would fail, and they would fail visibly rather than quietly.",
+        "",
         "**The network is frozen on the Ordnance Survey Open Rivers 2026-04 issue and will",
         "not take reissues.** OS states that its identifiers are not persistent between",
         "product versions, so stability is bought by refusing updates rather than by",
