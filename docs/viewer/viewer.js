@@ -143,82 +143,20 @@ const tilesFor = (o) => {
 };
 
 /* ── The first edition, composited in the browser ──────────────────────────
- * The National Library of Scotland publishes the six-inch FIRST edition county by
- * county, and the mosaics are not cut at the county line — each bleeds over its
- * neighbours, so stacking them puts two different surveys of the same ground on top of
- * each other with the join wherever the draw order falls. The local viewer composites
- * this server-side. A published site has no server, and MapLibre cannot clip a raster
- * to a polygon, so it is done here with a protocol handler and a canvas.
- *
- * A pixel is taken only where the county OWNS the ground and its own sheet HAS
- * something to say there. Both conditions matter: the first stops a mosaic bleeding
- * past its boundary, the second keeps its internal margins transparent rather than
- * painting them white over a neighbour.
+ * The compositor lives in `composite.js` with no side effects, so anything needing the
+ * PIXELS rather than a map layer can call it directly — `addProtocol` registers a
+ * scheme with MapLibre and not with the browser, so `img.src = 'firsted://…'` fetches
+ * nothing. The tracer reads ink that way, and two compositors would eventually disagree
+ * about which county's survey a given pixel came from.
  */
 
-let COUNTIES = null;
-
-function tileBounds(z, x, y) {
-  const lon = (i) => (i / 2 ** z) * 360 - 180;
-  const lat = (j) => {
-    const n = Math.PI - (2 * Math.PI * j) / 2 ** z;
-    return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
-  };
-  return [lon(x), lat(y + 1), lon(x + 1), lat(y)];
-}
-
-async function countyTile(slug, z, x, y) {
-  const url = `https://mapseries-tilesets.s3.amazonaws.com/os/six-inch-${slug}/${z}/${x}/${y}.png`;
-  try {
-    const r = await fetch(url);
-    if (!r.ok) return null;
-    return await createImageBitmap(await r.blob());
-  } catch (e) { return null; }
-}
-
-maplibregl.addProtocol('firsted', async (params, abort) => {
-  const m = params.url.match(/^firsted:\/\/(\d+)\/(\d+)\/(\d+)/);
-  if (!m || !COUNTIES) return { data: null };
-  const [z, x, y] = m.slice(1).map(Number);
-  const [w, s, e, n] = tileBounds(z, x, y);
-  const here = COUNTIES.filter((r) => r.in_scope && r.bounds
-    && !(r.bounds[2] < w || r.bounds[0] > e || r.bounds[3] < s || r.bounds[1] > n));
-  const cv = new OffscreenCanvas(256, 256);
-  const g = cv.getContext('2d');
-  for (const r of here) {
-    const img = await countyTile(r.slug, z, x, y);
-    if (!img) continue;
-    const layer = new OffscreenCanvas(256, 256);
-    const lg = layer.getContext('2d');
-    lg.drawImage(img, 0, 0);
-    if (r.mask) {
-      /* `destination-in` keeps only what falls inside the filled polygon — a mask in
-         two operations and no per-pixel work. A county with no polygon (the Isle of
-         Man, which the Historic Counties Standard omits) is masked by its own alpha
-         alone, which is right: it is an island and no neighbour's sheets reach it. */
-      lg.globalCompositeOperation = 'destination-in';
-      lg.fillStyle = '#000';
-      lg.beginPath();
-      for (const ring of r.mask) {
-        ring.forEach(([lo, la], i) => {
-          const px = ((lo - w) / (e - w)) * 256;
-          const py = ((n - la) / (n - s)) * 256;
-          i ? lg.lineTo(px, py) : lg.moveTo(px, py);
-        });
-        lg.closePath();
-      }
-      lg.fill();
-    }
-    g.drawImage(layer, 0, 0);
-  }
-  const blob = await cv.convertToBlob({ type: 'image/png' });
-  return { data: new Uint8Array(await blob.arrayBuffer()) };
-});
+import { registerProtocol } from './composite.js';
 
 /* ── Map ──────────────────────────────────────────────────────────────────── */
 
 const pm = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', pm.tile);
+registerProtocol(maplibregl);
 
 const b0raw = opts[backdropId];
 const b0 = (b0raw && (b0raw.counties || b0raw.collection)) ? { tiles: null } : b0raw;
@@ -684,7 +622,6 @@ $('#copy-link').onclick = async () => {
 
 map.on('load', async () => {
   map.addImage('arrow-reversed', arrowImage(C.rev));
-  COUNTIES = await fetch('counties.json').then((r) => r.json()).catch(() => null);
   await addNetwork();
   wireNetwork();
   buildLayerPanel();

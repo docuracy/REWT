@@ -11,7 +11,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>REWT — the network as currently assembled</title>
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<!-- SUBRESOURCE INTEGRITY. The version tag pins WHICH release; the digest pins the
+     BYTES. That is the same distinction that made the build pin EMODnet by manifest
+     digest rather than by coverage id — an identifier cannot say what you actually
+     built against, so the digest does. unpkg serves immutable versioned paths, which
+     makes this belt and braces rather than a fix; but a third party executing script
+     in a published page is exactly where belt and braces belongs, and the browser
+     refuses the file rather than running something else. -->
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"
+      integrity="sha384-MinO0mNliZ3vwppuPOUnGa+iq619pfMhLVUXfC4LHwSCvF9H+6P/KO4Q7qBOYV5V"
+      crossorigin="anonymous">
 <link rel="stylesheet" href="viewer.css">
 </head>
 <body>
@@ -103,8 +112,12 @@
      import that no bundler-less page can resolve; maplibre is loaded the same way for
      consistency and because the order matters — the protocol must be registered
      before any style referencing it is created. -->
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script src="https://unpkg.com/pmtiles@3.0.6/dist/pmtiles.js"></script>
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"
+        integrity="sha384-SYKAG6cglRMN0RVvhNeBY0r3FYKNOJtznwA0v7B5Vp9tr31xAHsZC0DqkQ/pZDmj"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/pmtiles@3.0.6/dist/pmtiles.js"
+        integrity="sha384-4sbA4B4Oqxkzs6apu8HaZcGrL3BySmt0tO/LQf6al3hkgq8ijZFxkTkvxxZZ/3PU"
+        crossorigin="anonymous"></script>
 <script type="module" src="viewer.js"></script>
 </body>
 </html>

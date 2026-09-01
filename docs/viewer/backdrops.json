@@ -66,7 +66,7 @@
       "group": "seamless"
     },
     "nls_county_maps": {
-      "label": "Pre-Ordnance county surveys, 1771–1831",
+      "label": "Pre-Ordnance county surveys",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/county/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -74,10 +74,10 @@
       "collection": "nls_county_maps.json",
       "item_label": "County survey",
       "attribution": "Reproduced with the permission of the <a href=\"https://maps.nls.uk\">National Library of Scotland</a>. Re-use terms for these particular layers are NOT established: NLS publish a per-layer re-use column, and the England and Wales six-inch and one-inch layers are not on it. Local and desktop use only — NLS ask that public websites use their Historic Maps API or contact them.",
-      "note": "Commercial county surveys made BEFORE the Ordnance Survey reached these counties — earlier than the first-edition six-inch by twenty to sixty years, and Cumberland 1771 and Cheshire 1794 predate the canal age outright. Eleven counties in the North and Midlands only, one at a time, to z11–z14. THEY ARE NOT ORDNANCE SURVEY: a different surveyor, a different standard of accuracy, and a channel drawn here is weaker evidence of position than the same channel on a six-inch sheet."
+      "note": "Commercial county surveys made BEFORE the Ordnance Survey reached these counties. Eleven counties in the North and Midlands only, one at a time, to z11–z14. THEY ARE NOT ORDNANCE SURVEY: a different surveyor, a different standard of accuracy, and a channel drawn here is weaker evidence of position than the same channel on a six-inch sheet. NO DATE IS CLAIMED — the year in each identifier is the Library's, not a survey date this project has checked."
     },
     "nls_estates": {
-      "label": "Estates — 68 sheets",
+      "label": "Estates (estates) — 68 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/estates/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -88,7 +88,7 @@
       "note": "68 tilesets under `estates/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 100%; sets below 15% are not offered."
     },
     "nls_london_1890s": {
-      "label": "London 1890s",
+      "label": "London (london_1890s)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/london_1890s/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -105,7 +105,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–21, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_town_england": {
-      "label": "Town england — 28 sheets",
+      "label": "Town england (town_england) — 28 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/town_england/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -116,7 +116,7 @@
       "note": "28 tilesets under `town_england/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 100%; sets below 15% are not offered."
     },
     "nls_air_photos_1250": {
-      "label": "Air photos 1250",
+      "label": "Air photos (air-photos-1250)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photos-1250/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -133,7 +133,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–20, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_air_photos_1250_238223269": {
-      "label": "Air photos 1250 238223269",
+      "label": "Air photos (air-photos-1250-238223269)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photos-1250-238223269/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -150,7 +150,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–20, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_air_photos_1250_238225828": {
-      "label": "Air photos 1250 238225828",
+      "label": "Air photos (air-photos-1250-238225828)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photos-1250-238225828/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -167,7 +167,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–20, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_air_photos_1250_238418479": {
-      "label": "Air photos 1250 238418479",
+      "label": "Air photos (air-photos-1250-238418479)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photos-1250-238418479/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -184,7 +184,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–20, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_london1890s": {
-      "label": "London1890s",
+      "label": "london1890s",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/london1890s/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -201,7 +201,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–20, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_gloucester": {
-      "label": "Gloucester",
+      "label": "Gloucester (gloucester)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/gloucester/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -218,7 +218,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 8–19, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_london_1940s": {
-      "label": "London 1940s",
+      "label": "London (london_1940s)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/london_1940s/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -246,7 +246,7 @@
       "note": "Admiralty charts — the only source found that DRAWS the water rather than stopping at it, which is what makes them useful for adjudicating a dead end at tidal water. MEASURED COVERAGE, so nobody plans around them as general: of a sample of 400 seed nodes, 20% have a chart tile; of 400 other tidal termini, 14%. FOUR SEEDS IN FIVE HAVE NO CHART. Individual sheets, not a series: two charts over one tile is normal, they overlap and disagree, and they are UNDATED — the identifier is an accession number, not a year. A chart surveyed over an estuary that has since silted is evidence about a coast that no longer exists, so this is a backdrop for a person to look at and never a source for a rule. Stage 1 takes its tidal test from the survey's own form = tidalRiver."
     },
     "nls_air_photos_10560": {
-      "label": "Air photos 10560",
+      "label": "Air photos (air-photos-10560)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photos-10560/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -263,7 +263,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_lus25k": {
-      "label": "Lus25k",
+      "label": "lus25k",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/lus25k/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -280,7 +280,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 100% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_lus25kpub": {
-      "label": "Lus25kpub",
+      "label": "lus25kpub",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/lus25kpub/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -297,7 +297,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 95% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_newpopular": {
-      "label": "Newpopular",
+      "label": "Newpopular (newpopular)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/newpopular/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -314,7 +314,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 96% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_1inch_3rd_col_eng": {
-      "label": "1inch 3rd col eng",
+      "label": "Col eng (1inch_3rd_col_eng)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/1inch_3rd_col_eng/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -331,7 +331,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–17, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_land_uti_eng": {
-      "label": "Land uti eng",
+      "label": "Land uti eng (land_uti_eng)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/land_uti_eng/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -348,7 +348,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_lus_10k": {
-      "label": "Lus 10k",
+      "label": "Lus (lus_10k)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/lus_10k/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -365,7 +365,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_bartholomew_england_wales_1920s": {
-      "label": "Bartholomew england wales 1920s",
+      "label": "Bartholomew england wales (bartholomew_england_wales_1920s)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/bartholomew_england_wales_1920s/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -382,7 +382,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_lus_scapes": {
-      "label": "Lus scapes",
+      "label": "Lus scapes (lus-scapes)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/lus-scapes/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -399,7 +399,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 87% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_one_inch_agricultural": {
-      "label": "One inch agricultural",
+      "label": "One inch agricultural (one-inch-agricultural)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/one-inch-agricultural/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -416,7 +416,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_wildscape_habitats": {
-      "label": "Wildscape habitats",
+      "label": "Wildscape habitats (wildscape_habitats)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/wildscape_habitats/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -433,7 +433,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_wildscape_vegetation": {
-      "label": "Wildscape vegetation",
+      "label": "Wildscape vegetation (wildscape_vegetation)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/wildscape_vegetation/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -450,7 +450,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 91% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_os": {
-      "label": "Os — 315 sheets",
+      "label": "Os (os) — 315 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/os/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -461,7 +461,7 @@
       "note": "315 tilesets under `os/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 70%; sets below 15% are not offered."
     },
     "nls_25_inch": {
-      "label": "25 inch — 165 sheets",
+      "label": "OS County Series 25-inch, 1:2,500 — 165 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25_inch/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -472,7 +472,7 @@
       "note": "165 tilesets under `25_inch/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 65%; sets below 15% are not offered."
     },
     "nls_lidar": {
-      "label": "Lidar — 9 sheets",
+      "label": "Lidar (lidar) — 9 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/lidar/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -483,7 +483,7 @@
       "note": "9 tilesets under `lidar/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 75%; sets below 15% are not offered."
     },
     "nls_urbhist": {
-      "label": "Urbhist — 2 sheets",
+      "label": "Urbhist (urbhist) — 2 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/urbhist/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -494,7 +494,7 @@
       "note": "2 tilesets under `urbhist/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 66%; sets below 15% are not offered."
     },
     "nls_geological": {
-      "label": "Geological — 6 sheets",
+      "label": "Geological (geological) — 6 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/geological/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -505,7 +505,7 @@
       "note": "6 tilesets under `geological/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 72%; sets below 15% are not offered."
     },
     "nls_towns": {
-      "label": "Towns — 7 sheets",
+      "label": "Towns (towns) — 7 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/towns/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -527,7 +527,7 @@
       "note": "Admiralty charts — the only source found that DRAWS the water rather than stopping at it, which is what makes them useful for adjudicating a dead end at tidal water. MEASURED COVERAGE, so nobody plans around them as general: of a sample of 400 seed nodes, 20% have a chart tile; of 400 other tidal termini, 14%. FOUR SEEDS IN FIVE HAVE NO CHART. Individual sheets, not a series: two charts over one tile is normal, they overlap and disagree, and they are UNDATED — the identifier is an accession number, not a year. A chart surveyed over an estuary that has since silted is evidence about a coast that no longer exists, so this is a backdrop for a person to look at and never a source for a rule. Stage 1 takes its tidal test from the survey's own form = tidalRiver."
     },
     "nls_trench_101465332": {
-      "label": "101465332",
+      "label": "trench (trench/101465332)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/trench/101465332/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -544,7 +544,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 2–17, and 56% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_25k_provisional_outline": {
-      "label": "25k provisional outline",
+      "label": "Provisional outline (25k_provisional_outline)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/25k_provisional_outline/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -561,7 +561,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 63% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_bartholomew_great_britain": {
-      "label": "Bartholomew great britain",
+      "label": "Bartholomew great britain (bartholomew_great_britain)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/bartholomew_great_britain/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -578,7 +578,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 45% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_roy": {
-      "label": "Roy — 2 sheets",
+      "label": "Roy (roy) — 2 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/roy/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -589,7 +589,7 @@
       "note": "2 tilesets under `roy/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 48%; sets below 15% are not offered."
     },
     "nls_goad": {
-      "label": "Goad — 6 sheets",
+      "label": "Goad (goad) — 6 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/goad/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -600,7 +600,7 @@
       "note": "6 tilesets under `goad/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 43%; sets below 15% are not offered."
     },
     "nls_air_photo": {
-      "label": "Air photo",
+      "label": "Air photo (air-photo)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/air-photo/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -617,7 +617,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–17, and 42% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_1inch_2nd_ed": {
-      "label": "1inch 2nd ed",
+      "label": "Ed (1inch_2nd_ed)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/1inch_2nd_ed/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -634,7 +634,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 43% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_gsgs3906": {
-      "label": "Gsgs3906",
+      "label": "gsgs3906",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/gsgs3906/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -651,7 +651,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 42% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_bartholomew_great_britain_1940s": {
-      "label": "Great britain 1940s",
+      "label": "Great britain (bartholomew/great_britain_1940s)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/bartholomew/great_britain_1940s/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -668,7 +668,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–14, and 42% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_ten_mile": {
-      "label": "Ten mile — 19 sheets",
+      "label": "Ten mile (ten_mile) — 19 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/ten_mile/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -679,7 +679,7 @@
       "note": "19 tilesets under `ten_mile/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 40%; sets below 15% are not offered."
     },
     "nls_light_pollution": {
-      "label": "Light pollution",
+      "label": "Light pollution (light-pollution)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/light-pollution/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -696,7 +696,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 0–9, and 42% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_edinburgh_1250": {
-      "label": "Edinburgh 1250",
+      "label": "Edinburgh (edinburgh_1250)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/edinburgh_1250/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -713,7 +713,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 8–20, and 31% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_scotland_2500_doubles_boness_fix": {
-      "label": "Scotland 2500 doubles boness fix",
+      "label": "Scotland doubles boness fix (scotland_2500_doubles_boness_fix)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/scotland_2500_doubles_boness_fix/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -730,7 +730,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–19, and 31% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_scotland_2500_doubles": {
-      "label": "Scotland 2500 doubles",
+      "label": "Scotland doubles (scotland_2500_doubles)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/scotland_2500_doubles/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -747,7 +747,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–18, and 27% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_scotland_2500_singles": {
-      "label": "Scotland 2500 singles",
+      "label": "Scotland singles (scotland_2500_singles)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/scotland_2500_singles/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -764,7 +764,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–18, and 27% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_land_uti2_scot": {
-      "label": "Land uti2 scot",
+      "label": "Land scot (land_uti2_scot)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/land_uti2_scot/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -781,7 +781,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 29% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_soil": {
-      "label": "Soil",
+      "label": "Soil (soil)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/soil/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -798,7 +798,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–16, and 29% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_channel_islands": {
-      "label": "Channel islands — 7 sheets",
+      "label": "Channel islands (channel_islands) — 7 sheets",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/channel-islands/{item}/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -809,7 +809,7 @@
       "note": "7 tilesets under `channel-islands/`, one at a time. Zoom ranges and extents are observed from the tiles served, and each is labelled with its own. NO DATES ARE CLAIMED. Average England-and-Wales share of extent 24%; sets below 15% are not offered."
     },
     "nls_land_uti": {
-      "label": "Land uti",
+      "label": "Land uti (land_uti)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/land_uti/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -826,7 +826,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 2–16, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_1inch_3rd_col": {
-      "label": "1inch 3rd col",
+      "label": "Col (1inch_3rd_col)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/1inch_3rd_col/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -843,7 +843,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 18% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_gsgs_3908": {
-      "label": "Gsgs 3908",
+      "label": "Gsgs (gsgs_3908)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/gsgs_3908/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -860,7 +860,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 15% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_mot": {
-      "label": "Mot",
+      "label": "Mot (mot)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/mot/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -877,7 +877,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_popular": {
-      "label": "Popular",
+      "label": "Popular (popular)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/popular/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -894,7 +894,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 15% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_popular_outline": {
-      "label": "Popular outline",
+      "label": "Popular outline (popular_outline)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/popular_outline/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -911,7 +911,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–15, and 15% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_half_inch_hills": {
-      "label": "Half inch hills",
+      "label": "Half inch hills (half-inch-hills)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/half-inch-hills/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -928,7 +928,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–13, and 15% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_half_inch_layers": {
-      "label": "Half inch layers",
+      "label": "Half inch layers (half-inch-layers)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/half-inch-layers/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -945,7 +945,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–13, and 19% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_quarter": {
-      "label": "Quarter",
+      "label": "Quarter (quarter)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -962,7 +962,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 18% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_quarter_inch_first_hills": {
-      "label": "Quarter inch first hills",
+      "label": "Quarter inch first hills (quarter-inch-first-hills)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter-inch-first-hills/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -979,7 +979,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_quarter_inch_first_outline": {
-      "label": "Quarter inch first outline",
+      "label": "Quarter inch first outline (quarter_inch_first_outline)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter_inch_first_outline/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -996,7 +996,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_quarter_inch_fourth": {
-      "label": "Quarter inch fourth",
+      "label": "Quarter inch fourth (quarter-inch-fourth)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter-inch-fourth/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -1013,7 +1013,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 16% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_quarter_inch_third_air": {
-      "label": "Quarter inch third air",
+      "label": "Quarter inch third air (quarter-inch-third-air)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter-inch-third-air/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -1030,7 +1030,7 @@
       "note": "Discovered in the Library's tile bucket, not described by it: zooms 1–12, and 18% of its extent lies in England and Wales. NO DATE IS CLAIMED — the bucket carries none, and the tileset's name is not a date."
     },
     "nls_quarter_inch_first": {
-      "label": "Quarter inch first",
+      "label": "Quarter inch first (quarter_inch_first)",
       "tiles": "https://mapseries-tilesets.s3.amazonaws.com/quarter_inch_first/{z}/{x}/{y}.png",
       "opacity": 0.9,
       "historic": true,
@@ -1092,5 +1092,6 @@
     "overview_below_zoom": 8
   },
   "historic_warning": "A historic sheet under this network is a BACKDROP AND NOT EVIDENCE. Stage 1 is a modern river network and makes no historical claim whatever: nothing drawn on it is dated, and a channel lying over an 1890s sheet is not thereby attested in the 1890s. The backdrops are here to read the ground against, and for the stages that will make dated claims — not to let this one imply a claim it does not make. Re-use terms for these layers are not established and no sheet image may be published until they are.",
-  "_no_keys": "EVERY BACKDROP HERE IS KEYLESS, AND THAT IS A PROPERTY OF THE FILE RATHER THAN A CONFIGURATION. The local viewer injects a key from a gitignored .env at request time; a published site has no server to do that, so a keyed entry could only work by shipping the key — and Pages is public even though the repository is not, so a published key can be rotated but never withdrawn. The keyed options are therefore removed from this copy rather than left present and disabled: an entry that can only ever fail is an invitation to make it work. Dropped here: carto_dark, carto_light, nls_six_inch_maptiler."
+  "_no_keys": "EVERY BACKDROP HERE IS KEYLESS, AND THAT IS A PROPERTY OF THE FILE RATHER THAN A CONFIGURATION. The local viewer injects a key from a gitignored .env at request time; a published site has no server to do that, so a keyed entry could only work by shipping the key — and Pages is public even though the repository is not, so a published key can be rotated but never withdrawn. The keyed options are therefore removed from this copy rather than left present and disabled: an entry that can only ever fail is an invitation to make it work. Dropped here: carto_dark, carto_light, nls_six_inch_maptiler.",
+  "_labels": "Generated labels show the Library's own tileset identifier verbatim in parentheses. A number in an identifier is not a date and must not be rendered as one: `air-photos-1250` is a scale of 1:1250, whose bucket siblings are 2500 and 10560, and it read as thirteenth-century beside an epoch selector. Only the hand-written labels carry dates, and those are claims someone can be held to."
 }
