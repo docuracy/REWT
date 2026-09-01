@@ -163,11 +163,34 @@ class Report:
         }
 
     def write_json(self, path: Path) -> Path:
+        """Write the report, refusing to emit anything that is not JSON.
+
+        **`allow_nan=False` is the point of this method.** Python's encoder emits a
+        bare `NaN` by default and its own decoder accepts it back, so a NaN
+        round-trips perfectly here and is invalid JSON everywhere else — RFC 8259 has
+        no such literal, and `JSON.parse` rejects the whole document. One missing
+        value then fails an entire payload in a browser while reading cleanly from
+        Python, which is the worst arrangement available: the producer cannot see the
+        defect and the consumer cannot use the file.
+
+        Found by rewt-fc, whose map broke on `terminus.inflow_length_m` — NaN for the
+        10,784 termini the crawl did not seed from, correct in the GeoPackage and
+        fatal once it reached a JSON encoder. Nothing this project publishes carries a
+        bare NaN today; that is luck rather than design, and this makes it a failure at
+        write time instead of a defect discovered by whoever tries to read it.
+        """
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(
-            json.dumps(self.to_dict(), indent=2, sort_keys=True, default=str),
-            encoding="utf-8",
-        )
+        try:
+            body = json.dumps(
+                self.to_dict(), indent=2, sort_keys=True, default=str, allow_nan=False
+            )
+        except ValueError as exc:
+            raise ValueError(
+                f"{path.name}: the report holds a value JSON cannot express ({exc}). "
+                "NaN and Infinity are not JSON, and a bare NaN fails the whole "
+                "document for any reader that is not Python. Use None."
+            ) from exc
+        path.write_text(body, encoding="utf-8")
         return path
 
 

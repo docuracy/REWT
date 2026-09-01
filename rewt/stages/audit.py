@@ -686,7 +686,7 @@ def _write_refused_crossings(frame: pd.DataFrame) -> None:
     }
     out = paths.PUBLISHED / "audit" / "refused_crossings.geojson"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(_json.dumps(doc, indent=1, sort_keys=True), encoding="utf-8")
+    out.write_text(_json.dumps(doc, indent=1, sort_keys=True, allow_nan=False), encoding="utf-8")
     log.detail(f"    all {len(features):,} written to {paths.rel(out)}, uncapped")
 
 

@@ -202,9 +202,47 @@ def run() -> dict:
     if export_crs != working:
         terminus_gdf = terminus_gdf.to_crs(export_crs)
 
+    # ------------------------------------------------------------------ the sea
+    # §10's network. Built and audited since this morning and, until rewt-fc asked
+    # whether it could be drawn, exported nowhere — so a single connected structure
+    # round the coast existed only inside a DuckDB file that nothing else opens.
+    #
+    # It matters that this is looked at rather than counted. D-056 records that two
+    # earlier answers said 84 components and then 169 and were both wrong; the count
+    # that is now 1 is the same kind of claim, and a picture is the check arithmetic
+    # cannot give. `snapped_m` on the entries is the per-place measure of how far a
+    # mouth had to move to find water, and its tail is where a reader should look.
+    sea_gdf = terminus_gdf.iloc[:0]
+    if db.table_exists("sea_link"):
+        rows = con.execute(
+            "SELECT link_id, from_entry, to_entry, from_node, to_node, length_m, "
+            "min_depth_m, median_depth_m, ST_AsWKB(geom) AS wkb FROM sea_link "
+            "ORDER BY link_id"
+        ).df()
+        sea_gdf = gpd.GeoDataFrame(
+            rows.drop(columns=["wkb"]),
+            geometry=[shapely.from_wkb(bytes(w)) for w in rows["wkb"]],
+            crs=working,
+        )
+        entry_rows = con.execute(
+            "SELECT e.entry_id, e.node_id, e.kind, e.snapped_m, e.easting, e.northing "
+            "FROM sea_entry e ORDER BY e.entry_id, e.node_id"
+        ).df()
+        entry_gdf = gpd.GeoDataFrame(
+            entry_rows,
+            geometry=gpd.points_from_xy(entry_rows["easting"], entry_rows["northing"]),
+            crs=working,
+        )
+        if export_crs != working:
+            sea_gdf = sea_gdf.to_crs(export_crs)
+            entry_gdf = entry_gdf.to_crs(export_crs)
+
     NETWORK_GPKG.unlink(missing_ok=True)
     link_gdf.to_file(NETWORK_GPKG, layer="link", driver="GPKG")
     terminus_gdf.to_file(NETWORK_GPKG, layer="terminus", driver="GPKG")
+    if len(sea_gdf):
+        sea_gdf.to_file(NETWORK_GPKG, layer="sea_route", driver="GPKG")
+        entry_gdf.to_file(NETWORK_GPKG, layer="sea_entry", driver="GPKG")
     node_gdf.to_file(NETWORK_GPKG, layer="node", driver="GPKG")
     basin_gdf.to_file(NETWORK_GPKG, layer="basin", driver="GPKG")
 
@@ -354,7 +392,7 @@ def _write_provenance() -> None:
                 "acquired_at": acq.acquired_at, "file": acq.file_name,
             }
     (paths.PUBLISHED / "provenance.json").write_text(
-        json.dumps(doc, indent=2, sort_keys=True), encoding="utf-8"
+        json.dumps(doc, indent=2, sort_keys=True, allow_nan=False), encoding="utf-8"
     )
 
 

@@ -2021,3 +2021,43 @@ doing work it should not be.
 
 Until then the second figure should be read as *an upper bound with a known
 discontinuity*, and the first as what it has always been.
+
+---
+
+**D-062 — The snap radius was a square, and both sweeps that calibrated it
+reimplemented it.** *2026-09-01*
+
+`sea.snap_radius_km` is named a radius and was a square. The search expands a window
+of half-width *n* cells, so a cell in its corner sits *n*√2 away: at the declared 15 km
+mouths were attached to water **21.1 km** off, and the published `sea_entry.snapped_m`
+said so outright — a maximum of **21,143 m under a limit of 15,000**. It was in the
+file before it was in my head, and rewt-fc asking for that column to be exported is
+what put it there.
+
+**The reason it survived two calibrations is worth more than the bug.** D-060's knee
+and D-061's cliff were both measured by sweep scripts that **reimplemented the snap
+inline** rather than calling `sea.snap`. So the instrument carried the same distortion
+as the thing it was measuring, agreed with it perfectly, and could not have revealed
+it. **A sweep that reimplements what it is calibrating is not calibrating it** — it is
+two copies of one assumption agreeing, which is the day's shape again with the
+measurement rather than the artefact as its subject.
+
+The radius is now checked against the distance it claims, and the sweep calls
+`sea.snap`. Re-run through the real function:
+
+| radius | 5 km | 12 km | **15 km** | 20 km | 30 km |
+|---|---|---|---|---|---|
+| max snap | 5,000 m | 11,997 m | **14,946 m** | 19,998 m | 29,996 m |
+| share reaching the sea | 75.33% | 77.05% | **93.53%** | 93.55% | 93.58% |
+| km the test tells apart | 18,963 | 17,178 | **59** | 36 | 11 |
+
+**The conclusions stand, which is the outcome that should be reported and not buried.**
+The cliff is still between 12 and 15 km, still the Humber, and the test still separates
+almost nothing at the working value — 59 km of 97,195. D-061 is unaffected in substance
+and its figures are superseded by these. Had the correction moved the cliff, D-060's
+choice of 15 km would have needed remaking; it did not.
+
+**And the guard is now in the measurement rather than in my attention.** The sweep
+prints `max snap` beside each radius. If it ever exceeds the radius again, the
+parameter has stopped meaning what it says, and the table shows it without anyone
+having to suspect it.

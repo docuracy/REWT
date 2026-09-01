@@ -75,8 +75,17 @@ def open_sea(passable: np.ndarray) -> np.ndarray:
 def snap(rows, cols, ocean: np.ndarray, max_cells: int, cell_m: float):
     """Move each mouth to the nearest open-sea cell, or record that it could not.
 
-    Returns the distance moved, negative where no open sea lies within `max_cells`.
+    Returns the distance moved, negative where no open sea lies within the radius.
     Those are findings and §10 requires them named rather than dropped.
+
+    **The radius is a circle, and saying so is not pedantry.** The search expands a
+    square window, so a cell in its corner sits `max_cells * sqrt(2)` away — with the
+    parameter at 15 km, mouths were being attached to water 21.1 km off, and the
+    published `snapped_m` showed exactly that: a maximum of 21,143 m under a limit of
+    15,000. A parameter that permits half again what its name says is not a parameter,
+    and both D-060's calibration and D-061's sweep were run through that distortion.
+    The square is kept because it finds the nearest cell cheaply; the distance is now
+    checked against the radius it claims.
     """
     H, W = ocean.shape
     moved = np.full(len(rows), -1.0)
@@ -93,8 +102,11 @@ def snap(rows, cols, ocean: np.ndarray, max_cells: int, cell_m: float):
             rr, cc = np.nonzero(win)
             d = (rr + r0 - r) ** 2 + (cc + c0 - c) ** 2
             k = int(np.argmin(d))
+            metres = float(np.sqrt(d[k]) * cell_m)
+            if metres > max_cells * cell_m:
+                break          # inside the square, outside the radius: not attached
             sr[i], sc[i] = rr[k] + r0, cc[k] + c0
-            moved[i] = float(np.sqrt(d[k]) * cell_m)
+            moved[i] = metres
             break
     return moved, sr, sc
 

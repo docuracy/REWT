@@ -715,3 +715,38 @@ def test_the_reachability_prose_says_something_true():
         "the audit's reachability prose does not describe the network it "
         "published:\n  " + "\n  ".join(wrong)
     )
+
+
+def test_no_published_json_carries_a_bare_nan():
+    """`NaN` is not JSON, and Python is the only reader that will not say so.
+
+    RFC 8259 has no `NaN` literal. Python's encoder emits one anyway and its own
+    decoder accepts it back, so the value round-trips perfectly in the language
+    that produced it and fails `JSON.parse` outright — one missing number breaks
+    an entire payload in a browser while reading cleanly here.
+
+    Found by rewt-fc, whose map broke on `terminus.inflow_length_m`: NaN for the
+    10,784 termini the crawl did not seed from, correct in the GeoPackage and
+    fatal once it reached an encoder. This reads the published files as a
+    non-Python consumer would, rather than trusting the writer.
+    """
+    import json
+
+    from rewt import paths
+
+    checked = []
+    for path in sorted(paths.PUBLISHED.rglob("*.json")) + sorted(
+        paths.PUBLISHED.rglob("*.geojson")
+    ):
+        text = path.read_text(encoding="utf-8")
+        checked.append(path.name)
+        # json.loads accepts NaN; a strict reader does not. parse_constant fires on
+        # exactly the three literals JSON has no place for.
+        def refuse(literal, _p=path):
+            raise AssertionError(
+                f"{_p.name} contains the bare literal {literal!r}, which is not JSON "
+                "and which JSON.parse rejects. Use null."
+            )
+
+        json.loads(text, parse_constant=refuse)
+    assert checked, "no published JSON found to check"
