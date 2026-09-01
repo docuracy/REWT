@@ -216,9 +216,18 @@ def notes(tag: str) -> str:
         "## What is attached",
         "",
     ]
+    skipped = deposit_excludes()
     for rel, why in ASSETS:
-        L.append(f"- `{rel}` — {why}")
+        name = rel.rsplit("/", 1)[-1]
+        mark = " — **on the GitHub release only, not in the Zenodo record**" \
+            if name in skipped else ""
+        L.append(f"- `{rel}` — {why}{mark}")
     L += [
+        "",
+        "**The DOI archives the data, not the map.** The tiles are a rendering of the",
+        "network and `rewt viewer-data` regenerates them from the GeoPackage, so they are",
+        "attached to the release — where the site fetches them from — and left out of the",
+        "citable record, which they would otherwise treble in size without adding to.",
         "",
         "`audit/audit.json` is attached in its own right rather than inside an archive,",
         "because the documentation site states that the audit published with the data is",
@@ -550,3 +559,32 @@ def citation_file(tag: str) -> str:
         "  rather than adjudicated at the place; each records which it is.",
         "",
     ])
+
+
+def deposit_excludes() -> set[str]:
+    """Release assets that are NOT deposited to Zenodo, declared in `.zenodo.json`.
+
+    Read from the same file the deposit script reads, so the release notes and the
+    deposit cannot describe different lists. That file is JSON precisely because the
+    workflow script has no dependencies and cannot import this module.
+    """
+    return set(json.loads((paths.ROOT / ".zenodo.json").read_text())
+               .get("deposit_excludes", []))
+
+
+def excluded_assets_still_ship() -> list[str]:
+    """An excluded file must still be attached to the GitHub release.
+
+    **Excluding is not deleting, and the difference is load-bearing.**
+    `viewer-data.tar` leaves the citable record because the DOI should resolve to data
+    rather than to a rendering of it — but `pages.yml` fetches that same file from the
+    release to serve the map. Dropping it from `ASSETS` as well would take the map down
+    at the next deploy, and the failure would look like a Pages problem.
+    """
+    attached = {rel.rsplit("/", 1)[-1] for rel, _ in ASSETS}
+    return [
+        f"{name} is excluded from the Zenodo deposit but is no longer a release asset. "
+        "Excluding it from the DOI is deliberate; removing it from the release would "
+        "stop pages.yml serving the map."
+        for name in sorted(deposit_excludes()) if name not in attached
+    ]

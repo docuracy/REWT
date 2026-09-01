@@ -48,7 +48,17 @@ def call(method: str, url: str, data=None, headers=None, raw: bytes | None = Non
 
 
 def main() -> None:
-    assets = sorted(pathlib.Path("assets").iterdir())
+    zj_early = json.loads((ROOT / ".zenodo.json").read_text())
+    # WHAT THE RELEASE CARRIES AND WHAT THE DOI ARCHIVES ARE NOT THE SAME LIST.
+    # `viewer-data.tar` is 312 MB of vector tiles — a rendering of the network, which
+    # `rewt viewer-data` regenerates from the GeoPackage beside it. Archiving it makes
+    # the citable record three times larger and no more complete. It stays on the GitHub
+    # release because `pages.yml` fetches it from there to serve the map.
+    excludes = set(zj_early.get("deposit_excludes", []))
+    assets = sorted(p for p in pathlib.Path("assets").iterdir()
+                    if p.name not in excludes)
+    for name in sorted(excludes):
+        print(f"  not deposited (release asset only): {name}")
     if not assets:
         raise SystemExit("no assets to deposit")
 

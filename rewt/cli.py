@@ -576,6 +576,8 @@ def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) 
     problems += release.attribution_drift()
     # The map that ships and the data it was built from must be one pass.
     problems += release.viewer_data_drift()
+    # Excluding a file from the DOI must not remove it from the release.
+    problems += release.excluded_assets_still_ship()
 
     # The citation must name the edition being cut, not the last one. It is generated,
     # so a stale copy means someone released without running `rewt citation`.

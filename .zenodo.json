@@ -15,7 +15,14 @@
     "WRITE `orcid` AS THE FULL RESOLVER URL, https://orcid.org/0000-.... CITATION.cff",
     "wants it in that form and Zenodo's API wants the bare identifier, so one must be",
     "derived from the other; the bare one is derived, because that needs no URL",
-    "written into code, and a URL belongs here rather than there."
+    "written into code, and a URL belongs here rather than there.",
+    "",
+    "`deposit_excludes` names release assets that are NOT deposited to Zenodo. The",
+    "DOI should resolve to the data, and tiles are a rendering of the data —",
+    "regenerable from the GeoPackage with `rewt viewer-data`, and 312 MB of the 523",
+    "that v0.1.0-alpha archived. They stay a GitHub release asset because pages.yml",
+    "fetches them from there to serve the map; it is the deposit they leave, not the",
+    "release."
   ],
   "creators": [
     {
@@ -35,5 +42,8 @@
     "Ordnance Survey",
     "historical geography",
     "drainage network"
+  ],
+  "deposit_excludes": [
+    "viewer-data.tar"
   ]
 }
