@@ -173,9 +173,20 @@ async function bestFor(lon, lat, group) {
 
 async function backdropOptions(lon, lat) {
   const best = await bestFor(lon, lat, '25_inch');
+  /* THE SIX-INCH FIRST, AND THIS ORDER WAS WRONG UNTIL IT WAS CORRECTED. An earlier version
+     defaulted to the 25-inch on the grounds that it is finer. It is — but the work is on
+     the six-inch: the task queue comes from GB1900's transcription of the six-inch second
+     edition, and the seamless layers cover England and Wales where the 25-inch is county
+     by county with gaps.
+
+     The two sheets afford DIFFERENT OPERATIONS rather than the same one at two qualities.
+     On the six-inch a watercourse is a single stroke, so the operation is to follow the ink
+     and centring correctly refuses. On the 25-inch it is two banks, so a middle exists to
+     be found and a width can be read. Defaulting to the 25-inch put contributors on the
+     sheet where the ordinary operation does not apply. */
   const order = [
-    ...(best ? [best] : []),
     ...BACKDROPS.filter((l) => l.group === 'seamless'),
+    ...(best ? [best] : []),
     ...BACKDROPS.filter((l) => l.group === '25_inch' && l !== best),
     ...BACKDROPS.filter((l) => l.group === 'modern'),
   ];
@@ -200,6 +211,23 @@ function applyBackdrop(layer) {
 function paintWhen() {
   const when = boundFromSurveyYear(CURRENT?.surveyYear);
   $('whenline').textContent = boundInWords(when);
+  /* Centring is a 25-inch operation. On a sheet where a watercourse is one stroke there is
+     no width to find a middle of, and the mode will refuse every vertex — correctly, but a
+     contributor left to discover that by watching it refuse will conclude the tool is
+     broken. Say which sheet affords what, before they try. */
+  const isDetailed = (CURRENT?.group === '25_inch');
+  const box = $('centring');
+  box.disabled = !isDetailed;
+  if (!isDetailed && box.checked) { box.checked = false; TRACER?.setCentring(false); }
+  box.parentElement.title = isDetailed
+    ? 'At 1:2,500 a watercourse is drawn as two banks, so it has a middle to find.'
+    : 'Only on the 25-inch. On this sheet a watercourse is a single stroke of ink: there '
+      + 'is no width to find a middle of, and every vertex would be refused.';
+  $('sheetnote').textContent = isDetailed
+    ? '1:2,500 — a watercourse is drawn as two banks here, so centring applies and a '
+      + 'channel width can be read.'
+    : 'Six-inch — a watercourse is a single stroke here. Centring does not apply; '
+      + 'following the ink (phase 3) is the operation for this sheet.';
 }
 
 async function startMap() {

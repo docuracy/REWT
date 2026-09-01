@@ -556,7 +556,7 @@ layers`. Snapping works against **any** NLS layer, including the 25-inch below. 
 reports `UNKNOWN` because the origin-bound key 403s and it was therefore never checked,
 which is the only true thing available to say about it.
 
-### The 25-inch is the tracing surface, not the six-inch
+### Two sheets, two operations — and they are not interchangeable
 
 rewt-fc's walk of the bucket catalogued **2,016 tilesets** and turned up the layer this tool
 should default to: **the OS County Series 25-inch, 1:2,500 — `25_inch/<county>`, 165
@@ -571,12 +571,29 @@ place **without dropping scale**, which is exactly what an *Old Course* / *New C
 wants: the surveyor says one channel replaced another, and two editions at 1:2,500 show it
 happening.
 
-**A consequence that changes §7 and would otherwise be discovered painfully at phase 3.**
-At six-inch a watercourse of ordinary size is drawn as **one line**, and following ink
-darkness follows the channel. At 1:2,500 it is drawn as **two bank lines with white
-between them** — so a corridor livewire minimising ink cost will lock onto whichever bank
-is darker or nearer and produce a trace offset by half the channel width, consistently, in
-a direction nobody chose. It will look like a good trace.
+**THE SIX-INCH IS THE ORDINARY TRACING SURFACE, AND AN EARLIER VERSION OF THIS SECTION SAID
+OTHERWISE.** It was headed *the 25-inch is the tracing surface, not the six-inch*, and that
+was wrong — corrected by Stephen, 1 Sep 2026. The six-inch is where the work is: the task
+queue is derived from GB1900's transcription of the six-inch second edition, and the
+seamless layers cover England and Wales where the 25-inch is county by county. What the
+25-inch changes is not which sheet is normal but **which operations are possible**, and the
+two do not transfer:
+
+| | six-inch | 25-inch |
+|---|---|---|
+| how a watercourse is drawn | **one stroke of ink** | **two banks with white between** |
+| the operation that fits | **follow the ink** (phase 3) | **find the middle between two sides** |
+| centring | refuses, correctly — there is no width to find a middle of | its proper home |
+| channel width | not readable | readable, and `PLAN.md` §10 wants it |
+
+**So centring is a 25-inch operation and snapping is a six-inch one**, and each is close to
+useless on the other's sheet. That is why the demonstration frames show centring refusing:
+on a single-stroke channel the refusal *is* the right answer.
+
+**The bank problem, stated for the scale it belongs to.** At 1:2,500 a corridor livewire
+minimising ink cost would lock onto whichever bank is darker or nearer and produce a trace
+offset by half the channel width, consistently, in a direction nobody chose. It would look
+like a good trace.
 
 Three ways out, and the choice is a phase 3 experiment rather than a decision to take here:
 
