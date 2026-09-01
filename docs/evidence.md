@@ -245,12 +245,51 @@ before the dam" has to be answered below the six-inch, and this is what is on th
 
 | source | what it shows | state |
 |---|---|---|
-| **[OS six-inch County Series](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}**, 1st and 2nd editions | the channel itself, 1:10,560 | georeferenced, national — the base case, and too late for a large minority |
+| **[OS six-inch County Series, 1st edition](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}** | the channel itself, 1:10,560 | georeferenced, national — **the default**, and the last survey before the dam almost everywhere |
+| the same series, **2nd edition** | the channel where the dam came later still | often the lake instead; check the sheet's survey date, not the edition |
 | **[OS one-inch Old Series](https://maps.nls.uk/os/one-inch-england-wales/){:target="_blank"}**, 1801–1869 | the valley; rarely the channel, at 1:63,360 | georeferenced, 746 sheets — earlier than the six-inch over much of the country, and **untested for this purpose** |
 | **Pre-Ordnance-Survey county maps**, c.1729–1836 | valley and settlement at county-map scale | scattered across a dozen libraries; georeferencing is the tracer's problem |
 | **Tithe maps**, 1836–1852 | the best large-scale coverage before the six-inch | **Wales: 1,224 maps, over 95% of the country, georeferenced by volunteers.** England: no national equivalent |
 | **Enclosure maps and awards** | large scale, patchy by construction | county record offices; unassessed |
 | **Deposited plans for the waterworks Acts** | the works *and the ground taken* — the channel, not only the valley | indexed nationally and item by item; **nothing digitised** |
+
+### Reach for the first edition, and check the sheet rather than the edition
+
+**The rule is not "the first edition usually helps".** Checked sheet by sheet against the
+survey dates for fourteen of the largest reservoirs in England and Wales, the first edition is
+**the last survey taken before the dam in every one** — Kielder surveyed 1862 against a dam of
+1975–82, Haweswater 1858–59 against 1929–35, Rutland Water 1884 against 1970–75, Llyn Celyn
+1886 against 1965. The only case where survey and construction overlap at all is Lake Vyrnwy,
+surveyed 1885 against a dam of 1881–88 — and even there the sheet carries the valley.
+
+**Vyrnwy is worth looking at because it shows exactly what one edition holds and the next does
+not.** On the 1885 sheet the floor of the valley carries the village of Llanwddyn entire: St
+John the Baptist's church and vicarage, the Powis Arms, two Methodist chapels, a school, a
+post office, two more public houses, a disused corn mill, and the bridges Pont Cedig and Pont
+Dol-wenith over the Afon Efyrnwy — which is drawn as a river the whole way through. At the
+edge of the same sheet, already labelled, are the reservoir works that would drown all of it.
+**The surveyor mapped the village and the thing that would destroy it on one sheet.** At the
+identical extent in 1900 there is open water, the lettering of the lake's name, a rain gauge
+and a new house on the shore. The church, the chapels, the mill, the bridges and the river are
+simply not there.
+
+**But the edition number is not the rule; the survey date is.** At the Elan Valley the second
+edition, surveyed 1902–04 while the dams were going up, draws *both at once* — the reservoirs
+annotated **in course of construction**, and the Afon Elan still running as a continuous
+channel through ground that was about to go under. So the honest statement is: **the last
+survey taken before the reservoir filled carries the channel, and carries it whether or not
+the works are already on the sheet.** Once the water is in, Ordnance Survey records the lake
+and stops; the drowned channel is neither drawn nor annotated. For England and Wales that
+last-before-filling survey is the first edition nearly everywhere, which is why it is the
+default — but the sheet's own date is what settles it.
+
+**And one thing survives the water.** On the 1900 Vyrnwy sheet a single dotted line crosses
+the lake: a parish boundary, which is a legal object and does not drown. Where a boundary
+followed a river, it is a witness to the channel after the channel is gone. That is a general
+possibility rather than a demonstrated one — this particular boundary runs *near* the Efyrnwy
+rather than along it, and one place is not a sample — but it is the only linear feature on
+that sheet that outlived the flooding, and it is the same argument [the boundary-fossil
+candidates](scale#courses-recoverable-only-from-another-synthesis) rest on.
 
 **The deposited plans are the best-evidenced route on that list, and water schemes are what
 the series was created for.** From **1793**, Standing Orders required an application for a

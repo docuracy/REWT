@@ -211,7 +211,17 @@ the 365 end in a zero**, against roughly a tenth expected by chance. A fifth to 
 approximations. The two oldest — Llyn Frogwy at 1350 and Llyn Llwydiarth at 1500 — are claims
 on a regulatory return and should be read as claims.
 
-**Read the two middle rows as statements about counties, not about sheets.** The comparison
+**Read the two middle rows as statements about counties, not about sheets** — and note what
+sharpens them. Checked sheet by sheet rather than by county span, the first edition turns out
+to be the last survey before the dam for [every one of the largest
+reservoirs](evidence#reach-for-the-first-edition-and-check-the-sheet-rather-than-the-edition).
+There is no contradiction: the big reservoirs are mostly twentieth-century, so a Victorian
+survey comfortably predates them, and the reservoirs that fall in the difficult rows here are
+the early ones — the Victorian impoundments built while the county was being surveyed, or
+before it was surveyed at all. **The rule to work by is the sheet's survey date against the
+reservoir's, not the edition number.**
+
+ The comparison
 is per historic county and the survey spans are long — Yorkshire 1844–1893, Lancashire
 1842–1893, and those two hold 73 of the 273 entries between them. *Surveyed while the dam was
 building* means the county was being mapped across those years, not that the particular
