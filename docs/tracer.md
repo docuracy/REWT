@@ -35,9 +35,24 @@ volunteer's mouse on the output of a stage that makes no historical claim at all
 
 **Nobody types a year.** The tool computes the bound the evidence actually supports — a
 sheet surveyed in 1885 establishes that a channel was there *by* 1885, and nothing about
-when it began — and shows that back in words for confirmation. A free-text year field
-invites a guess, and a guess is indistinguishable from evidence once it is in the file.
+when it began — and shows that back in words before recording it: *this says the channel
+existed by 1885, and nothing about when it began.* A free-text year field invites a guess,
+and a guess is indistinguishable from evidence once it is in the file.
 [How a date is recorded](epochs#how-a-date-is-recorded) is the model behind that.
+
+**Where the sheet has no survey year, it says so rather than saying nothing.** That is the
+normal case for the seamless layers, which are composites of many sheets and so carry no
+single survey date, and it matters because the two silences are different: an absent bound
+reads as *deliberately unbounded*, and what is true here is *nobody knows*. The tool records
+an explicit unknown.
+
+**And a computed date is not automatically an honest one.** Taking the typing away removes
+one failure and opens another, in the direction nobody watches: not a contributor inventing
+a date, but the tool inventing one on their behalf and presenting it as measured. A missing
+survey year that coerces to zero yields a perfectly well-formed bound asserting the channel
+existed by the year nought — plausible in shape, checkable by nothing, and far more
+convincing on a screen than a guess a person typed. The refusals have to be tested, not
+designed.
 
 ## Why snapping exists, and what it is not
 
