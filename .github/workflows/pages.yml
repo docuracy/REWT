@@ -17,14 +17,16 @@ on:
     # would leave the published page crediting last month's terms, and a licence
     # page that is quietly out of date is worse than no page at all.
     paths: ['docs/**', 'conf/sources.yml', 'tools/docs/**', '.github/workflows/pages.yml']
-  # A NEW RELEASE IS A NEW MAP. The data the viewer reads is fetched from the latest
-  # release, not built here and not committed, so the site goes stale when a release
-  # is cut and not when the code that made it changes. Adding `rewt/tiles.py` to the
-  # paths above would be the intuitive fix and the wrong one: an edit there deploys
-  # nothing until a release carries it, and a release with no code change at all still
-  # needs this to run.
-  release:
-    types: [published]
+  # A NEW RELEASE IS A NEW MAP — the data the viewer reads is fetched from the latest
+  # release, not built here and not committed — but this workflow CANNOT be triggered
+  # by the release event. A release run carries the tag as its ref, and the
+  # `github-pages` environment refuses to deploy from one; the build job passes and the
+  # deploy job is rejected by a protection rule. `site-after-release.yml` catches the
+  # release and dispatches this workflow on the default branch instead.
+  #
+  # Adding `rewt/tiles.py` to the paths above would also be the intuitive fix and the
+  # wrong one: an edit there deploys nothing until a release carries it, and a release
+  # with no code change at all still needs this to run.
   workflow_dispatch:
 
 permissions:

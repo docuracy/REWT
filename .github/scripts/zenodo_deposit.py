@@ -18,6 +18,7 @@ import sys
 import urllib.error
 import urllib.request
 
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 BASE = "https://zenodo.org/api"
 TOKEN = os.environ["ZENODO_TOKEN"]
 TAG = os.environ.get("TAG", "untagged")
@@ -63,17 +64,32 @@ def main() -> None:
             call("PUT", f"{bucket}/{path.name}", raw=fh.read(),
                  headers={"Content-Type": "application/octet-stream"})
 
+    # AUTHORSHIP COMES FROM `.zenodo.json`, WHICH IS WHY THIS DEPOSIT FAILED ONCE.
+    #
+    # Zenodo requires `metadata.creators` and refuses to publish without it. The first
+    # attempt uploaded all 523 MB successfully and then returned HTTP 400 on the publish
+    # call — so the failure looked like a transfer problem and was a metadata one, and
+    # every file was already sitting in a draft that could never be published.
+    #
+    # `.zenodo.json` is Zenodo's own standard file, so authorship is edited in an obvious
+    # place rather than inside this script; the fields below that describe THIS BUILD
+    # (title, version, description, notes) stay here, because they are generated.
+    zj = json.loads((ROOT / ".zenodo.json").read_text())
+    if not zj.get("creators"):
+        raise SystemExit(
+            ".zenodo.json declares no creators. Zenodo will accept every file and then "
+            "refuse to publish, which is the most expensive way to discover it."
+        )
+
     meta = {
         "metadata": {
+            "creators": zj["creators"],
             "title": f"REWT {TAG} — Rivers of England and Wales, Temporally (Stage 1)",
-            "upload_type": "dataset",
+            "upload_type": zj.get("upload_type", "dataset"),
             "description": BODY.replace("\n", "<br>") or "See the repository.",
             "version": TAG,
-            "license": "cc-by-4.0",
-            "keywords": [
-                "rivers", "hydrology", "England", "Wales", "river network",
-                "Ordnance Survey", "historical geography",
-            ],
+            "license": zj.get("license", "cc-by-4.0"),
+            "keywords": zj.get("keywords", []),
             "notes": (
                 "Stage 1 makes no historical claim. Nothing derived from the sea "
                 "network may be presented as a route a vessel could follow: the "

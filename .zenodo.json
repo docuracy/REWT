@@ -1,0 +1,24 @@
+{
+  "_comment": [
+    "Authorship and citation metadata for the Zenodo deposit, in Zenodo's own",
+    "standard file so it is edited here rather than inside a workflow script.",
+    "",
+    "IT EXISTS BECAUSE THE FIRST DEPOSIT FAILED WITHOUT IT. Zenodo requires",
+    "metadata.creators and refuses to publish without it; 523 MB uploaded",
+    "successfully and the publish call returned HTTP 400. A deposit that uploads",
+    "and cannot publish looks like a network problem and is a metadata one.",
+    "",
+    "Add `orcid` and `affiliation` to a creator when they are known — both are",
+    "optional to Zenodo and both make the record more useful to cite. Anyone who",
+    "should be credited on a future edition is added here, not in the script."
+  ],
+  "creators": [
+    { "name": "Gadd, Stephen" }
+  ],
+  "upload_type": "dataset",
+  "license": "cc-by-4.0",
+  "keywords": [
+    "rivers", "hydrology", "England", "Wales", "river network",
+    "Ordnance Survey", "historical geography", "drainage network"
+  ]
+}

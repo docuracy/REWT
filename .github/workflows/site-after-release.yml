@@ -1,0 +1,42 @@
+name: Rebuild the site after a release
+
+# A RELEASE CANNOT DEPLOY PAGES ITSELF, and the reason is not the one the obvious
+# fix addresses. `pages.yml` used to trigger on `release: published` directly. Its
+# build job succeeded and its deploy job was refused:
+#
+#     Tag "v0.1.0-alpha" is not allowed to deploy to github-pages
+#     due to environment protection rules.
+#
+# The `github-pages` environment admits deployments only from the branches its policy
+# names, and a release event's ref is the TAG. Pinning `actions/checkout` to the
+# default branch — which that workflow does, and must, for a different reason — does
+# not help: the checkout decides which tree is BUILT, and the environment gate is on
+# the ref the RUN carries. Two separate things that both look like "which ref is this".
+#
+# So the release asks the site workflow to run on the default branch instead, where the
+# policy allows it. That is one indirection and it is the whole fix; the alternative is
+# widening the environment's deployment policy to admit tags, which loosens a protection
+# rule to work around a triggering detail.
+#
+# The site needs rebuilding on a release because the map's data is fetched from the
+# latest release rather than committed — see rewt/tiles.py and D-065.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the site workflow to run on the default branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run pages.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "${{ github.event.repository.default_branch }}"
+          echo "dispatched pages.yml on ${{ github.event.repository.default_branch }}"
