@@ -773,6 +773,23 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
   `sea.max_path_km` is refused rather than drawn, because a least-cost path across an
   unsurveyed hole will otherwise produce a confident line through water nobody has measured.
 
+- **Room for a measured width, which is an observation and not an attribute.** A later stage
+  gets channel width for free from work it is doing anyway: a course traced from the six-inch
+  is a *line*, and the 25-inch draws the same channel as two banks — so a machine can step
+  along a well-placed centreline, cut across at right angles, and measure between the banks
+  without anyone tracing the finer sheet. One traced line, two measurements, and the only open
+  historical source of channel width there is.
+
+  **What Stage 1 must leave room for is the shape of the result, not the measurement.** A
+  width read off an 1890s sheet is not a property of a reach; it is **an observation of that
+  reach at a date**, and it will disagree with a width read off a different sheet or a
+  different survey — legitimately, because the channel changed. Storing it as a column on a
+  link is the same error as storing a date as a year: it forces one answer where the evidence
+  supports several, and the disagreement between two surveys is a finding rather than a
+  conflict to resolve. Whatever carries attributes on a reach has to admit **more than one
+  value, each with its own source and its own date bounds**, or this arrives later as a schema
+  change rather than a row.
+
 - **Fall per link, sampled from the UNCONDITIONED terrain.** A later stage models water
   power potential, which is flow times head — and the flow half is already planned while the
   head half is not. Recording the elevation of both ends of every link costs almost nothing
