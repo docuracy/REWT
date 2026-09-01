@@ -2146,3 +2146,152 @@ not offer rather than a wrong answer about rivers.
 without and cannot fetch at runtime. **It does not exempt the network, the basins, the
 sea routes or any figure** — those are built in CI into `docs/viewer/data/` and are
 committed nowhere, which is the whole reason Pages was moved off the branch build.
+
+---
+
+**D-065 — The map's data is a release asset, not a CI build. This corrects D-064's
+closing sentence.**
+
+*D-064 ends: "those are built in CI into `docs/viewer/data/`". That is wrong, and it was
+wrong when written — I had not asked what CI would need in order to build them. It is
+corrected here rather than edited there.*
+
+**What CI cannot do.** Building `docs/viewer/data/` means having `published/`, and
+`published/` is the output of the whole pipeline: OS Open Rivers, Terrain 50, Boundary-
+Line, OpenMap Local, the Trust structures and 120 EMODnet windows, then the terrain
+stage's twelve minutes of breaching and flow accumulation. A documentation deploy
+cannot hold any of that, and a site that fails to publish because a bathymetry service
+is down is the failure D-064 itself argued against two paragraphs earlier.
+
+**The route it takes instead.** `rewt viewer-data` builds it beside a finished
+`published/`; `rewt.tiles.pack()` tars it; the release carries it as `viewer-data.tar`;
+`pages.yml` downloads it server-side and Jekyll copies it into the site. Nothing derived
+is committed, which is the rule D-064 was defending, and it is defended better this way
+than by a claim that could not be honoured.
+
+**Why the download cannot be moved into the browser.** Release assets send no CORS
+header, so a page cannot read one directly. Pages sends CORS *and* honours Range. The
+hop through the workflow is what converts an unreadable asset into a Range-served file,
+and Range is the whole mechanism: a PMTiles archive is read a viewport at a time. 322 MB
+is served without any viewer downloading 322 MB. **This is what made a reduced extract
+unnecessary** — the objection to the extract was that the viewer must be able to load
+the whole dataset, and it now does, at every zoom to 14.
+
+**A release event triggers the deploy, and the checkout must not follow it.** New data
+means a new release, not a new commit, so `pages.yml` triggers on `release: published`.
+But a release event's ref is the *tag*, and `actions/checkout` would then rebuild the
+site from the tree as it stood at the tag — silently reverting every documentation
+commit made since, with a green run and nothing to look at. The checkout pins the
+default branch on release events. Adding `rewt/tiles.py` to the trigger paths would have
+been the intuitive fix and does nothing: an edit there deploys nothing until a release
+carries it. **The commit cycle and the release cycle are different clocks.**
+
+**And the citations gate would not have caught it.** `sources_page.py --check` compares
+two files in the same tree; at the tag they agree. Internal agreement is not correctness
+unless something anchors it outside itself — which is also why
+`release.attribution_drift()` checks each rendering against `conf/sources.yml` and never
+against the other.
+
+---
+
+**D-066 — The never-thinned classes get their own archive, because sharing a tile with
+the network was silently deleting them.**
+
+*The viewer has said since its first hour that four classes are drawn whatever their
+length — the stretch that cannot reach the sea, the retired line, the line this project
+added, the line it turned round. **The archive was shipping 679 of 10,229 of them at
+national view.** Found by rewt-fc, who tested the built archive instead of reading the
+flags, and confirmed independently before anything was changed.*
+
+**Why it is the worst possible defect for this project specifically.** A defect that
+disappears when you zoom out does not look like a defect. The map looks *tidier*, and no
+review catches it because there is nothing to see. A reader looking at 27 stranded links
+on the Weaver at z13, zooming out to ask whether the problem is national, would have lost
+24 of them and concluded it was local. **Every part was individually plausible and the
+assembly was false**, which is what AGENTS.md means by checking the thing rather than the
+aggregate.
+
+**Two causes, and I reported the proportions backwards the first time.** Tiling
+`link_kept` ALONE at the default budget puts 7,800 of 10,229 into the z5 tile; sharing a
+tile at that budget gives 679. So eviction was the larger cause. The remainder is
+coordinate quantisation, which no setting can reach: MVT snaps coordinates to a grid of
+EXTENT units, at 53°N one unit is ~184 m at z5, and a line shorter than that collapses to
+zero length and is discarded. The median never-thinned link is 394 m and a quarter are
+under 80 m, so this takes about 2,430 of them at z5. I measured 1,100 once, concluded the
+budget was irrelevant, and was corrected by an isolated build agreeing with rewt-fc's
+independent browser count. **Two measurements that agree beat one that is convenient.**
+
+**Raising the budget does not work, and the number proves it rather than suggesting it.**
+Beside `link`, the points came out at 1,317 at z5 with MAX_SIZE at 20 MB and at *exactly*
+1,317 with it at 500 MB. An identical count at a 25× budget means size was never the
+binding constraint, and GDAL offers no way to prefer one layer's features over another's
+within a tile.
+
+**So the fix is structural: the four classes are not in the same tile as the 195,690
+lines that were evicting them.** `rewt_kept.pmtiles` carries them as lines *and* as one
+point each, taken on the line at its midpoint — a point has no length to lose, so
+quantisation cannot touch it. Complete at every zoom, and the whole archive is 4 MB.
+
+**The promise had to change as well as the data, because the old one was unkeepable.**
+"Drawn at every zoom whatever their length" claims the *shape* is there, and at national
+view it cannot be. The panel now says the classes appear below zoom 9 as marks rather
+than as geometry — the mark says a defect is *there*, and the line appears when there is
+a pixel to draw it in. Nothing is omitted at any zoom, which is the part that matters and
+is now true.
+
+**And the check is no longer a flag.** `rewt.tiles.verify()` reads the built archive back
+through GDAL, zoom by zoom, and refuses a build where the point layer is short. The
+original failure was a setting that was believed rather than tested; a second setting
+would have been the same mistake with a different value.
+
+---
+
+**D-067 — Every gate in this repository compares the build against itself, and four
+defects in one afternoon lived in exactly that blind spot.**
+
+*Named by rewt-86 after finding the second of them. It is recorded as a decision because
+it is a statement about what the checks cannot do, and the temptation on meeting each
+instance is to write one more check of the same kind.*
+
+**The four, all found the same way — by reading a published artefact against the code
+that claims to produce it, which is not the same act as re-running the build.**
+
+* **The attribution obligation had five renderings**, and the release note's was wrong:
+  it dropped the consortium citation EMODnet's CC BY requires. Every renderer was
+  internally consistent.
+* **The never-thinned layer was thinned** — 679 of 10,229 at national view — while the
+  viewer printed a promise that it was not. Nothing compared the promise to the archive.
+* **`published/viewer-data.tar` was never repacked by anything.** `pack()` existed and no
+  code path called it. The attached tar was ninety minutes older than the tiles, 35 MB
+  different, and its `summary.json` agreed exactly with the shipped GeoPackage — so every
+  count matched and the artefacts were a different pass.
+* **The EMODnet `issue` fix could not reach the artefact.** The field is written at
+  acquisition and the build only reads the stored record, so a full rebuild would have
+  republished the old value with every gate green.
+
+**Why more gates of the same kind would not have helped.** Each of these artefacts was
+consistent — with itself, and with every other artefact. Consistency is what the gates
+test. A stale upstream record propagates correctly into everything downstream, and the
+whole set then agrees on the wrong string. **Agreement is not correctness unless
+something anchors it outside the set.** That is the same sentence that made
+`attribution_drift()` compare each rendering against `conf/sources.yml` rather than
+against the other rendering, and it generalises further than that check does.
+
+**What was actually built in response**, since a rule with no mechanism is a wish:
+`viewer_data_drift()` compares the tar against the served tiles by size and digest rather
+than by mtime; `tiles.verify()` reads the built archive back through GDAL instead of
+trusting the settings that produced it; and `viewer-data` now repacks so the two cannot
+be separate acts. Each of these anchors one comparison outside the thing being checked.
+
+**The same shape occurs a level down, in the data rather than the artefacts.** rewt-86's
+`propertyName` WFS fetch returned 46,766 features that were internally consistent, well
+formed, and carried no geometry; every downstream computation was correct on data that
+had lost the thing it was about. A count agreed with a count, and the request had
+silently dropped the column the request existed for. **The test that catches that is not
+a stronger consistency check but a question about what the data is for**, asked against
+the thing itself.
+
+**And the limit stays.** None of these gates would have caught the acquisition record,
+and no gate of this kind will. The only thing that finds that class is a person or an agent
+reading the artefact — which is why the release was held while four peers read it, and
+why the value of that reading was highest exactly where the build was greenest.
