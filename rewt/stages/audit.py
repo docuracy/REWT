@@ -400,6 +400,46 @@ def run() -> dict:
                 )
             )
 
+    # ----------------------------------- the crossings D-016 refuses to join
+    # Published as their own finding so they can be looked at. D-016 refuses a
+    # connector where a stranded line touches draining water at exactly 0 m, on the
+    # reasoning that such a crossing is an aqueduct or a culvert far more often than a
+    # confluence. D-030 tested that against 3,291 located structures and 77% of the
+    # refusals have one within 150 m. **The other 23% are the interesting ones** and
+    # cannot be looked at unless they are written down with a coordinate.
+    crossings = _refused_crossings()
+    if len(crossings):
+        corroborated = int(crossings["structure_m"].notna().sum())
+        log.info(
+            f"  {len(crossings):,} zero-metre crossings refused as aqueducts or "
+            f"culverts (D-016); {corroborated:,} have a Canal & River Trust structure "
+            f"within 150 m and {len(crossings) - corroborated:,} do not — the latter "
+            "are the ones to look at"
+        )
+        for row in crossings.head(int(p("audit.report_top_n"))).itertuples():
+            findings.append(
+                Finding(
+                    kind="refused_crossing",
+                    subject=f"{row.mine or 'unnamed'} x {row.theirs or 'unnamed'}",
+                    detail=(
+                        "touches draining water at exactly 0 m and is NOT joined: a "
+                        "crossing here is an aqueduct or a culvert far more often than "
+                        "a confluence (D-016). "
+                        + (
+                            f"Corroborated: {row.structure} recorded "
+                            f"{row.structure_m:,.0f} m away."
+                            if pd.notna(row.structure_m)
+                            else "No Canal & River Trust structure is recorded within "
+                            "150 m — but the Trust covers 101 waterways only, so that "
+                            "is not evidence of absence. Worth looking at."
+                        )
+                    ),
+                    easting=float(row.easting),
+                    northing=float(row.northing),
+                    metrics={"corroborated": bool(pd.notna(row.structure_m))},
+                )
+            )
+
     # ------------------------------------------------------------- persist
     frame = pd.DataFrame(
         [f.to_row() for f in findings],
@@ -450,6 +490,57 @@ def run() -> dict:
         "cycles": len(cycles),
         "reachable_share_in_scope": round((scoped[0] or 0) / (scoped[1] or 1), 4),
     }
+
+
+def _refused_crossings() -> pd.DataFrame:
+    """Where a stranded line touches draining water at exactly 0 m (D-016)."""
+    frame = db.df(
+        """
+        WITH un AS (
+            SELECT e.link_id, l.geom, l.name
+            FROM edge e JOIN link_reach r USING (link_id)
+            JOIN link l ON l.link_id = e.link_id
+            JOIN link_scope s ON s.link_id = e.link_id
+            WHERE NOT r.reaches_tidal AND s.in_scope
+        ),
+        re AS (
+            SELECT l.link_id, l.geom, l.name
+            FROM link l JOIN link_reach r USING (link_id)
+            WHERE r.reaches_tidal
+        )
+        SELECT un.name AS mine, re.name AS theirs,
+               ST_X(ST_Centroid(ST_Intersection(un.geom, re.geom))) AS easting,
+               ST_Y(ST_Centroid(ST_Intersection(un.geom, re.geom))) AS northing
+        FROM un JOIN re ON ST_Intersects(un.geom, re.geom)
+        """
+    ).dropna(subset=["easting", "northing"]).drop_duplicates(
+        subset=["easting", "northing"]
+    )
+    if frame.empty or not db.table_exists("structure"):
+        frame["structure"] = None
+        frame["structure_m"] = None
+        return frame
+    with db.registered("_cross_in", frame[["easting", "northing"]]):
+        near = db.df(
+            """
+            SELECT c.easting, c.northing,
+                   (SELECT s.description FROM structure s
+                    WHERE s.kind IN ('aqueducts', 'culverts')
+                      AND s.easting BETWEEN c.easting - 150 AND c.easting + 150
+                      AND s.northing BETWEEN c.northing - 150 AND c.northing + 150
+                    ORDER BY sqrt(pow(s.easting - c.easting, 2)
+                                + pow(s.northing - c.northing, 2)) LIMIT 1) AS structure,
+                   (SELECT min(sqrt(pow(s.easting - c.easting, 2)
+                                  + pow(s.northing - c.northing, 2)))
+                    FROM structure s
+                    WHERE s.kind IN ('aqueducts', 'culverts')
+                      AND s.easting BETWEEN c.easting - 150 AND c.easting + 150
+                      AND s.northing BETWEEN c.northing - 150 AND c.northing + 150)
+                   AS structure_m
+            FROM _cross_in c
+            """
+        )
+    return frame.merge(near, on=["easting", "northing"], how="left")
 
 
 def _share(value) -> str:
