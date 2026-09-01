@@ -215,3 +215,41 @@ determinism:
   seed: 20260831
   # Deterministic ordering wherever a result depends on iteration order (§2).
   order_by: publisher_id
+
+sea:
+  # §10's sea terminus. The construction stipulates a COST SURFACE and lets the route
+  # emerge, so these are the only numbers chosen by us rather than measured — which is
+  # why each states what would make it wrong.
+
+  # Depth below Lowest Astronomical Tide at which a cell becomes passable.
+  #
+  # NOT a vessel's draught, and the distinction is what keeps this stage dateless: a
+  # draught implies a hull implies a period. This is a margin against the grid and the
+  # survey. A cell's value is an average over its footprint and hides shallower ground
+  # inside it, and the bathymetry carries its own vertical uncertainty. Below LAT is
+  # permanently submerged by definition, so 0.0 would already be defensible; the margin
+  # is for the two errors above and nothing else.
+  #
+  # Wrong if: the passable surface fragments around Britain at this value, or if raising
+  # it to 10 m changes the trunk's course rather than only its edges.
+  clearance_m: 5.0
+
+  # Working resolution of the sea grid. The land runs at 50 m over 13,200 x 15,600
+  # cells; the sea box is larger and the question coarser — where deep water connects,
+  # not where a channel lies. 200 m keeps a national grid near 30 million cells.
+  # Wrong if: a strait known to be open closes at this resolution. The Menai Strait and
+  # the Sound of Harris are the tests.
+  cell_m: 200.0
+
+  # A cell joins the trunk when this share of all tidal termini route through it.
+  # Stated as a SHARE so it does not need revisiting when the terminus count changes.
+  #
+  # §10 forbids the obvious abuse: if no continuous trunk emerges, that is a finding
+  # about the bathymetry and must be reported. Lowering this until a line appears
+  # manufactures the result the parameter was supposed to test for.
+  trunk_share: 0.01
+
+  # A path longer than this is refused rather than drawn. A least-cost path will cross
+  # an unsurveyed hole and produce a confident track through water nobody has measured;
+  # refusing is a finding, drawing it is a fabrication.
+  max_path_km: 150.0

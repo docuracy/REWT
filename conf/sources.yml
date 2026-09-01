@@ -3,6 +3,68 @@
 # unattributed provenance is not provenance.
 
 sources:
+  - id: emodnet_bathymetry
+    title: "EMODnet Digital Bathymetry (DTM)"
+    publisher: "EMODnet Bathymetry Consortium"
+    url: "https://ows.emodnet-bathymetry.eu/wcs"
+    api: wcs
+    coverage_id: "emodnet__mean"
+    wcs:
+      version: "2.0.1"
+      format: "image/tiff"
+    licence: "Creative Commons Attribution 4.0 International (CC BY 4.0)"
+    attribution: "Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0."
+    attribution_constructed: true
+    use_constraint: "DO NOT USE FOR NAVIGATION"
+    access: open
+    redistribution: permitted
+    format: [geotiff]
+    crs: "EPSG:4326"
+    cache_path: "data/raw/emodnet_bathymetry/"
+    checksum: null
+    status: unverified
+    stage: 1
+    notes: >
+      THE SEA SURFACE §10's terminus is built on. Served as ONE seamless coverage over
+      WCS, subsettable to any window, so nothing has to be mosaicked. 1/16 arc-minute:
+      about 72 m east-west at 51.5 N and 115 m north-south, against the 200 m working
+      grid, so it is resampled down rather than up.
+
+      DEPTHS ARE REFERENCED TO LOWEST ASTRONOMICAL TIDE, which is what makes
+      `sea.clearance_m` directly expressible: the catalogue record states "water depth
+      (refering to the Lowest Astronomical Tide Datum - LAT)".
+
+      SIGN CONVENTION, AND A DATUM DISCONTINUITY AT THE COAST. The coverage is a merged
+      land-and-sea surface: land POSITIVE, sea NEGATIVE. Established by probing known
+      values rather than inferred — Snowdon returns +1057 m against a true 1085 m, the
+      Dogger Bank -16 to -35 m against 20-30 m of water, the Celtic margin -2083 to
+      -3861 m. The land is on some land datum the record does not name, so a value read
+      across the coastline changes datum without saying so. **It happens not to matter
+      for this construction** — "shallower than the clearance" is "greater than minus the
+      clearance", which land satisfies automatically, so land is impassable for free and
+      every cell actually costed is on LAT. It will matter to anyone reading a height off
+      it, hence this note.
+
+      THE WMS ABSTRACT FOR THIS LAYER IS WRONG. It says "Ocean overlay without land
+      cover"; the WCS plainly returns land. Trust the probe.
+
+      HOLES ARE FATAL HERE IN A WAY THEY WERE NOT FOR A CONTOUR, because an accumulation
+      routes confidently through a gap and reports the track as measured. Provenance is
+      served as WFS POLYGONS, not merely as a picture: `emodnet:quality_index` and
+      `emodnet:source_references` give per-survey polygons carrying `type` (CDI marks an
+      actual survey, other values mark composites) and a graded `combined` score. Masking
+      by these is a requirement of the construction, not a refinement.
+
+      THE COVERAGE ID CANNOT BE PINNED, so the BYTES are the pin. `emodnet__mean` is
+      whatever release is current and will move when 2026 ships; the dated ids are PAST
+      releases, and there is no `_2024`, so pinning `emodnet__mean_2022` would silently
+      take older data rather than freezing the current one. `checksum` is therefore
+      load-bearing here for the same reason `frozen_issue` is on OS Open Rivers (D-054):
+      the input is pinned by what was fetched, not by what was asked for.
+
+      Established against the live service by rewt-86 on 2026-09-01; `status: unverified`
+      until this project has fetched it and recorded the checksum itself.
+
   - id: os_open_rivers
     title: "OS Open Rivers"
     publisher: "Ordnance Survey"
