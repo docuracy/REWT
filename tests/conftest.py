@@ -34,6 +34,9 @@ from rewt import db, paths  # noqa: E402
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line("markers", "db: needs the build database")
     config.addinivalue_line("markers", "interim: reads a derived raster under data/interim/")
+    config.addinivalue_line(
+        "markers", "published: reads published/ only, so it holds no database lock"
+    )
 
 
 @pytest.fixture(scope="session")
