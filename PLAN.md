@@ -689,9 +689,9 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
   graphs for one geometry and could not reconcile them.
 - **Corrections addressable by id.** The tooling that lets a reader report a defect
   depends on every drawn feature carrying an id they can send back.
-- **A tidal terminus that can later attach to something.** The sea is an abstraction in this
-  stage: §1's traversability test ends at tidal water, and "reaches the sea" is true by
-  definition rather than by test. **This replaces the fixed-depth contour previously
+- **The sea is a test, not a definition.** It is an abstraction in this stage: §1's
+  traversability test ends at tidal water, and "reaches the sea" is true by definition rather
+  than by test. **This replaces the fixed-depth contour previously
   specified here, and it is a change of method rather than of intent.**
 
   **What was wrong with a stated contour.** A contour at a chosen depth is a *stipulation*, and
@@ -704,7 +704,11 @@ Not to be built now, but cheap to allow for and expensive to retrofit:
 
   1. **A cost surface over the sea**, from bathymetry. A cell shallower than `sea.clearance_m`
      below Lowest Astronomical Tide is impassable; deeper cells cost less as they deepen. One
-     stated parameter, carrying a number and no adjective.
+     stated parameter, carrying a number and no adjective. **Resample by average, not by
+     maximum** — the clearance is a margin against a cell *averaging* over its footprint, which
+     is true of average and false of max, so a reader who resamples the other way gets a number
+     whose stated reasoning no longer holds. A parameter whose justification depends on a
+     choice made elsewhere has to say so where the parameter is.
   2. **Every tidal terminus is a source** — the `terminus` layer, which this stage already
      publishes as first-class objects for exactly this join.
   3. **Least-cost paths run between termini, not out to open water.** This is the point the
