@@ -1362,6 +1362,70 @@ square of the spacing and the curve has something to recover. That is the test w
 running before it is ever recommended, and it is written here so the argument that built
 it is not made again from the armchair.
 
+### Handles, though, do work — and the difference is information, not smoothing
+
+Stephen asked whether the Photoshop pen tool's gesture — place a point, drag to pull out a
+tangent — would be a better implementation than the one measured above. It is, and the
+measurement above is the reason why rather than an argument against.
+
+**Catmull-Rom has to GUESS the tangent at each anchor from its neighbours.** When the
+neighbours are a meander wavelength apart the guess carries no information about the bend,
+which is exactly why it bought nothing. A drag does not guess: it states the direction and
+curvature at the anchor, from somebody who is looking at the ink. Each click then carries
+three constraints instead of one, and Hermite interpolation converges far faster than
+Catmull-Rom for the same number of sample sites.
+
+Tested the same way — the ink-follower's line as reference, sparse anchors sampled from it,
+and the tangents a *perfect* drag would give taken from the reference's own local
+direction:
+
+    mean distance from the reference, in metres
+
+    Old River Tone, Bathpool          straight   catmull   handles   gain
+       6 clicks  (70 m spacing)         6.25       6.09      6.05     +3%
+       8 clicks                         5.50       5.30      3.85    +30%
+      10 clicks                         5.10       5.26      3.77    +26%
+      15 clicks                         3.06       2.93      2.32    +24%
+
+    New Cut, Cumbria
+       3 clicks                         6.45       6.45      3.41    +47%
+       4 clicks                         5.41       5.41      3.54    +35%
+       7 clicks                         2.35       2.19      1.78    +24%
+
+**And it survives a sloppy hand, which is the finding that decides whether volunteers can
+use it.** Repeating every run with the handle angle randomised and its length varied by
+±40%:
+
+    angular error        0deg   10deg   20deg   30deg   45deg   (straight)
+      Bathpool, 8         3.93    4.04    4.00    4.24    4.45      5.50
+      Bathpool, 15        2.33    2.30    2.44    2.40    2.52      3.06
+      Cumbria, 7          1.81    1.84    1.86    1.91    1.82      2.35
+
+At forty-five degrees out — a drag that is barely pointing the right way — it is still
+about a fifth better than straight segments. This is not a precision instrument and does
+not need to be taught like one.
+
+**The click saving is real but should be stated carefully.** Eight clicks with handles
+(3.9 m) lands between ten and fifteen without (5.1 and 3.1), nearer the fifteen. So
+roughly half the clicking for comparable fidelity on the longer reach; less clear-cut on
+the short one.
+
+**Nyquist still binds.** At six clicks over 421 m the spacing is 70 m against an 80-100 m
+wavelength, and handles gain 3% — the same nothing Catmull-Rom got. A tangent stated at a
+point cannot describe a bend between points that were never sampled. Handles widen the
+usable window downwards; they do not abolish it.
+
+**What this changes about provenance, which is the part worth arguing over.** An
+interpolated point under Catmull-Rom is invented from a smoothness assumption and nobody
+looked at it. Under a handle it is derived from a stated human judgement about which way
+the channel leaves that anchor — weaker than a click, stronger than an inference, and it
+needs its own name rather than being folded into either.
+
+**And the risk to phase 7.** A handle is a new degree of freedom for two contributors to
+disagree in, and the whole reason snapping exists is that two people should produce the
+same line. The jitter sweep is mildly reassuring — 45deg of disagreement costs about half a
+metre — but agreement between *people* is the thing being measured and has not been.
+
 ## 12. What would falsify this plan
 
 - **Snapped traces by two people do not agree.** Then contributed geometry cannot be
