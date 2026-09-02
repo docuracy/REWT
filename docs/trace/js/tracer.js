@@ -77,7 +77,24 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
         paint: { 'line-color': '#ff3b6b', 'line-width': 2, 'line-dasharray': [2, 2], 'line-opacity': 0.8 } });
       map.addLayer({ id: 'trace-vertices', type: 'circle', source: SRC_VERTEX,
         paint: {
-          /* THE DISPLAY OBLIGATION, not decoration. A vertex a person put down and one an
+          /* ── MEASURED FOR COLOUR VISION, NOT CHOSEN BY EYE ─────────────────────────
+             The whole display obligation is carried by these three, so "they look
+             different to me" is not evidence. Run through `tools/palette_audit.py`
+             (rewt-fc's, which found the viewer's `form` theme collapsing to one colour),
+             CIEDE2000 separation under normal, protan, deutan and tritan vision:
+
+                clicked vs centred   worst 34.4 (protan)
+                clicked vs snapped   worst 35.8 (normal)
+                centred vs snapped   worst 16.4 (deutan)   <- the tightest pair
+                each vs the paper    25.7 / 30.4 / 38.5
+
+             All clear the tool's threshold of 15. The tightest pair is the one that
+             matters least — both are machine-placed — while **a person's vertex against a
+             machine's, which is the distinction the design rests on, is the widest.**
+             Shape carries it too: clicked is solid and 5 px, the others hollow, snapped
+             2.5 px. Colour alone would still be a single point of failure.
+
+             THE DISPLAY OBLIGATION, not decoration. A vertex a person put down and one an
              algorithm moved are different evidence, and the person most likely to
              over-trust the second is the contributor, in the moment, with the line in
              front of them. Clicked reads solid; centred reads hollow. */
