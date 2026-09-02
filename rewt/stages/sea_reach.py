@@ -31,7 +31,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from .. import db, paths, schema, sea
+from .. import db, graph, paths, schema, sea
 from ..pipeline import PIPELINE
 from ..report import Report, log
 
@@ -47,99 +47,118 @@ def run() -> dict:
     con = db.get()
     report = Report("sea_reach")
 
-    # DERIVED FROM THE CRAWL, NOT WALKED AGAIN. Two attempts at a separate walk got
-    # this wrong in both directions, and the second failure is the one that shows the
-    # right shape.
+    # WALKED ON THE COMPLETED GRAPH — `edge` WITH §10'S ROUTES IN IT.
     #
-    # Seeding from the 4,184 nodes that END a sea route gave 74.97% against the audit's
-    # published 93.74%: being SERVED by the sea network and ENDING one of its routes are
-    # different things, the network is a spanning tree over 11,265 entries, and the
-    # Trent's terminus is an entry on no sea link at all — so the whole Humber fell out.
+    # Two earlier attempts got this wrong and both were instructive. Seeding a walk over
+    # `edge` alone from the nodes that END a sea route gave 74.97% against a published
+    # 93.74%: the routes were not traversable, so the walk could only reach what already
+    # drained. Deriving it as a filter on the crawl — reaches tidal water AND the
+    # terminus is in a system the sea can take — gave the published figure back exactly,
+    # which was correct and could never help a mouth the crawl does not reach.
     #
-    # Seeding from `systems_the_sea_can_take` then gave 96.56%, which is HIGHER than the
-    # share reaching tidal water. **Reaching the sea cannot exceed reaching tidal water**
-    # — it is a strictly harder question — and a negative gap is the arithmetic saying
-    # the walk was the wrong instrument. Those 13,542 seeds include tidal nodes that are
-    # not sinks, so walking up from them admits water that never reaches a terminus.
-    #
-    # The relation is a FILTER on the crawl's own answer: a link reaches the sea when it
-    # reaches tidal water AND the terminus it drains to is in a system the sea can take.
-    # Being a subset is then true by construction rather than by luck, and it is the
-    # audit's published formula made per-link — so the aggregate cannot drift from the
-    # figure, because they are the same computation and not two agreeing ones.
-    reachable = sea.systems_the_sea_can_take(con)
-    log.info(f"  {len(reachable):,} tidal nodes are in a system the sea network can take")
+    # **A blocked mouth is precisely a mouth the crawl does not reach.** 541 of the 693
+    # already carry a sea route on their own node id, so nothing needed inventing; the
+    # routes simply were not in the graph. Walking `edge+sea` from the sea makes them
+    # drain, which is what §10 was for and what `schema.py` has always said should be
+    # true of a sea route.
+    g = graph.load("edge+sea")
+    is_sea = g.form == "sea"
+    sea_nodes = sorted(set(g.nodes[g.u[is_sea]]) | set(g.nodes[g.v[is_sea]]))
+    log.info(f"  {int(is_sea.sum()):,} sea routes are in the graph, touching "
+             f"{len(sea_nodes):,} nodes")
 
-    con.execute("DROP TABLE IF EXISTS _sea_ok")
-    con.execute("CREATE TEMP TABLE _sea_ok (node_id VARCHAR)")
-    if reachable:
-        con.executemany("INSERT INTO _sea_ok VALUES (?)",
-                        [(n,) for n in sorted(reachable)])
+    # TWO SEEDS, BECAUSE THERE ARE TWO WAYS TO THE SEA AND NEITHER SUBSUMES THE OTHER.
+    #
+    # Walking from the sea network alone gave 74.97%, and the Humber shows why: the
+    # Trent's terminus is a SINK with no outflow, and no §10 route reached it, so a
+    # direction-respecting walk stops there. But tidal water is physically continuous —
+    # if an estuary meets the sea anywhere, all of it drains — which is the relation
+    # `systems_the_sea_can_take` already captures and a graph walk cannot see, because
+    # the survey draws no edge along the width of an estuary.
+    #
+    # Filtering the crawl by that relation alone gave the published 93.53% and could
+    # never help a blocked mouth, since a blocked mouth is by definition one the crawl
+    # does not reach. So the seeds are the union: every node the sea network touches,
+    # and every tidal node whose system the sea can take. The first admits the 541
+    # coastal mouths that already carry a route; the second admits the estuaries.
+    tidal_ok = sea.systems_the_sea_can_take(con)
+    seeds = sorted(set(sea_nodes) | set(tidal_ok))
+    log.info(f"  seeds: {len(sea_nodes):,} on the sea network, {len(tidal_ok):,} in a "
+             f"tidal system it can take — {len(seeds):,} together")
+
+    admitted, edge_seed, hops = g.reachable_from_sea(g.indices_of(seeds))
+
+    # The sea's own routes are not part of the answer: asking whether a sea route
+    # reaches the sea is asking whether a thing reaches itself.
+    frame = pd.DataFrame({
+        "link_id": g.link_ids,
+        "reaches_sea": admitted,
+        "entry_node": [str(g.nodes[s]) if s >= 0 else None for s in edge_seed],
+        "hops": hops,
+        "_sea": is_sea,
+    })
+    frame = frame[~frame["_sea"]].drop(columns="_sea")
 
     schema.create("link_sea_reach")
-    con.execute(
-        """
-        INSERT INTO link_sea_reach
-        SELECT r.link_id,
-               r.reaches_tidal AND r.seed_node IN (SELECT node_id FROM _sea_ok),
-               CASE WHEN r.seed_node IN (SELECT node_id FROM _sea_ok)
-                    THEN r.seed_node END,
-               r.hops
-        FROM link_reach r ORDER BY r.link_id
-        """
-    )
+    with db.registered("_sea_reach_in", frame):
+        con.execute(
+            "INSERT INTO link_sea_reach SELECT link_id, reaches_sea, entry_node, "
+            "CASE WHEN hops < 0 THEN NULL ELSE hops END FROM _sea_reach_in "
+            "ORDER BY link_id"
+        )
 
-    # BOTH READINGS, SIDE BY SIDE, over the same table. The release notes already say
-    # that publishing one without the other misleads (D-061); the same applies here, and
-    # more sharply, because this is the reading that can fail.
+    # THE TWO READINGS ARE NO LONGER NESTED, AND THAT IS THE POINT.
+    #
+    # Before the sea network was in the graph, reaching the sea was strictly harder than
+    # reaching tidal water: the only way out was through a tidal link. Now a coastal
+    # mouth can discharge through a sea wall and reach the sea without touching a
+    # `tidalRiver` at all — which is exactly the drainage §10 was built to represent and
+    # the survey does not draw. So a cross-tabulation is the honest presentation and a
+    # single "share reaching the sea" is not: the interesting cell is the one that only
+    # the second reading admits, and a subtraction would hide it.
     rows = con.execute(
         """
-        SELECT s.in_scope,
-               sum(e.length_m) / 1000.0                                      AS km,
-               sum(CASE WHEN r.reaches_tidal THEN e.length_m ELSE 0 END)/1000.0 AS tidal_km,
-               sum(CASE WHEN q.reaches_sea   THEN e.length_m ELSE 0 END)/1000.0 AS sea_km
+        SELECT r.reaches_tidal, q.reaches_sea, sum(e.length_m)/1000.0 AS km, count(*) AS n
         FROM edge e
         JOIN link_reach r      USING (link_id)
         JOIN link_sea_reach q  USING (link_id)
         JOIN link_scope s      USING (link_id)
-        GROUP BY s.in_scope ORDER BY s.in_scope DESC
+        WHERE s.in_scope
+        GROUP BY 1, 2 ORDER BY 1 DESC, 2 DESC
         """
     ).fetchall()
+    total = sum(r[2] for r in rows) or 1.0
+    labels = {
+        (True, True): "reaches tidal water, and the sea",
+        (True, False): "reaches tidal water only — the sea cannot take it",
+        (False, True): "reaches the SEA only — coastal drainage, no tidal link",
+        (False, False): "reaches neither — the defect",
+    }
     log.table(
-        "the two readings — the second is the one that can fail",
-        ["extent", "km", "reaches tidal water", "reaches the sea network", "the gap"],
-        [
-            [
-                "in scope" if in_scope else "out of scope",
-                f"{km:,.0f}",
-                f"{tidal_km / km:.2%}" if km else "-",
-                f"{sea_km / km:.2%}" if km else "-",
-                f"{tidal_km - sea_km:,.0f} km",
-            ]
-            for in_scope, km, tidal_km, sea_km in rows
-        ],
+        "in-scope network, by which reading admits it",
+        ["km", "share", "links", "reading"],
+        [[f"{km:,.0f}", f"{km / total:.1%}", f"{n:,}", labels[(bool(t), bool(sea))]]
+         for t, sea, km, n in rows],
+    )
+    cell = {(bool(t), bool(sea)): (km, n) for t, sea, km, n in rows}
+    sea_only = cell.get((False, True), (0.0, 0))
+    defect = cell.get((False, False), (0.0, 0))
+    detail = {
+        "in_scope_km": round(total, 1),
+        "reaches_tidal_km": round(sum(k for (t, _), (k, _n) in cell.items() if t), 1),
+        "reaches_sea_km": round(sum(k for (_t, s), (k, _n) in cell.items() if s), 1),
+        "sea_only_km": round(sea_only[0], 1),
+        "sea_only_links": sea_only[1],
+        "reaches_neither_km": round(defect[0], 1),
+        "reaches_neither_links": defect[1],
+    }
+    log.done(
+        f"{sea_only[0]:,.0f} km ({sea_only[1]:,} links) reaches the sea WITHOUT reaching "
+        f"tidal water — coastal drainage the survey does not draw, and stranded until "
+        f"§10's routes entered the graph. {defect[0]:,.0f} km reaches neither, and that "
+        "is the defect list."
     )
 
-    scoped = next((r for r in rows if r[0]), None)
-    detail = {}
-    if scoped:
-        _, km, tidal_km, sea_km = scoped
-        detail = {
-            "in_scope_km": round(km, 1),
-            "reaches_tidal_km": round(tidal_km, 1),
-            "reaches_sea_km": round(sea_km, 1),
-            "reaches_tidal_share": round(tidal_km / km, 6) if km else None,
-            "reaches_sea_share": round(sea_km / km, 6) if km else None,
-        }
-        # THE GAP IS THE FINDING. Length that gets to tidal water and no further is
-        # water the survey says has arrived and the bathymetry says has not.
-        gap = tidal_km - sea_km
-        detail["tidal_but_not_sea_km"] = round(gap, 1)
-        log.done(
-            f"in scope: {tidal_km:,.0f} km reaches tidal water ({tidal_km/km:.2%}), "
-            f"{sea_km:,.0f} km reaches the sea network ({sea_km/km:.2%}). "
-            f"{gap:,.0f} km arrives at tidal water the sea cannot take."
-        )
     report.add("sea_reach", detail)
     report.write_json(paths.PUBLISHED / "audit" / "sea_reach.json")
     return detail

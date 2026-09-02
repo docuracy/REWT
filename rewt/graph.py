@@ -263,6 +263,19 @@ FROM link
 ORDER BY link_id
 """
 
+_SEA_SQL = """
+-- §10's routes, as edges of the one graph. `mode: both` because open water has no
+-- downstream; `form: sea` so a reader can tell a route from a river at a glance. An
+-- entry with no mouth of its own gets `rewt:sea-node/{entry}` so the network is
+-- connected rather than a scatter of pairs.
+SELECT link_id AS edge_id, link_id,
+       coalesce(from_node, 'rewt:sea-node/' || CAST(from_entry AS VARCHAR)) AS from_node,
+       coalesce(to_node,   'rewt:sea-node/' || CAST(to_entry   AS VARCHAR)) AS to_node,
+       length_m, 'sea' AS form, 'both' AS mode
+FROM sea_link
+ORDER BY link_id
+"""
+
 _EDGE_SQL = """
 SELECT edge_id, link_id, from_node, to_node, length_m, form, mode
 FROM edge
@@ -272,17 +285,42 @@ ORDER BY edge_id
 
 
 def load(table: str = "edge", where: str = "") -> Graph:
-    """Read a graph out of `edge` (the routing graph) or `link` (as the survey ships it).
+    """Read a graph out of `edge`, `link`, or `edge+sea` — the completed routing graph.
 
     `link` is the right table for the census, which runs before any repair. `edge` is
-    the right table for everything after it. There is no third graph, because two
-    graphs over one geometry cannot be reconciled after the fact (§8).
+    the right table for everything after it. There is no third graph, because two graphs
+    over one geometry cannot be reconciled after the fact (§8).
+
+    **`edge+sea` is not a third graph. It is the one graph with the half that was built
+    and never attached.** `schema.py` has always said a sea route must be a link in one
+    network rather than a second graph — and `sea_link` had 4,183 rows of which none were
+    in `edge`, so the network's seaward half existed, was published, was drawn, and could
+    not be traversed. 541 of the 693 coastal mouths the sea could not take already carry
+    a sea route on their own node id, so what was missing was admission and not geometry.
+    The union happens here because `edge` is written by `repair`, which runs long before
+    the sea network exists: `sea` reads `edge`, so `edge` cannot wait for it without a
+    cycle. Composing at read time is the only place both halves are available.
+
+    A sea route runs `mode: both`: open water has no downstream, and a mouth may be
+    reached from either side of it. An entry that is not a mouth gets a node of its own
+    (`rewt.ids.sea_node`) so the sea network is internally connected rather than a set of
+    disjoint pairs.
     """
-    if table not in ("edge", "link"):
+    if table not in ("edge", "link", "edge+sea"):
         raise ValueError(f"no graph over {table!r}")
-    sql = (_EDGE_SQL if table == "edge" else _LINK_SQL).format(
-        where=f"WHERE {where}" if where else ""
-    )
+    if table == "edge+sea":
+        # One query, so the two halves cannot be read from different states of the
+        # database, and so the node index below covers both without special-casing.
+        sql = (
+            "SELECT * FROM (" + _EDGE_SQL.format(where=f"WHERE {where}" if where else "")
+            .replace("ORDER BY edge_id", "") + ") "
+            "UNION ALL SELECT * FROM (" + _SEA_SQL.replace("ORDER BY link_id", "") + ") "
+            "ORDER BY edge_id"
+        )
+    else:
+        sql = (_EDGE_SQL if table == "edge" else _LINK_SQL).format(
+            where=f"WHERE {where}" if where else ""
+        )
     frame = db.df(sql)
     node_ids = db.df("SELECT node_id FROM node ORDER BY node_id")["node_id"].tolist()
 

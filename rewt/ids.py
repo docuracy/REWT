@@ -113,3 +113,17 @@ def publisher_id_of(identifier: str) -> str | None:
     if not is_publisher(identifier):
         return None
     return identifier.split("/", 1)[1] if "/" in identifier else None
+
+
+def sea_node(entry_id: int) -> str:
+    """A node for a sea entry that is not a place on the river network.
+
+    §10's routes run between entries — cells of open water — and only some of those
+    entries are mouths with a node id of their own. The rest need a node before the sea
+    network can be a connected part of the one routing graph, and a node that names its
+    entry is the only kind that can be checked back against `sea_entry`.
+
+    Minted here rather than at the point of use, like every other identifier: two were
+    once built by string concatenation elsewhere and drifted from the scheme (D-051).
+    """
+    return f"{PREFIX}:sea-node/{int(entry_id)}"
