@@ -24,10 +24,13 @@ that possible; the cross-reading is what did the work. If you restart the team, 
 
 **Open six terminals and run `rewt team claim` in each.** That is the whole of it. Roles are
 taken in the order below, so the first is the implementer; each session is told what it owns
-and what to do first, and **names its own terminal tab** — PyCharm gives six tabs that all
-read `zsh`. The escape goes to stderr and only to a real terminal, so a captured or
-redirected run is unaffected; **the role itself is printed on stdout**, so
+and what to do first, and is told what it owns. **The role is printed on stdout**, so
 `role=$(rewt team claim)` works.
+
+**It cannot name the terminal tab, and an earlier version claimed it could.** An agent runs
+each command through a tool that captures both streams, so a terminal escape never reaches
+a terminal, and `/dev/tty` is not available to it either. PyCharm's six identical tabs are a
+real problem and this is not the solution to it.
 
     rewt team                  # who holds what, and the other commands. Changes nothing.
     rewt team claim            # take the next free role

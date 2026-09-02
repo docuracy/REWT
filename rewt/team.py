@@ -270,21 +270,15 @@ def shutdown() -> list[str]:
     return sorted(held)
 
 
-def terminal_title(text: str) -> None:
-    """Name the terminal tab, because PyCharm does not.
-
-    Six sessions in six tabs all read `zsh`, and the person running them has no way to
-    tell which is the tracer. The OSC 0 escape names the window and the tab.
-
-    **Only to a real terminal, and only on stderr.** The first version printed it
-    unconditionally to stdout, and an agent reading the output through a tool rather than
-    a terminal got `]0;REWT · sourcesdone  you are the sources` — the ESC and BEL eaten,
-    the rest jammed into the first line of the first message a restarted session ever
-    sees. Harmless where it is understood and corruption everywhere else, which is the
-    worst distribution: it looks perfect to the person who wrote it and wrong to every
-    consumer. Found by rewt-86, who read it through a tool, which is what five of the six
-    sessions do.
-    """
-    if not sys.stderr.isatty():
-        return
-    print(f"\033]0;{text}\007", end="", file=sys.stderr, flush=True)
+# NO TAB NAMING, AND IT COULD NEVER HAVE WORKED WHERE IT WAS NEEDED.
+#
+# The idea was to fix PyCharm's six identical `zsh` tabs. It cannot: an agent runs each
+# command through a tool that captures stdout and stderr, so the OSC escape never reaches
+# a terminal — and `/dev/tty`, which would bypass the capture, is not available to the
+# process either. So it fired only when a HUMAN ran the command in a real terminal, which
+# is the one case that now refuses to claim, and never for the agent whose tab it was
+# meant to name. Stephen: "PyCharm did not rename the tab."
+#
+# Removed rather than left with a caveat. A feature that works only where it is not
+# wanted is worse than none: it looked like the problem was solved for two days of
+# documentation that said so.

@@ -629,9 +629,6 @@ def team_cmd(
     # where it would appear twice: once bare and once inside the message below.
     if not sys.stdout.isatty():
         print(got)
-    # Name the tab, because PyCharm will not and six terminals reading `zsh` are
-    # indistinguishable to the person who has to pick the right one.
-    team.terminal_title(f"REWT · {got}")
     if displaced is not None:
         # SAY WHAT HAPPENED, not what is comfortable. This claimed the role had been
         # "held by a process that has gone" — a true-looking sentence about something
@@ -643,7 +640,10 @@ def team_cmd(
                  "told — check `ListAgents`.")
     log.done(f"you are the {got} session")
     log.detail(f"you own: {owns}")
-    log.detail(f"opening task: {opening}")
+    # SUGGESTED, NOT ISSUED. This printed "opening task: …" and the first agent to claim
+    # a role read it as an instruction and did it — opening a browser unasked. A claim
+    # says who you are; what to do next is the person's call, not the board's.
+    log.detail(f"suggested first task, if nobody has told you otherwise: {opening}")
     log.info("Read TEAM.md for the scopes and the standing orders. Other sessions are "
              "found with ListAgents; `rewt team status` says which of them is which.")
 
