@@ -149,7 +149,7 @@ def _split_link(link_id: str, easting: float, northing: float) -> tuple[str, lis
 @PIPELINE.stage(
     "repair",
     "apply the curated judgements and build the one routing graph",
-    reads=["link", "node", "correction", "terrain50_unconditioned"],
+    reads=["link", "node", "correction", "terrain50_unconditioned", "structure"],
     writes=["edge", "repair_link", "repair_node", "retirement"],
     params=["repair", "forms", "connectors"],
     always=True,
@@ -162,6 +162,7 @@ def run() -> dict:
     snap_node_m = float(p("repair.connector_snap_node_m"))
     split_link_m = float(p("repair.connector_split_link_m"))
     max_rise_m = float(p("connectors.max_rise_m"))
+    corroborate_m = float(p("connectors.structure_corroboration_m"))
 
     new_links: list[dict] = []
     new_nodes: list[dict] = []
@@ -307,7 +308,20 @@ def run() -> dict:
         # usually are. Those are applied, and the rise is reported rather than hidden.
         rise = rises.get(row.correction_id)
         if rise is not None and rise > max_rise_m:
-            if "JUDGED BY RULE" in (row.evidence or "").upper():
+            # A SURVEYED STRUCTURE OUTRANKS THE MODEL. If the Trust records a lock, an
+            # aqueduct, a culvert or a weir within `corroborate_m`, something was built
+            # at this place to move water across it — which is the very thing D-011 says
+            # the survey does not draw, and better evidence than a 50 m grid. Measured
+            # against v0.1.0-alpha this reinstates 15 of 62 refusals, and those 15 are
+            # anomalous twice over: the terrain says uphill AND something is there.
+            near_structure = _structure_within(coords, corroborate_m)
+            if near_structure is not None:
+                log.detail(
+                    f"    {row.subject}: climbs {rise:,.1f} m, applied anyway — "
+                    f"{near_structure} within {corroborate_m:g} m. A surveyed structure "
+                    "outranks a 50 m terrain model"
+                )
+            elif "JUDGED BY RULE" in (row.evidence or "").upper():
                 skipped[row.correction_id] = (
                     f"the connector climbs {rise:,.1f} m end to end on the "
                     f"unconditioned Terrain 50 surface, more than the {max_rise_m:g} m "
@@ -678,3 +692,34 @@ def _rises_by_correction(corrections) -> dict[str, float]:
     good = np.isfinite(za) & np.isfinite(zb)
     return {cid: float(z2 - z1)
             for cid, z1, z2, ok in zip(ids, za, zb, good) if ok}
+
+
+def _structure_within(coords, radius_m: float) -> str | None:
+    """The nearest Canal & River Trust structure to either end, if one is close enough.
+
+    Returns a description for the log, or `None` where nothing is near. **Either end,
+    not the midpoint**: a lock or an aqueduct sits where the two waters meet, which is
+    one of the connector's ends, and a short connector's midpoint is a place where
+    nothing was ever built.
+
+    The structure register is loaded once per build and cached on the function, because
+    this is asked of every climbing connector and the table is small.
+    """
+    cache = getattr(_structure_within, "_cache", None)
+    if cache is None:
+        rows = db.get().execute(
+            "SELECT kind, easting, northing FROM structure"
+        ).fetchall()
+        cache = [(k, float(e), float(n)) for k, e, n in rows]
+        _structure_within._cache = cache
+    if not cache:
+        return None
+    for x, y in (coords[0], coords[-1]):
+        best, kind = None, None
+        for k, e, n in cache:
+            d = ((e - x) ** 2 + (n - y) ** 2) ** 0.5
+            if best is None or d < best:
+                best, kind = d, k
+        if best is not None and best <= radius_m:
+            return f"a {kind} {best:,.0f} m away"
+    return None

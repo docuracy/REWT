@@ -2548,3 +2548,42 @@ key at all. Neither tool carries both.
 
 **Revisit this entry when maps@nls.uk answers.** It records a decision about how to read
 someone else's terms, not a finding about what those terms are.
+
+---
+
+**D-073 — A surveyed structure outranks the terrain model. 16 refusals are reinstated.**
+
+*D-069 refused 62 connectors for climbing more than 2 m. This exempts those the Canal &
+River Trust's register corroborates, and it is corroboration overriding a measurement
+rather than a threshold being loosened: `max_rise_m` keeps its value and its meaning, and
+a connector with nothing near it is still refused however slightly it climbs.*
+
+**The warrant.** Where the Trust records a lock, an aqueduct, a culvert or a weir within
+150 m of a connector the terrain says climbs, **something was built at that place to move
+water across it** — which is the very thing D-011 says the survey does not draw. A 50 m
+grid whose cell is wider than a lock is the weaker witness. The rule already lets a
+person's judgement override the terrain; a surveyed structure is the better warrant of the
+two, because it was measured and a recollection was not.
+
+**16 of 62, and the shape of them is the argument.** The corroborating structures are
+**10 locks, 5 culverts and 1 weir**. D-011's own sentence names a lock first. Those 16 are
+anomalous twice over — the terrain says uphill *and* something is there — which is what
+makes them the reinstatement candidates rather than the doubtful ones. 46 remain refused,
+with neither terrain support nor a structure, and they revert to dead ends the audit
+reports with the length behind them.
+
+**It is 16 rather than the 15 first reported, and the difference is where you look.** The
+first count tested only the connector's first coordinate. **A lock or an aqueduct sits
+where the two waters meet, which is an END of the connector** — and a short connector's
+midpoint is a place where nothing was ever built. Testing both ends found one more.
+
+**The stage order had to change, and the planner did it.** `structures` ran after `repair`,
+so the register was not in the database when connectors were applied. Declaring `structure`
+among `repair`'s reads let `plan()` reorder it — `acquire_structures` and `structures` now
+run before `repair`. That is the same class of trap as D-069's terrain dependency, caught
+the same way: **state the dependency and let the planner schedule it, rather than assuming
+an order and reading a log to check.**
+
+**150 m is not a new number.** It is the radius the audit already uses to corroborate a
+refused 0 m crossing against this same register, so the two tests agree about what "at
+this place" means.

@@ -205,6 +205,20 @@ connectors:
   # where most of this work is. Two metres is the observed 5th percentile of the fall
   # distribution, so it is where real signal starts rather than a round number.
   max_rise_m: 2.0
+  # A SURVEYED STRUCTURE OUTRANKS A 50 m MODEL. Where the Canal & River Trust records a
+  # lock, an aqueduct, a culvert or a weir this close to a connector that the terrain
+  # says climbs, something was built at that place to move water across it, and the
+  # register is better evidence than a grid whose cell is fifty metres wide.
+  #
+  # It is corroboration overriding a measurement, not a loosened threshold: `max_rise_m`
+  # keeps its value and its meaning, and a connector with no structure near it is still
+  # refused however slightly it climbs. The same rule already lets a person's judgement
+  # override the terrain, and a structure is the better warrant of the two — it was
+  # surveyed, and a recollection was not.
+  #
+  # 150 m is the radius the audit already uses to corroborate a refused 0 m crossing
+  # against the same register, so the two tests agree about what "at this place" means.
+  structure_corroboration_m: 150.0
   # How many approaches to consider before giving up on finding a downhill one. The
   # nearest is tried first and a longer candidate is taken only to avoid climbing, so
   # this widens the search rather than loosening it.
