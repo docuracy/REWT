@@ -359,8 +359,11 @@ const THEMES = {
    showing a flat map. `themeAvailable` is filled in once the source has loaded. */
 const themeNeeds = (id) => THEMES[id] && THEMES[id].needs;
 let themeReady = null;
-const themeUsable = (id) => !themeNeeds(id)
-  || (themeReady !== null && themeReady.has(themeNeeds(id)));
+/* null means NOT YET ASKED, and that is not the same as "the property is absent" —
+   treating them alike is what removed a working theme. Unknown offers the theme; only a
+   metadata read that succeeded and did not list the property takes it away. */
+const themeUsable = (id) => !themeNeeds(id) || themeReady === null
+  || themeReady.has(themeNeeds(id));
 let theme = HASH.t && THEMES[HASH.t] ? HASH.t : 'reach';
 
 const WIDTH = ['interpolate', ['linear'], ['zoom'],
@@ -1258,12 +1261,28 @@ map.on('load', async () => {
   buildAbout();
   await applyBackdrop();
 
-  /* WHICH PROPERTIES THE TILES ACTUALLY CARRY, asked of a rendered feature rather than
-     assumed from the build that made them: the deployed data comes from a release and
-     can be older than this code. A theme naming a property the archive has not got is
-     removed from the control here. */
-  themeReady = new Set(Object.keys(
-    (map.querySourceFeatures('rewt', { sourceLayer: 'link' })[0] || {}).properties || {}));
+  /* WHICH PROPERTIES THE TILES CARRY, read from the ARCHIVE'S OWN METADATA. The
+     deployed data comes from a release and can be older than this code, so the question
+     is real — but the first version of this asked a rendered feature, and that is a
+     race it loses: at this point in boot no tile has been drawn yet, so
+     `querySourceFeatures` returned zero features, the property list came back empty,
+     and the cross-tab theme was removed from a build that fully supported it. Seconds
+     later the same call returns 168,971 features. The bug was invisible in every check
+     that asked whether the column was in the tiles, because it was.
+
+     PMTiles carries `vector_layers[].fields` in its metadata — a few KB by range
+     request, available before the first tile and independent of what has rendered. A
+     failure to read it leaves every theme in place: a theme that paints flat is a
+     visible fault someone reports, where a theme silently missing from the control is
+     one nobody knows to look for. */
+  try {
+    const meta = await new pmtiles.PMTiles(new URL(DATA + 'rewt.pmtiles', location.href).href)
+      .getMetadata();
+    const link = (meta.vector_layers || []).find((l) => l.id === 'link');
+    if (link && link.fields) themeReady = new Set(Object.keys(link.fields));
+  } catch (e) {
+    console.warn('could not read the archive metadata; every theme left offered:', e);
+  }
   for (const opt of [...$('#theme').options]) {
     if (!themeUsable(opt.value)) opt.remove();
   }
