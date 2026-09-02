@@ -83,6 +83,21 @@ taking a role over is explicit with `--force`.
 `status` shows its age and `--force` retakes it — but a board of claims from a team that no
 longer exists makes the next start ambiguous in exactly the way this file exists to prevent.
 
+**An agent that opens a port owns closing it.** Servers outlive the session that started
+them: this team left one running on the repository root for a day, and root is not `docs/` —
+it serves `.env`, `db/`, `data/` and every scratch file in the tree, none of which the
+published site contains. Two rules, and the first is the one that matters:
+
+- **Serve `docs/`, never the repository root.** `python3 -m http.server PORT --directory docs`.
+  If a viewer needs something outside `docs/`, copy it in or fix the build; do not widen the
+  server's root to reach it.
+- **Bind to `127.0.0.1`.** The default is `0.0.0.0`, which is every interface on the network
+  and not merely this machine. `--bind 127.0.0.1` is not the default and has to be typed.
+
+Check before you close: `ss -ltnp | grep python` names the port, the bind address and the
+pid, and `readlink /proc/PID/cwd` says what it is serving. A port you cannot account for
+belongs to somebody — ask on the board before killing it.
+
 ### The six scopes
 
 **The scopes live in `rewt/team.py` and nowhere else.** They were also written out here, by
