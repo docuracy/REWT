@@ -94,7 +94,7 @@ guarantee silently.
 ## Status
 
 **Stage 1 is built.** A traversable modern network for England and Wales, reproducible
-from an empty checkout by one command, with 208 tests running inside the build and
+from an empty checkout by one command, with the test suite running inside the build and
 failing it.
 
 At the current edition, **93.80% of the in-scope network can reach tidal water** — and

@@ -524,6 +524,14 @@ def team_cmd(
 
     if action == "status":
         held = team.read_all()
+        # THE ANSWER ON STDOUT, the presentation on stderr. `log` writes to stderr, so
+        # every byte of this command went there and `rewt team status > roles.txt` wrote
+        # an empty file and exited 0 — for a command whose entire purpose is to be read
+        # by another program. Found by rewt-1d, who redirected it. Plain and tab
+        # separated, because the consumer is a script or an agent, not a person.
+        for r, _owns, _task in team.ROLES:
+            c = held.get(r)
+            print(f"{r}\t{c.session if c else '-'}\t{c.claimed_at if c else '-'}")
         log.table(
             "roles",
             ["role", "held by", "state", "owns"],
@@ -557,13 +565,16 @@ def team_cmd(
 
     got, was_stale = team.claim(role, name, force)
     _, owns, opening = team.BY_NAME[got]
+    # The role, on stdout, alone on the first line: `role=$(rewt team claim)` is the
+    # obvious thing a caller wants and it returned nothing at all.
+    print(got)
     # Name the tab, because PyCharm will not and six terminals reading `zsh` are
     # indistinguishable to the person who has to pick the right one.
     team.terminal_title(f"REWT · {got}")
     if was_stale:
         log.warn(f"{got} was held by a process that has gone; taken over. Whatever it "
                  "was doing is unfinished and nobody has said so.")
-    log.done(f"you are the {got}")
+    log.done(f"you are the {got} session")
     log.detail(f"you own: {owns}")
     log.detail(f"opening task: {opening}")
     log.info("Read TEAM.md for the scopes and the standing orders. Other sessions are "

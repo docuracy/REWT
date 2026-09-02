@@ -2,19 +2,22 @@
 
 **How to start the other agents, and what each one owns.**
 
-Read this if you are the only session running. `PLAN.md` is what to build; `AGENTS.md` is how
-to work; this is who does which part and how they keep each other honest.
+Read this if you are the only session running. `PLAN.md` is what to build; `AGENTS.md` is
+how to work; this is who does which part and how they keep each other honest.
+
+# TEAM.md
+
+**How to start the other agents, and what each one owns.**
 
 Six agents worked this repository in parallel on 1–2 September 2026 and the arrangement was
 effective — but **its value was not the parallelism**. Every serious defect found in those two
-days was found by one agent reading an artefact another had produced. None by the build, which
-has 227 tests. The division of labour is what made that possible; the cross-reading is what did
+days was found by one agent reading an artefact another had produced. None by the build, and the suite is not small. The division of labour is what made that possible; the cross-reading is what did
 the work. **If you restart the team, restart both.**
 
 **Read this first if you are the only session running.** Six agents worked this repository
 in parallel and the arrangement was effective, but its value was not the parallelism. Every
 serious defect found on 1–2 September was found by **one agent reading an artefact another
-had produced** — none by the build, which has 227 tests. The division of labour is what made
+had produced** — none by the build, which and the suite is not small. The division of labour is what made
 that possible; the cross-reading is what did the work. If you restart the team, restart both.
 
 ### Starting: the whole procedure
@@ -22,7 +25,9 @@ that possible; the cross-reading is what did the work. If you restart the team, 
 **Open six terminals and run `rewt team claim` in each.** That is the whole of it. Roles are
 taken in the order below, so the first is the implementer; each session is told what it owns
 and what to do first, and **names its own terminal tab** — PyCharm gives six tabs that all
-read `zsh`, and the escape sequence fixes that at no cost.
+read `zsh`. The escape goes to stderr and only to a real terminal, so a captured or
+redirected run is unaffected; **the role itself is printed on stdout**, so
+`role=$(rewt team claim)` works.
 
     rewt team claim            # take the next free role
     rewt team status           # who holds what, and for how long
@@ -99,7 +104,7 @@ Paste one of these, adjusting the tag. **Each names a scope and something to go 
 - **documentation** — *"You own `docs/`, the Jekyll site at docuracy.github.io/REWT. Check
   every figure on /scale and /methodology against `published/audit/audit.json` and tell me
   which no longer hold. Do not trust a figure because another page states it."*
-- **tests** — *"You own `tests/`. The suite has 227 tests and did not catch any of the seven
+- **tests** — *"You own `tests/`. The suite and the suite is not small and did not catch any of the seven
   defects in DECISIONS.md D-067 to D-077. Read those and tell me which are now testable."*
 - **sources** — *"You write nothing. Audit `conf/sources.yml` against `published/ATTRIBUTION.md`
   and the live licence terms, and propose corrections to the implementer."*

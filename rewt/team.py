@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 from dataclasses import dataclass
 
@@ -51,11 +52,21 @@ ROLES: list[tuple[str, str, str]] = [
      "Check every figure on /scale and /methodology against published/audit/audit.json "
      "and say which no longer hold. Do not trust a figure because another page states it."),
     ("tests", "tests/",
-     "The suite has 227 tests and caught none of the defects in DECISIONS.md D-067 to "
-     "D-077. Read those and say which are now testable."),
-    ("sources", "nothing — proposes conf/sources.yml and decision text to the implementer",
-     "Audit conf/sources.yml against published/ATTRIBUTION.md and the live licence "
-     "terms, and propose corrections."),
+     "The suite caught none of the defects in DECISIONS.md D-067 to D-077 and is not "
+     "small. Read those and say which are now testable."),
+    # DESCRIBED AS A PERMISSION AND CALLED A ROLE, which is how it was written and what
+    # was wrong with it: "writes nothing" was true and a session reading it as its job
+    # would do a fraction of the work. By volume the role measures things and reads
+    # published artefacts against the code that claims to produce them — both pre-DOI
+    # defects came from the second, and D-067 exists because no gate here compares the
+    # build to anything outside itself. Corrected by rewt-86, who did the job.
+    ("sources",
+     "nothing — proposes conf/sources.yml entries and DECISIONS.md text to the "
+     "implementer; measures from published/ and data/raw/, NEVER the database, which "
+     "the implementer holds and which blocks its build",
+     "Find, vet and licence evidentiary sources; measure what they do and do not carry; "
+     "and read published artefacts against the code that claims to produce them. Start "
+     "by auditing conf/sources.yml against published/ATTRIBUTION.md and the live terms."),
 ]
 BY_NAME = {r[0]: r for r in ROLES}
 
@@ -63,7 +74,6 @@ BY_NAME = {r[0]: r for r in ROLES}
 @dataclass
 class Claim:
     role: str
-    pid: int
     session: str
     claimed_at: str
 
@@ -75,7 +85,7 @@ class Claim:
             return 0.0
         return (time.time() - t) / 3600.0
 
-    # NO PID LIVENESS CHECK, AND THE FIRST VERSION HAD ONE THAT WAS ALWAYS FALSE.
+    # NO PID AT ALL, AND THE FIRST VERSION RECORDED ONE THAT WAS ALWAYS DEAD.
     #
     # It recorded `os.getpid()` — the pid of the CLI invocation, which exits a moment
     # later — so every claim read back as held by a dead process and every role was
@@ -89,6 +99,12 @@ class Claim:
     # different one: who said they were doing what, and when. Age is shown so a reader
     # can judge; taking a role over is explicit, because a claim that looks abandoned
     # and is not is a collision the filesystem cannot prevent.
+    #
+    # **The field is deleted, not merely documented as useless.** rewt-fc: a `pid` left
+    # in the file with a note saying not to trust it is a loaded gun with a label on it
+    # — the next person wanting a liveness check finds it already populated and uses it
+    # in one line, with nothing in the diff to suggest they should not. `claimed_at`
+    # carries the only part that was ever true.
 
 
 def _path(role: str):
@@ -105,7 +121,7 @@ def read_all() -> dict[str, Claim]:
             continue
         try:
             d = json.loads(p.read_text())
-            out[role] = Claim(role, int(d["pid"]), str(d.get("session", "?")),
+            out[role] = Claim(role, str(d.get("session", "?")),
                               str(d.get("claimed_at", "")))
         except (ValueError, KeyError):
             continue
@@ -145,7 +161,7 @@ def claim(role: str | None = None, session: str | None = None,
         except FileExistsError:
             continue          # lost the race; try the next role
         with os.fdopen(fd, "w") as fh:
-            json.dump({"pid": os.getpid(), "session": session or os.environ.get(
+            json.dump({"session": session or os.environ.get(
                 "CLAUDE_SESSION_NAME", "unnamed"),
                 "claimed_at": time.strftime("%Y-%m-%dT%H:%M:%S")}, fh)
         return want, stale
@@ -187,7 +203,17 @@ def terminal_title(text: str) -> None:
     """Name the terminal tab, because PyCharm does not.
 
     Six sessions in six tabs all read `zsh`, and the person running them has no way to
-    tell which is the tracer. The OSC 0 escape names the window and the tab, and is
-    ignored harmlessly where it is not understood — so it costs nothing to send.
+    tell which is the tracer. The OSC 0 escape names the window and the tab.
+
+    **Only to a real terminal, and only on stderr.** The first version printed it
+    unconditionally to stdout, and an agent reading the output through a tool rather than
+    a terminal got `]0;REWT · sourcesdone  you are the sources` — the ESC and BEL eaten,
+    the rest jammed into the first line of the first message a restarted session ever
+    sees. Harmless where it is understood and corruption everywhere else, which is the
+    worst distribution: it looks perfect to the person who wrote it and wrong to every
+    consumer. Found by rewt-86, who read it through a tool, which is what five of the six
+    sessions do.
     """
-    print(f"\033]0;{text}\007", end="", flush=True)
+    if not sys.stderr.isatty():
+        return
+    print(f"\033]0;{text}\007", end="", file=sys.stderr, flush=True)
