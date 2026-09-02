@@ -117,6 +117,36 @@ CO_OCCURRING = {
 }
 BASIN_RAMP = ['#ff2d55', '#ff6b35', '#ffb03b', '#ffe066', '#86c8e8', '#1b9ce6']
 
+# THE BACKGROUND IS A COLOUR IN THE PALETTE, and leaving it out measures the easy half.
+# A marker only has to be distinguishable from the other markers if you can see it at
+# all, and what it is drawn ON is usually the tightest constraint — the viewer's first
+# canal measured well against every other colour and was nearly invisible on the dark
+# ground. Sampled from real pixels, not guessed: these are the mode, mid-tone and
+# darkest 3% of actual NLS six-inch tiles, and the tracer's markers sit on all three.
+GROUNDS = {
+    'viewer, dark map': ['#0d1117'],
+    'tracer, sheet paper': ['#f0eee0', '#f1eace', '#f2ebce', '#efecd8'],
+    'tracer, sheet mid-tone': ['#cbc8bb', '#d8d4c1', '#f0e8cb', '#c5c2b5'],
+    'tracer, sheet ink': ['#6c665d', '#4f4a41', '#878070', '#59534a'],
+}
+
+
+def against_ground(name, items, grounds, threshold=15.0):
+    """Every colour against every ground it can be drawn on. Worst case wins."""
+    print(f"\n{name} — against the ground")
+    bad = []
+    for n, c in items:
+        worst, where, kind = 1e9, None, None
+        for g in grounds:
+            for k in ('normal', 'protan', 'deutan', 'tritan'):
+                d = sep(c, g, k)
+                if d < worst: worst, where, kind = d, g, k
+        mark = '   <-- BELOW THRESHOLD' if worst < threshold else ''
+        print(f"  {n:34} dE {worst:5.1f} on {where} ({kind}){mark}")
+        if worst < threshold: bad.append((worst, kind, n, c, where, ''))
+    return bad
+
+
 # Pairs that measure close and are correct anyway, each with the channel that separates
 # them instead. Listed rather than silently excluded: an exception nobody can see is
 # indistinguishable from a defect nobody noticed.
@@ -153,6 +183,10 @@ if __name__ == "__main__":
     for k in ('normal', 'protan', 'deutan', 'tritan'):
         print(f"  none reaches vs all reaches, {k:7}: dE "
               f"{sep(BASIN_RAMP[0], BASIN_RAMP[-1], k):5.1f}")
+
+    for name, keys in CO_OCCURRING.items():
+        unexplained += against_ground(name, [(k, PALETTE[k]) for k in keys],
+                                      GROUNDS['viewer, dark map'])
 
     print("\nAccepted, with the channel that carries the distinction instead:")
     for (a, b), why in ACCEPTED.items():
