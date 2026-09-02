@@ -20,6 +20,7 @@ from . import (  # noqa: F401  (imported to register)
     flags,
     crawl,
     sea,
+    sea_reach,
     audit,
     export,
     check,

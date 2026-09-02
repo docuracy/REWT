@@ -214,6 +214,28 @@ CREATE TABLE sea_link (
 )
 """
 
+LINK_SEA_REACH_DDL = """
+-- Written by the sea_reach stage and by nothing else. The SECOND reachability reading,
+-- and the one §1 actually asks for.
+--
+-- `link_reach.reaches_tidal` asks whether water can get to tidal water, which the
+-- survey draws. This asks whether it can get to THE SEA NETWORK — the routes §10 builds
+-- across open water between every mouth. Those are two different questions and the
+-- second is strictly harder: a mouth that the sea could not take is blocked, and a
+-- river arriving at it has reached tidal water and still cannot get out.
+--
+-- It exists because the sea network was built, published, drawn on the map, and absent
+-- from the routing graph: 0 of 4,183 sea links were in `edge`, so no reachability
+-- reading could see them. 693 mouths were recorded as blocked and 2,751 nodes had sea
+-- routes attached, and none of it reached a single figure.
+CREATE TABLE link_sea_reach (
+    link_id         VARCHAR NOT NULL,
+    reaches_sea     BOOLEAN NOT NULL,
+    entry_node      VARCHAR,              -- the mouth it drains to, on the sea network
+    hops            INTEGER
+)
+"""
+
 TABLES = {
     "link": LINK_DDL,
     "node": NODE_DDL,
@@ -223,6 +245,7 @@ TABLES = {
     "retirement": RETIREMENT_DDL,
     "link_scope": LINK_SCOPE_DDL,
     "link_reach": LINK_REACH_DDL,
+    "link_sea_reach": LINK_SEA_REACH_DDL,
     "link_flag": LINK_FLAG_DDL,
     "sea_entry": SEA_ENTRY_DDL,
     "sea_link": SEA_LINK_DDL,
