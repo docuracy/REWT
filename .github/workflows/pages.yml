@@ -138,6 +138,36 @@ jobs:
           # the build believed and is worth keeping, and the tag is what the asset was
           # actually attached to. The viewer prefers the tag and says so.
           printf '{"tag": "%s"}\n' "$tag" > docs/viewer/data/release.json
+
+          # THE ASSET MUST BE THE SAME BUILD AS THE PROVENANCE BESIDE IT.
+          #
+          # D-049's rule one layer out: an archive can be internally consistent and
+          # still come from a different pass than the record that describes it. rewt-6a
+          # found exactly that locally — a tar ninety minutes older than the tiles, with
+          # counts that agreed — and `release-check` catches it there. Nothing checked it
+          # HERE, where the artefact is actually served, and the tracer is about to bind
+          # contributed evidence to `link_id`s read out of this archive: a stale
+          # identifier scheme would not draw a wrong map, it would attach a historical
+          # claim to identifiers the source no longer mints. Raised by rewt-2b.
+          #
+          # WHAT IT PROVES AND WHAT IT DOES NOT. `config_fingerprint` digests
+          # conf/sources.yml and conf/params.yml, so agreement proves the tiles and the
+          # deposited provenance came from one configuration. It does NOT prove the asset
+          # was built by the code in this tree, and it must not try: `main` advances past
+          # every release by design, so comparing against the checked-out tree would fail
+          # every deploy after any commit. The TAG is what both artefacts claim, and this
+          # checks that they agree about it.
+          gh release download "$tag" --pattern 'provenance.json' --dir /tmp --clobber
+          want=$(python3 -c "import json;print(json.load(open('/tmp/provenance.json'))['config_fingerprint'])")
+          got=$(python3 -c "import json;print(json.load(open('docs/viewer/data/summary.json'))['provenance']['config_fingerprint'])")
+          if [ "$want" != "$got" ]; then
+            echo "::error::viewer-data.tar was built under configuration $got, while"
+            echo "::error::release $tag deposits provenance for $want. The map and the"
+            echo "::error::record published beside it are different builds. Refusing to"
+            echo "::error::deploy: this fails rather than warns, by design."
+            exit 1
+          fi
+          echo "configuration fingerprint $got matches the release's provenance"
           echo "from release $tag:"
           ls -la docs/viewer/data
 
