@@ -53,13 +53,6 @@ taking a role over is explicit with `--force`.
 `status` shows its age and `--force` retakes it — but a board of claims from a team that no
 longer exists makes the next start ambiguous in exactly the way this file exists to prevent.
 
-### Start the build session first, and alone
-
-**`db/rewt.ddb` is single-writer and a read-only connection blocks writers.** Five sessions
-starting at once will race it, and the failure looks like a broken build rather than a lock.
-So: start the implementer, let it confirm `rewt release-check <tag>` is green or say why not,
-and only then start the others.
-
 ### The six scopes
 
 Ownership is by directory and is hard. A session that needs a change outside its scope
@@ -101,12 +94,9 @@ Paste one of these, adjusting the tag. **Each names a scope and something to go 
 - **tracer** — *"You own `tools/tracer/` and `docs/trace/`. Read tools/tracer/PLAN.md for the
   phase you are on. Nothing under `docs/trace/` may carry YAML front matter."*
 
-### What to tell each session when it starts
-
-**Give it a task and an artefact to check, never "continue where you left off".** The useful
-opening move was always *go and look at X and tell me whether it says what it claims*. State
-the current tag, and say that `DECISIONS.md` from D-067 onward is the handover: those entries
-are all about how this repository fools people who are being careful.
+**State the current tag, and say that `DECISIONS.md` from D-067 onward is the handover.**
+Those entries are all about how this repository fools people who are being careful, which is
+the thing an arriving session cannot infer from the code.
 
 ### The standing orders that made the cross-reading work
 

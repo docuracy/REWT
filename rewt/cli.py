@@ -23,7 +23,13 @@ from .report import log
 
 app = typer.Typer(
     add_completion=False,
-    no_args_is_help=True,
+    # NOT typer's own help. This project runs typer 0.15 against click 8.5, whose
+    # `Parameter.make_metavar()` gained a required argument, so typer's rich renderer
+    # raises a TypeError: **`rewt` with no arguments gave a traceback rather than a
+    # reminder.** That is the first thing a person types and the moment they most need
+    # an answer. Rendered below instead of moving a dependency under a working build —
+    # the listing is a few lines and cannot break on a version.
+    no_args_is_help=False,
     help="REWT Stage 1 — a traversable modern river network for England and Wales.",
 )
 
@@ -32,11 +38,34 @@ def _import_stages() -> None:
     from . import stages  # noqa: F401  (registers every stage)
 
 
-@app.callback()
-def main(quiet: bool = typer.Option(False, "--quiet", "-q", help="suppress progress")) -> None:
+@app.callback(invoke_without_command=True)
+def main(
+    ctx: typer.Context,
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="suppress progress"),
+) -> None:
     log.quiet = quiet
     paths.check_root()
     _import_stages()
+    if ctx.invoked_subcommand is not None:
+        return
+    log.rule("REWT — Stage 1")
+    log.table(
+        "what you are most likely to want",
+        ["command", "what it does"],
+        [
+            ["rewt team claim", "take a role in the team, and name this terminal tab"],
+            ["rewt team status", "which session holds which role"],
+            ["rewt build", "run the pipeline — only the implementer does this"],
+            ["rewt viewer-data", "build the map's tiles and layers from published/"],
+            ["rewt release-check TAG", "refuse a release that is not clean, current, green"],
+            ["rewt release-notes TAG", "the notes, generated from the build"],
+            ["rewt status", "what the last build did"],
+        ],
+    )
+    names = sorted(c.name for c in typer.main.get_command(app).commands.values() if c.name)
+    log.detail("all commands: " + ", ".join(names))
+    log.info("TEAM.md starts the other agents. AGENTS.md is how to work here. "
+             "PLAN.md is what is being built.")
 
 
 @app.command()
