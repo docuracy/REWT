@@ -75,23 +75,28 @@ longer exists makes the next start ambiguous in exactly the way this file exists
 
 ### The six scopes
 
-Ownership is by directory and is hard. A session that needs a change outside its scope
-**asks the owner** rather than editing — including for a one-line fix, because the owner
-knows what else reads it.
+**The scopes live in `rewt/team.py` and nowhere else.** They were also written out here, by
+hand, and the two had drifted apart within an hour of both being written — this file still
+described the `sources` role as *"writes nothing; proposes conf/sources.yml and decision
+text"* after the session that does the job had corrected it to something twice as long and
+materially different. Two renderings of one fact, drifting, in the file that records why
+that is dangerous (D-067).
 
-| session | owns | never touches |
-|---|---|---|
-| **implementer** | `rewt/**`, `conf/**`, `data/**`, `db/**`, `published/**`, `DECISIONS.md`, git on `main` | `docs/**`, `tools/**`, `tests/**` |
-| **documentation** | `docs/**` (Jekyll, live at docuracy.github.io/REWT); edits `README.md` and `PLAN.md` on request | anything under `rewt/` |
-| **tests** | `tests/**` | the code under test |
-| **sources** | writes nothing; proposes `conf/sources.yml` and decision text to the implementer | the repository |
-| **visualisation** | `tools/viewer/**`, `docs/viewer/**` | the pipeline |
-| **tracer** | `tools/tracer/**`, `docs/trace/**` | the pipeline |
+So there is one copy, and it is the one the tool reads out to each session as it claims:
 
-**Only the implementer builds, and only the implementer commits to `main`.** Others commit
-within their own scope. Nothing but the implementer opens the database: everything a viewer
-or an analysis needs is in `published/`, which is a file, takes no lock, and is rewritten
-often enough that a long-running reader must notice when it changes underneath.
+    rewt team status      # all six, with who holds what
+    rewt team claim       # your own, printed to you at the moment you take it
+
+Ownership is by directory and it is hard. **A session that needs a change outside its scope
+asks the owner** rather than editing — including for a one-line fix, because the owner knows
+what else reads it. Only the implementer builds, and only the implementer commits to `main`;
+others commit within their own scope.
+
+**Nothing but the implementer opens the database.** DuckDB is single-writer and a read-only
+connection blocks writers, so anything else attaching fails the build — and the failure looks
+like a broken build rather than a lock. Everything an analysis needs is in `published/` and
+`data/raw/`, which are files, take no lock, and are rewritten often enough that a
+long-running reader must notice when they change underneath.
 
 ### An opening prompt for each
 
@@ -139,6 +144,18 @@ Give them at the start:
   reported; a thing that quietly removes itself does not.
 - **Agreement is not correctness unless something anchors it outside the set** (D-067).
   Two artefacts made by one process agree perfectly while both are wrong.
+
+### Ask for the command, not the number
+
+**When another session reports a figure, ask how it was derived and re-derive it.** This was
+the single most productive habit of the two days and it is not obvious — the natural response
+to a colleague's table is to use it. Nearly every error the six sessions caught was caught
+this way, and several were caught by somebody re-deriving with a **different** method, which
+is stronger than re-running the same one: the same method repeats the same mistake, a
+different one has to agree by accident.
+
+rewt-86, whose role is largely this: *a peer who cannot say where their own number is
+recorded has told you what you needed to know.*
 
 ### Passing figures between sessions
 

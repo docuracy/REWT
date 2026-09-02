@@ -525,13 +525,17 @@ def team_cmd(
     if action == "status":
         held = team.read_all()
         # THE ANSWER ON STDOUT, the presentation on stderr. `log` writes to stderr, so
-        # every byte of this command went there and `rewt team status > roles.txt` wrote
-        # an empty file and exited 0 — for a command whose entire purpose is to be read
-        # by another program. Found by rewt-1d, who redirected it. Plain and tab
-        # separated, because the consumer is a script or an agent, not a person.
-        for r, _owns, _task in team.ROLES:
-            c = held.get(r)
-            print(f"{r}\t{c.session if c else '-'}\t{c.claimed_at if c else '-'}")
+        # every byte of this went there and `rewt team status > roles.txt` wrote an empty
+        # file and exited 0 — for a command whose purpose is to be read by another
+        # program. Found by rewt-1d, who redirected it.
+        #
+        # **Only when stdout is not a terminal.** Printing both gave a person the plain
+        # roster AND the table, one above the other, saying the same thing twice. A pipe
+        # wants the tab-separated form; a person wants the table; nobody wants both.
+        if not sys.stdout.isatty():
+            for r, _owns, _task in team.ROLES:
+                c = held.get(r)
+                print(f"{r}\t{c.session if c else '-'}\t{c.claimed_at if c else '-'}")
         log.table(
             "roles",
             ["role", "held by", "state", "owns"],
@@ -586,9 +590,10 @@ def team_cmd(
         log.error(str(exc))
         raise typer.Exit(1) from None
     _, owns, opening = team.BY_NAME[got]
-    # The role, on stdout, alone on the first line: `role=$(rewt team claim)` is the
-    # obvious thing a caller wants and it returned nothing at all.
-    print(got)
+    # The role on stdout, so `role=$(rewt team claim)` works — but not to a terminal,
+    # where it would appear twice: once bare and once inside the message below.
+    if not sys.stdout.isatty():
+        print(got)
     # Name the tab, because PyCharm will not and six terminals reading `zsh` are
     # indistinguishable to the person who has to pick the right one.
     team.terminal_title(f"REWT · {got}")
