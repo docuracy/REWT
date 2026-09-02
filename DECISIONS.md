@@ -2628,3 +2628,45 @@ names what is missing rather than drawing nothing.
 count and none of the places. Stephen's call was to leave it rather than re-tag, which is
 right — the figure is true, the gap is in detail rather than in fact, and the next edition
 carries the repair.
+
+---
+
+**D-075 — Every release minted its own concept DOI. The badge pointed at a lineage of
+one.**
+
+*D-068 repointed the badge from the GitHub hook's record to a concept DOI of the real
+deposit. It did not check that the concept was **shared**. `zenodo_deposit.py` called
+`POST /deposit/depositions` unconditionally, which starts a fresh record every time, so
+v0.1.0-alpha and v0.1.1-alpha became **two unrelated datasets** — concepts …22238250 and
+…22248272 — rather than two versions of one.*
+
+**What was false, and it was false in print.** The release notes tell a reader that the
+concept DOI always resolves to the newest edition and that a result computed from a
+particular edition must cite that edition's version DOI instead. The first half was
+untrue for this project from the second release onward: …22238250 resolves to
+v0.1.0-alpha and always will. `CITATION.cff` named it and described it in those words.
+
+**Both DOIs are permanent and cannot be merged.** Zenodo does not support it and support
+will not normally do it. The live lineage is **…22248272**, from v0.1.1-alpha onward;
+…22238250 remains a single-version concept holding the first alpha alone. That is not
+repairable, only stated.
+
+**The fix, and why the anchor is declared rather than found.** `.zenodo.json` now names
+`concept_recid`, and the script creates each release with `actions/newversion` on the
+latest version under it. The *anchor* is stored and the *head* is asked for, because a
+stored head goes stale at every release. Where no `concept_recid` is present the script
+says loudly that it is starting a new lineage, so the silent case that caused this
+becomes the announced one.
+
+**And a new version inherits the previous version's files**, which are the previous
+edition's data. They are cleared before uploading, or v0.1.2 would carry v0.1.1's
+GeoPackage beside its own.
+
+**It is D-068's own lesson one level deeper, and I made it while writing D-068.** That
+entry says the repository-id badge was convenient and that the convenience is what bound
+it to the wrong record. I replaced it with a literal concept DOI and verified the DOI
+resolved — which it did, to a real record, with the real data in it. **Resolving to
+something correct is not the same as resolving to the right thing**, and the check I ran
+could not tell the difference. The test that would have caught it is the one D-074 asks
+for in another form: not "does this identifier resolve", but "does it resolve to the
+thing whose *name* it is being given" — here, the newest edition.

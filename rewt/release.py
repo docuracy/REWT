@@ -488,10 +488,18 @@ def _network_in_outletless_basins() -> tuple[float, float]:
             float(inside[inside.reaches_tidal].length_m.sum()) / 1000.0)
 
 
-# The concept DOI: always the newest edition, and stable for the life of the project.
-# A literal, because it is minted once by Zenodo and cannot be derived from anything
-# here — the same reasoning as the README badge, and the same maintenance cost.
-CONCEPT_DOI = "10.5281/zenodo.22238250"
+# The concept DOI of the LIVE lineage: always the newest edition from v0.1.1-alpha on.
+#
+# It changed once, and the reason is worth keeping. The deposit script minted a fresh
+# deposition per release, so v0.1.0-alpha and v0.1.1-alpha ended up with separate
+# concepts — …22238250 and …22248272 — as two unrelated datasets rather than two
+# versions of one. This named the first, and described it as resolving to the newest
+# edition, which it never would. …22238250 is now a permanent single-version concept
+# holding the first alpha alone; DOIs cannot be merged.
+#
+# A literal, because Zenodo mints it and nothing here can derive it — the same
+# reasoning as the README badge, and the same maintenance cost.
+CONCEPT_DOI = "10.5281/zenodo.22248272"
 
 
 def citation_file(tag: str) -> str:

@@ -4,7 +4,7 @@
 
 **Rivers of England and Wales, Temporally.**
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22238250.svg)](https://doi.org/10.5281/zenodo.22238250)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22248272.svg)](https://doi.org/10.5281/zenodo.22248272)
 
 <!-- THE REPOSITORY-ID BADGE POINTED AT THE WRONG RECORD, and the wrong record was the
      exact failure this project set out to avoid.
@@ -22,6 +22,18 @@
      resolves to the newest edition, which is what a paper about the project cites; a
      result computed from a particular edition must cite that edition's VERSION DOI
      instead, or it becomes uncheckable the moment the next edition lands.
+
+     AND THE CONCEPT ITSELF MOVED ONCE, which is the second half of the same lesson.
+     The deposit script created a fresh deposition per release, so v0.1.0-alpha and
+     v0.1.1-alpha got separate concept DOIs — …22238250 and …22248272 — and were two
+     unrelated datasets rather than two versions of one. The badge named the first, so
+     it would have gone on resolving to the first alpha for ever while claiming to
+     resolve to the newest. Checking that the badge pointed at *a* concept DOI was not
+     the same as checking it pointed at *the* one.
+
+     The live lineage is …22248272, from v0.1.1-alpha onward, and every later release
+     extends it with `actions/newversion`. …22238250 remains a permanent single-version
+     concept holding v0.1.0-alpha alone; DOIs cannot be merged or withdrawn.
 
      It is a literal DOI rather than a repository id, so it needs editing if the concept
      ever changes — which is the cost of it pointing where it is supposed to. -->

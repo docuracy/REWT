@@ -22,7 +22,18 @@
     "regenerable from the GeoPackage with `rewt viewer-data`, and 312 MB of the 523",
     "that v0.1.0-alpha archived. They stay a GitHub release asset because pages.yml",
     "fetches them from there to serve the map; it is the deposit they leave, not the",
-    "release."
+    "release.",
+    "",
+    "`concept_recid` ANCHORS THE VERSION CHAIN, and it exists because the first two",
+    "releases did not share one. The script created a fresh deposition per release, so",
+    "v0.1.0-alpha and v0.1.1-alpha became two unrelated datasets with two concept DOIs",
+    "(…22238250 and …22248272) rather than two versions of one. The badge and the",
+    "citation both named the first, which will now never resolve to the newest edition.",
+    "",
+    "Both DOIs are permanent and cannot be merged. The live lineage is 22248272, from",
+    "v0.1.1-alpha onward; …22238250 is a superseded single-version concept. Every later",
+    "release is created with `actions/newversion` on the latest version of the recid",
+    "below, so there is one chain and it is declared rather than rediscovered."
   ],
   "creators": [
     {
@@ -45,5 +56,6 @@
   ],
   "deposit_excludes": [
     "viewer-data.tar"
-  ]
+  ],
+  "concept_recid": 22248272
 }

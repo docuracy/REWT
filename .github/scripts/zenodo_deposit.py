@@ -62,10 +62,45 @@ def main() -> None:
     if not assets:
         raise SystemExit("no assets to deposit")
 
-    dep = call("POST", f"{BASE}/deposit/depositions", data={})
+    # A NEW VERSION OF ONE RECORD, NOT A NEW RECORD.
+    #
+    # This called POST /deposit/depositions unconditionally, which mints a fresh
+    # deposition with its own concept DOI. v0.1.0-alpha and v0.1.1-alpha therefore
+    # became two unrelated datasets — concepts …22238250 and …22248272 — rather than two
+    # versions of one, and the badge naming the first will never resolve to the newest
+    # edition. That is the promise the release notes make about a concept DOI, and it
+    # was false for this project from the second release onward.
+    #
+    # `.zenodo.json` now names the concept to extend. The latest version under it is
+    # asked for by the API rather than stored, so the chain has one declared anchor and
+    # one derived head — storing the head would go stale at every release.
+    concept = zj_early.get("concept_recid")
+    if concept:
+        versions = call("GET", f"{BASE}/records/{concept}/versions?size=1&sort=-version")
+        hits = versions.get("hits", {}).get("hits", [])
+        if not hits:
+            raise SystemExit(
+                f"concept {concept} has no versions. Either the recid in .zenodo.json is "
+                "wrong, or the record was removed; a new deposition here would silently "
+                "start a third lineage, which is the fault this exists to prevent."
+            )
+        latest = hits[0]["id"]
+        dep = call("POST", f"{BASE}/deposit/depositions/{latest}/actions/newversion")
+        # The action answers with the OLD deposition and a link to the new draft.
+        dep = call("GET", dep["links"]["latest_draft"])
+        print(f"deposition {dep['id']} created as a new version of {latest} "
+              f"(concept {concept})")
+        # A new version inherits the previous version's files. They are the previous
+        # edition's data and must not be republished as this one's.
+        for f in call("GET", f"{BASE}/deposit/depositions/{dep['id']}/files"):
+            call("DELETE", f"{BASE}/deposit/depositions/{dep['id']}/files/{f['id']}")
+            print(f"  cleared inherited {f['filename']}")
+    else:
+        dep = call("POST", f"{BASE}/deposit/depositions", data={})
+        print(f"deposition {dep['id']} created as a NEW CONCEPT — .zenodo.json names "
+              "no concept_recid, so this starts its own lineage")
     dep_id = dep["id"]
     bucket = dep["links"]["bucket"]
-    print(f"deposition {dep_id} created")
 
     for path in assets:
         size = path.stat().st_size
