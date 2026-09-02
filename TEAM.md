@@ -29,6 +29,14 @@ read `zsh`, and the escape sequence fixes that at no cost.
     rewt team release --name X # give a role back
     rewt team shutdown         # clear the board when stopping the team
 
+`rewt` is `bin/rewt`, a wrapper — the project is deliberately not installed, because
+`AGENTS.md` requires it to run from the repository root and an installed console script
+invites running it from anywhere and finding nothing. **Put it on your PATH once:**
+
+    export PATH="$PWD/bin:$PATH"        # or add to ~/.bashrc, or: alias rewt=~/PycharmProjects/REWT/bin/rewt
+
+Until you do, it is `./bin/rewt`.
+
 **Sessions find each other with `ListAgents`, which returns session names — not roles.**
 Those names change at every restart, so `rewt team status` is the join between the two: it
 says which live session is the tracer. Without it six agents can address each other and

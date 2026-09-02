@@ -42,7 +42,8 @@ A routable reconstruction of the river network of England and Wales, built so th
 water in it can reach the sea, and worked backwards from the present-day channel to a
 series of dated cross-sections between Domesday and 1900.
 
-**Working here?** Run `rewt` for the commands, and `rewt team claim` to take a role — this
+**Working here?** Run `./bin/rewt` for the commands, and `./bin/rewt team claim` to take a
+role — this
 repository is worked by six parallel agents with hard directory ownership, and
 [TEAM.md](TEAM.md) is how to start them. `AGENTS.md` is how to work; `PLAN.md` is what is
 being built.

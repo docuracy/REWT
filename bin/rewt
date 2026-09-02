@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# The `rewt` command. A wrapper, not a package.
+#
+# This project is deliberately not installed: AGENTS.md requires it to run from the
+# repository root because paths in the code are relative, and `pip install -e .` would
+# invite running it from anywhere and finding nothing. So there is no console script and
+# `rewt` was not a command — it was four documents telling a reader to type something that
+# did not exist, written by someone who had only ever typed `python -m rewt.cli`.
+#
+# This resolves the interpreter itself so it works whether or not a virtualenv is active,
+# and refuses politely rather than failing obscurely if it cannot find one.
+set -euo pipefail
+# The repository ROOT, which is this script's parent — `bin/` exists only
+# because a script called `rewt` at the root would collide with the package
+# directory of the same name.
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+py="$here/.venv/bin/python"
+[ -x "$py" ] || py="$(command -v python3 || true)"
+if [ -z "${py:-}" ] || [ ! -x "$py" ]; then
+  echo "rewt: no interpreter found. Expected $here/.venv/bin/python" >&2
+  exit 1
+fi
+cd "$here"
+exec "$py" -m rewt.cli "$@"
