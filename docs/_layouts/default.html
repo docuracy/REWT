@@ -19,20 +19,24 @@
             <em>Rivers of England and Wales, Temporally</em>
           </span>
         </a>
-
-        <!-- Navigation, in both of the senses this project uses the word. -->
-        <nav class="site-nav" aria-label="Navigation">
-          {%- assign here = page.url | remove: 'index.html' | remove: '.html' -%}
-          {%- for item in site.nav -%}
-            {%- assign target = item.url -%}
-            {%- if here == target -%}
-              <a href="{{ target | relative_url }}" aria-current="page">{{ item.title }}</a>
-            {%- else -%}
-              <a href="{{ target | relative_url }}">{{ item.title }}</a>
-            {%- endif -%}
-          {%- endfor -%}
-        </nav>
       </header>
+
+      <!-- Navigation, in both of the senses this project uses the word.
+           OUTSIDE the masthead deliberately: it pins to the top of the window as the
+           reader scrolls, and a sticky element is confined to its parent's box. Nested
+           inside <header> it would come unstuck the moment the masthead left the screen,
+           which is the moment it starts being useful. -->
+      <nav class="site-nav" aria-label="Navigation">
+        {%- assign here = page.url | remove: 'index.html' | remove: '.html' -%}
+        {%- for item in site.nav -%}
+          {%- assign target = item.url -%}
+          {%- if here == target -%}
+            <a href="{{ target | relative_url }}" aria-current="page">{{ item.title }}</a>
+          {%- else -%}
+            <a href="{{ target | relative_url }}">{{ item.title }}</a>
+          {%- endif -%}
+        {%- endfor -%}
+      </nav>
 
       {{ content }}
 

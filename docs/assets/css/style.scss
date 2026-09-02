@@ -12,9 +12,9 @@ $rewt-former: #a9762f;
 $rewt-rule: #d8d2c4;
 
 .site-head {
-  border-bottom: 1px solid $rewt-rule;
-  margin-bottom: 2rem;
-  padding-bottom: 0.75rem;
+  /* The rule and the gap now belong to the navigation below, which is a sibling
+     rather than a child so that it can pin to the window. */
+  padding-bottom: 0;
 }
 
 .site-brand {
@@ -31,12 +31,22 @@ $rewt-rule: #d8d2c4;
   &:hover strong { color: $rewt-present; }
 }
 
+/* PINNED, so the menu is reachable from the bottom of a long page. The masthead
+   scrolls away as before and only this strip stays, which is why it is a strip:
+   anything taller would spend a reader's screen on furniture. */
 .site-nav {
+  background: #fff;
+  border-bottom: 1px solid $rewt-rule;
   display: flex;
   flex-wrap: wrap;
   font-size: 0.9rem;
   gap: 0.25rem 1.1rem;
+  margin-bottom: 2rem;
   margin-top: 0.9rem;
+  padding: 0.55rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 
   a {
     border-bottom: 2px solid transparent;
@@ -99,6 +109,25 @@ $rewt-rule: #d8d2c4;
   .credit { color: #8a8276; }
 }
 
+/* A DEEP LINK MUST NOT LAND UNDER THE BAR. These pages link to each other's
+   headings by anchor — /evidence#licensing-and-why-this-repository-is-structured-as-it-is
+   is followed from three places — and without room reserved above the target, the one
+   thing a pinned bar hides is the heading the reader just asked for. */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 { scroll-margin-top: 3.5rem; }
+
 @media (max-width: 620px) {
   .sheet-figure.pair .frames { grid-template-columns: 1fr; }
+
+  /* On a phone the ten links wrap to three rows, and three rows pinned to the top
+     is a third of the screen given to a menu. One scrolling row instead. */
+  .site-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
 }
