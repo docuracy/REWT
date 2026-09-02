@@ -203,6 +203,8 @@ export function traceAnnotation(o) {
   const origins = o.vertexOrigin || o.coordinates.map(() => 'clicked');
   const snapped = origins.filter((v) => v === 'snapped').length;
   const interpolated = origins.filter((v) => v === 'interpolated').length;
+  const shaped = origins.filter((v) => v === 'shaped').length;
+  const derived = interpolated + shaped;
 
   /* A SPLINED COURSE MUST CARRY ITS CLICKS, and this refuses rather than recording a
      curve whose control points are lost. The densified line is what a consumer reads, but
@@ -210,12 +212,12 @@ export function traceAnnotation(o) {
      at a different tolerance, or tell a thirteen-click trace from a four-click one that
      the tool filled in. Losing them would leave a record that looks MORE thorough than
      the work behind it, which is the wrong direction for a doubt to point. */
-  if (interpolated && !Array.isArray(o.controlPoints)) {
+  if (derived && !Array.isArray(o.controlPoints)) {
     throw new Error(
       'traceAnnotation: a course with interpolated vertices must carry `controlPoints` — '
       + 'the curve is not the evidence, the clicks are.');
   }
-  if (interpolated && !(o.splineDeviationM >= 0)) {
+  if (derived && !(o.splineDeviationM >= 0)) {
     throw new Error(
       'traceAnnotation: a splined course must carry `splineDeviationM`, the MEASURED '
       + 'deviation. A tolerance repeated back is not a measurement.');
@@ -257,16 +259,25 @@ export function traceAnnotation(o) {
       vertices: o.coordinates.length,
       vertices_snapped: snapped,
       vertices_interpolated: interpolated,
-      vertices_clicked: o.coordinates.length - snapped - interpolated,
+      vertices_shaped: shaped,
+      vertices_clicked: o.coordinates.length - snapped - derived,
       /* The clicks, kept beside the curve rather than instead of it. Present only when
          something was interpolated, so an ordinary trace is not padded with a duplicate
          of its own geometry. */
-      ...(interpolated ? {
+      ...(derived ? {
         control_points: o.controlPoints,
         control_origin: o.controlOrigin ?? null,
         spline_tolerance_m: o.splineToleranceM ?? null,
         spline_deviation_m: Math.round(o.splineDeviationM * 100) / 100,
-        spline: 'centripetal-catmull-rom',
+        /* WHICH TANGENT MADE THIS CURVE, per anchor. `handles` is parallel to
+           `control_points` and null wherever nobody dragged, so a reader can tell a
+           direction a person STATED from one the algorithm guessed — which is the whole
+           difference between a `shaped` vertex and an `interpolated` one, and is not
+           recoverable from the geometry afterwards. */
+        handles: o.handles ?? null,
+        handles_stated: (o.handles || []).filter(Boolean).length,
+        spline: shaped ? 'cubic-bezier, handles where stated, centripetal-catmull-rom elsewhere'
+                       : 'centripetal-catmull-rom',
       } : {}),
       /* Parallel to the coordinate array, so a reader can tell position by position
          whether a person put the vertex there or an algorithm did. */

@@ -46,6 +46,10 @@ export const SPLINE_DEFAULTS = {
   minSpacingM: 1.0,    // never emit two points closer than this
   maxDepth: 8,         // 2^8 = 256 subdivisions per span is far past any real need
   maxPointsPerSpan: 64,
+  /* Below this a drag was a click with a tremor in it. A pen tool that turned every
+     imprecise press into a tangent would make the gesture unusable for the people least
+     able to complain about it. */
+  minHandleM: 0.5,
 };
 
 const R = 6378137;
@@ -101,6 +105,39 @@ function offChord(p, a, b) {
   return Math.hypot(p[0] - (a[0] + u * vx), p[1] - (a[1] + u * vy));
 }
 
+/* Cubic Bezier, which is what a pen-tool handle IS. */
+function bezierAt(P0, C1, C2, P3, t) {
+  const u = 1 - t, a = u*u*u, b = 3*u*u*t, c = 3*u*t*t, d = t*t*t;
+  return [a*P0[0] + b*C1[0] + c*C2[0] + d*P3[0],
+          a*P0[1] + b*C1[1] + c*C2[1] + d*P3[1]];
+}
+
+/**
+ * The centripetal Catmull-Rom span p1->p2, converted EXACTLY to Bezier controls.
+ *
+ * Exact rather than approximated, and that matters: it is what lets one code path serve
+ * both modes. A span whose anchors nobody dragged must draw precisely the curve the
+ * Catmull-Rom implementation drew before handles existed, or every measurement taken
+ * against that mode stops applying to it.
+ *
+ * The span is a cubic in t, so four samples determine it. Evaluating at 0, 1/3, 2/3 and 1
+ * and inverting the Bernstein basis recovers the control points without differentiating
+ * Barry-Goldman by hand — which is where the sign errors live.
+ */
+function crControls(p0, p1, p2, p3, alpha) {
+  const [t0, t1, t2, t3] = knots(p0, p1, p2, p3, alpha);
+  const at = u => pointAt(p0, p1, p2, p3, t0, t1, t2, t3, t1 + (t2 - t1) * u);
+  const P0 = at(0), Q1 = at(1/3), Q2 = at(2/3), P3 = at(1);
+  const C1 = [], C2 = [];
+  for (let k = 0; k < 2; k++) {
+    const A = 27*Q1[k] - 8*P0[k] - P3[k];
+    const B = 27*Q2[k] - P0[k] - 8*P3[k];
+    C1[k] = (2*A - B) / 18;
+    C2[k] = (B - 6*C1[k]) / 12;
+  }
+  return [C1, C2];
+}
+
 /* Recursive bisection in PARAMETER space, with the test in GROUND space. Splitting the
    parameter evenly is not splitting the curve evenly, which is why the test has to be the
    measured deviation rather than a count of levels. */
@@ -131,6 +168,34 @@ function refine(out, ev, ta, tb, pa, pb, tol, depth, budget) {
 }
 
 /**
+ * Every span as a cubic Bezier, with a stated handle overriding the guessed tangent.
+ *
+ * THE WHOLE POINT OF THE HANDLE, in one line of code. Catmull-Rom must GUESS the tangent
+ * at an anchor from its neighbours, and when the neighbours are a meander wavelength apart
+ * the guess carries no information about the bend — measured, and worth about 2%. A drag
+ * states the tangent instead, from somebody looking at the ink, and the same measurement
+ * puts that at 24-47%. So a handle simply replaces the control point the guess produced.
+ *
+ * Symmetric, as a pen tool is: dragging H from an anchor sends the curve out along +H and
+ * brings it in along -H, so one gesture shapes both sides and the curve stays smooth
+ * through the anchor.
+ */
+function spansOf(P, handles, alpha) {
+  const ext = [reflect(P[0], P[1]), ...P, reflect(P[P.length - 1], P[P.length - 2])];
+  const spans = [];
+  for (let i = 0; i + 3 < ext.length; i++) {
+    const [p0, p1, p2, p3] = [ext[i], ext[i + 1], ext[i + 2], ext[i + 3]];
+    let [C1, C2] = crControls(p0, p1, p2, p3, alpha);
+    const hA = handles && handles[i], hB = handles && handles[i + 1];
+    if (hA) C1 = [p1[0] + hA[0], p1[1] + hA[1]];
+    if (hB) C2 = [p2[0] - hB[0], p2[1] - hB[1]];
+    spans.push({ P0: p1, C1, C2, P3: p2, from: i, to: i + 1,
+                 shaped: Boolean(hA || hB) });
+  }
+  return spans;
+}
+
+/**
  * A centripetal Catmull-Rom curve through `control`, densified to a sagitta tolerance.
  *
  * Returns `{ coords, origins, controlIndex, spans }` where `origins[i]` is `'clicked'`
@@ -156,43 +221,51 @@ export function splineThrough(control, opts = {}) {
 
   const f = frame(pts);
   const P = pts.map(f.toXY);
+  /* A handle arrives as the lon/lat the contributor dragged TO — what they actually did —
+     and becomes an offset in metres here. Anything that is not a usable pair is dropped
+     rather than trusted: a half-finished drag must degrade to a plain anchor, not to NaN. */
+  const H = (opts.handles || []).map((h, i) => {
+    if (!Array.isArray(h) || !Number.isFinite(h[0]) || !Number.isFinite(h[1])) return null;
+    const q = f.toXY(h), a = P[i];
+    if (!a) return null;
+    const v = [q[0] - a[0], q[1] - a[1]];
+    return Math.hypot(v[0], v[1]) < (o.minHandleM ?? 0.5) ? null : v;
+  });
+  const anyHandle = H.some(Boolean);
 
-  /* Ends are REFLECTED, not duplicated. Duplicating gives a zero-length knot span, and
-     `Math.pow(0, 0.5)` is 0, so t1 === t0 and the interpolation divides by zero — a NaN
-     that propagates into every coordinate downstream. Reflection keeps the knots distinct
-     and makes the curve leave the first click along the chord to the second, which is the
-     only defensible guess about a direction nobody stated. */
-  const ext = [reflect(P[0], P[1]), ...P, reflect(P[P.length - 1], P[P.length - 2])];
+  const spans = spansOf(P, anyHandle ? H : null, o.alpha);
 
   const coords = [pts[0].slice()];
   const origins = ['clicked'];
   const controlIndex = [0];
-  const spans = [];
+  const spanInfo = [];
 
-  for (let i = 0; i + 3 < ext.length; i++) {
-    const [p0, p1, p2, p3] = [ext[i], ext[i + 1], ext[i + 2], ext[i + 3]];
-    const [t0, t1, t2, t3] = knots(p0, p1, p2, p3, o.alpha);
-    const ev = t => pointAt(p0, p1, p2, p3, t0, t1, t2, t3, t);
+  for (const sp of spans) {
+    const ev = t => bezierAt(sp.P0, sp.C1, sp.C2, sp.P3, t);
     const interior = [];
     const budget = { n: 0, max: o.maxPointsPerSpan, maxDepth: o.maxDepth };
-    refine(interior, ev, t1, t2, p1, p2, o.toleranceM, 0, budget);
+    refine(interior, ev, 0, 1, sp.P0, sp.P3, o.toleranceM, 0, budget);
 
-    let last = p1;
-    let kept = 0;
+    let last = sp.P0, kept = 0;
     for (const q of interior) {
-      if (dist(q, last) < o.minSpacingM || dist(q, p2) < o.minSpacingM) continue;
+      if (dist(q, last) < o.minSpacingM || dist(q, sp.P3) < o.minSpacingM) continue;
       coords.push(f.toLonLat(q));
-      origins.push('interpolated');
+      /* SHAPED IS NOT INTERPOLATED, and collapsing them would be the quiet kind of lie.
+         A point on a span whose anchor somebody dragged is derived from a stated human
+         judgement about which way the channel leaves that anchor; a point on a span with
+         no handle is derived from a smoothness assumption and nobody looked at it. */
+      origins.push(sp.shaped ? 'shaped' : 'interpolated');
       controlIndex.push(-1);
       last = q; kept++;
     }
-    coords.push(pts[i + 1].slice());
+    coords.push(pts[sp.to].slice());
     origins.push('clicked');
-    controlIndex.push(i + 1);
-    spans.push({ from: i, to: i + 1, added: kept, chordM: dist(p1, p2) });
+    controlIndex.push(sp.to);
+    spanInfo.push({ from: sp.from, to: sp.to, added: kept, shaped: sp.shaped,
+                    chordM: dist(sp.P0, sp.P3) });
   }
 
-  return { coords, origins, controlIndex, spans };
+  return { coords, origins, controlIndex, spans: spanInfo, shaped: anyHandle };
 }
 
 function reflect(a, b) { return [2 * a[0] - b[0], 2 * a[1] - b[1]]; }
@@ -227,14 +300,19 @@ export function maxDeviationM(control, result, opts = {}) {
   if (pts.length < 3) return 0;
   const f = frame(pts);
   const P = pts.map(f.toXY);
-  const ext = [reflect(P[0], P[1]), ...P, reflect(P[P.length - 1], P[P.length - 2])];
+  const H = (opts.handles || []).map((h, i) => {
+    if (!Array.isArray(h) || !Number.isFinite(h[0]) || !Number.isFinite(h[1])) return null;
+    const q = f.toXY(h), a = P[i];
+    if (!a) return null;
+    const v = [q[0] - a[0], q[1] - a[1]];
+    return Math.hypot(v[0], v[1]) < (o.minHandleM ?? 0.5) ? null : v;
+  });
+  const spans = spansOf(P, H.some(Boolean) ? H : null, o.alpha);
   const poly = result.coords.map(f.toXY);
   let worst = 0;
-  for (let i = 0; i + 3 < ext.length; i++) {
-    const [p0, p1, p2, p3] = [ext[i], ext[i + 1], ext[i + 2], ext[i + 3]];
-    const [t0, t1, t2, t3] = knots(p0, p1, p2, p3, o.alpha);
+  for (const sp of spans) {
     for (let k = 0; k <= 200; k++) {
-      const q = pointAt(p0, p1, p2, p3, t0, t1, t2, t3, t1 + (t2 - t1) * (k / 200));
+      const q = bezierAt(sp.P0, sp.C1, sp.C2, sp.P3, k / 200);
       let near = Infinity;
       for (let j = 0; j + 1 < poly.length; j++) near = Math.min(near, offChord(q, poly[j], poly[j + 1]));
       worst = Math.max(worst, near);

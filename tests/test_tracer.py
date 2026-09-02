@@ -257,6 +257,6 @@ def test_every_vertex_origin_the_tracer_emits_is_drawn_and_named():
     """
     tracer = (paths.ROOT / "docs" / "trace" / "js" / "tracer.js").read_text(encoding="utf-8")
     page = (paths.ROOT / "docs" / "trace" / "index.html").read_text(encoding="utf-8")
-    for origin in ("clicked", "centred", "snapped", "interpolated"):
+    for origin in ("clicked", "centred", "snapped", "shaped", "interpolated"):
         assert origin in tracer, f"{origin} is not styled in tracer.js"
         assert f"dot {origin}" in page, f"{origin} has no legend entry in index.html"

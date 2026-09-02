@@ -79,6 +79,7 @@
   .dot.snapped { background:#fff; border:2px solid #7a5cff; }
   /* Smaller in the legend as it is on the map, because the size IS the hierarchy. */
   .dot.interpolated { background:#fff; border:2px solid #2b2b33; width:7px; height:7px; }
+  .dot.shaped { background:#fff; border:2px solid #880000; width:8px; height:8px; }
 </style>
 </head>
 <body>
@@ -209,10 +210,11 @@
       <label style="flex:0 0 auto"><input type="checkbox" id="centring" style="width:auto">
         Centre on the channel <em>(experimental)</em></label>
       <label style="flex:0 0 auto"><input type="checkbox" id="splining" style="width:auto">
-        Curve between clicks</label>
+        Curve between clicks <em>(drag to shape)</em></label>
       <span class="legend"><span><i class="dot clicked"></i>placed by you</span>
         <span><i class="dot centred"></i>moved by centring</span>
         <span><i class="dot snapped"></i>followed the ink</span>
+        <span><i class="dot shaped"></i>curve you shaped</span>
         <span><i class="dot interpolated"></i>curve, read from nothing</span></span>
     </div>
     <p id="sheetnote" class="note"></p>
@@ -245,7 +247,7 @@
 
 </main>
 
-<script type="module" src="./js/app.js?v=0.6.0-spline"></script>
+<script type="module" src="./js/app.js?v=0.7.0-pen"></script>
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 </body>
 </html>

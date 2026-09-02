@@ -460,18 +460,20 @@ function paintSpline(s) {
   const el = $('splinenote');
   if (!s.splining) { el.textContent = ''; return; }
   if (s.vertices < 3) {
-    el.textContent = 'Curving between your clicks. Two points are a straight line, so '
-      + 'nothing is added until there is a third — and nothing is added on a straight '
-      + 'reach at all.';
+    el.textContent = 'Curving between your clicks. Click to place a point, or press and '
+      + 'DRAG to say which way the channel leaves it — a rough drag is enough. '
+      + 'Hold Space to move the map.';
     return;
   }
   const added = s.drawn - s.vertices;
+  const stated = s.handlesStated
+    ? `${s.handlesStated} of your ${s.vertices} points say which way the channel goes. `
+    : 'None of your points say which way the channel goes, so the curve is guessing '
+      + 'between them — drag from a point to tell it. ';
   el.textContent = added === 0
-    ? `${s.vertices} clicks, ${s.drawn} points drawn — this reach is straight enough that `
-      + 'the curve adds nothing.'
-    : `${s.vertices} clicks, ${s.drawn} points drawn: ${added} of them are curve and were `
-      + `read from nothing. The curve stays within ${s.splineDeviationM.toFixed(2)} m of `
-      + 'the line those clicks describe.';
+    ? stated + `${s.drawn} points drawn; this reach is straight enough that the curve adds nothing.`
+    : stated + `${added} of the ${s.drawn} points drawn are curve. `
+      + `It stays within ${s.splineDeviationM.toFixed(2)} m of what your points describe.`;
 }
 
 /* ── wiring ───────────────────────────────────────────────────────────────── */

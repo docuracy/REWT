@@ -1426,6 +1426,43 @@ disagree in, and the whole reason snapping exists is that two people should prod
 same line. The jitter sweep is mildly reassuring — 45deg of disagreement costs about half a
 metre — but agreement between *people* is the thing being measured and has not been.
 
+### The pen, as built — and confirmed through the gesture rather than the maths
+
+Built at the version that follows. The prediction above was made with tangents computed
+offline; this is the same measurement taken **through the real interaction**, with anchors
+placed and handles dragged as synthetic mouse events on the map, so the drag itself is in
+the loop:
+
+    Old River Tone, 421 m, against the ink-followed reference
+      anchors   spacing   no handles   dragged   gain
+        5        105 m       6.05        6.01     +1%
+       10         47 m       3.99        2.78    +30%
+       14         32 m       2.49        2.00    +20%
+
+The 30% and 20% reproduce the offline prediction of 24-47%. **The 1% at five anchors is
+the Nyquist limit doing exactly what this file already said it would** — 105 m spacing
+against an 80-100 m meander, where no tangent can describe a bend nobody sampled. That row
+is the useful one: it is a prediction made before the interaction existed, confirmed by the
+interaction, and it means the gesture cannot rescue clicking too sparsely.
+
+Ten dragged anchors (2.78 m) beat fourteen plain clicks (2.49 m only just, and ten plain
+clicks by a third). So the saving is real and modest: roughly a third fewer points for the
+same fidelity, not a halving.
+
+**The pan collision, and what it costs.** A left-drag means pan on every map and must mean
+"state the tangent" here; the two cannot share a button. Panning is therefore disabled
+while the pen is active, and **Space restores it** — which is what Photoshop does, so the
+hand that knows the pen already knows the escape. Verified in the browser that pan is off
+exactly when the pen owns the mouse and on at every other moment, including the instant the
+mode is switched off mid-trace.
+
+**One bug worth recording because every part passed its own test.** Handles were captured,
+stored, passed to the curve and honoured by the geometry — and `curveOrigins` returned a
+hardcoded `interpolated` for every non-anchor point, so the provenance was overwritten one
+function after the work was done. The line bent correctly. The record simply understated
+what a person had contributed, and nothing looked wrong. The composition of two correct
+functions is now its own assertion.
+
 ## 12. What would falsify this plan
 
 - **Snapped traces by two people do not agree.** Then contributed geometry cannot be

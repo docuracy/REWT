@@ -29,6 +29,11 @@ import { splineThrough, maxDeviationM, SPLINE_DEFAULTS } from './spline.js';
 const SRC = 'trace-src';
 const SRC_CANDIDATE = 'trace-candidate-src';
 const SRC_VERTEX = 'trace-vertex-src';
+const SRC_HANDLE = 'trace-handle-src';
+/* Below this a press is a click, not a drag. Four pixels is about the wobble of a hand
+   releasing a mouse button, and treating that as a stated tangent would put a direction
+   into the record that nobody meant to state. */
+const DRAG_PX = 4;
 
 const emptyFC = () => ({ type: 'FeatureCollection', features: [] });
 
@@ -56,14 +61,23 @@ const emptyFC = () => ({ type: 'FeatureCollection', features: [] });
  * rewriting the provenance of work the assists had done. The curve passing through a
  * centred vertex does not make it a click.
  */
-export function curveOrigins(controlIndex, placed) {
-  return controlIndex.map((ci) => (ci >= 0 ? (placed[ci] || 'clicked') : 'interpolated'));
+export function curveOrigins(controlIndex, placed, splineOrigins) {
+  return controlIndex.map((ci, i) => (ci >= 0
+    ? (placed[ci] || 'clicked')
+    /* THE SPLINE'S OWN VERDICT, not a constant. This returned a hardcoded
+       `'interpolated'` until the pen arrived, and then silently threw away every
+       `shaped` the curve had worked out — the handles were captured, stored, passed in
+       and honoured by the geometry, and the provenance was overwritten one function
+       later. It cost nothing visible: the line bent correctly and the record simply
+       understated what a person had contributed. */
+    : (splineOrigins?.[i] || 'interpolated')));
 }
 
 export const VERTEX_GEOMETRY = {
   clicked:      { r: 5,   stroke: 2   },
   centred:      { r: 5,   stroke: 2   },
   snapped:      { r: 2.5, stroke: 2   },
+  shaped:       { r: 2.4, stroke: 1.5 },
   interpolated: { r: 2.2, stroke: 1.4 },
 };
 
@@ -72,6 +86,7 @@ export const casingRadius = (o) => VERTEX_GEOMETRY[o].r + VERTEX_GEOMETRY[o].str
 
 const byOrigin = (pick, fallback) => ['match', ['get', 'origin'],
   'interpolated', pick('interpolated'),
+  'shaped', pick('shaped'),
   'snapped', pick('snapped'),
   'centred', pick('centred'),
   fallback];
@@ -103,6 +118,10 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
     snapAt: 0,
     coordinates: [],
     origin: [],
+    /* Parallel to `coordinates`, and null wherever nobody dragged. Stored as the lon/lat
+       the contributor dragged TO — what they actually did — rather than as a tangent
+       vector, which is a derived thing and would lose the gesture. */
+    handles: [],
     candidate: [],
     patch: null,
     patchKey: null,
@@ -167,6 +186,17 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
          The same move as the viewer's line casings, for the same reason. Ring geometry is
          flush with the marker and does not overlap it: marker 5+2 px, casing 7..9;
          snapped marker 2.5+2, casing 4.5..6.5. */
+      /* HANDLES ARE AN EDITING AID, NOT EVIDENCE, and are drawn only while tracing.
+         Leaving them on a finished line would put a construction line into every
+         screenshot and invite a reader to take the tangent for something the survey drew. */
+      map.addSource(SRC_HANDLE, { type: 'geojson', data: emptyFC() });
+      map.addLayer({ id: 'trace-handle', type: 'line', source: SRC_HANDLE,
+        paint: { 'line-color': '#880000', 'line-width': 1.2, 'line-dasharray': [2, 2],
+                 'line-opacity': 0.9 } });
+      map.addLayer({ id: 'trace-handle-knob', type: 'circle', source: SRC_HANDLE,
+        filter: ['==', ['geometry-type'], 'Point'],
+        paint: { 'circle-radius': 3.2, 'circle-color': '#ffffff',
+                 'circle-stroke-color': '#880000', 'circle-stroke-width': 1.6 } });
       map.addLayer({ id: 'trace-vertex-casing', type: 'circle', source: SRC_VERTEX,
         paint: {
           'circle-color': 'rgba(0,0,0,0)',
@@ -215,6 +245,12 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
             'centred', '#00b4d8',
             'snapped', '#7a5cff',
             'interpolated', '#2b2b33',
+            /* Searched, not chosen: of 604 colours clearing dE 15 against all four
+               existing markers and the casing, this measures 26.6 at worst. Deliberately
+               the click's own family and deliberately darker — a shaped point is derived
+               from a direction a person stated, so it belongs with the human end and
+               below it. */
+            'shaped', '#880000',
             '#ff3b6b'],
           'circle-stroke-width': byOrigin(o => VERTEX_GEOMETRY[o].stroke, VERTEX_GEOMETRY.clicked.stroke),
           /* A snapped vertex is one of dozens in a run and was nobody's decision; a clicked
@@ -247,17 +283,37 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
     if (!state.splining || state.coordinates.length < 3) {
       return { coords: state.coordinates, origins: state.origin, controlIndex: null, deviationM: 0 };
     }
-    const r = splineThrough(state.coordinates, { toleranceM: state.splineToleranceM });
+    const r = splineThrough(state.coordinates,
+      { toleranceM: state.splineToleranceM, handles: state.handles });
     return {
       coords: r.coords,
-      origins: curveOrigins(r.controlIndex, state.origin),
+      origins: curveOrigins(r.controlIndex, state.origin, r.origins),
       controlIndex: r.controlIndex,
       deviationM: r.spans.length ? maxDeviationM(state.coordinates, r) : 0,
     };
   }
 
+  /** The tangent at an anchor, drawn both ways because a pen-tool handle is symmetric. */
+  function paintHandles() {
+    if (!map.getSource || !map.getSource(SRC_HANDLE)) return;
+    const feats = [];
+    const add = (anchor, to) => {
+      const back = [2 * anchor[0] - to[0], 2 * anchor[1] - to[1]];
+      feats.push({ type: 'Feature', properties: {},
+                   geometry: { type: 'LineString', coordinates: [back, anchor, to] } });
+      feats.push({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: to } });
+      feats.push({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: back } });
+    };
+    if (state.active) {
+      state.handles.forEach((h, i) => { if (h && state.coordinates[i]) add(state.coordinates[i], h); });
+      if (drag?.dragged && drag.to) add([drag.at.lng, drag.at.lat], [drag.to.lng, drag.to.lat]);
+    }
+    map.getSource(SRC_HANDLE).setData({ type: 'FeatureCollection', features: feats });
+  }
+
   function redraw() {
     if (!map.getLayer('trace-vertices')) { onChange?.(summary()); return; }
+    paintHandles();
     const c = curve();
     map.getSource(SRC).setData(c.coords.length >= 2
       ? { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: c.coords } }
@@ -288,6 +344,7 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
       vertices: state.coordinates.length,
       drawn: state.splining ? curve().coords.length : state.coordinates.length,
       splineDeviationM: state.splining ? curve().deviationM : 0,
+      handlesStated: state.handles.filter(Boolean).length,
       coordinates: state.coordinates.slice(),
       origin: state.origin.slice(),
       lastCentre: state.lastCentre,
@@ -365,16 +422,16 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
    * its answer selects the operation. That is Stephen's correction made mechanical: the
    * choice is a property of the reach in front of the contributor, not of the loaded sheet.
    */
-  async function place(lngLat) {
+  async function place(lngLat, handle) {
     const to = [lngLat.lng, lngLat.lat];
-    if (!state.coordinates.length) { push(to, 'clicked', null, null); return; }
+    if (!state.coordinates.length) { push(to, 'clicked', null, null, handle); return; }
     const prev = state.coordinates[state.coordinates.length - 1];
 
     state.busy = true; redraw();
     try {
       const patch = await patchFor(prev, to);
       if (!patch) {
-        push(to, 'clicked', { moved: false, why: 'no readable sheet here' }, null);
+        push(to, 'clicked', { moved: false, why: 'no readable sheet here' }, null, handle);
         return;
       }
       const mPerPx = metresPerPixel(to[1], patch.zoom);
@@ -384,8 +441,11 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
         const p = patchPixel(patch, to[0], to[1]);
         const q = patchPixel(patch, prev[0], prev[1]);
         centre = centreOnTransect(patch, p.x, p.y, q.x, q.y, { mPerPx });
-        if (centre.code === 'moved') { push([...toLonLatOf(patch, centre)], 'centred', centre, null); return; }
-        if (centre.code === 'central') { push(to, 'clicked', centre, null); return; }
+        /* The handle travels with the vertex when centring moves it. The contributor
+           stated a DIRECTION at a place; shifting the anchor a metre to the middle of the
+           channel does not change which way they said the water goes. */
+        if (centre.code === 'moved') { push([...toLonLatOf(patch, centre)], 'centred', centre, null, handle); return; }
+        if (centre.code === 'central') { push(to, 'clicked', centre, null, handle); return; }
       }
 
       /**
@@ -413,17 +473,20 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
           const body = snap.coordinates.slice(1);
           body.forEach((c, i) => {
             /* The interior of a snapped run is machine-placed; the vertex the person
-               actually clicked is the last one. */
+               actually clicked is the last one, and it is the one their handle belongs to. */
+            const last = i === body.length - 1;
             state.coordinates.push(c);
-            state.origin.push(i < body.length - 1 ? 'snapped' : 'clicked');
+            state.origin.push(last ? 'snapped' : 'snapped');
+            state.handles.push(last ? (handle || null) : null);
           });
+          if (state.origin.length) state.origin[state.origin.length - 1] = 'clicked';
           state.lastCentre = centre;
           state.candidate = [];
           redraw();
           return;
         }
       }
-      push(to, 'clicked', centre, state.lastSnap);
+      push(to, 'clicked', centre, state.lastSnap, handle);
     } finally {
       state.busy = false;
       redraw();
@@ -435,9 +498,10 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
     return [ll.lon, ll.lat];
   }
 
-  function push(coord, origin, centreResult, snapResult) {
+  function push(coord, origin, centreResult, snapResult, handle) {
     state.coordinates.push(coord);
     state.origin.push(origin);
+    state.handles.push(handle || null);
     state.lastCentre = centreResult;
     if (snapResult !== undefined) state.lastSnap = snapResult;
     state.candidate = [];
@@ -455,6 +519,11 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
    * broken rather than busy. Until the patch arrives the preview is the straight line,
    * which is also exactly what will be committed if the sheet turns out to be unreadable. */
   function onMouseMove(e) {
+    if (drag) {
+      const dx = e.point.x - drag.from.x, dy = e.point.y - drag.from.y;
+      if (Math.hypot(dx, dy) > DRAG_PX) { drag.dragged = true; drag.to = e.lngLat; paintHandles(); }
+      return;
+    }
     if (!state.active || !state.coordinates.length) return;
     const from = state.coordinates[state.coordinates.length - 1];
     const to = [e.lngLat.lng, e.lngLat.lat];
@@ -470,7 +539,41 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
     }
     redraw();
   }
-  function onClick(e) { if (state.active) place(e.lngLat); }
+  /* ── the pen gesture ───────────────────────────────────────────────────────────
+   *
+   * Press to place an anchor, drag to state which way the channel leaves it. Measured
+   * before it was built (PLAN.md): a stated tangent beats the one Catmull-Rom guesses by
+   * 24-47% on real reaches, where the guess itself was worth about 2%. What a handle
+   * supplies is INFORMATION — the derivative at the anchor — which is why it works where
+   * more smoothing did not.
+   *
+   * AND IT IS NOT A PRECISION INSTRUMENT, which is the finding that makes it usable by
+   * volunteers: with the handle angle randomised by 45 degrees and its length by 40%, it
+   * is still about a fifth better than straight segments. Nobody needs to be taught to
+   * drag accurately, and the interface must not imply they do.
+   */
+  let drag = null;
+
+  function onDown(e) {
+    if (!state.active || !state.splining) return;
+    drag = { at: e.lngLat, from: e.point, to: null, dragged: false };
+    /* The map must not pan out from under a gesture that starts as a press. */
+    if (e.originalEvent?.button === 0) e.preventDefault?.();
+  }
+
+  function onUp(e) {
+    if (!drag) return;
+    const d = drag; drag = null;
+    paintHandles();
+    if (!state.active) return;
+    place(d.at, d.dragged && d.to ? [d.to.lng, d.to.lat] : null);
+  }
+
+  function onClick(e) {
+    /* With the pen active the anchor is committed on mouseup, so letting `click` through
+       would place every vertex twice. */
+    if (state.active && !state.splining) place(e.lngLat, null);
+  }
   function onKey(e) {
     if (!state.active) return;
     if (e.key === 'Escape') cancel();
@@ -484,9 +587,11 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
     if (!state.coordinates.length) return;
     state.coordinates.pop();
     state.origin.pop();
+    state.handles.pop();
     while (state.origin.length && state.origin[state.origin.length - 1] === 'snapped') {
       state.coordinates.pop();
       state.origin.pop();
+      state.handles.pop();
     }
     state.candidate = [];
     state.lastCentre = null; state.lastSnap = null;
@@ -494,26 +599,74 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
   }
 
   function cancel() {
-    state.coordinates = []; state.origin = []; state.candidate = []; state.lastCentre = null;
+    state.coordinates = []; state.origin = []; state.handles = [];
+    state.candidate = []; state.lastCentre = null;
+    drag = null;
     redraw();
+  }
+
+  /**
+   * THE GESTURE COLLIDES WITH PANNING, and something has to give.
+   *
+   * A left-drag on a map means pan, and with the pen active it has to mean "state the
+   * tangent" — the two cannot both own the same button. But a contributor tracing a long
+   * channel MUST be able to move the map, so simply disabling the pan would trade one
+   * unusable tool for another.
+   *
+   * Space held down restores panning, which is what Photoshop does — and Photoshop is
+   * where this gesture comes from, so the hand that knows the pen already knows the
+   * escape. It is also the only spare key that is not already a browser shortcut.
+   *
+   * Panning is disabled ONLY while the pen is active. With the curve mode off, drag is
+   * pan exactly as before, and none of this is reachable.
+   */
+  function penHasTheMouse() { return state.active && state.splining; }
+
+  function applyDragPan() {
+    if (penHasTheMouse() && !spaceDown) map.dragPan.disable();
+    else map.dragPan.enable();
+    map.getCanvas().style.cursor =
+      !state.active ? '' : (spaceDown ? 'grab' : 'crosshair');
+  }
+
+  let spaceDown = false;
+  function onSpace(e) {
+    if (e.code !== 'Space' || !state.active) return;
+    const want = e.type === 'keydown';
+    if (want === spaceDown) return;
+    /* Space scrolls the page by default, which would move the map out from under the
+       cursor at the exact moment somebody reached for it. */
+    e.preventDefault();
+    spaceDown = want;
+    applyDragPan();
   }
 
   function start() {
     ensureLayers();
     state.active = true;
-    map.getCanvas().style.cursor = 'crosshair';
     map.on('mousemove', onMouseMove);
+    map.on('mousedown', onDown);
+    map.on('mouseup', onUp);
     map.on('click', onClick);
     window.addEventListener('keydown', onKey);
+    window.addEventListener('keydown', onSpace);
+    window.addEventListener('keyup', onSpace);
+    applyDragPan();
     redraw();
   }
 
   function stop() {
     state.active = false;
-    map.getCanvas().style.cursor = '';
+    drag = null; spaceDown = false;
     map.off('mousemove', onMouseMove);
+    map.off('mousedown', onDown);
+    map.off('mouseup', onUp);
     map.off('click', onClick);
     window.removeEventListener('keydown', onKey);
+    window.removeEventListener('keydown', onSpace);
+    window.removeEventListener('keyup', onSpace);
+    map.dragPan.enable();
+    map.getCanvas().style.cursor = '';
     state.candidate = [];
     redraw();
   }
@@ -529,6 +682,10 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
 
   function setSplining(on) {
     state.splining = Boolean(on);
+    drag = null;
+    /* Turning the pen off mid-trace has to give the mouse back to the map immediately,
+       or the contributor is left unable to pan with no visible reason why. */
+    applyDragPan();
     redraw();
   }
 
@@ -568,6 +725,10 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
       /* The tolerance ASKED FOR and the deviation MEASURED, because they are different
          claims and only the second is evidence. */
       splineToleranceM: state.splining ? state.splineToleranceM : null,
+      /* What the contributor dragged, kept as they did it. A tangent is derivable from
+         this; the gesture is not derivable from a tangent. */
+      handles: state.splining ? state.handles.slice() : null,
+      handlesStated: state.handles.filter(Boolean).length,
       splineDeviationM: state.splining ? c.deviationM : null,
       /* WHAT THE ANNOTATION IS ENTITLED TO SAY. With snapping off no vertex came from a
          cost surface, so naming the sheet's colour mode would imply a machine read one when

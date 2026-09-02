@@ -127,6 +127,28 @@ throws(() => traceAnnotation({ ...splined, splineDeviationM: undefined }),
 ok(JSON.parse(a.body.find((b) => b.purpose === 'describing').value).control_points === undefined,
   'an unsplined trace carries no control_points');
 
+// 13. a shaped course: the handles are recorded, and shaped is counted apart from interpolated
+const shapedTrace = {
+  ...splined,
+  vertexOrigin: ['clicked', 'shaped', 'clicked', 'interpolated', 'clicked'],
+  handles: [[-0.0975, 51.53095], null, null],
+};
+const sh = traceAnnotation(shapedTrace);
+const shBody = JSON.parse(sh.body.find((b) => b.purpose === 'describing').value);
+ok(shBody.vertices_shaped === 1 && shBody.vertices_interpolated === 1,
+  'shaped and interpolated are counted apart — they are different evidence');
+ok(shBody.vertices_clicked === 3,
+  'clicked is the remainder after snapped, shaped AND interpolated');
+ok(shBody.handles_stated === 1, 'the number of stated tangents is recorded');
+ok(JSON.stringify(shBody.handles) === JSON.stringify(shapedTrace.handles),
+  'the handles travel as dragged, parallel to the control points');
+ok(/bezier/i.test(shBody.spline) && /catmull/i.test(shBody.spline),
+  'the record names both curve families, because a mixed course used both');
+ok(!/bezier/i.test(JSON.parse(sp.body.find((b) => b.purpose === 'describing').value).spline),
+  'a course with no handle does not claim a Bezier it never used');
+throws(() => traceAnnotation({ ...shapedTrace, controlPoints: undefined }),
+  'a shaped course without its control points must be refused too');
+
 console.log(`${pass} passed, ${fails.length} failed`);
 for (const f of fails) console.error('  FAIL ' + f);
 process.exit(fails.length ? 1 : 0);

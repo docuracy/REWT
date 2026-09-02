@@ -196,7 +196,8 @@ console.log('\nswitching the curve on does not rewrite what the assists did');
      `clicked` would quietly relabel their work as a person's the moment this mode was
      switched on. Nothing would look wrong — the counts would even improve. */
   const placed = ['clicked', 'centred', 'snapped', 'clicked'];
-  const o = curveOrigins([0, -1, 1, -1, 2, -1, 3], placed);
+  const o = curveOrigins([0, -1, 1, -1, 2, -1, 3], placed,
+                         ['clicked','interpolated','clicked','interpolated','clicked','interpolated','clicked']);
   ok('interpolated points are marked interpolated',
      o.filter(x => x === 'interpolated').length === 3);
   ok('a centred control point stays centred', o[2] === 'centred');
@@ -206,6 +207,114 @@ console.log('\nswitching the curve on does not rewrite what the assists did');
         o.filter(y => y !== 'interpolated')[i] === x));
   ok('an origin the placed array does not have falls back to clicked, not undefined',
      curveOrigins([0, 1], [])[0] === 'clicked');
+
+  /* THE COMPOSITION, which is where the bug actually was. Every part passed its own test
+     — handles were captured, the curve marked its points `shaped`, and this function
+     mapped control points correctly — while the whole silently reported `interpolated`,
+     because this function returned a constant for every non-control point and nobody
+     checked the two halves together. The line bent correctly, so nothing looked wrong. */
+  const fromSpline = ['clicked', 'shaped', 'clicked', 'interpolated', 'clicked'];
+  const composed = curveOrigins([0, -1, 1, -1, 2], ['clicked','clicked','clicked'], fromSpline);
+  ok('a shaped point survives the mapping instead of being flattened to interpolated',
+     composed[1] === 'shaped' && composed[3] === 'interpolated', composed.join(','));
+  ok('with no spline origins given it still falls back to interpolated',
+     curveOrigins([0, -1, 1], ['clicked','clicked'])[1] === 'interpolated');
+}
+
+console.log('\nhandles: a stated tangent replaces a guessed one');
+{
+  const local = m => m.map(([x, y]) =>
+    [-0.03 + x / (111320 * Math.cos(51.81 * Math.PI / 180)), 51.81 + y / 111320]);
+  const toM = ([lon, lat]) =>
+    [(lon + 0.03) * 111320 * Math.cos(51.81 * Math.PI / 180), (lat - 51.81) * 111320];
+
+  const anchors = local([[0,0],[100,0],[200,0],[300,0]]);
+  const plain = splineThrough(anchors, { minSpacingM: 0.05 });
+  ok('four collinear anchors with no handles stay straight',
+     plain.origins.filter(o => o !== 'clicked').length === 0);
+
+  /* A handle pulled 40 m north of the second anchor must bend the line north there. */
+  const handles = [null, local([[100, 40]])[0], null, null];
+  const bent = splineThrough(anchors, { handles, minSpacingM: 0.05 });
+  const maxNorth = Math.max(...bent.coords.map(c => toM(c)[1]));
+  ok('a stated handle bends the curve the way it was dragged', maxNorth > 5,
+     `${maxNorth.toFixed(1)} m north`);
+  ok('the handle shapes BOTH spans meeting the anchor, as a pen tool does',
+     bent.spans.filter(sp => sp.shaped).length === 2,
+     `${bent.spans.filter(sp => sp.shaped).length} spans shaped`);
+  ok('points on a shaped span are `shaped`, not `interpolated`',
+     bent.origins.includes('shaped') && !bent.origins.includes('interpolated'));
+  ok('the result says a handle was used', bent.shaped === true);
+  ok('and says so when none was', plain.shaped === false);
+
+  /* A third anchor untouched by any handle keeps the guessed tangent and its own name. */
+  const far = local([[0,0],[100,0],[200,0],[300,0],[400,60],[500,60]]);
+  const mixed = splineThrough(far, { handles: [null, local([[100,40]])[0]], minSpacingM: 0.05 });
+  ok('a span with no handle at either end is still `interpolated`',
+     mixed.origins.includes('interpolated') && mixed.origins.includes('shaped'));
+
+  // a drag too small to be meant is a click with a tremor in it
+  const tremor = splineThrough(anchors,
+    { handles: [null, local([[100, 0.2]])[0], null, null], minSpacingM: 0.05 });
+  ok('a handle shorter than minHandleM is ignored', tremor.shaped === false);
+  for (const bad of [[NaN, 1], null, [1], 'x', [Infinity, 0]]) {
+    const r = splineThrough(anchors, { handles: [null, bad, null, null], minSpacingM: 0.05 });
+    ok(`a malformed handle (${JSON.stringify(bad)}) degrades to a plain anchor`,
+       r.shaped === false && r.coords.every(c => Number.isFinite(c[0]) && Number.isFinite(c[1])));
+  }
+}
+
+console.log('\nhandles beat the guess where the guess has no information');
+{
+  /* THE CLAIM THE WHOLE FEATURE RESTS ON, asserted against a curve whose truth is known.
+     A sine meander sampled at three points per wavelength is exactly the regime the
+     measurement on real sheets identified: too sparse for Catmull-Rom to infer the bend,
+     dense enough that a stated tangent describes it. Truth is the analytic curve, so
+     neither method is being compared against its own assumptions. */
+  const A = 30, L = 100, kx = 111320 * Math.cos(51.81 * Math.PI / 180);
+  const truthM = t => [t, A * Math.sin(2 * Math.PI * t / L)];
+  const toLL = ([x, y]) => [-0.03 + x / kx, 51.81 + y / 111320];
+  const spacing = L / 3;
+  const anchors = [], handles = [];
+  for (let t = 0; t <= 300; t += spacing) {
+    anchors.push(toLL(truthM(t)));
+    /* the tangent a drag states: the curve's own direction, at a third of the chord */
+    const d = A * (2 * Math.PI / L) * Math.cos(2 * Math.PI * t / L);
+    const n = Math.hypot(1, d);
+    handles.push(toLL([truthM(t)[0] + (spacing / 3) * (1 / n),
+                       truthM(t)[1] + (spacing / 3) * (d / n)]));
+  }
+  const err = (r) => {
+    let worst = 0;
+    for (let t = 0; t <= 300; t += 0.5) {
+      const p = truthM(t);
+      let near = Infinity;
+      for (let i = 0; i + 1 < r.coords.length; i++) {
+        const a = [(r.coords[i][0] + 0.03) * kx, (r.coords[i][1] - 51.81) * 111320];
+        const b = [(r.coords[i+1][0] + 0.03) * kx, (r.coords[i+1][1] - 51.81) * 111320];
+        const vx = b[0]-a[0], vy = b[1]-a[1], l2 = vx*vx + vy*vy;
+        let u = l2 ? ((p[0]-a[0])*vx + (p[1]-a[1])*vy) / l2 : 0;
+        u = Math.max(0, Math.min(1, u));
+        near = Math.min(near, Math.hypot(p[0]-(a[0]+u*vx), p[1]-(a[1]+u*vy)));
+      }
+      worst = Math.max(worst, near);
+    }
+    return worst;
+  };
+  const guessed = err(splineThrough(anchors, { minSpacingM: 0.05, toleranceM: 0.2 }));
+  const stated  = err(splineThrough(anchors, { handles, minSpacingM: 0.05, toleranceM: 0.2 }));
+  console.log(`        max error from the true meander: guessed ${guessed.toFixed(2)} m,` +
+              ` stated ${stated.toFixed(2)} m`);
+  /* THE THRESHOLD COMES FROM THE FIELD MEASUREMENT, NOT FROM WHAT PASSES. Handles measured
+     24-47% better than the guess on two real reaches (PLAN.md), so 25% is the bottom of
+     the observed band. My first attempt here demanded 50% — a number I had not measured
+     anywhere — and failed at 36%, which is squarely inside what the sheets actually
+     showed. Loosening a threshold to pass is how a check stops meaning anything; deriving
+     it from the evidence is not the same act. */
+  ok('stated tangents beat guessed ones by at least the margin measured on real sheets',
+     stated < guessed * 0.75,
+     `${stated.toFixed(2)} m vs ${guessed.toFixed(2)} m — ` +
+     `${(100 * (1 - stated / guessed)).toFixed(0)}% better`);
 }
 
 console.log('\nthe casing sits flush outside every marker');
@@ -222,7 +331,10 @@ console.log('\nthe casing sits flush outside every marker');
      VERTEX_GEOMETRY.clicked.r > VERTEX_GEOMETRY.snapped.r &&
      VERTEX_GEOMETRY.snapped.r > VERTEX_GEOMETRY.interpolated.r);
   ok('every origin the tracer can emit has a geometry',
-     ['clicked', 'centred', 'snapped', 'interpolated'].every(o => VERTEX_GEOMETRY[o]));
+     ['clicked', 'centred', 'snapped', 'shaped', 'interpolated'].every(o => VERTEX_GEOMETRY[o]));
+  ok('a shaped point sits between snapped and interpolated in weight',
+     VERTEX_GEOMETRY.snapped.r > VERTEX_GEOMETRY.shaped.r &&
+     VERTEX_GEOMETRY.shaped.r > VERTEX_GEOMETRY.interpolated.r);
 }
 
 console.log(`\n${pass} passed, ${fail} failed\n`);
