@@ -2698,6 +2698,28 @@ measurement, find where it is recorded; if it is nowhere, say that it is unverif
 for the run. Being specific is not being sourced — `267 of 1,806` is more convincing than
 `about a seventh` and was worth exactly as much.
 
+**And where the figure carries an ATTRIBUTION, the cheaper test is to ask the agent named.**
+*"rewt-2b measured it"* is the strongest false credential available and the easiest to
+break: one message settles it, and **a peer who cannot say where their own number is
+recorded has told you what you needed to know.** Nobody asked. rewt-2b has since put it on
+the record that they never ran a sweep of 1,806 probes, at Ware or anywhere, and never
+stated the figure — so the attribution was wrong before I ever repeated it, and repeating it
+is what made it look confirmed.
+
+**THE NEAR MISS IS THE SIGNATURE, NOT THE MITIGATION**, and this is the part to take
+forward. The invented figure was `267 / 1,806 = 14.8%`; the measured one is
+`3,346 / 24,336 = 13.7%`. Within a point. Every sanity check passed — right order of
+magnitude, right sort of proportion for a refusal, nothing inviting a second look. **Had it
+been 60% or 0.5% somebody would have gone and looked on instinct.**
+
+It is the second instance in one day. rewt-fc's invented ink colour was `#6b6459` against a
+real `#6c665d`, also within a point, and they said so unprompted: *the finding stood, but by
+luck.* Two independent fabrications, both plausible, both landing inside the noise of the
+true value. **That is not coincidence, it is what invention looks like**: a mind reaching for
+a number reaches for a plausible one. So plausibility is evidence of nothing, and the
+natural reaction to *it was nearly right* — relief — is the wrong one. The correct reading
+is that the check failed silently and would have failed the same way at any value.
+
 **And the real measurement contradicted the use I had planned for it.** rewt-2b then ran it:
 24,336 probes over a 756 m square at Ware, of which 13.7% found a channel whose sides did
 not hold — so the phenomenon is real and my instinct about it was right. But drawn on the
