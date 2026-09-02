@@ -1463,6 +1463,41 @@ function after the work was done. The line bent correctly. The record simply und
 what a person had contributed, and nothing looked wrong. The composition of two correct
 functions is now its own assertion.
 
+### Centring, asked everywhere: what it accepts when nobody points
+
+Measured because rewt-d3 proposed showing "the tool sees something a person cannot judge by
+eye" and quoted a figure — 267 of 1,806 probes — that **is not in this repository or its
+history**. It was not theirs to have; nothing had measured it. So it was measured.
+
+A 756 m square of the six-inch second edition at Ware, monochrome, 24.9% ink. Every grid
+point probed in four directions of travel, 24,336 probes:
+
+      no-banks           62.9%    open ground, refused
+      on-ink             19.2%    the point is on a stroke
+      width-disagrees    13.7%    a channel WAS found and its sides did not stay parallel
+      moved               3.6%    accepted, and shifted to the middle
+      central             0.6%    accepted, already central
+      too-narrow          0.0%
+
+    accepted in at least one direction: 773 of 6,084 grid points (12.7%)
+    median accepted width 10.3 m, quartiles 6.6 and 14.0
+
+**The 13.7% is the interesting refusal** and the one rewt-d3 was reaching for: the assist
+found two roughly parallel sides, measured them across seven transects, and declined
+because they did not stay parallel. That is a judgement no eye makes at a glance.
+
+**But the picture contradicts the premise it was meant to support, which is why it is on
+the page instead.** Rendered as an overlay, the acceptances follow the Lea and the New
+River — and equally the terraced streets, the railway and the malthouse ranges. **Asked
+everywhere, the assist is not selective for water at all**, exactly as §"How the ink is
+followed" already claimed in prose and had never shown. So the figure argues the
+confinement rather than the cleverness: the knowledge separating a channel from a street is
+the contributor's, and the assist may only search among ink they have indicated.
+
+The acceptance rate is a tuning figure and will move if the thresholds do; it is recorded
+here rather than on the page, per rewt-1d's rule that a measurement which IS a finding
+stays and a measurement of current performance does not.
+
 ## 12. What would falsify this plan
 
 - **Snapped traces by two people do not agree.** Then contributed geometry cannot be

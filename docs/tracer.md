@@ -180,6 +180,22 @@ anywhere in Ware, the assist returns a railway — and is correct about the geom
 particular. What supplies the missing knowledge is the
 contributor, who knows they are following a watercourse. Nothing in the raster does.
 
+<figure class="sheet-figure narrow">
+  <div class="frames">
+    <img src="{{ '/assets/maps/centring-let-loose-at-ware.jpg' | relative_url }}"
+         alt="A square of the six-inch second edition at Ware, three quarters of a kilometre across, with every point the centring assist accepts as a channel marked in blue. The marks follow the river and the New River, and equally follow the terraced streets, the railway and the ranges of malthouses.">
+  </div>
+  <figcaption><strong>The same assist, asked everywhere instead of where a contributor
+  points.</strong> Every blue mark is a place it accepted as a channel and measured a width
+  for. It finds the Lea and the New River — and the terraces, the railway and the malthouse
+  ranges, because those are also two roughly parallel lines a constant distance apart, and
+  it is not wrong about the geometry. <strong>This is the argument for confining it, made
+  in one picture</strong>: the knowledge that separates a channel from a street is the
+  contributor's, so the assist may only search among ink they have already indicated.
+  <span class="credit">Reproduced with the permission of the National Library of
+  Scotland.</span></figcaption>
+</figure>
+
 **It is an assistant, not an interpreter**, and the interface says so rather than leaving it
 to be inferred. Three consequences follow, and they are design rules and not caveats:
 
