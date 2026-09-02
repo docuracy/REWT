@@ -176,11 +176,22 @@ to port computable, down one river, along the coast and up another, which is the
 [navigation evidence](evidence#navigation) is about and which no purely fluvial network can
 express.
 
-**And it changes what a published number means, so both readings go out together.** Today
-reachability cannot fail at the coast. With the trunk attached it can. Every figure measured
-before that change is measured against the old definition — so the change is reported with
-both numbers side by side and never improved silently into the series. **Reachability moving
-because the sea became a test it can fail is not progress and must never read as progress.**
+**And it changes what a published number means, so both readings go out together — but they
+are not two grades of one test.** Measured against this build, **93.58% of in-scope length
+reaches tidal water and 96.26% reaches the sea**, and the second is the larger because
+**2,890 km drains to the coast without ever touching a watercourse the survey calls tidal.** A
+mouth discharging through a sea wall is not a defect. The readings cross rather than nest: 58 km
+reaches tidal water that the sea will not take, and **3,894 km reaches neither, which is the
+defect and the work.**
+
+**The warning that goes with this has inverted, and is the more necessary for it.** While the
+sea could only make reachability harder, the risk was a number quietly worsening under a
+stricter test. What happened instead is that the stranded total **fell, from 6,785 km to
+3,894 km — and not one kilometre of it was repaired.** Coastal drainage that always did reach
+the sea is now counted as reaching it. **A number improving because of a change in what is
+counted is the flattering direction, and therefore the dangerous one.** Every figure measured
+before the change belongs to the old definition and is not comparable with one measured after
+it.
 
 **It carries no date, and the naming is what keeps it that way.** The artefact is named by
 its parameter and not by its purpose: it is the connectivity structure of water deeper than a
