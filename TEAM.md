@@ -49,6 +49,13 @@ directory on PATH and never find the command. Use an absolute path or the symlin
 
 Until either is done, it is `./bin/rewt`.
 
+**Claim from the agent's session, not from a bare terminal.** The command can tell the
+difference — `CLAUDECODE` is set in one and not the other — and refuses in a terminal,
+because a role claimed by a person is held by nobody while five other sessions read it as
+taken. **Pass `--name` with the name `ListAgents` shows for you**: there is no environment
+variable carrying it, so without one the claim records a session id, which is unique and
+traceable and not what a peer will call you in a message.
+
 **Sessions find each other with `ListAgents`, which returns session names — not roles.**
 Those names change at every restart, so `rewt team status` is the join between the two: it
 says which live session is the tracer. Without it six agents can address each other and

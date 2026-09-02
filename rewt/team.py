@@ -107,6 +107,34 @@ class Claim:
     # carries the only part that was ever true.
 
 
+def in_agent_shell() -> bool:
+    """Whether this command is running inside an agent's shell or a person's terminal.
+
+    `CLAUDECODE` is set in the first and absent in the second, which is the distinction
+    the board actually needs: **a role claimed from a bare terminal is held by nobody.**
+    A person typing `rewt team claim` takes a role no session is doing, and five other
+    agents then see it as taken — which happened the first time Stephen typed
+    `rewt team`, because the action defaulted to claim.
+    """
+    return bool(os.environ.get("CLAUDECODE"))
+
+
+def _default_session() -> str:
+    """A name for a claim that did not give one.
+
+    **`CLAUDE_SESSION_NAME` does not exist and I invented it.** Every claim made without
+    `--name` recorded the literal string "unnamed", which defeats the whole purpose of
+    joining roles to sessions — and nothing said so, because "unnamed" looks like a
+    reasonable value rather than a failure. Verified against the real environment rather
+    than assumed a second time: what exists is `CLAUDE_CODE_SESSION_ID`, a uuid, which is
+    unique and traceable and not what a peer will call you in a message.
+
+    So the id is a fallback and `--name` is what to pass; the CLI says so.
+    """
+    sid = os.environ.get("CLAUDE_CODE_SESSION_ID", "")
+    return f"session-{sid[:8]}" if sid else "unnamed"
+
+
 def _path(role: str):
     return DIR / f"{role}.json"
 
@@ -187,9 +215,8 @@ def claim(role: str | None = None, session: str | None = None,
                 )
             continue
         with os.fdopen(fd, "w") as fh:
-            json.dump({"session": session or os.environ.get(
-                "CLAUDE_SESSION_NAME", "unnamed"),
-                "claimed_at": time.strftime("%Y-%m-%dT%H:%M:%S")}, fh)
+            json.dump({"session": session or _default_session(),
+                       "claimed_at": time.strftime("%Y-%m-%dT%H:%M:%S")}, fh)
         return want, displaced
     raise RuntimeError("every role is claimed by a live process")
 

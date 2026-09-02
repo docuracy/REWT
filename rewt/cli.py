@@ -583,6 +583,21 @@ def team_cmd(
         log.error(f"unknown action {action!r}; use claim, status, release or shutdown")
         raise typer.Exit(1)
 
+    # A ROLE CLAIMED FROM A BARE TERMINAL IS HELD BY NOBODY, and five other sessions
+    # will read it as taken. The board exists to say which agent is doing what; a person
+    # typing the command is not an agent, and the honest answer is to refuse rather than
+    # record a claim nothing is behind.
+    if not team.in_agent_shell() and not name:
+        log.error("this is a terminal, not an agent session — a role claimed here would "
+                  "be held by nobody, and the other sessions would read it as taken.")
+        log.detail("`rewt team` shows the board. If you really mean to hold a role "
+                   "yourself, say who you are: rewt team claim --name stephen")
+        raise typer.Exit(1)
+    if team.in_agent_shell() and not name:
+        log.warn("no --name given, so this claim records a session id rather than the "
+                 "name your peers address you by. Pass --name with the name ListAgents "
+                 "shows for you.")
+
     # An expected condition is a message and an exit code. Both of these arrived as raw
     # tracebacks — an unknown role as a KeyError, a role already held as a RuntimeError —
     # three lines below a branch that does it correctly for an unknown action. `--role
