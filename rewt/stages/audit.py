@@ -467,11 +467,26 @@ def run() -> dict:
                 )
             )
 
+    # EVERY PRODUCER OF FINDINGS MUST RUN ABOVE THIS LINE. These two were called two
+    # hundred lines below it, so they appended to a list that had already been written
+    # to `audit_finding` and their findings were silently discarded — the aggregate
+    # counts were published and not one of the 16 places was. Both functions carry
+    # docstrings about a gate that must not merely report that it ran, and both did
+    # exactly that. rewt-fc found it by looking for the findings I had told them were
+    # there.
+    _sweep_the_outletless_basins(report, findings)
+    _connectors_that_climb(report, findings)
+
     # ------------------------------------------------------------- persist
     frame = pd.DataFrame(
         [f.to_row() for f in findings],
         columns=["kind", "subject", "detail", "easting", "northing", "metrics", "basin_id"],
     )
+    # SEALED, so a producer added below this line fails instead of vanishing. Two were,
+    # and their findings were dropped in silence while their aggregates were published;
+    # nothing in the build could tell the difference between "found nothing" and "ran
+    # too late". The list stays readable — `report.finding` iterates it further down.
+    findings = _Sealed(findings)
     # ------------------------------------------- termini outside any basin
     # Named because §8 reports per basin and these cannot be. Not a defect of the
     # terminus layer: 27% of all nodes fall outside a delineated basin, and termini
@@ -679,8 +694,6 @@ def run() -> dict:
         f"{len(dead):,} dead ends carrying BOTH upstream_km and stranded_km — rank on "
         "stranded_km, since upstream_km counts water that has another way out"
     )
-    _sweep_the_outletless_basins(report, findings)
-    _connectors_that_climb(report, findings)
 
     report.add("stranded_components", {
         "count": int(len(stranded)),
@@ -1384,3 +1397,28 @@ def _connectors_that_climb(report: Report, findings: list[Finding]) -> None:
                 metrics={"rise_m": round(rise, 2), "length_m": round(length_m, 1)},
             )
         )
+
+
+class _Sealed(list):
+    """A findings list that refuses to grow, once its contents have been written.
+
+    The audit builds `audit_finding` from the list at one moment, and anything appended
+    after that moment is discarded without a word. That is not hypothetical: the
+    outlet-less basin sweep and the climbing-connector check were both called two
+    hundred lines too late, published their counts, and contributed not one place.
+
+    Raising here turns the next occurrence into a failed build with a traceback naming
+    the caller, which is the difference between a defect and a mystery.
+    """
+
+    _MESSAGE = (
+        "a finding was added after audit_finding was written, and would have been "
+        "discarded in silence. Move the producer above the persist block in "
+        "rewt/stages/audit.py — every producer of findings must run before it."
+    )
+
+    def append(self, item):  # noqa: D102
+        raise StageError(self._MESSAGE)
+
+    def extend(self, items):  # noqa: D102
+        raise StageError(self._MESSAGE)
