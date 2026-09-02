@@ -76,7 +76,15 @@ def main() -> None:
     # one derived head — storing the head would go stale at every release.
     concept = zj_early.get("concept_recid")
     if concept:
-        versions = call("GET", f"{BASE}/records/{concept}/versions?size=1&sort=-version")
+        # `/records/{concept}/versions` DOES NOT EXIST in this API and returned 404 on
+        # the first release that used it. A search on `conceptrecid` does, and returns
+        # the versions newest first — verified against the public API before use, since
+        # a wrong endpoint here fails after the upload rather than before it.
+        versions = call(
+            "GET",
+            f"{BASE}/records?q=conceptrecid:{concept}"
+            "&all_versions=true&sort=-version&size=1",
+        )
         hits = versions.get("hits", {}).get("hits", [])
         if not hits:
             raise SystemExit(
