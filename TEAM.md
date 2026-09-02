@@ -173,6 +173,13 @@ Give them at the start:
   reported; a thing that quietly removes itself does not.
 - **Agreement is not correctness unless something anchors it outside the set** (D-067).
   Two artefacts made by one process agree perfectly while both are wrong.
+- **A rule may be written wider than the incident, but only if you can go and look.** The
+  ports rule below has two halves and this team only broke one; the other half caught two
+  servers nobody knew about. That was not foresight — `0.0.0.0` is the *default*, so the
+  hazard was already universal on the machine and merely unlooked-for. The test that
+  separates a justified widening from a guess in the same clothes is cheap and immediate:
+  **can you search for instances of the wider rule right now?** If you can, do, and the
+  count settles it. If you cannot, you are writing down a feeling.
 
 ### Ask for the command, not the number
 
