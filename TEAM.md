@@ -84,9 +84,13 @@ taking a role over is explicit with `--force`.
 longer exists makes the next start ambiguous in exactly the way this file exists to prevent.
 
 **An agent that opens a port owns closing it.** Servers outlive the session that started
-them: this team left one running on the repository root for a day, and root is not `docs/` —
-it serves `.env`, `db/`, `data/` and every scratch file in the tree, none of which the
-published site contains. Two rules, and the first is the one that matters:
+them, and nothing this team built would tell you: the board tracks intent, `git status` stays
+clean while a process serves `.env`, and `rewt team shutdown` knows nothing about sockets.
+Two sessions each left one running and neither believed they had. **Two rules, because we
+each broke a different one** — one server was rooted at the repository, the other ran for
+twenty-three hours; a third pair, on this machine but from another project, was bound to
+every interface for four days. Anyone writing down only the half that had bitten them would
+have missed the rest:
 
 - **Serve `docs/`, never the repository root.** `python3 -m http.server PORT --directory docs`.
   If a viewer needs something outside `docs/`, copy it in or fix the build; do not widen the
