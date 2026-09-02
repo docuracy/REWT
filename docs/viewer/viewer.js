@@ -132,12 +132,37 @@ const R = (summary && summary.reachability) || {};
 const inScopeKm = need(R, 'total_in_scope_km', 'in_scope_km');
 const inScopeShare = need(R, 'in_scope_share');
 
-$('#f-share').textContent = pct(inScopeShare);
+/* THE HEADLINE SAID "REACHES THE SEA" OVER A TIDAL FIGURE, and until the sea network
+   joined the routing graph the two were close enough that nobody caught it. They are
+   not close now: 93.58% of in-scope length reaches tidal water and 96.26% reaches the
+   sea, and the difference is 2,890 km of coastal drainage that discharges at a sea wall
+   without ever touching a tidalRiver. The old line called all of that stranded — it
+   printed "6,785 km cannot reach the sea" where the true figure for that sentence is
+   3,894 km, overstating the work left by three quarters of it.
+
+   `readings_are_nested: false` is stated in the audit's own section, so the data was
+   saying this about itself while the panel rounded the two together. The label decides
+   which number belongs under it: the sea question gets the sea figure, the tidal
+   question is named as the tidal question, and the cell between them is printed rather
+   than folded into either. Where the audit has no sea section — an older release — the
+   panel falls back to the tidal reading AND relabels itself, because a stale number
+   under a confident label is the failure being fixed. */
+const SEA = (summary && summary.reachability_tested_against_the_sea) || {};
+const haveSea = SEA.reaches_the_sea_share != null;
+$('#f-share').textContent = pct(haveSea ? SEA.reaches_the_sea_share : inScopeShare);
+$('#f-share-label').textContent = haveSea
+  ? 'of in-scope length reaches the sea'
+  : 'of in-scope length reaches tidal water — this build does not test the sea';
 $('#f-defects').textContent = fmt(c.dead_ends_defect);
 $('#f-detail').innerHTML = summary ? `
   ${fmt(inScopeKm)} km in scope, of which
-  <b>${fmt(inScopeKm == null || inScopeShare == null ? null : inScopeKm * (1 - inScopeShare))} km
-  cannot reach the sea</b>.<br>
+  <b>${fmt(haveSea ? SEA.reaches_neither_km
+    : (inScopeKm == null || inScopeShare == null ? null : inScopeKm * (1 - inScopeShare)))} km
+  reaches neither tidal water nor the sea</b>.
+  ${haveSea ? `<br><b>${fmt(SEA.reaches_sea_only_km)} km reaches the SEA ONLY</b> —
+  coastal drainage with no tidal link, which the tidal reading alone counts as stranded;
+  ${fmt(SEA.reaches_tidal_only_km)} km reaches tidal water the sea cannot take. The two
+  readings are not nested.` : ''}<br>
   ${fmt(c.links)} links · ${fmt(c.nodes)} nodes · ${fmt(c.basins)} basins ·
   ${fmt(c.corrections)} curated judgements · ${fmt(c.retired)} retired.`
   : 'The figures could not be loaded.';
@@ -459,6 +484,7 @@ const OVERLAYS = [
   { id: 'refused_connectors', kind: 'point', file: 'refused_connectors.geojson',
     label: 'Connectors refused — they would run uphill', colour: C.unreached,
     radius: ['interpolate', ['linear'], ['zoom'], 5, 3, 14, 7],
+    legend: [['refused — the terrain says this would run uphill', C.unreached]],
     note: 'the terrain says the water at the far end is ABOVE this channel, so joining '
       + 'them would invent a flow that runs uphill. Left as a dead end, which the audit '
       + 'reports with the length behind it.' },
