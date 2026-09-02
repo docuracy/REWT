@@ -2475,3 +2475,76 @@ in reasoning, and rewt-2b withdrew the proposal to append a withdrawal).
 knew the ruling had been overturned; the file did not. That is exactly the failure mode
 D-067 describes at the level of artefacts, occurring at the level of decisions: everything
 in the room agreed, and the record disagreed with all of it, and nothing compared them.
+
+**D-072 — The viewer and the tracer treat the same NLS layers oppositely, and the
+difference is whether there is a gate.** *2026-09-02*
+
+*Stephen's ruling. Raised by rewt-fc and rewt-86; drafted by rewt-2b.*
+
+The viewer publishes **no** NLS layer. The tracer publishes **all** of them — the seamless
+six-inch first and second editions, the one-inch, and 88 county 25-inch sheets. Same
+source, same unestablished licence, opposite treatment. Nothing recorded why, and the next
+reader would have resolved that inconsistency in whichever direction they happened to
+guess. This entry exists so they do not have to.
+
+**The distinction is presentation, and it is D-043's reasoning applied to two tools.** NLS
+state one condition: *"Re-use of these layers is intended within a desktop or local
+environment. If you wish to present these layers online in a public website, please use our
+Historic Maps API layers, or contact us."* The viewer renders sheets to any visitor and is
+squarely inside that sentence. **The tracer renders nothing to anyone without a token** —
+`startMap()` is reachable only from a successful sign-in, an anonymous visitor gets a wall
+and fetches no tile, and no tile passes through this project's infrastructure at any point.
+Stephen's ruling: the request concerns public presentation and does not reach a tool that
+presents to nobody. *"The first edition MUST remain available on /tracer together with all
+of the other historical map layers that we have assembled from NLS."*
+
+**A second reading was raised and overruled, and it is recorded because the reasoning will
+matter when the Library answers.** rewt-86 separated two things. The stated condition (a) is
+about serving tiles, and a gate answers it — that half survives and is the basis above. But
+(b): for the England-and-Wales layers **NLS publishes no URL at all**. They are absent from
+the per-layer re-use table — counted in the page source, *England* 0, *Wales* 0,
+*6inchsecond* 0 — and discoverable only by enumerating the S3 bucket. So a world-readable
+catalogue is *an index the Library has not itself published, to precisely the layers it asks
+not to be served publicly*, while a letter asking it for terms is pending. **Not a rights
+question**: no copyright or database right subsists in the address of a tile, and rewt-86
+declined to dress it up as one. A question of how it would look. Stephen decided the other
+way, knowingly. The caution is recorded at its proper weight — raised, sound, overruled —
+rather than dropped.
+
+**The ruling rests on (a) alone, and it does so knowingly.** There is no "behind the gate"
+for data. The repository is public — made so on 1 Sep 2026 because Zenodo will not mint a DOI for a
+private one, which reversed Stephen's own earlier ruling that contributed traces stay
+private until published — so the catalogue is
+world-readable wherever it sits — `docs/`, `tools/`, anywhere. The gate covers **rendering**
+and nothing else. Both remedies considered would have failed: relocating the file changes a
+website URL and not its readability, and deriving the layer names at runtime cannot
+reconstruct a seamless layer, which has no counties in it.
+
+**Which is the collision worth recording, because it is the strongest argument for sending
+the letter.** Applied honestly, the good-faith test removes exactly the layers whose names
+had to be discovered — twelve of ninety, the rest being county names anyone would guess —
+and two of the twelve are `os/6inchfirst` and `os/6inchsecond`. The second edition is the
+tracer's default backdrop, the sheet the GB1900 work queue is transcribed from, and the
+surface both tracing assists were calibrated on. The first is what the drowned-valley work
+needs, and **the Historic Maps API carries no first edition at all** (D-037). So the
+cautious answer takes out the layer the project most needs, and it was not engineered
+around.
+
+**One consequence to hold: the letter is now load-bearing.** Under this ruling nothing else
+holds the position up. (a) is a reading of somebody else's sentence, and if NLS say a
+credential gate is not what they meant, the position changes. That is a reason to send the
+letter promptly rather than an argument against the ruling. The draft at
+`~/Downloads/nls-enquiry-draft.md` asks the gate question in terms, and rewt-86 has amended
+it to disclose that the catalogue is public — because asking whether a gate satisfies them
+while omitting that would be asking a question with a fact missing from it, and the answer
+would be worth nothing.
+
+**And the split that follows.** The **viewer** uses NLS's Historic Maps API through MapTiler
+— `uk-osgb10k1888`, six-inch second edition 1888–1913, **stated CC BY 3.0 with embedding
+explicitly permitted**, which is the route their own guidance names. Attribution to the
+National Library of Scotland with a link, free tier ≤100,000 tiles a month,
+non-commercial. The **tracer** keeps the assembled S3 layers behind its gate and needs no
+key at all. Neither tool carries both.
+
+**Revisit this entry when maps@nls.uk answers.** It records a decision about how to read
+someone else's terms, not a finding about what those terms are.
