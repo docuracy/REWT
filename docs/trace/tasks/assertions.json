@@ -1,0 +1,3035 @@
+{
+ "_what": "assertion tasks for the REWT tracer, one per place",
+ "_source": "GB1900 CC0 raw dump, clustered by tools/gb1900/measure.py; see tools/tracer/queue/README.md",
+ "_crs": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+ "_kinds": {
+  "trace": "a caption letters the channel itself",
+  "locate": "only a structure named after the channel is lettered — the channel is located but not lettered, which is weaker evidence and not none"
+ },
+ "_dropped": {
+  "count": 6,
+  "why": "captions name built works and imply no channel; a contributor sent there would not find one",
+  "ids": [
+   "as00037",
+   "as00049",
+   "as00189",
+   "as00193",
+   "as00211",
+   "as00217"
+  ]
+ },
+ "tasks": [
+  {
+   "id": "as00000",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT",
+    "New Cut Bridge",
+    "New Cut Bridge (Draw)"
+   ],
+   "labels": 5,
+   "lon": -3.935578,
+   "lat": 51.623183
+  },
+  {
+   "id": "as00001",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River"
+   ],
+   "labels": 1,
+   "lon": -3.788123,
+   "lat": 51.572543
+  },
+  {
+   "id": "as00002",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "old channel"
+   ],
+   "labels": 1,
+   "lon": -3.589697,
+   "lat": 50.536836
+  },
+  {
+   "id": "as00003",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -3.319341,
+   "lat": 54.884988
+  },
+  {
+   "id": "as00004",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut",
+    "Old River Tone"
+   ],
+   "labels": 2,
+   "lon": -3.072062,
+   "lat": 51.026905
+  },
+  {
+   "id": "as00005",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -3.098122,
+   "lat": 52.726326
+  },
+  {
+   "id": "as00006",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "new cut"
+   ],
+   "labels": 1,
+   "lon": -3.056709,
+   "lat": 54.214388
+  },
+  {
+   "id": "as00007",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "OLD RIVER BRUE"
+   ],
+   "labels": 1,
+   "lon": -2.982777,
+   "lat": 51.220554
+  },
+  {
+   "id": "as00008",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 2,
+   "lon": -3.033665,
+   "lat": 53.556157
+  },
+  {
+   "id": "as00009",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Chedzoy New Cut"
+   ],
+   "labels": 1,
+   "lon": -2.952232,
+   "lat": 51.121775
+  },
+  {
+   "id": "as00010",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut Brook",
+    "New Cut Farm",
+    "New Cut Lane"
+   ],
+   "labels": 3,
+   "lon": -2.993704,
+   "lat": 53.605504
+  },
+  {
+   "id": "as00011",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Chedzoy New Cut"
+   ],
+   "labels": 1,
+   "lon": -2.931633,
+   "lat": 51.118691
+  },
+  {
+   "id": "as00012",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut Brook",
+    "New Cut Lane Halt"
+   ],
+   "labels": 2,
+   "lon": -2.9728,
+   "lat": 53.595274
+  },
+  {
+   "id": "as00013",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Axe"
+   ],
+   "labels": 1,
+   "lon": -2.904897,
+   "lat": 51.27832
+  },
+  {
+   "id": "as00014",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -2.881554,
+   "lat": 51.380563
+  },
+  {
+   "id": "as00015",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Axe"
+   ],
+   "labels": 1,
+   "lon": -2.874663,
+   "lat": 51.290305
+  },
+  {
+   "id": "as00016",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of Langley's Brook"
+   ],
+   "labels": 1,
+   "lon": -2.884426,
+   "lat": 53.623897
+  },
+  {
+   "id": "as00017",
+   "cls": "assertion",
+   "kind": "locate",
+   "captions": [
+    "New Cut Farm",
+    "New Cut House",
+    "New Cut Lane"
+   ],
+   "labels": 3,
+   "lon": -2.824974,
+   "lat": 53.47401
+  },
+  {
+   "id": "as00018",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old course of River Asland or Douglas"
+   ],
+   "labels": 1,
+   "lon": -2.822949,
+   "lat": 53.667853
+  },
+  {
+   "id": "as00019",
+   "cls": "assertion",
+   "kind": "locate",
+   "captions": [
+    "New Cut Bridge"
+   ],
+   "labels": 1,
+   "lon": -2.795462,
+   "lat": 53.628236
+  },
+  {
+   "id": "as00020",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Brock"
+   ],
+   "labels": 1,
+   "lon": -2.796965,
+   "lat": 53.861231
+  },
+  {
+   "id": "as00021",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Brock"
+   ],
+   "labels": 1,
+   "lon": -2.778704,
+   "lat": 53.850461
+  },
+  {
+   "id": "as00022",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut",
+    "New Cut Drove"
+   ],
+   "labels": 2,
+   "lon": -2.71416,
+   "lat": 51.127748
+  },
+  {
+   "id": "as00023",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Bed"
+   ],
+   "labels": 1,
+   "lon": -2.750895,
+   "lat": 53.759479
+  },
+  {
+   "id": "as00024",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -2.696478,
+   "lat": 51.122591
+  },
+  {
+   "id": "as00025",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "St. Helens Canal (New Cut)"
+   ],
+   "labels": 1,
+   "lon": -2.720222,
+   "lat": 53.358524
+  },
+  {
+   "id": "as00026",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "St. Helens Canal (New Cut)"
+   ],
+   "labels": 1,
+   "lon": -2.681029,
+   "lat": 53.36716
+  },
+  {
+   "id": "as00027",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "new cut"
+   ],
+   "labels": 1,
+   "lon": -2.646332,
+   "lat": 51.223443
+  },
+  {
+   "id": "as00028",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "RIVER AVON (NEW CUT)"
+   ],
+   "labels": 1,
+   "lon": -2.610068,
+   "lat": 51.446517
+  },
+  {
+   "id": "as00029",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW RIVER DIVERSION"
+   ],
+   "labels": 1,
+   "lon": -2.596721,
+   "lat": 53.377261
+  },
+  {
+   "id": "as00030",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "WOOLSTON NEW CUT"
+   ],
+   "labels": 1,
+   "lon": -2.548549,
+   "lat": 53.396515
+  },
+  {
+   "id": "as00031",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": -2.5228,
+   "lat": 53.213835
+  },
+  {
+   "id": "as00032",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of Middle Brook"
+   ],
+   "labels": 1,
+   "lon": -2.519806,
+   "lat": 53.572626
+  },
+  {
+   "id": "as00033",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Mersey (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -2.430262,
+   "lat": 53.429867
+  },
+  {
+   "id": "as00034",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Irwell (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -2.415233,
+   "lat": 53.444395
+  },
+  {
+   "id": "as00035",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Irwell (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -2.402294,
+   "lat": 53.454901
+  },
+  {
+   "id": "as00036",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Irwell (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -2.383862,
+   "lat": 53.46557
+  },
+  {
+   "id": "as00038",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -2.164039,
+   "lat": 53.895513
+  },
+  {
+   "id": "as00039",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -2.148352,
+   "lat": 53.906891
+  },
+  {
+   "id": "as00040",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -1.943185,
+   "lat": 53.619305
+  },
+  {
+   "id": "as00041",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -1.938958,
+   "lat": 54.508711
+  },
+  {
+   "id": "as00042",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Tame"
+   ],
+   "labels": 1,
+   "lon": -1.879564,
+   "lat": 52.508464
+  },
+  {
+   "id": "as00043",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "FREEMAN'S NEW CUT"
+   ],
+   "labels": 1,
+   "lon": -1.802659,
+   "lat": 53.699127
+  },
+  {
+   "id": "as00044",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Trent"
+   ],
+   "labels": 1,
+   "lon": -1.706916,
+   "lat": 52.744523
+  },
+  {
+   "id": "as00045",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut Top"
+   ],
+   "labels": 1,
+   "lon": -1.652981,
+   "lat": 53.678255
+  },
+  {
+   "id": "as00046",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": -1.634496,
+   "lat": 53.673159
+  },
+  {
+   "id": "as00047",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": -1.588555,
+   "lat": 53.661387
+  },
+  {
+   "id": "as00048",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": -1.555746,
+   "lat": 53.650088
+  },
+  {
+   "id": "as00050",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Aire (Old Channel)"
+   ],
+   "labels": 1,
+   "lon": -1.521166,
+   "lat": 53.779292
+  },
+  {
+   "id": "as00051",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "AIRE & CALDER NAVIGATION NEW CUT"
+   ],
+   "labels": 1,
+   "lon": -1.467113,
+   "lat": 53.687643
+  },
+  {
+   "id": "as00052",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "AIRE & CALDER NAVIGATION NEW CUT"
+   ],
+   "labels": 1,
+   "lon": -1.461701,
+   "lat": 53.704874
+  },
+  {
+   "id": "as00053",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of River Aire"
+   ],
+   "labels": 1,
+   "lon": -1.432997,
+   "lat": 53.757528
+  },
+  {
+   "id": "as00054",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of River Don"
+   ],
+   "labels": 1,
+   "lon": -1.435776,
+   "lat": 53.396087
+  },
+  {
+   "id": "as00055",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "AIRE & CALDER NAVIGATION NEW CUT"
+   ],
+   "labels": 1,
+   "lon": -1.42415,
+   "lat": 53.720055
+  },
+  {
+   "id": "as00056",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -1.408997,
+   "lat": 53.996622
+  },
+  {
+   "id": "as00057",
+   "cls": "assertion",
+   "kind": "locate",
+   "captions": [
+    "Old River Bridge"
+   ],
+   "labels": 1,
+   "lon": -1.417279,
+   "lat": 53.258017
+  },
+  {
+   "id": "as00058",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "SHEFFIELD & SOUTH YORKSHIRE NAVIGATION (NEW CUT)"
+   ],
+   "labels": 1,
+   "lon": -1.391981,
+   "lat": 53.424111
+  },
+  {
+   "id": "as00059",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -1.378656,
+   "lat": 53.987098
+  },
+  {
+   "id": "as00060",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Calder (Old Course)"
+   ],
+   "labels": 3,
+   "lon": -1.367805,
+   "lat": 53.730624
+  },
+  {
+   "id": "as00061",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Rother (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -1.349444,
+   "lat": 53.403758
+  },
+  {
+   "id": "as00062",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Rother (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -1.348607,
+   "lat": 53.3773
+  },
+  {
+   "id": "as00063",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of River Tees"
+   ],
+   "labels": 1,
+   "lon": -1.29231,
+   "lat": 54.555521
+  },
+  {
+   "id": "as00064",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Dearne (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -1.307534,
+   "lat": 53.510375
+  },
+  {
+   "id": "as00065",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "SHEFFIELD & SOUTH YORKSHIRE NAVIGATION (MEXBOROUGH NEW CUT)"
+   ],
+   "labels": 1,
+   "lon": -1.30173,
+   "lat": 53.482437
+  },
+  {
+   "id": "as00066",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut",
+    "The Old River",
+    "The Old River Bridge"
+   ],
+   "labels": 3,
+   "lon": -1.276832,
+   "lat": 54.562644
+  },
+  {
+   "id": "as00067",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -1.273524,
+   "lat": 54.157798
+  },
+  {
+   "id": "as00068",
+   "cls": "assertion",
+   "kind": "locate",
+   "captions": [
+    "New cut mill"
+   ],
+   "labels": 1,
+   "lon": -1.309905,
+   "lat": 51.663206
+  },
+  {
+   "id": "as00069",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Sheffield & South Yorkshire Navigation (Mexborough new cut)"
+   ],
+   "labels": 2,
+   "lon": -1.268101,
+   "lat": 53.493513
+  },
+  {
+   "id": "as00070",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT",
+    "new cut"
+   ],
+   "labels": 2,
+   "lon": -1.267698,
+   "lat": 52.840012
+  },
+  {
+   "id": "as00071",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Moor Drain or New Cut",
+    "New Cut Bridge"
+   ],
+   "labels": 2,
+   "lon": -1.213742,
+   "lat": 53.959178
+  },
+  {
+   "id": "as00072",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain",
+    "Old Ea Beck",
+    "Old Ea bridge"
+   ],
+   "labels": 3,
+   "lon": -1.185049,
+   "lat": 53.57744
+  },
+  {
+   "id": "as00073",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River Ray"
+   ],
+   "labels": 1,
+   "lon": -1.193347,
+   "lat": 51.831004
+  },
+  {
+   "id": "as00074",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New cut"
+   ],
+   "labels": 1,
+   "lon": -1.131506,
+   "lat": 53.830776
+  },
+  {
+   "id": "as00075",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Soar",
+    "old river soar"
+   ],
+   "labels": 2,
+   "lon": -1.146488,
+   "lat": 52.62787
+  },
+  {
+   "id": "as00076",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Don (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -1.117343,
+   "lat": 53.542482
+  },
+  {
+   "id": "as00077",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "river don (old course)"
+   ],
+   "labels": 1,
+   "lon": -1.10374,
+   "lat": 53.548455
+  },
+  {
+   "id": "as00078",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of the River Ouse",
+    "old course of the river ouse"
+   ],
+   "labels": 2,
+   "lon": -1.090918,
+   "lat": 53.818419
+  },
+  {
+   "id": "as00079",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Course"
+   ],
+   "labels": 1,
+   "lon": -1.095242,
+   "lat": 53.518722
+  },
+  {
+   "id": "as00080",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Don (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -1.091959,
+   "lat": 53.564554
+  },
+  {
+   "id": "as00081",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Holmes Dike (Old Course of River Ouse",
+    "Holmes Dike (Old Course of River Ouse)",
+    "old course of the river ouse"
+   ],
+   "labels": 3,
+   "lon": -1.07312,
+   "lat": 53.791317
+  },
+  {
+   "id": "as00082",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of the River Foss"
+   ],
+   "labels": 2,
+   "lon": -1.06855,
+   "lat": 53.990874
+  },
+  {
+   "id": "as00083",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of Bridge Dike"
+   ],
+   "labels": 1,
+   "lon": -1.054806,
+   "lat": 53.87419
+  },
+  {
+   "id": "as00084",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of the River Foss"
+   ],
+   "labels": 1,
+   "lon": -1.031106,
+   "lat": 54.072296
+  },
+  {
+   "id": "as00085",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of the River Ouse"
+   ],
+   "labels": 1,
+   "lon": -1.011612,
+   "lat": 53.775957
+  },
+  {
+   "id": "as00086",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of the River Ouse"
+   ],
+   "labels": 1,
+   "lon": -0.991753,
+   "lat": 53.774442
+  },
+  {
+   "id": "as00087",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.999455,
+   "lat": 53.444623
+  },
+  {
+   "id": "as00088",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Don"
+   ],
+   "labels": 1,
+   "lon": -0.989016,
+   "lat": 53.691066
+  },
+  {
+   "id": "as00089",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of the River Ouse"
+   ],
+   "labels": 2,
+   "lon": -0.983476,
+   "lat": 53.764857
+  },
+  {
+   "id": "as00090",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.973406,
+   "lat": 53.518192
+  },
+  {
+   "id": "as00091",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of the R. Derwent",
+    "Old Course of the River Derwent"
+   ],
+   "labels": 3,
+   "lon": -0.938707,
+   "lat": 53.890647
+  },
+  {
+   "id": "as00092",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of the River Derwent"
+   ],
+   "labels": 1,
+   "lon": -0.931714,
+   "lat": 53.876571
+  },
+  {
+   "id": "as00093",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.920555,
+   "lat": 53.759579
+  },
+  {
+   "id": "as00094",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.920298,
+   "lat": 53.678599
+  },
+  {
+   "id": "as00095",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Ea Drain"
+   ],
+   "labels": 1,
+   "lon": -0.922186,
+   "lat": 53.376377
+  },
+  {
+   "id": "as00096",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Ea Drain"
+   ],
+   "labels": 1,
+   "lon": -0.920685,
+   "lat": 53.360357
+  },
+  {
+   "id": "as00097",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "new Drain"
+   ],
+   "labels": 1,
+   "lon": -0.905317,
+   "lat": 53.753504
+  },
+  {
+   "id": "as00098",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River",
+    "New River Bridge"
+   ],
+   "labels": 2,
+   "lon": -0.895578,
+   "lat": 54.118565
+  },
+  {
+   "id": "as00099",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.974113,
+   "lat": 50.834917
+  },
+  {
+   "id": "as00100",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Don"
+   ],
+   "labels": 1,
+   "lon": -0.865945,
+   "lat": 53.588506
+  },
+  {
+   "id": "as00101",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Don"
+   ],
+   "labels": 1,
+   "lon": -0.853103,
+   "lat": 53.606773
+  },
+  {
+   "id": "as00102",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.844459,
+   "lat": 53.779655
+  },
+  {
+   "id": "as00103",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Don"
+   ],
+   "labels": 1,
+   "lon": -0.841183,
+   "lat": 53.622448
+  },
+  {
+   "id": "as00104",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.823606,
+   "lat": 53.87395
+  },
+  {
+   "id": "as00105",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT",
+    "New Cut Cottages",
+    "Old River Bank Plantation"
+   ],
+   "labels": 3,
+   "lon": -0.815796,
+   "lat": 54.118861
+  },
+  {
+   "id": "as00106",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Don"
+   ],
+   "labels": 1,
+   "lon": -0.824297,
+   "lat": 53.638404
+  },
+  {
+   "id": "as00107",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River"
+   ],
+   "labels": 1,
+   "lon": -0.875194,
+   "lat": 51.473337
+  },
+  {
+   "id": "as00108",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River"
+   ],
+   "labels": 1,
+   "lon": -0.87485,
+   "lat": 51.458992
+  },
+  {
+   "id": "as00109",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Don"
+   ],
+   "labels": 1,
+   "lon": -0.810821,
+   "lat": 53.625808
+  },
+  {
+   "id": "as00110",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.803547,
+   "lat": 53.865992
+  },
+  {
+   "id": "as00111",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.784986,
+   "lat": 54.135741
+  },
+  {
+   "id": "as00112",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Trent"
+   ],
+   "labels": 1,
+   "lon": -0.811294,
+   "lat": 53.092535
+  },
+  {
+   "id": "as00113",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.761967,
+   "lat": 54.172906
+  },
+  {
+   "id": "as00114",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Don"
+   ],
+   "labels": 1,
+   "lon": -0.775544,
+   "lat": 53.648759
+  },
+  {
+   "id": "as00115",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.758241,
+   "lat": 54.148544
+  },
+  {
+   "id": "as00116",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.749894,
+   "lat": 54.218639
+  },
+  {
+   "id": "as00117",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Don"
+   ],
+   "labels": 1,
+   "lon": -0.755395,
+   "lat": 53.630885
+  },
+  {
+   "id": "as00118",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.733351,
+   "lat": 54.163213
+  },
+  {
+   "id": "as00119",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Don"
+   ],
+   "labels": 2,
+   "lon": -0.746952,
+   "lat": 53.65044
+  },
+  {
+   "id": "as00120",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Don"
+   ],
+   "labels": 1,
+   "lon": -0.722673,
+   "lat": 53.67671
+  },
+  {
+   "id": "as00121",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.702416,
+   "lat": 53.789269
+  },
+  {
+   "id": "as00122",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.670719,
+   "lat": 51.532191
+  },
+  {
+   "id": "as00123",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.658112,
+   "lat": 51.253361
+  },
+  {
+   "id": "as00124",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Dike"
+   ],
+   "labels": 1,
+   "lon": -0.58113,
+   "lat": 53.179601
+  },
+  {
+   "id": "as00125",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River Ancholme",
+    "Old River Ancholme"
+   ],
+   "labels": 3,
+   "lon": -0.537673,
+   "lat": 53.639811
+  },
+  {
+   "id": "as00126",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Ancholme"
+   ],
+   "labels": 1,
+   "lon": -0.535025,
+   "lat": 53.654967
+  },
+  {
+   "id": "as00127",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW RIVER ANCHOLME",
+    "Old River Ancholme"
+   ],
+   "labels": 2,
+   "lon": -0.529167,
+   "lat": 53.667155
+  },
+  {
+   "id": "as00128",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW RIVER ANCHOLME",
+    "Old River Ancholme"
+   ],
+   "labels": 2,
+   "lon": -0.528567,
+   "lat": 53.615058
+  },
+  {
+   "id": "as00129",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "old river ancholme"
+   ],
+   "labels": 1,
+   "lon": -0.524339,
+   "lat": 53.596402
+  },
+  {
+   "id": "as00130",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Ancholme",
+    "new River ancholme"
+   ],
+   "labels": 2,
+   "lon": -0.508601,
+   "lat": 53.586245
+  },
+  {
+   "id": "as00131",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": -0.572147,
+   "lat": 51.466173
+  },
+  {
+   "id": "as00132",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW RIVER ANCHOLME",
+    "Old River Ancholme"
+   ],
+   "labels": 2,
+   "lon": -0.502464,
+   "lat": 53.561113
+  },
+  {
+   "id": "as00133",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "old river ancholme"
+   ],
+   "labels": 1,
+   "lon": -0.502507,
+   "lat": 53.519416
+  },
+  {
+   "id": "as00134",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Ancholme",
+    "new river ancholme"
+   ],
+   "labels": 2,
+   "lon": -0.49962,
+   "lat": 53.532537
+  },
+  {
+   "id": "as00135",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "OLD RIVER ANCHOLME"
+   ],
+   "labels": 1,
+   "lon": -0.494128,
+   "lat": 53.551566
+  },
+  {
+   "id": "as00136",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "new river ancholme",
+    "old river ancholme"
+   ],
+   "labels": 2,
+   "lon": -0.492399,
+   "lat": 53.503306
+  },
+  {
+   "id": "as00137",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW RIVER ANCHOLME",
+    "Old River Ancholme",
+    "old river ancholme",
+    "redbourne old river"
+   ],
+   "labels": 6,
+   "lon": -0.48206,
+   "lat": 53.478539
+  },
+  {
+   "id": "as00138",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Kilnwick New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.457701,
+   "lat": 53.932823
+  },
+  {
+   "id": "as00139",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River Ancholme",
+    "Old River Ancholme"
+   ],
+   "labels": 2,
+   "lon": -0.466286,
+   "lat": 53.443797
+  },
+  {
+   "id": "as00140",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River Ancholme"
+   ],
+   "labels": 1,
+   "lon": -0.45398,
+   "lat": 53.419162
+  },
+  {
+   "id": "as00141",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Beswick New Cut",
+    "Kilnwick New Cut"
+   ],
+   "labels": 2,
+   "lon": -0.431201,
+   "lat": 53.923883
+  },
+  {
+   "id": "as00142",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.405646,
+   "lat": 53.725455
+  },
+  {
+   "id": "as00143",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.438595,
+   "lat": 52.132895
+  },
+  {
+   "id": "as00144",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Course of the River Hull",
+    "RIVER HILL NEW CUT"
+   ],
+   "labels": 3,
+   "lon": -0.363791,
+   "lat": 53.940225
+  },
+  {
+   "id": "as00145",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "old river bridge",
+    "old river slea"
+   ],
+   "labels": 2,
+   "lon": -0.38986,
+   "lat": 53.005659
+  },
+  {
+   "id": "as00146",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "old river witham"
+   ],
+   "labels": 1,
+   "lon": -0.35888,
+   "lat": 53.226462
+  },
+  {
+   "id": "as00147",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Slea"
+   ],
+   "labels": 1,
+   "lon": -0.355274,
+   "lat": 53.025367
+  },
+  {
+   "id": "as00148",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Witham"
+   ],
+   "labels": 1,
+   "lon": -0.347561,
+   "lat": 53.217836
+  },
+  {
+   "id": "as00149",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.29839,
+   "lat": 53.904159
+  },
+  {
+   "id": "as00150",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Slea"
+   ],
+   "labels": 1,
+   "lon": -0.330405,
+   "lat": 53.032517
+  },
+  {
+   "id": "as00151",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.315449,
+   "lat": 53.0853
+  },
+  {
+   "id": "as00152",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut Bridge",
+    "New Cut Drain"
+   ],
+   "labels": 2,
+   "lon": -0.272502,
+   "lat": 53.804028
+  },
+  {
+   "id": "as00153",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut Drain"
+   ],
+   "labels": 1,
+   "lon": -0.305665,
+   "lat": 52.906657
+  },
+  {
+   "id": "as00154",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.295346,
+   "lat": 53.072659
+  },
+  {
+   "id": "as00155",
+   "cls": "assertion",
+   "kind": "locate",
+   "captions": [
+    "New Cut Bridge"
+   ],
+   "labels": 1,
+   "lon": -0.282576,
+   "lat": 52.909924
+  },
+  {
+   "id": "as00156",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Crane"
+   ],
+   "labels": 1,
+   "lon": -0.328238,
+   "lat": 51.454956
+  },
+  {
+   "id": "as00157",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Preston New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.23564,
+   "lat": 53.766833
+  },
+  {
+   "id": "as00158",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Preston New Drain",
+    "preston new drain"
+   ],
+   "labels": 2,
+   "lon": -0.23199,
+   "lat": 53.743606
+  },
+  {
+   "id": "as00159",
+   "cls": "assertion",
+   "kind": "locate",
+   "captions": [
+    "New Drain Bridge"
+   ],
+   "labels": 1,
+   "lon": -0.230992,
+   "lat": 53.756593
+  },
+  {
+   "id": "as00160",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.246571,
+   "lat": 53.07068
+  },
+  {
+   "id": "as00161",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "RIVER NENE (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -0.227751,
+   "lat": 52.528285
+  },
+  {
+   "id": "as00162",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.212216,
+   "lat": 52.833735
+  },
+  {
+   "id": "as00163",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.194385,
+   "lat": 53.007134
+  },
+  {
+   "id": "as00164",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Nene (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -0.21125,
+   "lat": 52.542511
+  },
+  {
+   "id": "as00165",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Eau"
+   ],
+   "labels": 1,
+   "lon": -0.189171,
+   "lat": 52.935145
+  },
+  {
+   "id": "as00166",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.180975,
+   "lat": 53.012756
+  },
+  {
+   "id": "as00167",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Eau"
+   ],
+   "labels": 1,
+   "lon": -0.180062,
+   "lat": 52.925742
+  },
+  {
+   "id": "as00168",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.181811,
+   "lat": 52.827901
+  },
+  {
+   "id": "as00169",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Eau"
+   ],
+   "labels": 1,
+   "lon": -0.165718,
+   "lat": 52.911865
+  },
+  {
+   "id": "as00170",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": -0.175385,
+   "lat": 52.674808
+  },
+  {
+   "id": "as00171",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "old channel"
+   ],
+   "labels": 1,
+   "lon": -0.132416,
+   "lat": 53.670858
+  },
+  {
+   "id": "as00172",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "RIVER ADUR (old Course)"
+   ],
+   "labels": 1,
+   "lon": -0.244788,
+   "lat": 50.830188
+  },
+  {
+   "id": "as00173",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut Drain"
+   ],
+   "labels": 1,
+   "lon": -0.132201,
+   "lat": 53.563225
+  },
+  {
+   "id": "as00174",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": -0.169194,
+   "lat": 52.694489
+  },
+  {
+   "id": "as00175",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": -0.165869,
+   "lat": 52.709671
+  },
+  {
+   "id": "as00176",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Nene (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -0.175202,
+   "lat": 52.484897
+  },
+  {
+   "id": "as00177",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River",
+    "New River Drove"
+   ],
+   "labels": 2,
+   "lon": -0.162327,
+   "lat": 52.766776
+  },
+  {
+   "id": "as00178",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Channel"
+   ],
+   "labels": 1,
+   "lon": -0.119334,
+   "lat": 53.665905
+  },
+  {
+   "id": "as00179",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River",
+    "New River Drove"
+   ],
+   "labels": 2,
+   "lon": -0.15604,
+   "lat": 52.751802
+  },
+  {
+   "id": "as00180",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Nene (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -0.167348,
+   "lat": 52.472181
+  },
+  {
+   "id": "as00181",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut Drain"
+   ],
+   "labels": 1,
+   "lon": -0.116537,
+   "lat": 53.572085
+  },
+  {
+   "id": "as00182",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.146513,
+   "lat": 52.658867
+  },
+  {
+   "id": "as00183",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": -0.139046,
+   "lat": 52.744605
+  },
+  {
+   "id": "as00184",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut Drain"
+   ],
+   "labels": 1,
+   "lon": -0.099596,
+   "lat": 53.579538
+  },
+  {
+   "id": "as00185",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": -0.136878,
+   "lat": 52.718423
+  },
+  {
+   "id": "as00186",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Nene (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -0.131277,
+   "lat": 52.468207
+  },
+  {
+   "id": "as00187",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": -0.078492,
+   "lat": 53.64002
+  },
+  {
+   "id": "as00188",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Hampstead Ponds (New River Co's W.W. Reservoirs)",
+    "Highgate Ponds (New River Co's W.W. Reservoirs)"
+   ],
+   "labels": 3,
+   "lon": -0.166902,
+   "lat": 51.562512
+  },
+  {
+   "id": "as00190",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Nene (old course)"
+   ],
+   "labels": 1,
+   "lon": -0.087868,
+   "lat": 52.480546
+  },
+  {
+   "id": "as00191",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -0.122213,
+   "lat": 51.616238
+  },
+  {
+   "id": "as00192",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Filtering Bed (New River Co.'s W.W.)",
+    "New River",
+    "Reservoir (New River Co's W.W.)"
+   ],
+   "labels": 4,
+   "lon": -0.117185,
+   "lat": 51.591225
+  },
+  {
+   "id": "as00194",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "RIVER NENE (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -0.074008,
+   "lat": 52.493155
+  },
+  {
+   "id": "as00195",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut",
+    "New Cut Bridge"
+   ],
+   "labels": 2,
+   "lon": -0.065274,
+   "lat": 52.656648
+  },
+  {
+   "id": "as00196",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River (Old Course)",
+    "new river"
+   ],
+   "labels": 3,
+   "lon": -0.105589,
+   "lat": 51.608518
+  },
+  {
+   "id": "as00197",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.085638,
+   "lat": 52.079994
+  },
+  {
+   "id": "as00198",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River Head"
+   ],
+   "labels": 1,
+   "lon": -0.10879,
+   "lat": 51.528464
+  },
+  {
+   "id": "as00199",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": -0.109187,
+   "lat": 51.502425
+  },
+  {
+   "id": "as00200",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut",
+    "New Cut Farm"
+   ],
+   "labels": 2,
+   "lon": -0.060639,
+   "lat": 52.635713
+  },
+  {
+   "id": "as00201",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River"
+   ],
+   "labels": 1,
+   "lon": -0.069695,
+   "lat": 52.317569
+  },
+  {
+   "id": "as00202",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Bushhill Tower (New River water Works)",
+    "New River",
+    "Pumping Station (New River Co's Water Works)",
+    "new river"
+   ],
+   "labels": 5,
+   "lon": -0.092124,
+   "lat": 51.635026
+  },
+  {
+   "id": "as00203",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 3,
+   "lon": -0.094077,
+   "lat": 51.571406
+  },
+  {
+   "id": "as00204",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": -0.094585,
+   "lat": 51.54446
+  },
+  {
+   "id": "as00205",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "RIVER NENE (Old Course)"
+   ],
+   "labels": 1,
+   "lon": -0.044117,
+   "lat": 52.502926
+  },
+  {
+   "id": "as00206",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 2,
+   "lon": -0.078208,
+   "lat": 51.67334
+  },
+  {
+   "id": "as00207",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": -0.069823,
+   "lat": 51.658148
+  },
+  {
+   "id": "as00208",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Hoe Lane Pumping Station (New River Water Works)",
+    "New River"
+   ],
+   "labels": 2,
+   "lon": -0.061187,
+   "lat": 51.666923
+  },
+  {
+   "id": "as00209",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": -0.010535,
+   "lat": 52.77856
+  },
+  {
+   "id": "as00210",
+   "cls": "assertion",
+   "kind": "locate",
+   "captions": [
+    "New River Gate",
+    "New River Gate House"
+   ],
+   "labels": 2,
+   "lon": -0.012188,
+   "lat": 52.739416
+  },
+  {
+   "id": "as00212",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": -0.054545,
+   "lat": 51.676428
+  },
+  {
+   "id": "as00213",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River",
+    "New river"
+   ],
+   "labels": 2,
+   "lon": -0.045533,
+   "lat": 51.806793
+  },
+  {
+   "id": "as00214",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River",
+    "Old River"
+   ],
+   "labels": 2,
+   "lon": 0.001137,
+   "lat": 52.793796
+  },
+  {
+   "id": "as00215",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": 0.002413,
+   "lat": 52.80734
+  },
+  {
+   "id": "as00216",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "cheshunt well (new river company's water works)",
+    "new river"
+   ],
+   "labels": 2,
+   "lon": -0.041907,
+   "lat": 51.712123
+  },
+  {
+   "id": "as00218",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River"
+   ],
+   "labels": 1,
+   "lon": 0.0178,
+   "lat": 52.807827
+  },
+  {
+   "id": "as00219",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River",
+    "Water Works (New River Company)"
+   ],
+   "labels": 2,
+   "lon": -0.026661,
+   "lat": 51.805745
+  },
+  {
+   "id": "as00220",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": -0.026339,
+   "lat": 51.730942
+  },
+  {
+   "id": "as00221",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River",
+    "Pumping Station (New River Cos. W.W.)"
+   ],
+   "labels": 2,
+   "lon": -0.012157,
+   "lat": 51.747644
+  },
+  {
+   "id": "as00222",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River",
+    "Pumping Station (New River Company)"
+   ],
+   "labels": 3,
+   "lon": -0.00992,
+   "lat": 51.794035
+  },
+  {
+   "id": "as00223",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River Lea"
+   ],
+   "labels": 1,
+   "lon": -0.011866,
+   "lat": 51.698629
+  },
+  {
+   "id": "as00224",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Witham (Old Course)"
+   ],
+   "labels": 1,
+   "lon": 0.045511,
+   "lat": 52.923199
+  },
+  {
+   "id": "as00225",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River",
+    "Pumping Station (New River Company W.W.)"
+   ],
+   "labels": 2,
+   "lon": -0.004463,
+   "lat": 51.763164
+  },
+  {
+   "id": "as00226",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "new river company's water works",
+    "old course of river"
+   ],
+   "labels": 2,
+   "lon": 1.1e-05,
+   "lat": 51.781519
+  },
+  {
+   "id": "as00227",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Lady Nunn's Old Eau"
+   ],
+   "labels": 1,
+   "lon": 0.044718,
+   "lat": 52.708051
+  },
+  {
+   "id": "as00228",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Nene (Old Course)"
+   ],
+   "labels": 1,
+   "lon": 0.04064,
+   "lat": 52.545662
+  },
+  {
+   "id": "as00229",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Lady Nunn's Old Eau"
+   ],
+   "labels": 1,
+   "lon": 0.048988,
+   "lat": 52.689208
+  },
+  {
+   "id": "as00230",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": 0.090895,
+   "lat": 53.453167
+  },
+  {
+   "id": "as00231",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Eau"
+   ],
+   "labels": 1,
+   "lon": 0.090594,
+   "lat": 53.415705
+  },
+  {
+   "id": "as00232",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Eau"
+   ],
+   "labels": 1,
+   "lon": 0.101559,
+   "lat": 53.425596
+  },
+  {
+   "id": "as00233",
+   "cls": "assertion",
+   "kind": "locate",
+   "captions": [
+    "Old Eau Field"
+   ],
+   "labels": 1,
+   "lon": 0.064932,
+   "lat": 52.660481
+  },
+  {
+   "id": "as00234",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Eau"
+   ],
+   "labels": 1,
+   "lon": 0.098512,
+   "lat": 53.338699
+  },
+  {
+   "id": "as00235",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old Eau"
+   ],
+   "labels": 1,
+   "lon": 0.10746,
+   "lat": 53.348397
+  },
+  {
+   "id": "as00236",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "river nene (old course)"
+   ],
+   "labels": 1,
+   "lon": 0.095315,
+   "lat": 52.551344
+  },
+  {
+   "id": "as00237",
+   "cls": "assertion",
+   "kind": "locate",
+   "captions": [
+    "Old Eau Field"
+   ],
+   "labels": 1,
+   "lon": 0.124626,
+   "lat": 52.733758
+  },
+  {
+   "id": "as00238",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 0.104864,
+   "lat": 52.294583
+  },
+  {
+   "id": "as00239",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut Bridge",
+    "New Cut Drain",
+    "New Drain"
+   ],
+   "labels": 3,
+   "lon": 0.108465,
+   "lat": 52.364779
+  },
+  {
+   "id": "as00240",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Nene (Old Course)"
+   ],
+   "labels": 1,
+   "lon": 0.122803,
+   "lat": 52.564573
+  },
+  {
+   "id": "as00241",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut",
+    "New Cut Bridge"
+   ],
+   "labels": 2,
+   "lon": 0.11437,
+   "lat": 52.340163
+  },
+  {
+   "id": "as00242",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 0.130715,
+   "lat": 52.298759
+  },
+  {
+   "id": "as00243",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut Drain"
+   ],
+   "labels": 1,
+   "lon": 0.136106,
+   "lat": 52.387591
+  },
+  {
+   "id": "as00244",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Nene (Old Course)"
+   ],
+   "labels": 1,
+   "lon": 0.151813,
+   "lat": 52.573729
+  },
+  {
+   "id": "as00245",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "new cut"
+   ],
+   "labels": 1,
+   "lon": 0.144303,
+   "lat": 52.342838
+  },
+  {
+   "id": "as00246",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "River Nene (Old Course)"
+   ],
+   "labels": 1,
+   "lon": 0.17945,
+   "lat": 52.587862
+  },
+  {
+   "id": "as00247",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "new cut"
+   ],
+   "labels": 1,
+   "lon": 0.189664,
+   "lat": 52.338404
+  },
+  {
+   "id": "as00248",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 0.232902,
+   "lat": 52.19798
+  },
+  {
+   "id": "as00249",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 0.299464,
+   "lat": 53.137825
+  },
+  {
+   "id": "as00250",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": 0.259016,
+   "lat": 52.332704
+  },
+  {
+   "id": "as00251",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 0.254316,
+   "lat": 52.19948
+  },
+  {
+   "id": "as00252",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": 0.275367,
+   "lat": 52.247207
+  },
+  {
+   "id": "as00253",
+   "cls": "assertion",
+   "kind": "locate",
+   "captions": [
+    "Old River Farm"
+   ],
+   "labels": 1,
+   "lon": 0.340361,
+   "lat": 52.746411
+  },
+  {
+   "id": "as00254",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New River"
+   ],
+   "labels": 1,
+   "lon": 0.324826,
+   "lat": 52.304201
+  },
+  {
+   "id": "as00255",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Drain"
+   ],
+   "labels": 1,
+   "lon": 0.343988,
+   "lat": 52.651343
+  },
+  {
+   "id": "as00256",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 0.574766,
+   "lat": 50.914567
+  },
+  {
+   "id": "as00257",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": 1.015849,
+   "lat": 52.962198
+  },
+  {
+   "id": "as00258",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 2,
+   "lon": 1.055213,
+   "lat": 52.962039
+  },
+  {
+   "id": "as00259",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 1.083055,
+   "lat": 52.9558
+  },
+  {
+   "id": "as00260",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River"
+   ],
+   "labels": 1,
+   "lon": 1.064847,
+   "lat": 52.147513
+  },
+  {
+   "id": "as00261",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 1.158521,
+   "lat": 52.050168
+  },
+  {
+   "id": "as00262",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CHANNEL"
+   ],
+   "labels": 1,
+   "lon": 1.162996,
+   "lat": 52.028495
+  },
+  {
+   "id": "as00263",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "old channel (track of)"
+   ],
+   "labels": 1,
+   "lon": 1.219526,
+   "lat": 51.354283
+  },
+  {
+   "id": "as00264",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": 1.334152,
+   "lat": 52.624675
+  },
+  {
+   "id": "as00265",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "Old River"
+   ],
+   "labels": 1,
+   "lon": 1.424333,
+   "lat": 52.464896
+  },
+  {
+   "id": "as00266",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "The New Cut",
+    "new cut bridge"
+   ],
+   "labels": 2,
+   "lon": 1.363024,
+   "lat": 51.272615
+  },
+  {
+   "id": "as00267",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 1.597546,
+   "lat": 52.771532
+  },
+  {
+   "id": "as00268",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": 1.599605,
+   "lat": 52.544599
+  },
+  {
+   "id": "as00269",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 1.624647,
+   "lat": 52.750022
+  },
+  {
+   "id": "as00270",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "The New Cut"
+   ],
+   "labels": 1,
+   "lon": 1.593115,
+   "lat": 52.240705
+  },
+  {
+   "id": "as00271",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "NEW CUT"
+   ],
+   "labels": 1,
+   "lon": 1.612126,
+   "lat": 52.319379
+  },
+  {
+   "id": "as00272",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 1.65207,
+   "lat": 52.426913
+  },
+  {
+   "id": "as00273",
+   "cls": "assertion",
+   "kind": "trace",
+   "captions": [
+    "New Cut"
+   ],
+   "labels": 1,
+   "lon": 1.723222,
+   "lat": 52.388082
+  }
+ ]
+}

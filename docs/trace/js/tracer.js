@@ -22,8 +22,8 @@
  * coordinates and per-vertex provenance. What a trace MEANS belongs to the caller.
  */
 
-import { loadPatch, patchPixel, patchLonLat, centreOnTransect, metresPerPixel } from './ink.js';
-import { snapSegment, LIVEWIRE_DEFAULTS } from './livewire.js';
+import { loadPatch, patchPixel, patchLonLat, centreOnTransect, metresPerPixel } from 'ink';
+import { snapSegment, LIVEWIRE_DEFAULTS } from 'livewire';
 
 const SRC = 'trace-src';
 const SRC_CANDIDATE = 'trace-candidate-src';

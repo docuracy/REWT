@@ -7,11 +7,12 @@
  * work out of a browser and into this repository, with the network off included.
  */
 
-import { BUILD, REPO } from './config.js';
-import * as gh from './gh.js';
-import { ACTS, makeEvent, store, createSync, serialise, union } from './log.js';
-import { createTracer } from './tracer.js';
-import { traceAnnotation, boundFromSurveyYear, boundInWords, representativePoint } from './anno.js';
+import { BUILD, REPO } from 'config';
+import * as gh from 'gh';
+import { ACTS, makeEvent, store, createSync, serialise, union } from 'log';
+import { createTracer } from 'tracer';
+import { traceAnnotation, boundFromSurveyYear, boundInWords, representativePoint } from 'anno';
+import { parseSlice, loadQueue, describeTask } from 'queue';
 
 const $ = (id) => document.getElementById(id);
 
@@ -20,6 +21,8 @@ let MAP = null;
 let TRACER = null;
 let BACKDROPS = [];
 let CURRENT = null;   // the backdrop being traced on
+let QUEUE = null;     // { spec, tasks, describe }
+let AT = 0;           // index into QUEUE.tasks
 
 /* ── status: a count and a time, never a spinner ──────────────────────────── */
 
@@ -36,16 +39,22 @@ let CURRENT = null;   // the backdrop being traced on
 async function paint(msg, bad) {
   const held = await store.unsyncedCount().catch(() => 0);
   const last = SESSION?.sync?.lastPush;
+  /* A REFUSAL ALWAYS GOES TO #advice, WHATEVER ITS LENGTH. The rule used to be by size —
+     short messages to the header, long ones to the notice — and that made a short refusal
+     invisible: "every event carries a reason in words" is 34 characters, so it went to the
+     status strip and was overwritten by the next repaint. The contributor saw their skip
+     simply not happen. Length is a property of the sentence; whether it is a refusal is a
+     property of what happened, and only the second should decide where it is shown. */
   const bits = [];
-  if (msg && msg.length <= 40) bits.push(msg);
+  if (msg && !bad && msg.length <= 40) bits.push(msg);
   bits.push(`${held} held locally`);
   bits.push(last ? `last saved ${last.toLocaleTimeString()}` : 'not yet saved');
   if (!navigator.onLine) bits.push('offline');
   const el = $('status');
   el.textContent = bits.join(' · ');
   el.classList.toggle('bad', Boolean(bad));
-  if (msg && msg.length > 40) advise(msg, bad);
-  else if (!bad) advise(null);
+  if (bad || (msg && msg.length > 40)) advise(msg, bad);
+  else advise(null);
 }
 
 function advise(msg, bad) {
@@ -120,6 +129,67 @@ async function signIn(token) {
   }
 }
 
+/* ── the queue ────────────────────────────────────────────────────────────── */
+
+async function startQueue() {
+  const slice = parseSlice();
+  try {
+    QUEUE = await loadQueue(slice);
+  } catch (e) {
+    /* No queue is a working state, not a broken one: a contributor can trace a place they
+       already know. Say which it is rather than leaving the panel blank. */
+    $('slicenote').textContent = 'No task list loaded — ' + e.message
+      + '. You can still trace anywhere on the sheet.';
+    $('queue').hidden = false;
+    return;
+  }
+  AT = 0;
+  $('queue').hidden = false;
+  $('taskblurb').textContent = QUEUE.spec.blurb;
+  $('slicenote').textContent = QUEUE.describe;
+  showTask();
+}
+
+function showTask() {
+  if (!QUEUE || !QUEUE.tasks.length) return;
+  const t = QUEUE.tasks[AT];
+  const d = describeTask(t);
+  $('taskpos').textContent = `${AT + 1} / ${QUEUE.tasks.length}`;
+  $('taskcaptions').textContent = d.captions;
+  $('taskcaveat').hidden = !d.caveat;
+  if (d.caveat) $('taskcaveat').textContent = d.caveat;
+  $('prevtask').disabled = AT === 0;
+  $('nexttask').disabled = AT >= QUEUE.tasks.length - 1;
+  $('t_task').value = t.id;
+  if (MAP) MAP.flyTo({ center: [t.lon, t.lat], zoom: 17.5, duration: 0 });
+  TRACER?.cancel();
+}
+
+/** A skip is an event with a reason and a place, exactly like a trace. */
+async function skipTask() {
+  if (!QUEUE || !SESSION) return;
+  const t = QUEUE.tasks[AT];
+  const reason = $('skipreason').value.trim();
+  try {
+    const seq = (await store.all()).length;
+    await store.put(makeEvent({
+      act: 'skip', taskId: t.id, reason,
+      evidence: `${CURRENT?.name ?? 'no sheet'}; captions: ${t.captions.join('; ')}`,
+      lon: t.lon, lat: t.lat,
+      payload: { kind: t.kind, captions: t.captions },
+    }, SESSION.login, seq));
+    $('skipreason').value = '';
+    SESSION.sync.touch();
+    await paint('skip recorded');
+    await paintLedger();
+    if (AT < QUEUE.tasks.length - 1) { AT += 1; showTask(); }
+  } catch (e) {
+    /* makeEvent refuses a skip with no reason. *Name every skip* is not a courtesy: eleven
+       of twenty-five corrections once did nothing silently in the predecessor. */
+    await paint(e.message, true);
+  }
+}
+
 /* ── the map ──────────────────────────────────────────────────────────────── */
 
 /**
@@ -145,15 +215,23 @@ function tileXY(lon, lat, z) {
   };
 }
 
+/* WITH A TIMEOUT, BECAUSE THIS IS ON THE STARTUP PATH. A bare `fetch` waits as long as the
+   network takes, and this runs once per candidate county before the map is built — so a
+   single stalled request left the tool showing "checking…" for ever, with no error, no map
+   and nothing said. A probe that cannot answer promptly has answered: assume the layer
+   does not serve here and let the picker offer the rest. */
+const PROBE_MS = 4000;
+
 async function servesTile(layer, lon, lat) {
   const z = Math.min(layer.zooms[1], 16);
   const { x, y } = tileXY(lon, lat, z);
   const url = layer.tiles.replace('{z}', z).replace('{x}', x).replace('{y}', y);
   try {
-    const r = await fetch(url, { method: 'GET', cache: 'no-store' });
+    const r = await fetch(url, { method: 'GET', cache: 'no-store',
+                                 signal: AbortSignal.timeout(PROBE_MS) });
     return r.ok;
   } catch {
-    return false;                       // offline, or the host refused
+    return false;                       // offline, refused, or too slow to be waited on
   }
 }
 
@@ -165,8 +243,12 @@ function candidatesFor(lon, lat, group) {
     .sort((a, b) => area(a) - area(b));
 }
 
+/* Smallest boxes first, and only a few of them: the box is a hint, so the third-smallest
+   candidate is already a guess about a guess, and the picker offers everything anyway. */
+const MAX_PROBES = 4;
+
 async function bestFor(lon, lat, group) {
-  for (const l of candidatesFor(lon, lat, group)) {
+  for (const l of candidatesFor(lon, lat, group).slice(0, MAX_PROBES)) {
     if (await servesTile(l, lon, lat)) return l;
   }
   return null;
@@ -266,6 +348,8 @@ async function startMap() {
     backdrop: () => CURRENT,
     onChange: paintTrace,
   });
+
+  await startQueue();
 
   MAP.on('zoom', () => { $('zoompill').textContent = 'z' + MAP.getZoom().toFixed(1); });
   $('zoompill').textContent = 'z' + MAP.getZoom().toFixed(1);
@@ -409,6 +493,10 @@ function boot() {
   $('centring').onchange = (e) => TRACER.setCentring(e.target.checked);
   $('snapping').onchange = (e) => TRACER.setSnapping(e.target.checked);
   $('record').onclick = recordTrace;
+  $('prevtask').onclick = () => { if (AT > 0) { AT -= 1; showTask(); } };
+  $('nexttask').onclick = () => { if (QUEUE && AT < QUEUE.tasks.length - 1) { AT += 1; showTask(); } };
+  $('skip').onclick = skipTask;
+  addEventListener('hashchange', () => startQueue());
 
   const held = gh.readToken();
   if (held.token) signIn(held.token); else paint('sign in to begin');
@@ -459,6 +547,9 @@ async function recordTrace() {
     await store.put(ev);
     TRACER.cancel();
     SESSION.sync.touch();
+    /* Move on, because the unit of work is a place and the contributor has finished this
+       one. Their slice is a view, so nothing about the queue position is recorded. */
+    if (QUEUE && AT < QUEUE.tasks.length - 1) { AT += 1; showTask(); }
     await paint('trace recorded');
     await paintLedger();
   } catch (e) {

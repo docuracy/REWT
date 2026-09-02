@@ -38,7 +38,7 @@
  * narrows the corridor by shortening it.
  */
 
-import { isBluePixel, classifyPatch, metresPerPixel, patchPixel, patchLonLat } from './ink.js';
+import { isBluePixel, classifyPatch, metresPerPixel, patchPixel, patchLonLat } from 'ink';
 
 export const LIVEWIRE_DEFAULTS = {
   /* IN METRES, like everything else here that describes the world. This is how far from

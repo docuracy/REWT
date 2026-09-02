@@ -14,8 +14,8 @@
  * including the largest single defect in the country.
  */
 
-import { SYNC_EVERY_EVENTS, SYNC_IDLE_MS, BUILD } from './config.js';
-import * as gh from './gh.js';
+import { SYNC_EVERY_EVENTS, SYNC_IDLE_MS, BUILD } from 'config';
+import * as gh from 'gh';
 
 const DB_NAME = 'rewt-tracer';
 const STORE = 'events';

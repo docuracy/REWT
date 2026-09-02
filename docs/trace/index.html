@@ -168,6 +168,25 @@
     <p class="note" id="pathline"></p>
   </section>
 
+  <!-- PHASE 4: the queue. A place, not a task list — the handing out is done with a link. -->
+  <section id="queue" hidden>
+    <h2>The place you are looking at</h2>
+    <p class="bar" style="gap:.5rem">
+      <button id="prevtask" class="ghost">◀</button>
+      <span class="pill" id="taskpos">—</span>
+      <button id="nexttask" class="ghost">▶</button>
+      <span id="slicenote" class="note" style="flex:1 1 14rem"></span>
+    </p>
+    <p id="taskcaptions" style="font-size:1.1rem;margin:.3rem 0"></p>
+    <p id="taskcaveat" class="note warn" hidden></p>
+    <p id="taskblurb" class="note"></p>
+    <div class="bar">
+      <input id="skipreason" placeholder="…or say why this place cannot be traced, and skip"
+             style="flex:1 1 20rem">
+      <button id="skip" class="ghost">Skip, with that reason</button>
+    </div>
+  </section>
+
   <!-- PHASE 2: the map. Straight segments between clicks, no cost surface, so every
        vertex is `hand` unless centring moved it. Following printed ink is phase 3. -->
   <section id="mapsection" hidden>
@@ -220,7 +239,22 @@
 
 </main>
 
-<script type="module" src="./js/app.js?v=0.3.3-p3"></script>
+<script type="importmap">
+{
+  "imports": {
+    "config": "./js/config.js?v=0.4.2-p4",
+    "gh": "./js/gh.js?v=0.4.2-p4",
+    "log": "./js/log.js?v=0.4.2-p4",
+    "ids": "./js/ids.js?v=0.4.2-p4",
+    "anno": "./js/anno.js?v=0.4.2-p4",
+    "ink": "./js/ink.js?v=0.4.2-p4",
+    "livewire": "./js/livewire.js?v=0.4.2-p4",
+    "tracer": "./js/tracer.js?v=0.4.2-p4",
+    "queue": "./js/queue.js?v=0.4.2-p4"
+  }
+}
+</script>
+<script type="module" src="./js/app.js?v=0.4.2-p4"></script>
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 </body>
 </html>

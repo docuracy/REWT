@@ -13,7 +13,7 @@
 /* Must match the ?v= on the script tag in index.html. Browsers go on serving a cached
    module, and the page then reports the behaviour of code that is not deployed —
    which arrives as a bug report about something nobody can reproduce. */
-export const BUILD = '0.3.3-p3';
+export const BUILD = '0.4.2-p4';
 
 export const REPO = {
   owner: 'docuracy',
