@@ -45,8 +45,8 @@ each checked at the place by one person in a few minutes.
   judgements is the right one. Read from the build of 1 September 2026, fingerprint
   <code>8c2a2095</code>, over OS Open Rivers 2026-04, when 93.29% of in-scope length reached
   tidal water and 1,290 dead ends were outstanding. <strong>Tidal water, not the sea:</strong>
-  the two are separate tests and the audit reports both, the first being true by construction
-  where the second is one a river mouth can fail. <span class="credit">Contains OS data © Crown copyright and database
+  those are two different tests and this figure is the first of them. Neither can be read off
+  the other, and the sea reading is not simply the harder version of this one. <span class="credit">Contains OS data © Crown copyright and database
   rights 2026. Base map © OpenStreetMap contributors.</span></figcaption>
 </figure>
 
