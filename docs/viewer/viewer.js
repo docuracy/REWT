@@ -78,9 +78,14 @@ for (const k of ['zoom', 'lat', 'lon', 'b', 'o', 't', 'l']) {
   }
 }
 
-const [summary, backdrops] = await Promise.all([
+/* keys.json is written by the Pages workflow from a repository secret and is committed
+   nowhere. Absent is the normal case, not an error: a local preview has no key, and a
+   fork's deployment will not have one either. A 404, a network failure and a malformed
+   file all mean the same thing — no keys — and none of them should stop the map. */
+const [summary, backdrops, keys] = await Promise.all([
   grab('summary.json', 'the headline figures and the basin table'),
   fetch('backdrops.json').then((r) => r.json()),
+  fetch('keys.json').then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
 ]);
 
 /* ── Figures ──────────────────────────────────────────────────────────────── */
@@ -118,13 +123,21 @@ if (summary && summary.provenance) {
 
 const opts = backdrops.options;
 const thin = backdrops.thinning;
-/* No key handling at all, deliberately: this build has no keyed backdrop to hold one
-   for. See `_no_keys` in backdrops.json. */
-const usable = Object.entries(opts);
+/* A LAYER WHOSE KEY IS ABSENT IS NOT OFFERED, rather than being offered and failing.
+   An entry that can only ever draw blank tiles is worse than no entry: it reads as a
+   broken map instead of as an unconfigured one, and it invites someone to "fix" it by
+   committing a credential. See `_no_keys` in backdrops.json.
+
+   THIS HIDES THE HISTORIC LAYERS FROM EVERY LOCAL PREVIEW, and that is correct rather
+   than inconvenient: the key is restricted by Allowed HTTP Origins to
+   https://docuracy.github.io and returns 403 from localhost, so a local preview could
+   not draw them even holding it. They can only be checked on the deployed site. */
+const usable = Object.entries(opts).filter(([, o]) => !o.requires_key || keys[o.requires_key]);
 const sel = $('#backdrop');
 const GROUPS = [
   ['modern', 'Modern'],
-  ['seamless', 'Historic — seamless, England and Wales'],
+  ['seamless', 'Historic — seamless, Great Britain'],
+  ['regional', 'Historic — one place only'],
   ['composited', 'Historic — composited in your browser'],
   ['collection', 'Historic — pick a sheet or county'],
   ['other', 'Other'],
@@ -137,8 +150,13 @@ for (const [key, label] of GROUPS) {
   for (const [id, o] of rows) g.append(new Option(o.label, id));
   sel.append(g);
 }
-let backdropId = opts[backdrops.default] ? backdrops.default : usable[0][0];
-if (HASH.b && opts[HASH.b]) backdropId = HASH.b;
+/* `usable`, not `opts`: a link shared from the deployed site can name a keyed backdrop,
+   and opening it where no key is configured would select an entry that is not in the
+   dropdown and cannot draw. It falls back to the default instead, silently, because the
+   reader did nothing wrong and the rest of the link — the view, the layers — is good. */
+const offered = new Map(usable);
+let backdropId = offered.has(backdrops.default) ? backdrops.default : usable[0][0];
+if (HASH.b && offered.has(HASH.b)) backdropId = HASH.b;
 sel.value = backdropId;
 
 const items = {};
@@ -154,19 +172,24 @@ const tilesFor = (o) => {
     const r = itemRow(o);
     t = t.replace('{county}', r?.slug ?? r?.id ?? '').replace('{item}', r?.id ?? '');
   }
+  /* Substituted here and nowhere else, so there is one place a credential enters a URL.
+     `usable` has already dropped every entry whose key is missing, so this cannot
+     produce the literal string "{key}" in a request. */
+  if (o.requires_key) t = t.replace('{key}', encodeURIComponent(keys[o.requires_key]));
   return [t];
 };
 
-/* NO NATIONAL LIBRARY OF SCOTLAND LAYER IS DRAWN HERE, and `composite.js` and
- * `counties.json` are no longer published beside this file either. The Library asks
- * that its georeferenced layers be re-used "within a desktop or local environment" and
- * that a public website use their Historic Maps API or write to them; this site is
- * public, so the layers went.
+/* THE HISTORIC BACKDROPS COME THROUGH THE LIBRARY'S OWN API, not from its tile bucket,
+ * and the difference is the whole of it. NLS ask that the georeferenced S3 layers be
+ * re-used "within a desktop or local environment" and that a public website use their
+ * Historic Maps API or write to them. This site is public, so the 68 S3 layers went and
+ * the eight API layers — the sanctioned route, delivered through MapTiler under this
+ * project's own account — are what is offered instead.
  *
- * REMOVING THE LAYERS WAS NOT ENOUGH, and that is the part worth remembering.
+ * REMOVING THE S3 LAYERS WAS NOT ENOUGH, and that is the part worth remembering.
  * `composite.js` held the base URL of the six-inch bucket and `counties.json`
  * enumerated the 53 slugs that complete it, so the two of them together were still a
- * published index to the layers — with a working fetcher attached — after every layer
+ * published index to those layers — with a working fetcher attached — after every one
  * had gone from `backdrops.json`. Separately each looked harmless, which is why it
  * survived the first pass. Both now live in `tools/viewer/`, gitignored, which is the
  * desktop environment the Library's sentence describes. Found by rewt-86.
@@ -189,7 +212,8 @@ const map = new maplibregl.Map({
   style: {
     version: 8,
     sources: b0.tiles ? { backdrop: { type: 'raster', tiles: tilesFor(b0), tileSize: 256,
-      maxzoom: b0.max_zoom || 19, attribution: b0.attribution } } : {},
+      maxzoom: b0.max_zoom || 19, ...(b0.min_zoom ? { minzoom: b0.min_zoom } : {}),
+      attribution: b0.attribution } } : {},
     layers: [
       { id: 'ground', type: 'background', paint: { 'background-color': '#0d1117' } },
       ...(b0.tiles ? [{ id: 'backdrop', type: 'raster', source: 'backdrop',
@@ -266,8 +290,22 @@ const OVERLAYS = [
   { id: 'reversals', label: 'Reversals — direction changed, geometry untouched',
     file: 'reversals.geojson', kind: 'line', colour: C.rev, width: 2.6, arrows: true,
     count: c.reversals },
+  /* DRAWN BESIDE ITS REPLACEMENT, NOT ON TOP OF IT. Every one of these retirements is
+     the same operation: OS Open Rivers carries no node partway along a link, so to
+     attach a connector the link is cut, the original retired and two children created —
+     674 originals became 1,446 children. Drawn without an offset, a retired link lies
+     exactly over the two lines that replaced it, and reads as a mysterious third
+     channel that a connector joins for no reason. Stephen could not work out what he
+     was looking at, and he knows what the layer is for. The offset puts the old line
+     alongside the new so the relation is visible instead of hidden. Found by rewt-d3. */
   { id: 'retired', label: 'Retired — superseded, kept', file: 'retired.geojson',
-    kind: 'line', colour: C.retiredc, width: 2.2, dash: [2, 2], count: c.retired },
+    kind: 'line', colour: C.retiredc, width: 2.2, dash: [2, 2], offset: 9,
+    count: c.retired,
+    legend: [['dashed, and set to one side — the superseded geometry', C.retiredc, 'dash']],
+    note: 'every one of these was cut in two so that a connector could attach at the '
+      + 'cut. The dashed line is the ORIGINAL, drawn offset to one side; the two lines '
+      + 'that replaced it are in the network beneath it. Nothing is duplicated in the '
+      + 'routing — only the children are in the graph.' },
   { id: 'dead_ends', label: 'Dead ends that are the work', file: 'dead_ends.geojson',
     kind: 'point', on: true, colour: C.unreached, count: c.dead_ends_defect,
     radius: ['interpolate', ['linear'], ['zoom'],
@@ -510,11 +548,19 @@ async function ensure(o) {
     map.addLayer({ id: o.id + '-casing', type: 'line', source: o.id,
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': '#0d1117', 'line-width': (o.width || 2) + 2.5,
-        'line-opacity': 0.85 } });
+        'line-opacity': 0.85,
+        ...(o.offset ? { 'line-offset': o.offset } : {}) } });
     map.addLayer({ id: o.id, type: 'line', source: o.id,
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': o.colour, 'line-width': o.width,
-        ...(o.dash ? { 'line-dasharray': o.dash } : {}) } });
+        ...(o.dash ? { 'line-dasharray': o.dash } : {}),
+        // Screen pixels, so the line stays beside its replacement at every zoom rather
+        // than drifting metres away from it as you zoom out. NINE, not four: at four
+        // the offset was inside the network line's own casing and the retired line
+        // read as a dashed centre-stripe decorating the channel it replaced — which is
+        // a worse misreading than the overdraw it was meant to fix, because it looks
+        // deliberate.
+        ...(o.offset ? { 'line-offset': o.offset } : {}) } });
     if (o.arrows) {
       map.addLayer({ id: o.id + '-arrows', type: 'symbol', source: o.id,
         layout: { 'symbol-placement': 'line', 'icon-image': 'arrow-reversed',
@@ -554,9 +600,14 @@ function buildLayerPanel() {
     const hues = typeof source === 'string' ? [source]
       : ((source ? JSON.stringify(source).match(/#[0-9a-fA-F]{6}/g) : null) || ['#8a93a0']);
     const uniq = [...new Set(hues)];
-    const sw = uniq.length === 1 ? uniq[0]
+    let sw = uniq.length === 1 ? uniq[0]
       : `linear-gradient(90deg, ${uniq.map((h, n) =>
           `${h} ${Math.round(n * 100 / uniq.length)}% ${Math.round((n + 1) * 100 / uniq.length)}%`).join(', ')})`;
+    // The switch's swatch shows the pattern too, so that the row in the panel and the
+    // line on the map are recognisably the same thing.
+    if (o.dash && uniq.length === 1) {
+      sw = `repeating-linear-gradient(90deg, ${uniq[0]} 0 3px, transparent 3px 6px)`;
+    }
     row.innerHTML = `<input type="checkbox" ${o.on ? 'checked' : ''}>
       <i class="sw ${o.kind === 'point' || o.kind === 'symbol' ? 'dot' : ''}" style="background:${sw}"
          title="${esc(uniq.join(' · '))}"></i>
@@ -590,8 +641,17 @@ function applyTheme() {
   rows.push([map.getZoom() < 9 ? 'Marked at this zoom, not drawn — a dot each'
     : 'Never thinned, at any zoom', null],
     ...(thin?.never_thinned || []).map((t) => [t, null]));
-  $('#legend').innerHTML = rows.map(([text, colour], i) => colour
-    ? `<span><i style="background:${colour}"></i>${esc(text)}</span>`
+  /* A DASHED LAYER GETS A DASHED SWATCH. The retired layer is drawn as a broken line
+     and its key was a solid block of magenta, so the legend showed a reader a thing
+     they were not looking at: on the map the striping is the most obvious property of
+     the line, and the key did not have it. Pattern is a second channel alongside hue —
+     it survives a projector, daylight and colour vision deficiency, none of which
+     blue-against-indigo does — and a channel the key does not explain is not a
+     channel. Raised by rewt-d3. */
+  $('#legend').innerHTML = rows.map(([text, colour, style], i) => colour
+    ? `<span><i class="${style === 'dash' ? 'dashed' : ''}" style="${style === 'dash'
+        ? `background:repeating-linear-gradient(90deg,${colour} 0 3px,transparent 3px 6px)`
+        : `background:${colour}`}"></i>${esc(text)}</span>`
     : i === 0 ? `<b>${esc(text)}</b>` : `<span class="foot">${esc(text)}</span>`).join('');
 }
 $('#theme').onchange = (e) => { theme = e.target.value; applyTheme(); writeHash(); };
@@ -625,6 +685,15 @@ async function applyBackdrop() {
     else if (!itemRow(o)) chosen[src] = itemsFor(o)[0] && (itemsFor(o)[0].code || itemsFor(o)[0].id);
     buildItemPicker(o);
   }
+  /* THE PANEL IS USABLE BEFORE THE MAP IS. The figures and the backdrop list render as
+     soon as summary.json lands, but the network takes a further twenty seconds, and a
+     reader who picks a backdrop during that wait reached `addSource` before the style
+     had finished loading — "Style is not done loading", thrown, and the rest of boot
+     abandoned with the spinner still turning. Disabling the control would be the wrong
+     fix: reading the panel while the map loads is exactly what that time is for. So the
+     change is held until the style is ready instead. */
+  if (!map.isStyleLoaded()) await new Promise((done) => map.once('styledata', done));
+
   if (map.getLayer('backdrop')) map.removeLayer('backdrop');
   if (map.getSource('backdrop')) map.removeSource('backdrop');
   if (o.tiles) {
@@ -918,11 +987,16 @@ function buildAbout() {
     reach the sea, links retired and kept for the audit trail, geometry this project
     added, and anything whose routing direction was corrected.</p>
 
-    <h3>What is not here</h3>
-    <p>No historic backdrop. The National Library of Scotland asks that its
-    georeferenced layers be re-used <q>within a desktop or local environment</q> and
-    that a public website use their Historic Maps API or contact them; this site is
-    public, so those layers are drawn only in the local viewer in the repository.</p>
+    <h3>The historic backdrops</h3>
+    <p>Eight sheets, 1885 to 1961, from the National Library of Scotland's collections
+    through their Historic Maps API. <b>A sheet under this network is a backdrop and not
+    evidence.</b> Nothing here is dated, and a channel lying over an 1890s sheet is not
+    thereby attested in the 1890s — the backdrops are here to read the ground against.</p>
+    <p>They are the Library's <em>API</em> layers. Their georeferenced tile bucket holds
+    far more, including the England-and-Wales six-inch first edition, but NLS ask that
+    those be re-used <q>within a desktop or local environment</q> and that a public
+    website use the API or contact them; this site is public, so the bucket layers are
+    drawn only in the local viewer in the repository.</p>
 
     <h3>Sources and attribution</h3>
     <p>${(summary && summary.attribution) || ''}</p>

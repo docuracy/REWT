@@ -26,3 +26,10 @@ vendor/
 # on a public website. Committing an index it declined to publish is not something to
 # do while a letter to maps@nls.uk is unanswered. Local only; see tools/viewer/.gitignore.
 tools/nls_layers.json
+
+# Written by pages.yml from a repository secret at deploy time, and never committed.
+# The key it holds is origin-restricted to https://docuracy.github.io and is public on
+# the deployed site by necessity — a browser cannot request a tile without it. Keeping
+# it out of the history is what makes rotation possible: a key in a public repository
+# can be rotated but never withdrawn from every clone of that history.
+docs/viewer/keys.json

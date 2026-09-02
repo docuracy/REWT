@@ -129,6 +129,52 @@ jobs:
           echo "from release $tag:"
           ls -la docs/viewer/data
 
+      - name: Write the viewer's key file
+        env:
+          MAPTILER_API_KEY: ${{ secrets.MAPTILER_API_KEY }}
+          CARTO_API_KEY: ${{ secrets.CARTO_API_KEY }}
+        run: |
+          # THE ONLY CREDENTIAL THAT REACHES THE PUBLISHED SITE, and it is written here
+          # rather than committed. The eight historic backdrops are the National Library
+          # of Scotland's own Historic Maps API layers, delivered through MapTiler, and a
+          # browser-side tile request cannot be made without the key being in the page.
+          #
+          # So the question is not whether the key is public — it will be — but whether it
+          # is also in the repository's history. It is not. A key in a public repository
+          # can be rotated but never withdrawn from every clone and cache of the history;
+          # a key written at deploy time is replaced by rotating the secret and running
+          # this again. That is the whole reason for the step.
+          #
+          # WHAT ACTUALLY PROTECTS THE KEY IS THE ORIGIN RESTRICTION on it, not secrecy:
+          # it is limited by Allowed HTTP Origins to https://docuracy.github.io and
+          # returns 403 anywhere else, including localhost. The step above this one
+          # refuses to deploy a credential found in docs/ and must keep running BEFORE
+          # this, which is why this is here and not earlier.
+          #
+          # No secret is the normal case for a fork. The viewer hides every keyed
+          # backdrop when the file is absent or empty, so it offers OpenStreetMap and the
+          # three CARTO grounds rather than eight entries that can only draw blank tiles.
+          # Each provider independently. A missing CARTO key must not cost the map its
+          # historic layers, and a missing MapTiler key must not cost it the modern
+          # grounds — the two have nothing to do with each other and an all-or-nothing
+          # file would have coupled them.
+          #
+          # CARTO's key is what removes a watermark rather than what grants access: the
+          # unkeyed tiles come back 200 with API KEY REQUIRED across them. So an absent
+          # CARTO secret must HIDE those layers, not fall back to unkeyed ones.
+          keys=""
+          [ -n "$MAPTILER_API_KEY" ] && keys="$keys\"maptiler\":\"$MAPTILER_API_KEY\","
+          [ -n "$CARTO_API_KEY" ] && keys="$keys\"carto\":\"$CARTO_API_KEY\","
+          if [ -z "$keys" ]; then
+            echo "::warning::Neither MAPTILER_API_KEY nor CARTO_API_KEY is set, so only"
+            echo "::warning::OpenStreetMap is offered as a backdrop. The viewer hides"
+            echo "::warning::keyed layers rather than listing ones that cannot draw."
+            echo "::warning::This is that path, not a failure."
+            exit 0
+          fi
+          printf '{%s}\n' "${keys%,}" > docs/viewer/keys.json
+          echo "docs/viewer/keys.json written for: $(echo "${keys%,}" | grep -o '\"[a-z]*\":' | tr -d '\":' | tr '\n' ' ')"
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'

@@ -127,6 +127,8 @@ button:hover { border-color: var(--accent); }
 #legend span { display: flex; align-items: center; gap: 7px; }
 #legend i { width: 16px; height: 3px; border-radius: 2px; flex: none; }
 #legend i.dot { width: 9px; height: 9px; border-radius: 50%; }
+/* The dashed key needs height to read as a broken line rather than as a grey smear. */
+#legend i.dashed { height: 3px; border-radius: 0; }
 #legend .foot { display: block; margin-top: 5px; color: var(--ink-dim); font-size: 10px;
                 line-height: 1.35; }
 
