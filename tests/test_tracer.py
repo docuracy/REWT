@@ -219,3 +219,44 @@ def test_a_resolved_D_037_fails_here_and_names_the_figures_to_reshoot():
 
     for rel in CREDIT_FIGURES:
         assert (paths.ROOT / rel).is_file(), f"{rel} is listed as carrying the credit but is missing"
+
+
+# ─── THE WIRING, WHICH NO OTHER CHECK TOUCHES ─────────────────────────────────────────
+# Every check in this repository tests logic. None of them notices `$('splining')`
+# returning null because the checkbox was never added to the page, or added under another
+# id — and that failure is silent: `null.onchange = fn` throws once, during setup, and the
+# control simply does nothing for ever after. It is the cheapest possible bug and the
+# hardest to see, because the feature looks present and does not respond.
+
+def test_every_control_app_js_reaches_for_exists_in_the_page():
+    """`$('id')` in app.js against `id="id"` in index.html.
+
+    A missing element is not a typo caught by a linter — it is a control that renders,
+    accepts a click and is wired to nothing.
+    """
+    app = (paths.ROOT / "docs" / "trace" / "js" / "app.js").read_text(encoding="utf-8")
+    page = (paths.ROOT / "docs" / "trace" / "index.html").read_text(encoding="utf-8")
+
+    wanted = set(re.findall(r"""\$\(['"]([A-Za-z0-9_-]+)['"]\)""", app))
+    assert wanted, "no $('id') calls found — this check has stopped checking anything"
+    present = set(re.findall(r"""\bid=["']([A-Za-z0-9_-]+)["']""", page))
+    missing = sorted(wanted - present)
+    assert not missing, (
+        "app.js reaches for elements the page does not define: "
+        + ", ".join(missing)
+        + "\nEach one is a control wired to nothing, which looks exactly like a working one."
+    )
+
+
+def test_every_vertex_origin_the_tracer_emits_is_drawn_and_named():
+    """A fourth provenance that the legend does not explain is a fourth that nobody reads.
+
+    The tracer can emit `clicked`, `centred`, `snapped` and `interpolated`. Each needs a
+    geometry in `VERTEX_GEOMETRY` (checked by `check_spline.mjs`), a colour in the layer,
+    and — the part only a person notices — a line in the legend saying what it means.
+    """
+    tracer = (paths.ROOT / "docs" / "trace" / "js" / "tracer.js").read_text(encoding="utf-8")
+    page = (paths.ROOT / "docs" / "trace" / "index.html").read_text(encoding="utf-8")
+    for origin in ("clicked", "centred", "snapped", "interpolated"):
+        assert origin in tracer, f"{origin} is not styled in tracer.js"
+        assert f"dot {origin}" in page, f"{origin} has no legend entry in index.html"

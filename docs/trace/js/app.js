@@ -398,6 +398,7 @@ function paintTrace(s) {
      mode being on. */
   paintCentre(s);
   paintSnap(s);
+  paintSpline(s);
   if (s.finished) $('record').focus();
 }
 
@@ -444,6 +445,33 @@ function paintSnap(s) {
     ? `Followed the ink: ${k.vertices} vertices from ${k.pixels} pixels, on a `
       + `${k.mode} sheet, inside a ${k.corridorM} m corridor.`
     : 'Straight line — ' + k.why;
+}
+
+/**
+ * What the curve is, said in the words that make its standing clear.
+ *
+ * **This is the note that has to be most careful, because this assist reads nothing.**
+ * Centring and ink-following can at least point at pixels; a curve is a claim that the
+ * channel bends smoothly, which is a better guess than the straight line it replaces and
+ * is still a guess. The note therefore leads with what was actually done — how many points
+ * a person placed against how many are drawn — rather than with the reassuring part.
+ */
+function paintSpline(s) {
+  const el = $('splinenote');
+  if (!s.splining) { el.textContent = ''; return; }
+  if (s.vertices < 3) {
+    el.textContent = 'Curving between your clicks. Two points are a straight line, so '
+      + 'nothing is added until there is a third — and nothing is added on a straight '
+      + 'reach at all.';
+    return;
+  }
+  const added = s.drawn - s.vertices;
+  el.textContent = added === 0
+    ? `${s.vertices} clicks, ${s.drawn} points drawn — this reach is straight enough that `
+      + 'the curve adds nothing.'
+    : `${s.vertices} clicks, ${s.drawn} points drawn: ${added} of them are curve and were `
+      + `read from nothing. The curve stays within ${s.splineDeviationM.toFixed(2)} m of `
+      + 'the line those clicks describe.';
 }
 
 /* ── wiring ───────────────────────────────────────────────────────────────── */
@@ -511,6 +539,7 @@ function boot() {
   $('finish').onclick = () => { TRACER.stop(); $('starttrace').textContent = 'Start tracing'; };
   $('centring').onchange = (e) => TRACER.setCentring(e.target.checked);
   $('snapping').onchange = (e) => TRACER.setSnapping(e.target.checked);
+  $('splining').onchange = (e) => TRACER.setSplining(e.target.checked);
   $('record').onclick = recordTrace;
   $('prevtask').onclick = () => { if (AT > 0) { AT -= 1; showTask(); } };
   $('nexttask').onclick = () => { if (QUEUE && AT < QUEUE.tasks.length - 1) { AT += 1; showTask(); } };
@@ -536,6 +565,13 @@ async function recordTrace() {
     const point = representativePoint(r.coordinates);
     const replaces = $('t_replaces').value.trim();
     const annotation = traceAnnotation({
+      /* The clicks travel with the curve. `traceAnnotation` REFUSES a course with
+         interpolated vertices that does not carry them, so forgetting this is a thrown
+         error rather than a quietly thinner record. */
+      controlPoints: r.controlPoints,
+      controlOrigin: r.controlOrigin,
+      splineToleranceM: r.splineToleranceM,
+      splineDeviationM: r.splineDeviationM,
       id: `urn:uuid:${crypto.randomUUID()}`,
       coordinates: r.coordinates,
       vertexOrigin: r.vertexOrigin,

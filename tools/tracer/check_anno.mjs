@@ -94,6 +94,39 @@ ok(m > 250 && m < 500, `length is plausible (${m.toFixed(1)} m)`);
 ok(a.creator.name === 'docuracy' && a['dcterms:date'] === '2026-09-01',
   'author and dated reach the annotation itself');
 
+// 12. a splined course: the curve is recorded, the clicks are kept, and losing either is refused
+const splined = {
+  ...good,
+  coordinates: [[-0.0977, 51.5308], [-0.09695, 51.53148], [-0.0961, 51.5321],
+                [-0.09525, 51.53277], [-0.0944, 51.5334]],
+  vertexOrigin: ['clicked', 'interpolated', 'clicked', 'interpolated', 'clicked'],
+  controlPoints: [[-0.0977, 51.5308], [-0.0961, 51.5321], [-0.0944, 51.5334]],
+  controlOrigin: ['clicked', 'clicked', 'clicked'],
+  splineToleranceM: 1.0,
+  splineDeviationM: 0.42,
+};
+const sp = traceAnnotation(splined);
+const spBody = JSON.parse(sp.body.find((b) => b.purpose === 'describing').value);
+ok(spBody.vertices_interpolated === 2, 'interpolated vertices are counted as their own kind');
+ok(spBody.vertices_clicked === 3,
+  'clicked is the remainder after snapped AND interpolated, not after snapped alone');
+ok(JSON.stringify(spBody.control_points) === JSON.stringify(splined.controlPoints),
+  'the clicks travel with the curve');
+ok(spBody.spline === 'centripetal-catmull-rom', 'the curve names the family that made it');
+ok(spBody.spline_deviation_m === 0.42, 'the MEASURED deviation is recorded, not the tolerance');
+ok(spBody.spline_tolerance_m === 1.0 && spBody.spline_deviation_m <= spBody.spline_tolerance_m,
+  'the measurement is within the tolerance asked for');
+
+// the two refusals that keep a splined record honest
+throws(() => traceAnnotation({ ...splined, controlPoints: undefined }),
+  'a curve without its control points must be refused');
+throws(() => traceAnnotation({ ...splined, splineDeviationM: undefined }),
+  'a curve without a measured deviation must be refused');
+
+// and an ordinary trace is not padded with spline fields it has no use for
+ok(JSON.parse(a.body.find((b) => b.purpose === 'describing').value).control_points === undefined,
+  'an unsplined trace carries no control_points');
+
 console.log(`${pass} passed, ${fails.length} failed`);
 for (const f of fails) console.error('  FAIL ' + f);
 process.exit(fails.length ? 1 : 0);

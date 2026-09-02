@@ -24,6 +24,7 @@
 
 import { loadPatch, patchPixel, patchLonLat, centreOnTransect, metresPerPixel } from './ink.js';
 import { snapSegment, LIVEWIRE_DEFAULTS } from './livewire.js';
+import { splineThrough, maxDeviationM, SPLINE_DEFAULTS } from './spline.js';
 
 const SRC = 'trace-src';
 const SRC_CANDIDATE = 'trace-candidate-src';
@@ -31,7 +32,51 @@ const SRC_VERTEX = 'trace-vertex-src';
 
 const emptyFC = () => ({ type: 'FeatureCollection', features: [] });
 
-export function createTracer({ map, backdrop, tileSource, onChange, centring = false, snapping = false }) {
+/**
+ * THE FOUR VERTEX STATES, AS DATA RATHER THAN AS FOUR HAND-WRITTEN STYLE EXPRESSIONS.
+ *
+ * `r` is the marker's radius and `stroke` its width, so its outer edge is `r + stroke`
+ * and the white casing must begin exactly there — flush, covering nothing. I got that
+ * wrong by hand the first time a fourth state was added, giving `interpolated` a casing
+ * at 2.2 against an outer edge of 3.6, so the ring sat INSIDE the marker it was meant to
+ * protect. It would have rendered as a slightly muddier dot and nothing would have
+ * complained. `check_spline.mjs` asserts the invariant now instead of me re-deriving it.
+ *
+ * Sizes ARE the hierarchy: a click is a judgement and is largest; an interpolated point
+ * is nobody's decision and is smallest. Colour is checked separately, in the palette
+ * audit, because "they look different to me" is not evidence.
+ */
+/**
+ * The origin of every point on the curve: `interpolated` where the spline invented one,
+ * and OTHERWISE WHATEVER THE PLACED POINT ALREADY WAS.
+ *
+ * Pure, and exported, so the mapping can be checked without a map. The temptation is to
+ * call a control point `clicked` — it is a control point, after all — and that would
+ * silently demote every centred and snapped vertex the moment splining was switched on,
+ * rewriting the provenance of work the assists had done. The curve passing through a
+ * centred vertex does not make it a click.
+ */
+export function curveOrigins(controlIndex, placed) {
+  return controlIndex.map((ci) => (ci >= 0 ? (placed[ci] || 'clicked') : 'interpolated'));
+}
+
+export const VERTEX_GEOMETRY = {
+  clicked:      { r: 5,   stroke: 2   },
+  centred:      { r: 5,   stroke: 2   },
+  snapped:      { r: 2.5, stroke: 2   },
+  interpolated: { r: 2.2, stroke: 1.4 },
+};
+
+/** The casing radius for each state: flush with the marker's outer edge, by construction. */
+export const casingRadius = (o) => VERTEX_GEOMETRY[o].r + VERTEX_GEOMETRY[o].stroke;
+
+const byOrigin = (pick, fallback) => ['match', ['get', 'origin'],
+  'interpolated', pick('interpolated'),
+  'snapped', pick('snapped'),
+  'centred', pick('centred'),
+  fallback];
+
+export function createTracer({ map, backdrop, tileSource, onChange, centring = false, snapping = false, splining = false }) {
   const state = {
     active: false,
     /* SNAPPING IS A SEPARATE SWITCH FROM TRACING, and conflating them made the predecessor's
@@ -42,6 +87,18 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
        the annotation records every vertex as `clicked` — which is what it is. */
     snapping,
     centring,
+    /* A THIRD SWITCH, AND DELIBERATELY NOT A THIRD ASSIST. Centring and ink-following read
+       the sheet; this one does not read anything. It draws a curve through the points that
+       are already there, on the argument that a straight segment between two clicks is
+       ALSO an invention — one asserting the channel runs straight, which round a bend is
+       simply false. The points it adds are marked `interpolated` and are the weakest thing
+       the tool records. */
+    splining,
+    /* SHARED WITH THE LIVEWIRE'S `simplifyM` ON PURPOSE. One half of the tool densifying
+       to a finer tolerance than the other simplifies to would be two halves disagreeing
+       about what a metre is worth, and the disagreement would show up as points appearing
+       and vanishing as a contributor toggled switches. */
+    splineToleranceM: SPLINE_DEFAULTS.toleranceM,
     lastSnap: null,
     snapAt: 0,
     coordinates: [],
@@ -113,7 +170,7 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
       map.addLayer({ id: 'trace-vertex-casing', type: 'circle', source: SRC_VERTEX,
         paint: {
           'circle-color': 'rgba(0,0,0,0)',
-          'circle-radius': ['case', ['==', ['get', 'origin'], 'snapped'], 4.5, 7],
+          'circle-radius': byOrigin(casingRadius, casingRadius('clicked')),
           'circle-stroke-color': '#ffffff',
           'circle-stroke-width': 2,
           'circle-stroke-opacity': 0.95,
@@ -143,15 +200,27 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
              over-trust the second is the contributor, in the moment, with the line in
              front of them. Clicked reads solid; centred reads hollow. */
           'circle-color': ['case', ['==', ['get', 'origin'], 'clicked'], '#ff3b6b', '#ffffff'],
-          'circle-stroke-color': ['case',
-            ['==', ['get', 'origin'], 'centred'], '#00b4d8',
-            ['==', ['get', 'origin'], 'snapped'], '#7a5cff',
+          /* THE FOURTH STATE WAS NOT A FREE CHOICE. Six colours picked by eye all failed
+             the threshold against one of the three already here — the space is crowded —
+             so it was searched rather than guessed: of 968 colours clearing dE 15 against
+             clicked, centred, snapped AND the white casing, this dark neutral measures
+             30.5 at worst (clicked 32.4, centred 44.9, snapped 30.5, casing 73.4).
+
+             DARK, YET THE LEAST ASSERTIVE OF THE FOUR. Weight here is carried by SIZE and
+             not by washing the colour out — a faint marker would be an unreadable one on a
+             sheet that is a fifth ink, which is the mistake the casing exists to undo. So
+             it reads as least by being smallest: 2.2 px against snapped's 2.5 and a
+             click's 5. */
+          'circle-stroke-color': ['match', ['get', 'origin'],
+            'centred', '#00b4d8',
+            'snapped', '#7a5cff',
+            'interpolated', '#2b2b33',
             '#ff3b6b'],
-          'circle-stroke-width': 2,
+          'circle-stroke-width': byOrigin(o => VERTEX_GEOMETRY[o].stroke, VERTEX_GEOMETRY.clicked.stroke),
           /* A snapped vertex is one of dozens in a run and was nobody's decision; a clicked
              one is a judgement. Drawing them the same size would give the run a visual
              weight it has not earned. */
-          'circle-radius': ['case', ['==', ['get', 'origin'], 'snapped'], 2.5, 5],
+          'circle-radius': byOrigin(o => VERTEX_GEOMETRY[o].r, VERTEX_GEOMETRY.clicked.r),
         } });
       return true;
     } catch {
@@ -160,19 +229,47 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
     }
   }
 
+  /**
+   * WHAT IS DRAWN AND WHAT IS RECORDED, which with splining on are not the placed points.
+   *
+   * The placed points — clicked, centred, snapped — stay the record of what happened;
+   * this is a derived view over them and nothing here mutates `state.coordinates`. Undo
+   * therefore removes a click rather than an interpolated point, which is the only thing
+   * a person can mean by undo.
+   *
+   * **Recomputed from scratch on every redraw, and the whole curve rather than the last
+   * span.** An interpolating spline's shape near a point depends on its NEIGHBOURS, so
+   * adding a click legitimately changes the span before it. Freezing completed spans would
+   * be cheaper and would draw a line that is not the curve the coordinates describe — the
+   * kind of divergence that survives review because both halves look right.
+   */
+  function curve() {
+    if (!state.splining || state.coordinates.length < 3) {
+      return { coords: state.coordinates, origins: state.origin, controlIndex: null, deviationM: 0 };
+    }
+    const r = splineThrough(state.coordinates, { toleranceM: state.splineToleranceM });
+    return {
+      coords: r.coords,
+      origins: curveOrigins(r.controlIndex, state.origin),
+      controlIndex: r.controlIndex,
+      deviationM: r.spans.length ? maxDeviationM(state.coordinates, r) : 0,
+    };
+  }
+
   function redraw() {
     if (!map.getLayer('trace-vertices')) { onChange?.(summary()); return; }
-    map.getSource(SRC).setData(state.coordinates.length >= 2
-      ? { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: state.coordinates } }
+    const c = curve();
+    map.getSource(SRC).setData(c.coords.length >= 2
+      ? { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: c.coords } }
       : emptyFC());
     map.getSource(SRC_CANDIDATE).setData(state.candidate.length >= 2
       ? { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: state.candidate } }
       : emptyFC());
     map.getSource(SRC_VERTEX).setData({
       type: 'FeatureCollection',
-      features: state.coordinates.map((c, i) => ({
-        type: 'Feature', properties: { origin: state.origin[i] || 'clicked' },
-        geometry: { type: 'Point', coordinates: c },
+      features: c.coords.map((coord, i) => ({
+        type: 'Feature', properties: { origin: c.origins[i] || 'clicked' },
+        geometry: { type: 'Point', coordinates: coord },
       })),
     });
     onChange?.(summary());
@@ -183,8 +280,14 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
       active: state.active,
       centring: state.centring,
       snapping: state.snapping,
+      splining: state.splining,
       lastSnap: state.lastSnap,
+      /* TWO COUNTS, NOT ONE. `vertices` is what the person placed and `drawn` is what the
+         curve holds; reporting only the second would let a mode that quietly quadrupled
+         the geometry read as a productive afternoon. */
       vertices: state.coordinates.length,
+      drawn: state.splining ? curve().coords.length : state.coordinates.length,
+      splineDeviationM: state.splining ? curve().deviationM : 0,
       coordinates: state.coordinates.slice(),
       origin: state.origin.slice(),
       lastCentre: state.lastCentre,
@@ -424,6 +527,11 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
     onChange?.(summary());
   }
 
+  function setSplining(on) {
+    state.splining = Boolean(on);
+    redraw();
+  }
+
   function setCentring(on) {
     state.centring = Boolean(on);
     state.patch = null; state.patchKey = null;
@@ -437,13 +545,30 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
   function refresh() { if (ensureLayers()) redraw(); else retryLater(); }
 
   return {
-    start, stop, undo, cancel, setCentring, setSnapping, refresh,
+    start, stop, undo, cancel, setCentring, setSnapping, setSplining, refresh,
     get active() { return state.active; },
     get centring() { return state.centring; },
     get snapping() { return state.snapping; },
-    result: () => ({
-      coordinates: state.coordinates.slice(),
-      vertexOrigin: state.origin.slice(),
+    get splining() { return state.splining; },
+    result: () => {
+      const c = curve();
+      return {
+      /* THE CURVE IS WHAT IS RECORDED, and the clicks are recorded beside it.
+         Storing control points alone would be smaller and exactly reproducible, and is
+         wrong here: a consumer reading our GeoJSON without our spline would get a visibly
+         different river, and D-035 settled that a published geometry has to be readable
+         without our code. So the densified line is the geometry, and the clicks travel
+         with it as the record of what a person actually did — which is also what a later
+         re-tracing at a different tolerance would need. */
+      coordinates: c.coords.slice(),
+      vertexOrigin: c.origins.slice(),
+      splining: state.splining,
+      controlPoints: state.splining ? state.coordinates.slice() : null,
+      controlOrigin: state.splining ? state.origin.slice() : null,
+      /* The tolerance ASKED FOR and the deviation MEASURED, because they are different
+         claims and only the second is evidence. */
+      splineToleranceM: state.splining ? state.splineToleranceM : null,
+      splineDeviationM: state.splining ? c.deviationM : null,
       /* WHAT THE ANNOTATION IS ENTITLED TO SAY. With snapping off no vertex came from a
          cost surface, so naming the sheet's colour mode would imply a machine read one when
          none did — `hand` is the truthful value, and it stays truthful where centring moved
@@ -453,6 +578,7 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
       snapMode: state.origin.includes('snapped')
         ? (state.lastSnap?.mode ?? 'monochrome')
         : 'hand',
-    }),
+      };
+    },
   };
 }

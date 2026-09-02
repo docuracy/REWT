@@ -1,0 +1,244 @@
+/* A curve through the clicks, for channels that bend.
+ *
+ * WHY THIS EXISTS, AND WHY IT IS NOT A WEAKENING OF THE EVIDENCE.
+ * The obvious objection is that a spline invents geometry nobody looked at. It does. But
+ * the polyline it replaces invents geometry too: a straight segment between two clicks
+ * asserts the channel runs straight between them, which on a meander is simply false. So
+ * the question is not evidence against inference, it is **which prior is less wrong**, and
+ * for a watercourse a smooth curve beats a corner. Rivers do not have vertices.
+ *
+ * What follows from that is the whole design:
+ *
+ *   - The curve must PASS THROUGH the clicks. Those are the evidenced points — a person
+ *     looked at each one — so an approximating spline (a B-spline) is disqualified no
+ *     matter how smooth it is. Catmull-Rom interpolates, and is therefore the family.
+ *   - CENTRIPETAL parameterisation (alpha = 0.5), not uniform. Uniform Catmull-Rom forms
+ *     a LOOP when consecutive spans differ sharply in length — and two clicks a metre
+ *     apart is not a contrived input, it is a contributor making a small correction. The
+ *     measured case is in `check_spline.mjs`: clicks at 0, 150, 151 and 300 m give a
+ *     self-intersecting curve under uniform and a clean one under centripetal, and a
+ *     hairpin overshoots by 12.5 m under uniform against 2.9 m. A loop is not a river,
+ *     and it reads as a rendering artefact rather than as the wrong claim it is.
+ *
+ *     **Centripetal is not uniformly tighter, and the honest statement is narrower than
+ *     "it overshoots less".** On smooth, evenly-spaced bends it bulges slightly further
+ *     from the control polygon than uniform does — measured, on three of six test inputs.
+ *     What it buys is the absence of loops and cusps, which is a correctness property
+ *     rather than a smaller number, and that is the trade being made.
+ *   - The points it adds are marked `interpolated` and are NOT the same evidence as a
+ *     click. They are offered to the assists, and where the ink supports one it is
+ *     promoted and stops being an inference. Where it does not, it stays an inference and
+ *     is drawn as the weakest of the four states.
+ *
+ * DENSIFY BY SAGITTA, NOT BY SPACING. Adding a point every N metres over-samples the
+ * straight reaches and under-samples the bends the spline was added for — and it makes
+ * the error a function of how the contributor clicked rather than a number anybody can
+ * state. Subdividing until the chord is within `toleranceM` of the curve bounds the
+ * deviation in metres, which is a claim that can go in the record and be checked. It is
+ * Ramer-Douglas-Peucker run backwards, and shares its tolerance with the livewire's
+ * `simplifyM` on purpose: densifying to a finer tolerance than the other assist simplifies
+ * to would be two halves of one tool disagreeing about what a metre is worth.
+ */
+
+export const SPLINE_DEFAULTS = {
+  alpha: 0.5,          // centripetal. 0 is uniform and cusps; 1 is chordal and slackens.
+  toleranceM: 1.0,     // max distance from chord to curve. Matches LIVEWIRE simplifyM.
+  minSpacingM: 1.0,    // never emit two points closer than this
+  maxDepth: 8,         // 2^8 = 256 subdivisions per span is far past any real need
+  maxPointsPerSpan: 64,
+};
+
+const R = 6378137;
+const D2R = Math.PI / 180;
+
+/* METRES, LOCALLY. The tolerance is in metres, so the maths has to happen somewhere
+   metres are constant. Web Mercator is not that place — it stretches by about 1.6 at
+   these latitudes, so a 1 m tolerance would silently become 1.6 m of ground. A local
+   equirectangular frame about the trace's own centre is exact enough over the few
+   kilometres a trace spans and costs one cosine. */
+function frame(control) {
+  let lat0 = 0, lon0 = 0;
+  for (const [lon, lat] of control) { lon0 += lon; lat0 += lat; }
+  lon0 /= control.length; lat0 /= control.length;
+  const kx = Math.cos(lat0 * D2R) * R * D2R, ky = R * D2R;
+  return {
+    toXY: ([lon, lat]) => [(lon - lon0) * kx, (lat - lat0) * ky],
+    toLonLat: ([x, y]) => [lon0 + x / kx, lat0 + y / ky],
+  };
+}
+
+const dist = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
+
+/* Barry-Goldman: the numerically honest way to evaluate a Catmull-Rom span at an
+   arbitrary knot spacing. The matrix form assumes uniform knots and quietly gives the
+   wrong curve when they are not, which is the whole point of using centripetal. */
+function pointAt(p0, p1, p2, p3, t0, t1, t2, t3, t) {
+  const lerp = (a, b, ta, tb) => {
+    if (tb === ta) return a.slice();
+    const w = (t - ta) / (tb - ta);
+    return [a[0] + (b[0] - a[0]) * w, a[1] + (b[1] - a[1]) * w];
+  };
+  const A1 = lerp(p0, p1, t0, t1), A2 = lerp(p1, p2, t1, t2), A3 = lerp(p2, p3, t2, t3);
+  const B1 = lerp(A1, A2, t0, t2), B2 = lerp(A2, A3, t1, t3);
+  return lerp(B1, B2, t1, t2);
+}
+
+function knots(p0, p1, p2, p3, alpha) {
+  const t0 = 0;
+  const t1 = t0 + Math.pow(dist(p0, p1), alpha);
+  const t2 = t1 + Math.pow(dist(p1, p2), alpha);
+  const t3 = t2 + Math.pow(dist(p2, p3), alpha);
+  return [t0, t1, t2, t3];
+}
+
+/* Distance from a point to the segment ab — the sagitta test's measuring stick. */
+function offChord(p, a, b) {
+  const vx = b[0] - a[0], vy = b[1] - a[1];
+  const len2 = vx * vx + vy * vy;
+  if (len2 === 0) return dist(p, a);
+  let u = ((p[0] - a[0]) * vx + (p[1] - a[1]) * vy) / len2;
+  u = Math.max(0, Math.min(1, u));
+  return Math.hypot(p[0] - (a[0] + u * vx), p[1] - (a[1] + u * vy));
+}
+
+/* Recursive bisection in PARAMETER space, with the test in GROUND space. Splitting the
+   parameter evenly is not splitting the curve evenly, which is why the test has to be the
+   measured deviation rather than a count of levels. */
+function refine(out, ev, ta, tb, pa, pb, tol, depth, budget) {
+  if (depth >= budget.maxDepth || budget.n >= budget.max) return;
+
+  /* SAMPLED AT SEVERAL POINTS, NOT JUST THE MIDPOINT. Testing only the midpoint bounds
+     the midpoint and not the span: on an asymmetric bend the curve can sit within
+     tolerance halfway along and wander well outside it at the quarter points, and the
+     subdivision stops satisfied. `maxDeviationM` caught this claiming 1.75 m against a
+     1.0 m tolerance — the parameter repeated back as though it were a measurement, which
+     is the exact failure this module's comment warns about two screens up. */
+  let worst = 0;
+  for (const u of [0.2, 0.4, 0.5, 0.6, 0.8]) {
+    const d = offChord(ev(ta + (tb - ta) * u), pa, pb);
+    if (d > worst) worst = d;
+  }
+  if (worst <= tol) return;
+
+  const tm = (ta + tb) / 2;
+  const pm = ev(tm);
+  refine(out, ev, ta, tm, pa, pm, tol, depth + 1, budget);
+  /* Checked again HERE, not only on entry: the left half may have spent the budget, and
+     pushing regardless is how a cap that reads like a cap overruns it. */
+  if (budget.n >= budget.max) return;
+  out.push(pm); budget.n++;
+  refine(out, ev, tm, tb, pm, pb, tol, depth + 1, budget);
+}
+
+/**
+ * A centripetal Catmull-Rom curve through `control`, densified to a sagitta tolerance.
+ *
+ * Returns `{ coords, origins, controlIndex, spans }` where `origins[i]` is `'clicked'`
+ * for a control point and `'interpolated'` for one this module invented, and
+ * `controlIndex[i]` is the index in `control` for a clicked point or `-1` otherwise.
+ *
+ * Fewer than three control points is not a refusal and not an error — two points ARE a
+ * straight line, and there is nothing to curve. It returns them unchanged so the caller
+ * has no special case to forget.
+ */
+export function splineThrough(control, opts = {}) {
+  const o = { ...SPLINE_DEFAULTS, ...opts };
+  const pts = dedupe(control);
+  if (pts.length < 3) {
+    return {
+      coords: pts.map(p => p.slice()),
+      origins: pts.map(() => 'clicked'),
+      controlIndex: pts.map((_, i) => i),
+      spans: [],
+      why: pts.length < 2 ? 'nothing to curve yet' : 'two points are a straight line',
+    };
+  }
+
+  const f = frame(pts);
+  const P = pts.map(f.toXY);
+
+  /* Ends are REFLECTED, not duplicated. Duplicating gives a zero-length knot span, and
+     `Math.pow(0, 0.5)` is 0, so t1 === t0 and the interpolation divides by zero — a NaN
+     that propagates into every coordinate downstream. Reflection keeps the knots distinct
+     and makes the curve leave the first click along the chord to the second, which is the
+     only defensible guess about a direction nobody stated. */
+  const ext = [reflect(P[0], P[1]), ...P, reflect(P[P.length - 1], P[P.length - 2])];
+
+  const coords = [pts[0].slice()];
+  const origins = ['clicked'];
+  const controlIndex = [0];
+  const spans = [];
+
+  for (let i = 0; i + 3 < ext.length; i++) {
+    const [p0, p1, p2, p3] = [ext[i], ext[i + 1], ext[i + 2], ext[i + 3]];
+    const [t0, t1, t2, t3] = knots(p0, p1, p2, p3, o.alpha);
+    const ev = t => pointAt(p0, p1, p2, p3, t0, t1, t2, t3, t);
+    const interior = [];
+    const budget = { n: 0, max: o.maxPointsPerSpan, maxDepth: o.maxDepth };
+    refine(interior, ev, t1, t2, p1, p2, o.toleranceM, 0, budget);
+
+    let last = p1;
+    let kept = 0;
+    for (const q of interior) {
+      if (dist(q, last) < o.minSpacingM || dist(q, p2) < o.minSpacingM) continue;
+      coords.push(f.toLonLat(q));
+      origins.push('interpolated');
+      controlIndex.push(-1);
+      last = q; kept++;
+    }
+    coords.push(pts[i + 1].slice());
+    origins.push('clicked');
+    controlIndex.push(i + 1);
+    spans.push({ from: i, to: i + 1, added: kept, chordM: dist(p1, p2) });
+  }
+
+  return { coords, origins, controlIndex, spans };
+}
+
+function reflect(a, b) { return [2 * a[0] - b[0], 2 * a[1] - b[1]]; }
+
+/* Two clicks at the same place are one click. Left in, they give a zero-length span whose
+   centripetal knot collapses, and the curve fills with NaN — the failure looks like a
+   blank map rather than a bad point, so it is cheaper to refuse the duplicate here. */
+function dedupe(control) {
+  const out = [];
+  for (const p of control || []) {
+    if (!Array.isArray(p) || p.length < 2) continue;
+    if (!Number.isFinite(p[0]) || !Number.isFinite(p[1])) continue;
+    const prev = out[out.length - 1];
+    if (prev && prev[0] === p[0] && prev[1] === p[1]) continue;
+    out.push([p[0], p[1]]);
+  }
+  return out;
+}
+
+/**
+ * The worst distance, in metres, between the returned polyline and the curve it samples.
+ *
+ * **This exists so the tolerance is a measurement and not a hope.** The subdivision stops
+ * when a midpoint is within tolerance, which bounds that midpoint and not the whole span;
+ * checking the claim needs an independent, much denser sampling. The tests use it, and it
+ * is exported so a future caller can put a real number in the record rather than repeating
+ * the parameter it asked for.
+ */
+export function maxDeviationM(control, result, opts = {}) {
+  const o = { ...SPLINE_DEFAULTS, ...opts };
+  const pts = dedupe(control);
+  if (pts.length < 3) return 0;
+  const f = frame(pts);
+  const P = pts.map(f.toXY);
+  const ext = [reflect(P[0], P[1]), ...P, reflect(P[P.length - 1], P[P.length - 2])];
+  const poly = result.coords.map(f.toXY);
+  let worst = 0;
+  for (let i = 0; i + 3 < ext.length; i++) {
+    const [p0, p1, p2, p3] = [ext[i], ext[i + 1], ext[i + 2], ext[i + 3]];
+    const [t0, t1, t2, t3] = knots(p0, p1, p2, p3, o.alpha);
+    for (let k = 0; k <= 200; k++) {
+      const q = pointAt(p0, p1, p2, p3, t0, t1, t2, t3, t1 + (t2 - t1) * (k / 200));
+      let near = Infinity;
+      for (let j = 0; j + 1 < poly.length; j++) near = Math.min(near, offChord(q, poly[j], poly[j + 1]));
+      worst = Math.max(worst, near);
+    }
+  }
+  return worst;
+}
