@@ -2431,3 +2431,47 @@ structure test stands. The 15 corroborated refusals remain the reinstatement can
 on the register rather than the terrain. **And the true headline is plainer than the
 canals ever were: the dominant refusal is `inlandRiver -> inlandRiver`, 23 of 39 — an
 ordinary stream joined to another stream that sits above it, needing no mechanism at all.**
+
+---
+
+**D-071 — The repository is public, and that reversed the ruling that contributed traces
+stay private until published.**
+
+*Recorded late, and the lateness is the point. `docuracy/REWT` was made public on
+1 September 2026 and this entry is written on the 2nd, after rewt-2b went looking for a
+number to cite and found that none existed. AGENTS.md says never to silently reverse a
+decision recorded in this file — **the obligation is to the file, not to the
+conversation**, and between two people who both knew what was happening it felt recorded
+when it was not.*
+
+**What was reversed.** Asked directly that morning whether contributed tracings could be
+public, Stephen ruled they stay private until published. The reasoning was rewt-6a's
+asymmetry and it is a good one: **private to public is one click; public to private is
+impossible.** A trace released early cannot be recalled from a clone, a cache or an
+index.
+
+**Why it was overruled, in his own words.** *"Yes, the repo can go public: the Tracer
+agent will warn that I said tracings should be private, but I am now overriding that
+call."* He anticipated the objection and named the reversal himself, so nothing was
+slipped past anybody. **What it bought was the DOI**: Zenodo does not archive a private
+repository, and a citable record of the network — which is what the alpha existed to
+produce — was not otherwise available.
+
+**The argument was outweighed, not refuted, and that distinction is the reason to write
+this down.** The asymmetry is still true. Nothing has shown that publishing early is
+safe; a requirement simply arrived that was worth more. A reader meeting both rulings in
+a year — with contributed traces flowing and the pooling question settled or not — needs
+to know which of the two it was, because a refuted argument stays dead and an outweighed
+one comes back the moment its counterweight is removed.
+
+**What is actually public.** The code, the configuration, the curated judgements, and the
+`traces` branch, which today holds five test events from Stephen and rewt-2b. Three of
+their `reason` fields read *blah*. They were left deliberately: the branch's own rule is
+that nothing is deleted to correct it, and suspending that the first time it is
+*cosmetically* inconvenient is how such a rule stops meaning anything (D-067's neighbour
+in reasoning, and rewt-2b withdrew the proposal to append a withdrawal).
+
+**The gap this entry fills is the one it also demonstrates.** Two agents and a person all
+knew the ruling had been overturned; the file did not. That is exactly the failure mode
+D-067 describes at the level of artefacts, occurring at the level of decisions: everything
+in the room agreed, and the record disagreed with all of it, and nothing compared them.

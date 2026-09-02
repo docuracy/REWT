@@ -92,7 +92,7 @@ sources:
   redistribution: permitted
   status: verified
   stage: 2
-  used_by: viewer
+  used_by: none (removed from the viewer; reserved for the tracer)
   format: shapefile
   crs: EPSG:4326
   checksum: c830da98ec7cbac480c9b97ba3b6831ff19d457d8b8f6351073145897abcfdd9

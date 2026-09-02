@@ -670,7 +670,13 @@ sources:
       https://www.county-borders.co.uk
     access: open
     redistribution: permitted
-    used_by: viewer
+    # NOT DRAWN ANYWHERE TODAY. This said `viewer` until `counties.json` was removed
+    # from `docs/viewer/` — the browser compositor that masked the six-inch mosaics to
+    # county polygons went with it. If these boundaries are drawn again it will be in
+    # the tracer, and the acknowledgement travels with them. Corrected because the
+    # manifest is now cited by a DOI and a source that claims a consumer it does not
+    # have is a false statement about the build. Found by rewt-86.
+    used_by: none (removed from the viewer; reserved for the tracer)
     stage: 2
     format: [shapefile]
     crs: "EPSG:4326"
