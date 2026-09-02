@@ -573,13 +573,34 @@ def pack() -> pathlib.Path:
     # the workflow overwrites it a moment later, and wrong for anyone who reads the
     # asset directly — which is the exact failure that file exists to prevent, packaged
     # inside the artefact.
-    files = sorted(f for f in OUT.iterdir()
-                   if f.suffix in (".pmtiles", ".geojson", ".json")
-                   and f.name != "release.json")
-    if not files:
+    # PACKED FROM A MANIFEST, NOT SWEPT FROM A DIRECTORY.
+    #
+    # Excluding `release.json` by name fixed the instance; the fault was the sweep. A
+    # glob over suffixes ships whatever happens to be lying in the directory, and its
+    # output is indistinguishable from a correct manifest's — which is why the fixture
+    # went unnoticed into a published release. **The build knows exactly what it wrote**,
+    # so it should say so, and anything else present is somebody's leftover.
+    expected = (
+        ["rewt.pmtiles", "rewt_kept.pmtiles", "summary.json"]
+        + [f"{name}.geojson" for name, _, _ in VECTORS]
+        + ["dead_ends.geojson", "refused_crossings.geojson",
+           "refused_connectors.geojson"]
+    )
+    missing = [n for n in expected if not (OUT / n).exists()]
+    if missing:
         raise FileNotFoundError(
-            f"{OUT.relative_to(paths.ROOT)} is empty; run `rewt viewer-data` first"
+            f"{OUT.relative_to(paths.ROOT)} is missing {', '.join(missing)}; run "
+            "`rewt viewer-data`. The tar is built from a manifest, so a file the build "
+            "should have written and did not is an error rather than a smaller archive."
         )
+    files = [OUT / n for n in expected]
+
+    # Named, never silently left behind — a stray file is usually a leftover and
+    # occasionally something the manifest has forgotten.
+    strays = sorted(f.name for f in OUT.iterdir()
+                    if f.is_file() and f.name not in set(expected))
+    if strays:
+        log.detail(f"not packed, not in the manifest: {', '.join(strays)}")
     out.parent.mkdir(parents=True, exist_ok=True)
     with tarfile.open(out, "w") as tar:
         for f in files:
