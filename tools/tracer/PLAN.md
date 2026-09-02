@@ -274,9 +274,27 @@ deployed site rather than assumed: `viewer/data/rewt.pmtiles` answers a Range re
 settle. The link layer stops at z14 while tracing happens at the sheet's native zoom, so
 the geometry drawn under the cursor is generalised and only the identifiers are exact —
 adequate for binding, and to be measured rather than assumed for anything else. And the
-fingerprint comparison this section requires below **is not in `pages.yml`**: the workflow
-resolves the latest tag, downloads and untars, and checks nothing about what it got. That
-is rewt-d3's to land, and it is recorded here so it cannot be mistaken for done. History stays small, the rule stays intact, and the tiles cannot drift from the
+fingerprint comparison is now partly in `pages.yml` — rewt-d3 landed it at `767def5`,
+comparing the release's `provenance.json` against the unpacked `summary.json` and failing
+the deploy on a mismatch.
+
+**That check is worth having and it is not the one the rule below asks for, so it should
+not be recorded as satisfying it.** Both halves it compares come out of the same build, so
+on a D-049-style change they agree with each other and are wrong together; what it catches
+is a *mispackaged* asset, the tar ninety minutes older than the tiles that rewt-6a found.
+Nor would comparing against the checked-out tree help: `config_fingerprint` digests
+`conf/`, which advances past every release by design, and the export stage's fingerprint
+covers the transitive closure of its imports, which does the same. Either would fail
+routine deploys, and a check that is routinely overridden is worse than none.
+
+**The leg that is narrow enough to compare against the tree is the identifier scheme, and
+it is mine.** `gen_ids.py` generates `ids.js` from `rewt/ids.py` and `check_ids.py`
+asserts parity, so the tracer already fails if its identifier code drifts from the
+exporter's. What is missing is whether the identifiers in the *deployed archive* match
+that scheme — one assertion over a tile fetched from the live site, indifferent to what
+`conf/` did, and firing on exactly the event that should fire it. It belongs with
+bind-to-link, because that is when a trace first takes an identifier out of those tiles;
+written before then it would be a check with no consumer. History stays small, the rule stays intact, and the tiles cannot drift from the
 network they claim to draw.
 
 **A release asset is the vehicle, and rewt-d3 has agreed it.** A full Stage 1 build in an
