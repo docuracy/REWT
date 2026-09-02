@@ -45,7 +45,20 @@ def main(
 ) -> None:
     log.quiet = quiet
     paths.check_root()
-    _import_stages()
+    # ONLY WHERE THEY ARE NEEDED. This imported every stage — and with them rasterio,
+    # geopandas, scipy and duckdb — before running ANY command, including `rewt team`,
+    # which reads a small JSON file and needs none of it. Warm, that is a second and
+    # four CPU-seconds; cold, on a machine that has not touched the geospatial stack, it
+    # is long enough to look like a hang, which is what it looked like.
+    #
+    # The stage registry is needed by the commands that plan, run or check a build.
+    # Nothing else touches it.
+    if ctx.invoked_subcommand in {
+        "build", "run", "plan", "status", "check", "validate", "acquire", "sources",
+        "candidates", "propose", "propose-outlets", "propose-reversals",
+        "release-check", "viewer-data",
+    }:
+        _import_stages()
     if ctx.invoked_subcommand is not None:
         return
     log.rule("REWT — Stage 1")
