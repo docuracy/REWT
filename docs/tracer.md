@@ -191,51 +191,34 @@ to be inferred. Three consequences follow, and they are design rules and not cav
 
 ## What happens between the clicks
 
-A channel bends, and two clicks are two points. **Whatever the tool draws between them is
-an assertion nobody made** — a straight segment says the channel runs straight from one to
-the other, which round a meander is simply false. So the question was never whether to
-infer something between the clicks; it is which inference is least wrong, and how a reader
-is told which one was used.
+A channel bends, and two clicks are two points. **Whatever the tool draws between them is an
+assertion nobody made** — a straight segment says the channel runs straight from one to the
+other, which round a meander is simply false. So the question was never whether to infer
+something between the clicks, but which inference is least wrong, and how a reader is told
+which one was used.
 
-**The first answer was a curve that guesses, and it did not work.** A spline can infer the
-direction of the bend from the neighbouring clicks, and on two real meandering reaches —
-the *Old River Tone* at Bathpool and a *New Cut* in Cumbria, both genuinely sinuous — it
-came out between three per cent worse and seven per cent better than plain straight
-segments. It saved nobody a click. That negative result is on this page rather than
-quietly dropped, because it is the evidence that the tool is tested against real ink
-instead of designed against an idea of it, and because the reasoning that produced it was
-persuasive and wrong.
+**The first answer did not work, and it is on this page for that reason.** A curve that
+guessed the bend from the neighbouring clicks measured **between three per cent worse and
+seven per cent better** than plain straight segments on two genuinely sinuous reaches — which
+is to say it did nothing, and saved nobody a click. What was missing was information rather
+than smoothing: a guess made from points a meander's width apart carries nothing about the
+bend between them. So the tool now lets a contributor **state** the direction the water leaves
+a point instead of inferring it, and that does measurably better. It is deliberately not a
+precision instrument — pointing roughly the right way is enough, and an interface that
+demanded more would put the tool out of reach of the people it exists for. It cannot rescue
+clicking too sparsely, and that limit was predicted before the gesture was built rather than
+discovered afterwards as a disappointment.
 
-**What was missing was information, not smoothing.** A guessed curve has to work out which
-way the channel goes from the clicks either side, and when those are a meander's width
-apart the guess carries nothing about the bend between them. So the tool now lets a
-contributor *say*: place a point and drag, and the direction of the drag states which way
-the water leaves that point. The same measurement, repeated through the actual gesture,
-puts that at **twenty to thirty per cent closer** to the channel the surveyor drew.
+**A curve somebody shaped and a curve the tool guessed are kept apart in the record**, along
+with the clicks and the drags as they were made. A point on the first derives from something a
+person stated while looking at the sheet; a point on the second from an assumption nobody
+checked. They are different evidence, they are drawn differently, and a later reader can
+rebuild the line rather than having to trust it.
 
-**It is deliberately not a precision instrument.** With the drag direction thrown off by
-forty-five degrees — barely pointing the right way — and its length varied by two fifths,
-it is still about a fifth better than straight segments. Nobody needs to be taught to drag
-accurately, and an interface implying otherwise would put the tool out of reach of exactly
-the people it exists for.
-
-**And it cannot rescue clicking too sparsely, which is the limit worth stating.** At one
-click per meander there is no bend to describe and the gesture is worth one per cent —
-the same nothing the guessing curve managed. This was predicted from the first
-measurement before the gesture existed and confirmed by it afterwards, which is the only
-reason it can be stated as a limit rather than discovered later as a disappointment.
-
-**A curve somebody shaped and a curve the tool guessed are kept apart in the record.** A
-point on the first is derived from something a person stated while looking at the sheet; a
-point on the second from an assumption nobody checked.
-They are different evidence, they are drawn differently, and the file keeps them apart —
-along with the clicks themselves and the drags as made, so that a later reader can rebuild
-the line rather than having to trust it.
-
-**What is not yet known is whether it helps two people agree**, and that is the claim the
-whole volunteer strand rests on. A drag is a new thing for two contributors to disagree
-about. The distances above are between the tool and the ink; the distance that matters is
-between one person and another, and it has not been measured.
+**Whether any of this helps two people agree is unmeasured**, and that is the claim the whole
+volunteer strand rests on. A drag is a new thing for two contributors to disagree about. Every
+distance above is between the tool and the ink; the distance that matters is between one
+person and another.
 
 ## What the gate is, and what it is not
 
