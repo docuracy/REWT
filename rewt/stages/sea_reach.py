@@ -32,8 +32,13 @@ from __future__ import annotations
 import pandas as pd
 
 from .. import config, db, graph, paths, schema, sea
-from ..pipeline import PIPELINE
+from ..pipeline import PIPELINE, artefact
 from ..report import Report, log
+
+# Declared so a stage that reads it is reading something the pipeline knows about;
+# `export` does, and the check that caught this exists because an undeclared read is a
+# dependency the planner cannot order.
+LINK_SEA_REACH = artefact("link_sea_reach")
 
 
 @PIPELINE.stage(

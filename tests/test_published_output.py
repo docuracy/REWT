@@ -780,10 +780,40 @@ def test_the_two_reachability_readings_are_computed_the_same_way(audit):
         "the two readings disagree about how much reaches tidal water, which is the "
         "quantity they share"
     )
-    assert s["reaches_the_sea_km"] <= s["reaches_tidal_water_km"] + 0.5, (
-        "more length reaches the sea than reaches tidal water, which cannot happen: "
-        "the sea test is a filter applied to the tidal one"
-    )
+    # THE READINGS NO LONGER NEST, AND THIS ASSERTION USED TO SAY THEY DID.
+    #
+    # It read `reaches_the_sea_km <= reaches_tidal_water_km`, because the sea test was
+    # a filter applied to the tidal one: the only way out was through tidal water. Once
+    # §10's routes entered the routing graph a mouth could discharge through a sea wall
+    # and reach the sea without touching a `tidalRiver`, and the old invariant became
+    # false by intent rather than by error.
+    #
+    # It is replaced by a STRONGER claim rather than dropped. The four cells must
+    # partition the in-scope network exactly, and each share must be the sum of its two
+    # cells — which is what a cross-tabulation being a cross-tabulation means, and
+    # catches a mis-summed cell that the inequality never could.
+    cells = {k: s[k] for k in ("reaches_both_km", "reaches_tidal_only_km",
+                               "reaches_sea_only_km", "reaches_neither_km")
+             if k in s}
+    if len(cells) == 4:
+        assert abs(sum(cells.values()) - s["in_scope_total_km"]) < 0.5, (
+            f"the four cells sum to {sum(cells.values()):,.1f} km against an in-scope "
+            f"total of {s['in_scope_total_km']:,.1f}. They are a partition of the "
+            "network and must account for all of it."
+        )
+        assert abs((cells["reaches_both_km"] + cells["reaches_tidal_only_km"])
+                   - s["reaches_tidal_water_km"]) < 0.5, (
+            "the tidal share is not the sum of its two cells"
+        )
+        assert abs((cells["reaches_both_km"] + cells["reaches_sea_only_km"])
+                   - s["reaches_the_sea_km"]) < 0.5, (
+            "the sea share is not the sum of its two cells"
+        )
+        assert s.get("readings_are_nested") is False, (
+            "the audit still claims the readings nest. They stopped nesting when the "
+            "sea network entered the routing graph, and a reader told they nest will "
+            "derive one figure from the other and be wrong."
+        )
 
 
 def test_the_audit_ships_as_its_own_release_asset():

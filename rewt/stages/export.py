@@ -46,7 +46,7 @@ def _licence_gate(source_ids) -> None:
 @PIPELINE.stage(
     "export",
     "write the published network, the corrections, the audit and the attribution",
-    reads=["edge", "link", "node", "basin", "link_scope", "link_reach", "correction"],
+    reads=["edge", "link", "node", "basin", "link_scope", "link_reach", "correction", "link_sea_reach"],
     writes=["published"],
     params=["crs"],
     always=True,
@@ -91,6 +91,15 @@ def run() -> dict:
                s.scope_rule,
                coalesce(r.reaches_tidal, false)   AS reaches_tidal,
                r.seed_node,
+               -- THE SECOND READING, PUBLISHED BESIDE THE FIRST AND NOT INSTEAD OF IT.
+               -- The two stopped nesting when §10's routes entered the routing graph: a
+               -- mouth discharging through a sea wall reaches the sea without touching a
+               -- tidalRiver, so `reaches_sea` is not a stricter `reaches_tidal` and a
+               -- reader cannot derive either from the other. It is a column rather than
+               -- a table nobody joins, because the map themes on it — and a flag that
+               -- exists only in the database is a flag the map silently does without.
+               coalesce(q.reaches_sea, false)     AS reaches_sea,
+               q.entry_node                       AS sea_entry_node,
                coalesce(e.reversed, false)        AS routing_reversed,
                e.reversed_by                      AS reversed_by_correction,
                coalesce(e.mode, 'downstream')     AS routing_mode,
@@ -116,6 +125,7 @@ def run() -> dict:
         LEFT JOIN edge e        ON e.link_id  = a.link_id
         LEFT JOIN link_scope s  ON s.link_id  = a.link_id
         LEFT JOIN link_reach r  ON r.link_id  = a.link_id
+        LEFT JOIN link_sea_reach q ON q.link_id = a.link_id
         LEFT JOIN retirement ret ON ret.link_id = a.link_id
         LEFT JOIN link_gradient g ON g.link_id = a.link_id
         ORDER BY a.link_id

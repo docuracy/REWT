@@ -519,60 +519,78 @@ def run() -> dict:
     # the old one would put a discontinuity in the series that no reader could see —
     # the figures either side would stop being comparable while still looking like a
     # trend. rewt-1d wrote that clause into §10 and I would not remove it.
-    if db.table_exists("sea_entry"):
-        reachable_by_sea = sea.systems_the_sea_can_take(con)
-        con.execute("DROP TABLE IF EXISTS _sea_ok")
-        con.execute("CREATE TEMP TABLE _sea_ok (node_id VARCHAR)")
-        if reachable_by_sea:
-            con.executemany("INSERT INTO _sea_ok VALUES (?)",
-                            [(n,) for n in sorted(reachable_by_sea)])
-        tested = con.execute(
+    if db.table_exists("link_sea_reach"):
+        # READ FROM `link_sea_reach`, NOT RECOMPUTED HERE.
+        #
+        # This block used to derive its own answer — reaches tidal water AND the seed
+        # terminus is in a system the sea can take — which was right while those were
+        # the only two ways out. §10's routes are now in the routing graph, so a mouth
+        # can discharge through a sea wall and reach the sea without touching a
+        # `tidalRiver`, and a second arithmetic over the same question would have
+        # published 93.53% beside the flag's 96.26% (D-058). The stage owns the reading;
+        # the audit reports it.
+        cells = con.execute(
             """
-            -- OVER `edge`, EXACTLY AS THE REACHABILITY SECTION ABOVE DOES. The point
-            -- of publishing both readings is that they are comparable, so they must be
-            -- summed over the same thing — and the first version of this was not. It
-            -- summed over `link`, which omits the 2,650 links this project ADDS, and
-            -- reported 103,855 km in scope beside the audit's own 105,699. Two totals
-            -- for one quantity in one document, differing by 1,844 km, and the smaller
-            -- one made the sea share look higher. `edge` already excludes retired
-            -- links, because a retired link has no edge.
-            SELECT sum(e.length_m) / 1000.0 AS total_km,
-                   sum(CASE WHEN r.reaches_tidal THEN e.length_m ELSE 0 END) / 1000.0
-                       AS tidal_km,
-                   sum(CASE WHEN r.reaches_tidal
-                             AND r.seed_node IN (SELECT node_id FROM _sea_ok)
-                            THEN e.length_m ELSE 0 END) / 1000.0 AS sea_km
+            SELECT r.reaches_tidal, q.reaches_sea, sum(e.length_m) / 1000.0 AS km
             FROM edge e
-            JOIN link_reach r USING (link_id)
-            JOIN link_scope sc USING (link_id)
+            JOIN link_reach r     USING (link_id)
+            JOIN link_sea_reach q USING (link_id)
+            JOIN link_scope sc    USING (link_id)
             WHERE sc.in_scope
+            GROUP BY 1, 2
             """
-        ).fetchone()
-        total_km, tidal_km, sea_km = (float(x or 0) for x in tested)
+        ).fetchall()
+        cell = {(bool(t), bool(s_)): float(km) for t, s_, km in cells}
+        total_km = sum(cell.values())
+        tidal_km = sum(v for (t, _s), v in cell.items() if t)
+        sea_km = sum(v for (_t, s_), v in cell.items() if s_)
+        sea_only = cell.get((False, True), 0.0)
+        neither = cell.get((False, False), 0.0)
         report.add("reachability_tested_against_the_sea", {
             "in_scope_total_km": round(total_km, 1),
             "reaches_tidal_water_km": round(tidal_km, 1),
             "reaches_tidal_water_share": round(tidal_km / (total_km or 1), 6),
             "reaches_the_sea_km": round(sea_km, 1),
             "reaches_the_sea_share": round(sea_km / (total_km or 1), 6),
+            # THE READINGS NO LONGER NEST, so the cross-tab is the answer and either
+            # share alone is a half of it. `sea_only` is drainage that leaves through a
+            # sea wall and never touches a tidal link — invisible to the older reading
+            # by construction, not by oversight.
+            "reaches_both_km": round(cell.get((True, True), 0.0), 1),
+            "reaches_tidal_only_km": round(cell.get((True, False), 0.0), 1),
+            "reaches_sea_only_km": round(sea_only, 1),
+            "reaches_neither_km": round(neither, 1),
+            "readings_are_nested": False,
         })
         log.rule("The sea as a definition, and the sea as a test (§10)")
         log.table(
-            "in-scope reachability under both readings",
-            ["reading", "km", "share"],
+            "in-scope reachability — the readings no longer nest",
+            ["km", "share", "reading"],
             [
-                ["reaches tidal water — true by definition",
-                 f"{tidal_km:,.0f}", _share(tidal_km / (total_km or 1))],
-                ["and that tidal water reaches the sea — tested",
-                 f"{sea_km:,.0f}", _share(sea_km / (total_km or 1))],
+                [f"{cell.get((True, True), 0.0):,.0f}",
+                 _share(cell.get((True, True), 0.0) / (total_km or 1)),
+                 "reaches tidal water, and the sea"],
+                [f"{cell.get((True, False), 0.0):,.0f}",
+                 _share(cell.get((True, False), 0.0) / (total_km or 1)),
+                 "reaches tidal water only — the sea cannot take it"],
+                [f"{sea_only:,.0f}", _share(sea_only / (total_km or 1)),
+                 "reaches the SEA only — coastal drainage, no tidal link"],
+                [f"{neither:,.0f}", _share(neither / (total_km or 1)),
+                 "reaches neither — the defect"],
             ],
         )
         log.info(
-            f"{tidal_km - sea_km:,.0f} km reaches tidal water that does not itself "
-            f"reach the sea — {(tidal_km - sea_km) / (total_km or 1):.2%} of the "
-            "in-scope network, and invisible until the sea became a test. "
-            "BOTH figures are published: the fall is a change of question, not of "
-            "network, and the series is not comparable across it."
+            f"{sea_only:,.0f} km reaches the sea WITHOUT reaching tidal water — "
+            f"{sea_only / (total_km or 1):.2%} of the in-scope network, discharging "
+            "through a sea wall the survey does not draw. The two readings stopped "
+            "nesting when §10's routes entered the routing graph, so NEITHER SHARE IS "
+            "THE ANSWER ON ITS OWN and the cross-tabulation above is."
+        )
+        log.info(
+            "The stranded total falls because coastal drainage is now counted, not "
+            "because anything was repaired. **A figure improving through a change of "
+            "definition is the more flattering direction and therefore the more "
+            "dangerous**; the series is not comparable across it, in either direction."
         )
 
     # --------------------------------------------- the survey's own generalisation
