@@ -31,11 +31,18 @@ read `zsh`, and the escape sequence fixes that at no cost.
 
 `rewt` is `bin/rewt`, a wrapper — the project is deliberately not installed, because
 `AGENTS.md` requires it to run from the repository root and an installed console script
-invites running it from anywhere and finding nothing. **Put it on your PATH once:**
+invites running it from anywhere and finding nothing. **To make `rewt` typeable, permanently, link it into a directory already on your PATH:**
 
-    export PATH="$PWD/bin:$PATH"        # or add to ~/.bashrc, or: alias rewt=~/PycharmProjects/REWT/bin/rewt
+    ln -s ~/PycharmProjects/REWT/bin/rewt ~/.local/bin/rewt
 
-Until you do, it is `./bin/rewt`.
+A symlink, so it always runs the current script. `~/.local/bin` is on PATH by default on
+most Linux desktops — check with `echo $PATH` before assuming.
+
+`export PATH="$PWD/bin:$PATH"` works **for that terminal only**, and must not go in
+`~/.bashrc`: `$PWD` expands when the shell starts, so it would silently put the wrong
+directory on PATH and never find the command. Use an absolute path or the symlink.
+
+Until either is done, it is `./bin/rewt`.
 
 **Sessions find each other with `ListAgents`, which returns session names — not roles.**
 Those names change at every restart, so `rewt team status` is the join between the two: it

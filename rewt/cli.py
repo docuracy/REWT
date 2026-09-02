@@ -64,7 +64,8 @@ def main(
     )
     names = sorted(c.name for c in typer.main.get_command(app).commands.values() if c.name)
     log.detail("all commands: " + ", ".join(names))
-    log.detail("this is bin/rewt; put it on PATH with: export PATH=\"$PWD/bin:$PATH\"")
+    log.detail("this is bin/rewt — to type `rewt` anywhere: "
+               "ln -s $PWD/bin/rewt ~/.local/bin/rewt")
     log.info("TEAM.md starts the other agents. AGENTS.md is how to work here. "
              "PLAN.md is what is being built.")
 
