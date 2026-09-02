@@ -126,6 +126,7 @@ function need(obj, ...names) {
   missing.push(names[0]);
   return null;
 }
+const FINDINGS = (summary && summary.findings) || [];
 const c = (summary && summary.counts) || {};
 const R = (summary && summary.reachability) || {};
 const inScopeKm = need(R, 'total_in_scope_km', 'in_scope_km');
@@ -286,6 +287,28 @@ const THEMES = {
       ['get', 'reaches_tidal'], C.reach, C.unreached],
     legend: [['Whether it reaches tidal water', null], ['reaches tidal water', C.reach],
       ['in scope, and does NOT — the work', C.unreached], ['out of scope', C.outscope]] },
+  /* THE TWO QUESTIONS ARE NOT NESTED, which is why this is a cross-tabulation and not a
+     second shade on the reach theme. A mouth discharging through a sea wall reaches the
+     SEA without ever touching a tidalRiver, so "reaches tidal water" and "reaches the
+     sea" each have cases the other has not. Collapsing them into one "gets there"
+     colour would hide the cell that is new — 2,890 km of coastal drainage that was
+     stranded until the sea network joined the routing graph, and that the reach theme
+     above still paints as a defect because it can only ask the tidal question.
+     Offered only when the tiles actually carry `reaches_sea`; see `link_columns()`. */
+  seareach: { needs: 'reaches_sea',
+    colour: ['case', ['!', ['get', 'in_scope']], C.outscope,
+      ['all', ['get', 'reaches_tidal'], ['get', 'reaches_sea']], C.reach,
+      ['get', 'reaches_tidal'], C.tidal,
+      ['get', 'reaches_sea'], C.lake,
+      C.unreached],
+    legend: [['Tidal water and the sea, cross-tabulated', null],
+      ['both — tidal water AND the sea', C.reach],
+      ['tidal water only — the sea cannot take it', C.tidal],
+      ['THE SEA ONLY — coastal drainage with no tidal link', C.lake],
+      ['neither — the work that is left', C.unreached],
+      ['out of scope', C.outscope],
+      ['"reaches the sea" is not a stronger form of "reaches tidal water": each has '
+       + 'cases the other has not, which is why this is a table and not a scale', null]] },
   form: { colour: ['match', ['coalesce', ['get', 'form'], 'added'],
       'inlandRiver', C.reach, 'canal', C.canal, 'lake', C.lake, 'tidalRiver', C.tidal, C.add],
     legend: [['Form of water', null], ['inland river', C.reach], ['canal', C.canal],
@@ -305,6 +328,14 @@ const THEMES = {
       ['unnamed', C.warn], ['not a lake', '#39414d'],
       ['`name` is the WELSH form where one exists — the English is in `name_alt`', null]] },
 };
+/* A theme whose property the tiles do not carry would paint every link the same colour
+   and look like a bug in the data rather than an absence in the build. Dropped from the
+   control instead, and from the URL, so an old link naming it falls back rather than
+   showing a flat map. `themeAvailable` is filled in once the source has loaded. */
+const themeNeeds = (id) => THEMES[id] && THEMES[id].needs;
+let themeReady = null;
+const themeUsable = (id) => !themeNeeds(id)
+  || (themeReady !== null && themeReady.has(themeNeeds(id)));
 let theme = HASH.t && THEMES[HASH.t] ? HASH.t : 'reach';
 
 const WIDTH = ['interpolate', ['linear'], ['zoom'],
@@ -411,6 +442,33 @@ const OVERLAYS = [
              ['all but a fraction — 99%', '#86c8e8'],
              ['all of it, exactly — the network’s own blue', C.reach],
              ['grey — out of scope, or no watercourse in it at all', '#39414d']] },
+  /* ── THE TWO HALVES OF ONE DECISION, and they must be drawn as a pair ───────
+     62 connectors climb more than 2 m on the unconditioned terrain, which would route
+     water uphill. 46 are refused for it. 16 are APPLIED DESPITE IT, because a lock, a
+     culvert or a weir in the Trust's register sits within 150 m and a surveyed
+     structure outranks a 50 m terrain model — the same rule that already lets a
+     person's judgement outrank it, extended to something that was measured rather than
+     remembered.
+
+     Drawing the refusals alone would say the veto refused every climbing connector and
+     kept none, which is a stronger and more wrong claim than showing neither, so the
+     viewer held both back until the release carried the 16. They are deliberately NOT
+     the same colour: a red mark on both sets would make a reader assume the opposite of
+     what happened to half of them. Refusals read as defects; reinstatements read as
+     judgements, in the same yellow as every other curated decision. Raised by rewt-d3. */
+  { id: 'refused_connectors', kind: 'point', file: 'refused_connectors.geojson',
+    label: 'Connectors refused — they would run uphill', colour: C.unreached,
+    radius: ['interpolate', ['linear'], ['zoom'], 5, 3, 14, 7],
+    note: 'the terrain says the water at the far end is ABOVE this channel, so joining '
+      + 'them would invent a flow that runs uphill. Left as a dead end, which the audit '
+      + 'reports with the length behind it.' },
+  { id: 'reinstated_connectors', kind: 'point', findings: 'connector_climbs',
+    label: 'Connectors applied despite climbing — a structure vouches for them',
+    colour: C.add, radius: ['interpolate', ['linear'], ['zoom'], 5, 3.4, 14, 8],
+    legend: [['applied on a surveyed structure’s warrant, not on the terrain', C.add]],
+    note: 'these climb too, and were applied anyway because a lock, culvert or weir in '
+      + 'the Canal & River Trust register is within 150 m. Evidence somebody measured '
+      + 'outranks a 50 m terrain model. Each one is a place you can disagree with.' },
   { id: 'sea_entry', label: 'Sea entries', file: 'sea_entry.geojson', kind: 'point',
     count: c.sea_entries,
     colour: ['case', ['==', ['get', 'kind'], 'blocked'], C.warn, '#5ce1e6'],
@@ -613,8 +671,13 @@ async function ensure(o) {
   if (o.tiled) return;                 // already in the style, from the tile archives
   if (loaded.has(o.id)) return;
   loaded.add(o.id);
-  const data = await grab(o.file, o.label.toLowerCase());
+  /* Some layers are the audit's own findings rather than a file of their own. Built
+     here from the array the panel already lists, so there is one copy of them on the
+     page and a place in the list and a mark on the map cannot disagree. */
+  const data = o.findings ? findingsAsPoints(o.findings)
+    : await grab(o.file, o.label.toLowerCase());
   if (!data) return;
+  if (o.findings && !data.features.length) { loaded.delete(o.id); return; }
   map.addSource(o.id, { type: 'geojson', data });
   if (o.kind === 'line') {
     // A casing, so an overlay line never reads as a network line whatever the theme.
@@ -653,6 +716,18 @@ async function ensure(o) {
   wireClicks(o);
 }
 
+/* A FeatureCollection from the findings of one kind. Empty is the normal case for a
+   build whose audit did not publish that kind, and the layer then removes itself from
+   the panel rather than offering a switch that turns nothing on. */
+function findingsAsPoints(kind) {
+  const rows = FINDINGS.filter((f) => f.kind === kind && f.lon != null);
+  return { type: 'FeatureCollection', features: rows.map((f) => ({
+    type: 'Feature',
+    geometry: { type: 'Point', coordinates: [f.lon, f.lat] },
+    properties: { subject: f.subject, detail: f.detail, basin_id: f.basin_id },
+  })) };
+}
+
 function setVisible(o, on) {
   for (const id of [o.id, o.id + '-casing', o.id + '-arrows', ...(o.also || [])]) {
     if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
@@ -661,9 +736,21 @@ function setVisible(o, on) {
 
 /* ── Panel, legend, backdrops ─────────────────────────────────────────────── */
 
+/* THE LIST OF SWITCHES, COMPUTED ONCE. The panel renders this and the boot loop
+   restores it, and they index into each other by position — so two copies of the
+   predicate would mis-wire every checkbox after the first divergence, silently and
+   without an error. One function, called twice.
+
+   A layer built from findings the audit did not publish gets no switch at all. An empty
+   layer offered as a control reads as "there are none of these", which is a claim;
+   an absent control reads as "this build does not report them", which is the true one.
+   Same rule as the findings panel hiding itself. */
+const offeredOverlays = () => OVERLAYS.filter((o) => !o.findings
+  || FINDINGS.some((f) => f.kind === o.findings && f.lon != null));
+
 function buildLayerPanel() {
   const host = $('#layers');
-  for (const o of OVERLAYS) {
+  for (const o of offeredOverlays()) {
     const row = document.createElement('label');
     row.className = 'switch';
     /* A layer coloured by its data has no one colour; showing white for it made four
@@ -909,8 +996,6 @@ function wireNetwork() {
   }
 }
 
-const FINDINGS = (summary && summary.findings) || [];
-
 function renderBasins(filter = '') {
   const host = $('#basin-list');
   host.innerHTML = '';
@@ -1147,10 +1232,21 @@ map.on('load', async () => {
   buildAbout();
   await applyBackdrop();
 
+  /* WHICH PROPERTIES THE TILES ACTUALLY CARRY, asked of a rendered feature rather than
+     assumed from the build that made them: the deployed data comes from a release and
+     can be older than this code. A theme naming a property the archive has not got is
+     removed from the control here. */
+  themeReady = new Set(Object.keys(
+    (map.querySourceFeatures('rewt', { sourceLayer: 'link' })[0] || {}).properties || {}));
+  for (const opt of [...$('#theme').options]) {
+    if (!themeUsable(opt.value)) opt.remove();
+  }
+  if (!themeUsable(theme)) theme = 'reach';
+
   progress('Drawing the layers…');
   const wanted = HASH.l === undefined ? null : (HASH.l === '-' ? [] : HASH.l.split(','));
   const boxes = [...document.querySelectorAll('#layers .switch')];
-  for (const [i, o] of OVERLAYS.entries()) {
+  for (const [i, o] of offeredOverlays().entries()) {
     const want = wanted ? wanted.includes(o.id) : !!o.on;
     try {
       if (want) await ensure(o);

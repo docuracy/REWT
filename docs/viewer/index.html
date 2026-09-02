@@ -72,6 +72,9 @@
     <label class="field"><span>Colour the network by</span>
       <select id="theme">
         <option value="reach">whether it reaches tidal water</option>
+        <!-- Removed by viewer.js when the tiles do not carry `reaches_sea`, rather than
+             left to paint a flat map that looks like a data fault. -->
+        <option value="seareach">tidal water and the sea, cross-tabulated</option>
         <option value="form">form — river, canal, lake, tidal</option>
         <option value="origin">whose geometry it is</option>
         <option value="scope">why it is in scope</option>

@@ -64,13 +64,35 @@ KEPT = (
 # Measured honestly, this is a small win: 11% off a z6 `link` tile, not the large one
 # the cardinality figures suggested. MVT builds its string dictionary per tile, so a
 # column with 195,690 distinct values nationally has only as many as the tile holds.
-LINK_COLUMNS = (
+_LINK_COLUMNS = (
     "link_id, source_id, origin, form, name, name_alt, "
     "length_m, basin_id, in_scope, scope_rule, reaches_tidal, seed_node, "
     "routing_reversed, reversed_by_correction, routing_mode, retired, retired_reason, "
     "superseded_by, parent_link_id, screening_elevation_upstream_m, "
     "screening_elevation_downstream_m, screening_fall_m, screening_terrain_verdict"
 )
+
+# Columns the map draws IF the build published them. `reaches_sea` arrived with the sea
+# network joining the routing graph, and it is a genuinely different question from
+# `reaches_tidal` — the two are not nested, because a mouth discharging through a sea
+# wall reaches the sea without touching a tidalRiver. Asked for conditionally rather
+# than added to the list above, so that a tile build against an older published/ does
+# not fail on a column that does not exist yet; the viewer, in turn, offers the
+# cross-tabulated theme only when the property is actually in the tiles.
+_OPTIONAL_LINK_COLUMNS = ("reaches_sea",)
+
+
+def link_columns() -> str:
+    """The link columns to tile, minus any the published build has not got."""
+    import pyogrio
+
+    have = set(pyogrio.read_info(NETWORK, layer="link")["fields"])
+    extra = [c for c in _OPTIONAL_LINK_COLUMNS if c in have]
+    missing = [c for c in _OPTIONAL_LINK_COLUMNS if c not in have]
+    if missing:
+        log.detail(f"link has no {', '.join(missing)} — tiled without it, and the "
+                   f"viewer will not offer the theme that needs it")
+    return _LINK_COLUMNS + ("".join(f", {c}" for c in extra))
 
 # WHY THE NEVER-THINNED LAYER NEEDS A POINT LAYER BESIDE IT.
 #
@@ -137,14 +159,14 @@ def build_tiles() -> None:
 
     basin_src = _basins_on_land()
     main = [
-        ("link", f"SELECT geom, {LINK_COLUMNS} FROM link", NETWORK),
+        ("link", f"SELECT geom, {link_columns()} FROM link", NETWORK),
         ("sea_route", "SELECT geom, link_id, from_node, to_node, length_m, "
                       "min_depth_m, median_depth_m FROM sea_route", NETWORK),
         ("basin", "SELECT geom, basin_id, label, area_km2, in_scope, scope_reason, "
                   "england_wales_area_km2, outlet_node, provisional FROM basin",
          basin_src),
     ]
-    kept = [("link_kept", f"SELECT geom, {LINK_COLUMNS} FROM link WHERE {KEPT}", NETWORK)]
+    kept = [("link_kept", f"SELECT geom, {link_columns()} FROM link WHERE {KEPT}", NETWORK)]
 
     _archive(OUT / "rewt.pmtiles", OUT / "_stage.gpkg", main,
              "REWT Stage 1", with_points=False)
@@ -288,6 +310,7 @@ def build_layers() -> None:
                     OUT / "refused_crossings.geojson")
 
     _dead_ends()
+    _refused_connectors()
     _summary()
     total = sum(f.stat().st_size for f in OUT.glob("*.geojson")) / 1e6
     log.done(f"docs/viewer/data/ — 9 GeoJSON layers, {total:,.1f} MB, and summary.json")
@@ -310,6 +333,49 @@ def _dead_ends() -> None:
         {"type": "FeatureCollection", "features": feats}, allow_nan=False))
     log.detail(f"dead_ends.geojson — {len(feats):,} in-scope defects of {len(rows):,} "
                f"non-tidal sinks; the rest are out of scope and stay in audit/")
+
+
+def _refused_connectors() -> None:
+    """The connectors refused for climbing, as points — the other half of a pair.
+
+    THIS LAYER IS ONLY HALF A STORY ON ITS OWN, and that is why it is exported next to
+    the `connector_climbs` findings rather than instead of them. A map showing the
+    refusals alone says the veto refused every connector that climbed and reinstated
+    none, which is a stronger and more wrong claim than showing neither. The viewer
+    draws the two together: refused for climbing, and applied despite climbing on the
+    warrant of a surveyed structure. Raised by rewt-d3, who was right that a red mark on
+    both sets would make a reader assume the opposite of what happened to half of them.
+
+    From `repair.json`, which the audit writes, rather than from the database: the same
+    rule as `_dead_ends`, so the map and the audit cannot drift apart.
+    """
+    src = paths.PUBLISHED / "audit" / "repair.json"
+    if not src.exists():
+        log.detail("repair.json absent — no refused-connector layer")
+        return
+    from pyproj import Transformer
+
+    rows = json.loads(src.read_text()).get("findings", [])
+    climbs = [r for r in rows
+              if "climbs" in (r.get("detail") or "")
+              and r.get("easting") is not None and r.get("northing") is not None]
+    to_wgs = Transformer.from_crs(27700, 4326, always_xy=True)
+    feats = []
+    for r in climbs:
+        lon, lat = to_wgs.transform(r["easting"], r["northing"])
+        feats.append({
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [round(lon, 6), round(lat, 6)]},
+            # `detail` is the audit's own sentence, printed verbatim. It carries the rise
+            # and the reason, and rewording it here would be a second opinion wearing the
+            # audit's name.
+            "properties": {"subject": r.get("subject"), "detail": r.get("detail"),
+                           "basin_id": r.get("basin_id")},
+        })
+    (OUT / "refused_connectors.geojson").write_text(json.dumps(
+        {"type": "FeatureCollection", "features": feats}, allow_nan=False))
+    log.detail(f"refused_connectors.geojson — {len(feats):,} refused for climbing, "
+               f"of {len(rows):,} skipped corrections")
 
 
 def _summary() -> None:
