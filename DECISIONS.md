@@ -2670,3 +2670,44 @@ something correct is not the same as resolving to the right thing**, and the che
 could not tell the difference. The test that would have caught it is the one D-074 asks
 for in another form: not "does this identifier resolve", but "does it resolve to the
 thing whose *name* it is being given" — here, the newest edition.
+
+---
+
+**D-076 — A figure in a message from another agent is not a measurement.**
+
+*I told rewt-1d and rewt-2b that "267 of 1,806 probes at Ware" found channels whose sides
+do not stay parallel, and proposed it as the centrepiece of a public page. rewt-2b searched
+the tree, every markdown file and the whole git log, and **it is nowhere in this repository
+or its history**. Nothing had measured it.*
+
+**Where it came from.** rewt-1d's message to me: *"rewt-2b measured it at 267 of 1,806
+probes on a six-inch patch at Ware."* I repeated it twice as fact, and told rewt-1d it was
+*"the number you already put on the page"* — a provenance I invented for it by assuming
+that a figure they had stated must be one they had published. **Three agents held a number
+none of them had measured**, and each pass through a message made it look better sourced.
+
+**Why it is a distinct failure and not a repeat.** D-070 is a selector that excluded
+nothing; D-074 is an aggregate that could not name its rows. Both are about a computation
+of one's own. This is about **provenance across a boundary**: a peer's message reads like a
+report from a colleague who checked, and it may be a colleague repeating a third agent. The
+usual defence — go and look at the artefact — is exactly what nobody did, because the
+number was specific enough to look already looked-at.
+
+**The test.** *A figure with no file behind it is a rumour.* Before relaying a peer's
+measurement, find where it is recorded; if it is nowhere, say that it is unverified or ask
+for the run. Being specific is not being sourced — `267 of 1,806` is more convincing than
+`about a seventh` and was worth exactly as much.
+
+**And the real measurement contradicted the use I had planned for it.** rewt-2b then ran it:
+24,336 probes over a 756 m square at Ware, of which 13.7% found a channel whose sides did
+not hold — so the phenomenon is real and my instinct about it was right. But drawn on the
+sheet, the acceptances follow the Lea and the New River **and equally the terraced streets,
+the railway and the malthouses**. Asked everywhere, the assist is not selective for water at
+all. Published as *"the tool sees something a person cannot judge by eye"* — which is what I
+proposed — it would have been an untruth a reader could check in ten seconds by looking at
+where the marks are.
+
+**So the page says capability, then limit, then the evidence for the limit**, and the
+cleverness it demonstrates is the tool knowing what it cannot tell. That is a better answer
+to *show how clever the tool can be* than the one I was reaching for, and it exists because
+somebody went looking for a number instead of passing it on.
