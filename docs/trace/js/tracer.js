@@ -75,6 +75,41 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
       map.addLayer({ id: 'trace-candidate', type: 'line', source: SRC_CANDIDATE,
         /* Dashed, because it is not committed. */
         paint: { 'line-color': '#ff3b6b', 'line-width': 2, 'line-dasharray': [2, 2], 'line-opacity': 0.8 } });
+      /* A CASING, BECAUSE THE GROUND IS THE COMPETITOR AND NOT THE OTHER MARKERS.
+         The three origin colours separate from each other well past threshold — but they
+         are drawn ON a historic sheet, which is 20–30% ink, and a marker landing on a
+         hachure, a parish boundary or a block of stipple is competing with that. Measured
+         against ink sampled from real NLS six-inch tiles rather than guessed at
+         (rewt-fc's `GROUNDS`, tools/palette_audit.py):
+
+             on the worst real ink, worst vision type
+               clicked   dE  1.9 on #878070 (protan)   <- BELOW the just-noticeable difference
+               centred   dE 31.1
+               snapped   dE 23.3
+
+         The worst case falls on the marker that matters MOST — the person's own
+         judgement, the only thing the display obligation exists to distinguish — while
+         the two machine-placed states are safe. The wrong way round, and mechanically so:
+         `clicked` is the one marker drawn SOLID in its own colour, so it is wholly against
+         the ground, where the other two are white-filled and carry their own pale
+         interior. A white casing gives all three that interior. Measured after:
+
+               clicked 30.8   centred 26.9   snapped 39.3   (against the casing)
+               casing vs the four sampled inks   33.5 / 43.0 / 51.3 / 55.7
+               casing vs paper                    4.4   <- correctly invisible where
+                                                            nothing is wrong
+
+         The same move as the viewer's line casings, for the same reason. Ring geometry is
+         flush with the marker and does not overlap it: marker 5+2 px, casing 7..9;
+         snapped marker 2.5+2, casing 4.5..6.5. */
+      map.addLayer({ id: 'trace-vertex-casing', type: 'circle', source: SRC_VERTEX,
+        paint: {
+          'circle-color': 'rgba(0,0,0,0)',
+          'circle-radius': ['case', ['==', ['get', 'origin'], 'snapped'], 4.5, 7],
+          'circle-stroke-color': '#ffffff',
+          'circle-stroke-width': 2,
+          'circle-stroke-opacity': 0.95,
+        } });
       map.addLayer({ id: 'trace-vertices', type: 'circle', source: SRC_VERTEX,
         paint: {
           /* ── MEASURED FOR COLOUR VISION, NOT CHOSEN BY EYE ─────────────────────────
@@ -86,9 +121,10 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
                 clicked vs centred   worst 34.4 (protan)
                 clicked vs snapped   worst 35.8 (normal)
                 centred vs snapped   worst 16.4 (deutan)   <- the tightest pair
-                each vs the paper    25.7 / 30.4 / 38.5
 
-             All clear the tool's threshold of 15. The tightest pair is the one that
+             All clear the tool's threshold of 15. Marker against marker is only the easy
+             half, though, and measuring it alone is what let the ink failure through —
+             see the casing above, and `against_ground` for the half that decides it. The tightest pair is the one that
              matters least — both are machine-placed — while **a person's vertex against a
              machine's, which is the distinction the design rests on, is the widest.**
              Shape carries it too: clicked is solid and 5 px, the others hollow, snapped
