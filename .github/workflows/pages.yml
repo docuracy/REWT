@@ -126,6 +126,18 @@ jobs:
             exit 0
           fi
           tar -xf /tmp/viewer-data.tar -C docs/viewer/data
+
+          # WHICH RELEASE THIS DATA IS, recorded here because this is the only place
+          # that knows. `rewt viewer-data` stamps summary.json's citation with the
+          # version in CITATION.cff AT BUILD TIME, and cutting a release bumps that file
+          # — so the first deploy of v0.1.1-alpha carried a citation reading v0.1.0-alpha
+          # and told readers to cite an edition its numbers did not come from. The
+          # fourteen minutes between building the asset and tagging it is enough.
+          #
+          # Additive rather than a patch to summary.json: the stamped version is what
+          # the build believed and is worth keeping, and the tag is what the asset was
+          # actually attached to. The viewer prefers the tag and says so.
+          printf '{"tag": "%s"}\n' "$tag" > docs/viewer/data/release.json
           echo "from release $tag:"
           ls -la docs/viewer/data
 

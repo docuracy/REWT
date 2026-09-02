@@ -82,10 +82,14 @@ for (const k of ['zoom', 'lat', 'lon', 'b', 'o', 't', 'l']) {
    nowhere. Absent is the normal case, not an error: a local preview has no key, and a
    fork's deployment will not have one either. A 404, a network failure and a malformed
    file all mean the same thing — no keys — and none of them should stop the map. */
-const [summary, backdrops, keys] = await Promise.all([
+const [summary, backdrops, keys, release] = await Promise.all([
   grab('summary.json', 'the headline figures and the basin table'),
   fetch('backdrops.json').then((r) => r.json()),
   fetch('keys.json').then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
+  /* Written by the Pages workflow, which is the only thing that knows which release the
+     data came from. Absent in a local preview, where the stamped version is all there
+     is. See the citation box for why the two can differ. */
+  fetch(DATA + 'release.json').then((r) => (r.ok ? r.json() : null)).catch(() => null),
 ]);
 
 /* ── Figures ──────────────────────────────────────────────────────────────── */
@@ -968,6 +972,11 @@ async function buildEpochs() {
 function buildAbout() {
   const prov = (summary && summary.provenance) || {};
   const cite = summary && summary.citation;
+  /* The version the BUILD stamped, against the release the data was attached to. They
+     agree in the ordinary case and the box says nothing; when they disagree the tag
+     wins, because a citation must name the edition the numbers came from. */
+  const stamped = cite && cite.version;
+  const version = (release && release.tag) || stamped;
   const year = (prov.built_at || '').slice(0, 4) || '2026';
   $('#about-body').innerHTML = `
     <h3>What this is</h3>
@@ -1003,7 +1012,7 @@ function buildAbout() {
 
     ${cite ? `<h3>Citing this</h3>
     <p><code>${esc(cite.authors.join('; '))} (${esc(year)}).
-    ${esc(cite.title)}. Version ${esc(cite.version)}.
+    ${esc(cite.title)}. Version ${esc(version)}.
     ${esc(cite.affiliations.join('; '))}. doi:${esc(cite.doi)}</code></p>
     <p>${esc(cite.message)}</p>
     <p><a href="https://doi.org/${esc(cite.doi)}" target="_blank" rel="noopener">${esc(cite.doi)}</a>
@@ -1015,7 +1024,15 @@ function buildAbout() {
 
     <h3>This build</h3>
     <p>Built ${esc((prov.built_at || '').slice(0, 16).replace('T', ' '))}, configuration
-    fingerprint <code>${esc(prov.config_fingerprint || '—')}</code>.</p>
+    fingerprint <code>${esc(prov.config_fingerprint || '—')}</code>.
+    ${release ? `The figures above are read from the data attached to release
+    <b>${esc(release.tag)}</b>.` : 'No release is named, so these figures come from a '
+      + 'local build rather than from a published edition.'}</p>
+    ${stamped && release && stamped !== release.tag ? `<p><b>The version to cite is
+    ${esc(release.tag)}, not ${esc(stamped)}.</b> The citation is stamped into the data
+    when it is built, and the version is bumped when the release is cut a few minutes
+    later — so a freshly built asset can carry the previous edition's number. The tag is
+    what the data was actually published as, and it is what this box shows.</p>` : ''}
 
     <h3>Elsewhere</h3>
     <p><a href="../" target="_blank" rel="noopener">The project site</a> ·
