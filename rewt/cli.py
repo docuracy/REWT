@@ -53,8 +53,9 @@ def main(
         "what you are most likely to want",
         ["command", "what it does"],
         [
-            ["rewt team claim", "take a role in the team, and name this terminal tab"],
-            ["rewt team status", "which session holds which role"],
+            ["rewt team", "who holds which role, and the other team commands"],
+            ["rewt team claim", "take a role, and name this terminal tab"],
+            ["rewt team shutdown", "clear the board when stopping the team"],
             ["rewt build", "run the pipeline — only the implementer does this"],
             ["rewt viewer-data", "build the map's tiles and layers from published/"],
             ["rewt release-check TAG", "refuse a release that is not clean, current, green"],
@@ -508,7 +509,10 @@ def viewer_data_cmd(
 
 @app.command("team")
 def team_cmd(
-    action: str = typer.Argument("claim", help="claim | status | release | shutdown"),
+    # DEFAULTS TO status, NOT claim. It defaulted to claim, so `rewt team` — which reads
+    # like a question — took a role. A bare command that looks like a query must not
+    # mutate anything, and claiming is a mutation another session can see.
+    action: str = typer.Argument("status", help="status | claim | release | shutdown"),
     role: Optional[str] = typer.Option(None, "--role", help="a specific role"),
     name: Optional[str] = typer.Option(None, "--name", help="this session's name"),
     force: bool = typer.Option(False, "--force", help="retake a role whose holder has gone"),
@@ -536,6 +540,9 @@ def team_cmd(
             for r, _owns, _task in team.ROLES:
                 c = held.get(r)
                 print(f"{r}\t{c.session if c else '-'}\t{c.claimed_at if c else '-'}")
+        log.detail("rewt team claim [--role R]   take a role, and name this terminal tab")
+        log.detail("rewt team release --name S    give one back")
+        log.detail("rewt team shutdown           clear the board when stopping the team")
         log.table(
             "roles",
             ["role", "held by", "state", "owns"],

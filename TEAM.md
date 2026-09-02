@@ -29,8 +29,8 @@ read `zsh`. The escape goes to stderr and only to a real terminal, so a captured
 redirected run is unaffected; **the role itself is printed on stdout**, so
 `role=$(rewt team claim)` works.
 
+    rewt team                  # who holds what, and the other commands. Changes nothing.
     rewt team claim            # take the next free role
-    rewt team status           # who holds what, and for how long
     rewt team release --name X # give a role back
     rewt team shutdown         # clear the board when stopping the team
 
