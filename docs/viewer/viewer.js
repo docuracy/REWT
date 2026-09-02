@@ -25,8 +25,34 @@ const esc = (s) => String(s ?? '').replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>':
 /* Two palettes, one rule: an overlay shares a theme's colour only where it means the
    same thing. Theme colours are cool because every one of them is water the survey
    drew; overlay colours are warm or bright because none of them is. */
+/* MEASURED, NOT CHOSEN BY EYE. Every pair that can share a screen was simulated for
+ * protanopia, deuteranopia and tritanopia (Viénot, Brettel & Mollon) and separated with
+ * CIEDE2000. The old `form` theme failed badly: canal against tidal river was **dE 2.5**
+ * under deuteranopia — at the just-noticeable difference — with river/tidal at 2.7 and
+ * river/canal at 4.5, so four of its five colours were one colour for roughly one man in
+ * twelve. It is now dE 15 or better on every pair of every theme.
+ *
+ * The three that moved are canal, lake and tidal river; inland river keeps its blue
+ * because it is the dominant class and a river map whose rivers are not blue is a worse
+ * map however well it measures.
+ *
+ * CANAL IS WARM ON PURPOSE, and the reason is not only separation. Once river, tidal and
+ * lake are all natural water and all cool, there is nowhere left in the blue-violet
+ * family for a fourth — the first attempt put canal at #006699 and it measured well and
+ * was nearly invisible on this ground, which only looking caught. A burnt sienna clears
+ * the background, clears every other form by dE 25, and says "engineered, not natural"
+ * at a glance, which is the actual distinction a reader wants from that class.
+ *
+ * ONE PAIR MEASURES CLOSE AND IS FINE: canal against the dead-end marks, dE 9.0 under
+ * deuteranopia. Canals are lines and dead ends are circles sized by the length stranded
+ * above them, so shape and size both separate them.
+ *
+ * Seeds against tidal river is the same case, dE 9.6, and the seed layer is off by
+ * default besides. `tools/palette_audit.py` is the instrument; it lists both exceptions
+ * with the channel that carries the distinction instead, and fails on anything new.
+ */
 const C = {
-  reach: '#1b9ce6', canal: '#6c7bd9', lake: '#2ec4b6', tidal: '#8f6fe8',
+  reach: '#1b9ce6', canal: '#bb631b', lake: '#c6cce7', tidal: '#66ffcc',
   outscope: '#7f8b9c', unreached: '#ff2d55',
   add: '#ffd21e', rev: '#39e08b', retiredc: '#ff5cf0', seed: '#ffffff', warn: '#ff9f1c',
 };
@@ -288,12 +314,45 @@ const WIDTH = ['interpolate', ['linear'], ['zoom'],
 
 /* ── Overlays: small enough to be flat files, and needed whole at every zoom ── */
 
+/* ── PATTERN IS THE PRIMARY CHANNEL FOR PROVENANCE, HUE IS THE REDUNDANT ONE ────
+ * Measured on this palette rather than asserted. Simulating protanopia, deuteranopia
+ * and tritanopia and computing CIEDE2000 between every pair that can share a screen:
+ * the default `reach` theme is clean (no pair under dE 15), but `form` collapses —
+ * canal against tidal river is **dE 2.5** under deuteranopia, which is at the
+ * just-noticeable difference, and river/tidal and river/canal are 2.7 and 4.5. Four of
+ * its five colours become one colour for roughly one man in twelve.
+ *
+ * AND IT CANNOT BE FIXED BY CHOOSING BETTER COLOURS. Of a 2,149-colour pool, ZERO clear
+ * both the fixed form colours and all five hues that already carry meaning here
+ * (unreached, warn, reversals, retired, out of scope) at dE > 20 under all four vision
+ * types; the constraint only becomes satisfiable at dE > 12, which is too weak for a
+ * 2-pixel line. The map has simply run out of hue: seven meanings were already in it.
+ *
+ * So each provenance overlay is identifiable by PATTERN ALONE — dashed for geometry we
+ * added, solid-with-arrows for a reversal, fine-dashed-and-offset for a retirement —
+ * and keeps its hue as a second, redundant signal. Nobody who sees colour loses
+ * anything; everybody who does not gets the distinction back. Pattern also survives a
+ * projector and daylight, which is the same argument without the accessibility framing.
+ * Raised by rewt-d3.
+ */
+
 const OVERLAYS = [
+  /* Dashed because it is INFERRED GEOMETRY. No surveyor drew this line: the project put
+     it there to close a gap, and a broken line is the conventional way to say so. That
+     the dash also separates it from the solid network under any colour vision is the
+     second reason, not the first. */
   { id: 'connectors', label: 'Connectors — geometry we added', file: 'connectors.geojson',
-    kind: 'line', colour: C.add, width: 2.6, count: c.connectors },
+    kind: 'line', colour: C.add, width: 2.6, dash: [3, 1.6], count: c.connectors,
+    legend: [['dashed — no surveyor drew it; this project inferred it', C.add, 'dash']] },
+  /* Solid, and the ARROWS are its pattern — the only overlay whose finding is about
+     direction, so the channel that carries it should show direction. A dash here would
+     be a second signal for a distinction the arrows already make, which is noise rather
+     than redundancy. */
   { id: 'reversals', label: 'Reversals — direction changed, geometry untouched',
     file: 'reversals.geojson', kind: 'line', colour: C.rev, width: 2.6, arrows: true,
-    count: c.reversals },
+    count: c.reversals,
+    legend: [['solid, with arrows — the geometry is the survey’s, the direction is ours',
+              C.rev]] },
   /* DRAWN BESIDE ITS REPLACEMENT, NOT ON TOP OF IT. Every one of these retirements is
      the same operation: OS Open Rivers carries no node partway along a link, so to
      attach a connector the link is cut, the original retired and two children created —
@@ -346,11 +405,11 @@ const OVERLAYS = [
              ['deep — 120 m and over', '#123f8a']] },
   { id: 'basins-fill', label: 'Basins, by share reaching the sea', tiled: true,
     on: true, swatch: '#ff9f1c', count: c.basins, also: ['basins-line'],
-    legend: [['none of it reaches the sea', '#ff2d55'],
-             ['about three quarters', '#ff9f1c'],
+    legend: [['none of it reaches the sea — the network’s own red', C.unreached],
+             ['about three quarters', '#ffb03b'],
              ['nearly all — 95%', '#ffe066'],
-             ['all but a fraction — 99%', '#7cb342'],
-             ['all of it, exactly', '#1b5e20'],
+             ['all but a fraction — 99%', '#86c8e8'],
+             ['all of it, exactly — the network’s own blue', C.reach],
              ['grey — out of scope, or no watercourse in it at all', '#39414d']] },
   { id: 'sea_entry', label: 'Sea entries', file: 'sea_entry.geojson', kind: 'point',
     count: c.sea_entries,
@@ -525,13 +584,23 @@ async function addNetwork() {
      anyone is looking for: a basin that is whole against one that is nearly whole. The
      `==` case takes the complete ones out first; the ramp then has 0 to 0.99 to itself
      and can spend its range where the variation is. */
+  /* THE RAMP RAN RED TO GREEN, which is the classic failure and was the worst thing the
+     palette audit found — worse than the form theme, because it inverts a meaning rather
+     than merging two. "None of it reaches the sea" (#ff2d55) against "99% does" (#7cb342)
+     measured **dE 1.4 under deuteranopia**: a basin that strands all its water looked
+     identical to one that strands almost none. End to end it was dE 13.8 under
+     protanopia.
+     It runs red to BLUE now, ending on the two colours the network itself uses for the
+     same two meanings — `unreached` red and `reach` blue — so the basin fill and the
+     lines over it say the same thing in the same colours. End to end that is dE 46 to 60
+     under all four vision types. */
   map.addLayer({ id: 'basins-fill', type: 'fill', source: 'rewt', 'source-layer': 'basin',
     layout: { visibility: 'none' },
     paint: { 'fill-opacity': 0.4, 'fill-color': ['case',
       ['<', byId, 0], '#39414d',
-      ['>=', byId, 0.9999], '#1b5e20',
+      ['>=', byId, 0.9999], C.reach,
       ['interpolate', ['linear'], byId,
-        0, '#ff2d55', 0.4, '#ff6b35', 0.75, '#ff9f1c', 0.95, '#ffe066', 0.99, '#7cb342']] } },
+        0, C.unreached, 0.4, '#ff6b35', 0.75, '#ffb03b', 0.95, '#ffe066', 0.99, '#86c8e8']] } },
     'network-out');
   map.addLayer({ id: 'basins-line', type: 'line', source: 'rewt', 'source-layer': 'basin',
     layout: { visibility: 'none' },
