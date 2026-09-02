@@ -132,13 +132,16 @@ to what a person indicated; it does not go looking.
 <figure class="sheet-figure narrow">
   <div class="frames">
     <img src="{{ '/assets/maps/tracer-lea-at-ware.jpg' | relative_url }}"
-         alt="The tracer on the six-inch second edition at Ware: a traced line along the Lea past the wharves, most of its vertices drawn solid where a hand placed them and a few drawn hollow where the tool moved them to the middle of the channel.">
+         alt="The tracer on the six-inch second edition at Ware: a traced line along the Lea past the wharves, seven of its vertices drawn solid where a hand placed them and six drawn hollow where the tool moved them to the middle of the channel, each ringed in white so it stays legible where it falls on printed ink.">
   </div>
   <figcaption><strong>Both operations, in one line, chosen vertex by vertex.</strong> The Lea
-  at Ware past the wharves, on the six-inch. <strong>Most vertices are left where the hand put
-  them</strong>; a few are moved to the middle and drawn hollow. That ratio is the honest part
-  — a frame in which every vertex had been moved would be a frame of a tool that had stopped
-  discriminating. Traced by a contributor, not staged for the photograph.
+  at Ware past the wharves, on the six-inch. <strong>Seven vertices are left where the hand put
+  them; six are moved to the middle and drawn hollow.</strong> That split is the honest part —
+  a frame in which every vertex had been moved would be a frame of a tool that had stopped
+  discriminating. The clicks are the ones already recorded in the paired traces, replayed
+  rather than composed for the photograph, and the line under the map is the tool's own
+  account of what it just did. Every marker carries a white ring, which is why the ones
+  crossing the lettering of <em>Wharves</em> can still be read.
   <span class="credit">Reproduced with the permission of the National Library of
   Scotland.</span></figcaption>
 </figure>
