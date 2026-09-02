@@ -1311,6 +1311,57 @@ misconfigured reader returns.
 
 ---
 
+### The curve mode, measured — and it does not save anybody a click
+
+Built at `cb07ccc` on the argument that a straight segment between two clicks asserts the
+channel runs straight, which round a bend is false, so a smooth curve is the less wrong
+prior. The reasoning still looks right. **The benefit is not there.**
+
+**How it was measured.** The only ground truth available is the ink-follower's own line,
+so on each reach it traced the channel at full density and that became the reference.
+Sparse "clicks" were then sampled from that reference at several densities, and two lines
+built through them — the straight polyline a contributor gets today, and the curve — each
+compared back against the full reference. Sampling the clicks FROM the reference removes
+my own aim as a variable, which the first attempt did not: reading a channel off a
+downscaled screenshot by eye tested my hand, not the mode.
+
+    Old River Tone, Bathpool — 421 m, sinuosity 1.374, reference jitter 2.19 m
+      15 clicks   straight 3.06 m   curve 2.93 m    +4%
+      10 clicks   straight 5.10 m   curve 5.26 m    -3%
+       8 clicks   straight 5.50 m   curve 5.30 m    +4%
+       6 clicks   straight 6.25 m   curve 6.09 m    +3%
+
+    New Cut, Cumbria — 201 m, sinuosity 1.309, reference jitter 3.22 m
+       7 clicks   straight 2.35 m   curve 2.19 m    +7%
+       5 clicks   straight 1.98 m   curve 2.01 m    -2%
+       4 clicks   straight 5.41 m   curve 5.41 m     0%
+       3 clicks   straight 6.45 m   curve 6.45 m     0%
+
+Both reaches are genuinely sinuous — 1.37 and 1.31, with 30 m of amplitude off the chord —
+so this is not the null you get from testing a curve mode on a straight river.
+
+**Why it fails, which is more useful than the fact that it does.** A spline can only
+recover a bend the clicking actually sampled. These meanders have a wavelength around 80
+to 100 m. At six clicks over 421 m the spacing is 70 m — at or below Nyquist, so neither
+method has any information about the bend and both miss it by the same 6 m. At fifteen
+clicks the spacing is 28 m, both methods have converged to the reference's own 2.2 m
+jitter, and there is no headroom left to win. **The window where a curve could help is
+between about two and four clicks per meander wavelength, and for these channels it is
+only a few metres wide and worth a few per cent.**
+
+**The honest limit of this result.** The reference carries 2.2 to 3.2 m of its own jitter,
+so an effect smaller than that is invisible to this experiment. But an effect smaller than
+that is also smaller than the channels being traced are wide — 26.6 m at Ware — so it
+could not matter for the purpose even if it were real.
+
+**What follows.** The mode stays, off by default, and **no page tells a contributor it
+will save them clicks**, because on this evidence it will not. Two reaches is not many;
+what would change the conclusion is a channel with a long smooth bend — a canal, a large
+river meander with a radius in the hundreds of metres — where the chord error grows as the
+square of the spacing and the curve has something to recover. That is the test worth
+running before it is ever recommended, and it is written here so the argument that built
+it is not made again from the armchair.
+
 ## 12. What would falsify this plan
 
 - **Snapped traces by two people do not agree.** Then contributed geometry cannot be
