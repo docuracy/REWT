@@ -2387,3 +2387,47 @@ reads the whole band on every call. Sampling per connector would have read a 128
 raster 1,200 times; both the veto and the audit collect every coordinate first and read
 it twice. The docstring says the function is for questions that are national — it is, and
 that is exactly why calling it in a loop is wrong.
+
+---
+
+**D-070 — Before believing a selector, confirm it excludes something.**
+
+*I reported a canal signal twice, with numbers, and there was no canal signal. The
+classifier was `'canal' in reason.lower()`, and `propose_component_outlets` writes
+"D-011: a canal reaches the sea through a structure the survey does not draw" into every
+reason it generates. **It selected 517 of 517.** Measured on the actual `form` field,
+canals climb LESS than everything else — 4.7% against 8.9%.*
+
+**Why it was convincing.** The figure was not asserted, it was *computed*, which made it
+look checked. A number carries the authority of a measurement whether or not the thing it
+selected was the thing it was named for. Two people then spent an hour arguing about the
+mechanism of the effect — aqueduct, cutting, embankment — and the argument got sharper as
+it went, because that is what a real number does to careful people. rewt-fc's own line
+came before either of us knew: *the physical story keeps being the part that is assumed
+while the arithmetic is the part that is checked.*
+
+**It is the same failure as D-039's `Medieval` also matching `Post Medieval`, in a field
+nobody classes as a vocabulary.** That is why the recorded lesson did not fire: a `reason`
+column is free prose until a template makes every value share a phrase, and then it is a
+controlled vocabulary that nothing declares as one.
+
+**Three sessions hit the shape in one night, in three surfaces.** This; a `curl` returning
+200 from CARTO read as "no key needed", when the 200 was a tile with API KEY REQUIRED
+written across it; and a grep of `nls_25_inch.json` for `mapseries` returning zero from a
+file that holds layer *names* while a different file held the base URL. Status code for
+content, substring for field value, filename for payload. **Each returns something crisp,
+so it looks checked rather than assumed.**
+
+**The test, which would have caught all three.** Print what the selector matches against
+the population, and look at one row it rejected. `517 of 517` says it immediately;
+`6.5% against 2.6%` does not. A filter that matches everything and a filter that matches
+the right thing are indistinguishable from their output alone.
+
+**What is retracted is an EXPLANATION, not a finding**, and the distinction matters
+because "there is no canal signal" is easily misheard as "the refusals were wrong". The
+veto never needed the canal story: 62 connectors climb more than 2 m, they climb whatever
+they are made of, and joining a channel to water above it is wrong on its own terms. The
+structure test stands. The 15 corroborated refusals remain the reinstatement candidates,
+on the register rather than the terrain. **And the true headline is plainer than the
+canals ever were: the dominant refusal is `inlandRiver -> inlandRiver`, 23 of 39 — an
+ordinary stream joined to another stream that sits above it, needing no mechanism at all.**
