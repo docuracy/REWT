@@ -2733,3 +2733,46 @@ where the marks are.
 cleverness it demonstrates is the tool knowing what it cannot tell. That is a better answer
 to *show how clever the tool can be* than the one I was reaching for, and it exists because
 somebody went looking for a number instead of passing it on.
+
+---
+
+**D-077 — "Not yet asked" and "asked, and it is not there" are different answers, and code
+that conflates them fails silently.**
+
+*rewt-fc's finding, recorded here because it is the third instance of one shape in a day
+and the other two are already in this file.*
+
+**The instance.** The viewer decided whether to offer the sea cross-tab theme by asking a
+*rendered feature* what properties it carried:
+
+```
+map.querySourceFeatures('rewt', {sourceLayer: 'link'})[0]?.properties
+```
+
+It runs during boot, before the first tile has drawn, so it returned **zero features**, the
+property set came back empty, and the theme was struck from the control. Seconds later the
+same call returns 168,971 features carrying `reaches_sea`.
+
+**Five confirmations across two sessions could not find it, and none of them was wrong.**
+I verified the column in `export.py`, in the published GeoPackage, in the GeoPackage
+downloaded back from the release, and in `rewt.pmtiles`; rewt-fc verified it independently
+in the tar. Every check passed because **the data was never the problem**. The map's answer
+to *does this build support the theme?* was decided by how much had rendered at one instant.
+
+**The generalisation, which is the reason to write it down.** An empty answer was allowed to
+wear the authority of a definite one — the same fault the predicate was trying to diagnose.
+It is D-074's shape at a different scale: there an aggregate reported a count with no rows
+behind it; here an absence of evidence was read as evidence of absence, and both produced
+confident output nobody could challenge from the outside.
+
+**The asymmetry that fixes it is not "read the metadata instead", though that is the
+mechanism.** It is that **unknown must fail towards the visible fault**. Unknown now offers
+the theme; only a metadata read that *succeeded* and did not list the property takes it
+away. A theme that paints flat is a fault somebody reports. **A theme missing from a
+dropdown is a fault nobody knows to look for** — so where a check cannot tell, it must
+choose the loud failure over the quiet one, and that is a design rule rather than a bug fix.
+
+**Three surfaces in one day**: an aggregate with no rows (D-074), a palette audit measuring
+markers against markers rather than against the ground they sit on, and a capability probe
+sampling a race. Each measurement was sound. **In each, the frame excluded the thing that
+decided the answer.**
