@@ -320,6 +320,13 @@ sea:
   # deep Atlantic: the construction connects mouths to each other, so water far offshore
   # is never on a route between two of them and only costs time to fetch.
   # Wrong if: a terminus in Shetland or the Isles of Scilly falls outside it.
+  # HOW CLOSE TO MEAN HIGH WATER A BLOCKED MOUTH MUST BE TO REACH THE SEA DIRECTLY.
+  # A channel ending at the sea wall discharges through it; one ending well inland is
+  # drained by the network, and attaching it to a §10 route would show the water leaving
+  # where it does not. 100 m is a knee rather than a preference: 76% of blocked mouths
+  # lie within it, the next 150 m add only 27 more, and it sits between the 43 m that
+  # should attach and the 210 m that should not.
+  max_coast_m: 100.0
   extent_wgs84: [-8.0, 49.5, 2.0, 61.0]
   # Fetched in windows this many degrees square and mosaicked. The service serves one
   # seamless coverage, so this is only about request size.

@@ -31,7 +31,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from .. import db, graph, paths, schema, sea
+from .. import config, db, graph, paths, schema, sea
 from ..pipeline import PIPELINE
 from ..report import Report, log
 
@@ -82,7 +82,22 @@ def run() -> dict:
     # and every tidal node whose system the sea can take. The first admits the 541
     # coastal mouths that already carry a route; the second admits the estuaries.
     tidal_ok = sea.systems_the_sea_can_take(con)
-    seeds = sorted(set(sea_nodes) | set(tidal_ok))
+
+    # A MOUTH THE GATE WITHHELD MUST NOT BE A WAY TO THE SEA BY ANY OTHER ROUTE.
+    #
+    # The graph already refuses to attach a blocked mouth more than `sea.max_coast_m`
+    # from Mean High Water — but `systems_the_sea_can_take` is a second relation and did
+    # not know about it, so F28D09AC at 210 m was withheld from the sea network and
+    # admitted by the tidal systems anyway. The gate is a decision about the mouth, not
+    # about one of the two ways of reaching it, so it is applied to the union.
+    withheld = {r[0] for r in con.execute(
+        "SELECT node_id FROM sea_entry WHERE kind = 'blocked' AND coast_m > ? "
+        "AND node_id IS NOT NULL",
+        [float(config.param("sea.max_coast_m"))],
+    ).fetchall()}
+    seeds = sorted((set(sea_nodes) | set(tidal_ok)) - withheld)
+    log.detail(f"{len(withheld):,} blocked mouths are withheld as too far inland "
+               f"(> {config.param('sea.max_coast_m'):g} m from Mean High Water)")
     log.info(f"  seeds: {len(sea_nodes):,} on the sea network, {len(tidal_ok):,} in a "
              f"tidal system it can take — {len(seeds):,} together")
 

@@ -20,7 +20,7 @@ import numpy as np
 from scipy.sparse import coo_matrix, csr_matrix
 from scipy.sparse.csgraph import connected_components
 
-from . import db
+from . import config, db
 
 
 @dataclass
@@ -266,14 +266,47 @@ ORDER BY link_id
 _SEA_SQL = """
 -- §10's routes, as edges of the one graph. `mode: both` because open water has no
 -- downstream; `form: sea` so a reader can tell a route from a river at a glance. An
--- entry with no mouth of its own gets `rewt:sea-node/{entry}` so the network is
+-- entry with no mouth of its own gets a `rewt:sea-node/` id so the network is
 -- connected rather than a scatter of pairs.
-SELECT link_id AS edge_id, link_id,
-       coalesce(from_node, 'rewt:sea-node/' || CAST(from_entry AS VARCHAR)) AS from_node,
-       coalesce(to_node,   'rewt:sea-node/' || CAST(to_entry   AS VARCHAR)) AS to_node,
-       length_m, 'sea' AS form, 'both' AS mode
-FROM sea_link
-ORDER BY link_id
+-- A BLOCKED MOUTH ATTACHES ONLY IF IT IS AT THE COAST. `sea_entry.coast_m` is its
+-- distance to Mean High Water. A channel ending at the sea wall discharges through it;
+-- one ending well inland is drained by the network, and attaching it to a route would
+-- show the water leaving where it does not — Stephen's four cases separate at 4 m, 43 m
+-- and 4 m attaching against 210 m not.
+--
+-- The ROUTE IS NEVER REMOVED, only the attachment withheld: the sea network stays whole
+-- and connected, and the mouth simply is not a way into it. Dropping the link instead
+-- would tear the network apart at exactly the places §10 found hardest to serve.
+--
+-- A mouth the sea took (`kind = 'terminus'`) attaches whatever its distance: it reached
+-- tidal water, which is the survey's own statement that the sea is already there.
+SELECT s.link_id AS edge_id, s.link_id,
+       coalesce(
+         CASE WHEN ef.is_terminus = 1 OR ef.coast_m <= {max_coast_m}
+              THEN s.from_node END,
+         'rewt:sea-node/' || CAST(s.from_entry AS VARCHAR)) AS from_node,
+       coalesce(
+         CASE WHEN et.is_terminus = 1 OR et.coast_m <= {max_coast_m}
+              THEN s.to_node END,
+         'rewt:sea-node/' || CAST(s.to_entry AS VARCHAR)) AS to_node,
+       s.length_m, 'sea' AS form, 'both' AS mode
+FROM sea_link s
+-- JOINED ON THE MOUTH, AND PRE-AGGREGATED. `entry_id` is not unique in `sea_entry`:
+-- several mouths can snap to one cell of open water, so joining on it multiplied 4,183
+-- routes into 35,707 and every count downstream with them. A node is the thing that
+-- either attaches or does not, so it is the thing to join on — and the aggregate makes
+-- that one row even where a node was offered more than one entry.
+LEFT JOIN (SELECT node_id,
+                  min(coast_m) AS coast_m,
+                  max(CASE WHEN kind = 'terminus' THEN 1 ELSE 0 END) AS is_terminus
+           FROM sea_entry WHERE node_id IS NOT NULL GROUP BY node_id) ef
+       ON ef.node_id = s.from_node
+LEFT JOIN (SELECT node_id,
+                  min(coast_m) AS coast_m,
+                  max(CASE WHEN kind = 'terminus' THEN 1 ELSE 0 END) AS is_terminus
+           FROM sea_entry WHERE node_id IS NOT NULL GROUP BY node_id) et
+       ON et.node_id = s.to_node
+ORDER BY s.link_id
 """
 
 _EDGE_SQL = """
@@ -314,7 +347,9 @@ def load(table: str = "edge", where: str = "") -> Graph:
         sql = (
             "SELECT * FROM (" + _EDGE_SQL.format(where=f"WHERE {where}" if where else "")
             .replace("ORDER BY edge_id", "") + ") "
-            "UNION ALL SELECT * FROM (" + _SEA_SQL.replace("ORDER BY link_id", "") + ") "
+            "UNION ALL SELECT * FROM ("
+            + _SEA_SQL.format(max_coast_m=float(config.param("sea.max_coast_m")))
+              .replace("ORDER BY s.link_id", "") + ") "
             "ORDER BY edge_id"
         )
     else:

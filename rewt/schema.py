@@ -200,6 +200,13 @@ CREATE TABLE sea_entry (
     node_id      VARCHAR NOT NULL,   -- the tidal terminus or coastal orphan
     kind         VARCHAR NOT NULL,   -- 'terminus' or 'orphan'
     snapped_m    DOUBLE,             -- how far the mouth moved to reach open water
+    -- HOW FAR THE MOUTH IS FROM MEAN HIGH WATER, which is what decides whether a
+    -- BLOCKED mouth may attach to the sea network. A channel ending at the sea wall
+    -- discharges to the sea; one ending 200 m inland is drained by the network, and
+    -- attaching it to a sea route would represent the water leaving somewhere it does
+    -- not. Stephen gave four cases and this is the measurement that separates them:
+    -- 4 m, 43 m and 4 m attach; 210 m does not.
+    coast_m      DOUBLE,
     easting      DOUBLE,
     northing     DOUBLE
 )

@@ -100,10 +100,10 @@ def _mouths(con) -> pd.DataFrame:
 @PIPELINE.stage(
     "sea",
     "the sea network: a cost surface, and the routes that emerge from it",
-    reads=["node", "edge", "basin", "node_basin"],
+    reads=["node", "edge", "basin", "node_basin", "raw_os_boundary_line"],
     writes=["sea_entry", "sea_link"],
     params=["sea", "crs"],
-    sources=["emodnet_bathymetry"],
+    sources=["emodnet_bathymetry", "os_boundary_line"],
 )
 def run() -> dict:
     import rasterio
@@ -243,6 +243,12 @@ def run() -> dict:
         "easting": mouths["easting"].to_numpy()[got],
         "northing": mouths["northing"].to_numpy()[got],
     })
+    entry_rows["coast_m"] = _distance_to_mean_high_water(
+        entry_rows["easting"].to_numpy(), entry_rows["northing"].to_numpy()
+    )
+    entry_rows = entry_rows[
+        ["entry_id", "node_id", "kind", "snapped_m", "coast_m", "easting", "northing"]
+    ]
     with db.registered("_se_in", entry_rows):
         con.execute("INSERT INTO sea_entry SELECT * FROM _se_in")
     with db.registered("_sl_in", frame):
@@ -269,3 +275,29 @@ def run() -> dict:
     report.add("route_km", round(total_km, 1))
     report.write_json(paths.PUBLISHED / "audit" / "sea.json")
     return {"routes": len(frame), "km": round(total_km, 1), "entries": n}
+
+
+def _distance_to_mean_high_water(eastings, northings):
+    """How far each mouth is from the coastline, in metres.
+
+    **Boundary-Line's `high_water` layer, which IS Mean High Water** — not a country
+    polygon, which merely stops at it and so answers a different question the same way
+    for every coastal mouth.
+
+    It decides whether a BLOCKED mouth may attach to the sea network. A channel ending
+    at the sea wall discharges through it and belongs on a §10 route; a channel ending
+    200 m inland is drained by the network, and attaching it would show the water
+    leaving where it does not. Measured for every entry, not only the blocked ones, so
+    the figure is available to anything that wants it and the filter is not the only
+    thing that can see it.
+    """
+    import geopandas as gpd
+
+    from .. import acquire
+
+    gpkg = acquire.one("os_boundary_line", "bdline_gb.gpkg")
+    hw = gpd.read_file(gpkg, layer="high_water").to_crs(config.param("crs.working"))
+    pts = gpd.GeoDataFrame(geometry=gpd.points_from_xy(eastings, northings),
+                           crs=config.param("crs.working"))
+    near = gpd.sjoin_nearest(pts, hw[["geometry"]], how="left", distance_col="m")
+    return near.groupby(level=0)["m"].min().reindex(range(len(pts))).to_numpy()
