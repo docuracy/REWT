@@ -12,6 +12,7 @@ That is why there is no separate audit script: `audit` is a stage, and `build` r
 
 from __future__ import annotations
 
+import os
 import sys
 from typing import Optional
 
@@ -472,6 +473,70 @@ def viewer_data_cmd(
         # internally consistent, never compared. rewt-6a found exactly that: a tar
         # ninety minutes older than the tiles on disk, with counts that agreed.
         tiles.pack()
+
+
+@app.command("team")
+def team_cmd(
+    action: str = typer.Argument("claim", help="claim | status | release | shutdown"),
+    role: Optional[str] = typer.Option(None, "--role", help="a specific role"),
+    name: Optional[str] = typer.Option(None, "--name", help="this session's name"),
+    force: bool = typer.Option(False, "--force", help="retake a role whose holder has gone"),
+) -> None:
+    """Take a role, see who holds what, or give one back.
+
+    Six sessions can see each other's names through `ListAgents` and cannot tell which is
+    which — the names are new after every restart and `TEAM.md` names roles, not sessions.
+    Claiming joins the two, in a file anybody can read, without a master session handing
+    out identities it cannot prove it is entitled to hand out.
+    """
+    from . import team
+
+    if action == "status":
+        held = team.read_all()
+        log.table(
+            "roles",
+            ["role", "held by", "state", "owns"],
+            [[r,
+              f"{held[r].session}" if r in held else "—",
+              (f"claimed {held[r].age_hours:,.1f} h ago" if r in held else "free"),
+              owns]
+             for r, owns, _ in team.ROLES],
+        )
+        return
+
+    if action == "release":
+        freed = team.release(role, name)
+        if not freed:
+            log.warn("nothing released — name the role with --role or the session with "
+                     "--name. There is no pid to match on: an agent runs each command in "
+                     "a fresh shell, so nothing on this side outlives the call.")
+            raise typer.Exit(1)
+        log.done(f"released {', '.join(freed)}")
+        return
+
+    if action == "shutdown":
+        freed = team.shutdown()
+        log.done(f"cleared {len(freed)} claim(s): {', '.join(freed) or 'none were held'}")
+        log.detail("the board is clean; the next session to claim becomes the implementer")
+        return
+
+    if action != "claim":
+        log.error(f"unknown action {action!r}; use claim, status, release or shutdown")
+        raise typer.Exit(1)
+
+    got, was_stale = team.claim(role, name, force)
+    _, owns, opening = team.BY_NAME[got]
+    # Name the tab, because PyCharm will not and six terminals reading `zsh` are
+    # indistinguishable to the person who has to pick the right one.
+    team.terminal_title(f"REWT · {got}")
+    if was_stale:
+        log.warn(f"{got} was held by a process that has gone; taken over. Whatever it "
+                 "was doing is unfinished and nobody has said so.")
+    log.done(f"you are the {got}")
+    log.detail(f"you own: {owns}")
+    log.detail(f"opening task: {opening}")
+    log.info("Read TEAM.md for the scopes and the standing orders. Other sessions are "
+             "found with ListAgents; `rewt team status` says which of them is which.")
 
 
 @app.command("citation")

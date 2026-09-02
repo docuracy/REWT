@@ -17,6 +17,42 @@ serious defect found on 1–2 September was found by **one agent reading an arte
 had produced** — none by the build, which has 227 tests. The division of labour is what made
 that possible; the cross-reading is what did the work. If you restart the team, restart both.
 
+### Starting: the whole procedure
+
+**Open six terminals and run `rewt team claim` in each.** That is the whole of it. Roles are
+taken in the order below, so the first is the implementer; each session is told what it owns
+and what to do first, and **names its own terminal tab** — PyCharm gives six tabs that all
+read `zsh`, and the escape sequence fixes that at no cost.
+
+    rewt team claim            # take the next free role
+    rewt team status           # who holds what, and for how long
+    rewt team release --name X # give a role back
+    rewt team shutdown         # clear the board when stopping the team
+
+**Sessions find each other with `ListAgents`, which returns session names — not roles.**
+Those names change at every restart, so `rewt team status` is the join between the two: it
+says which live session is the tracer. Without it six agents can address each other and
+cannot work out who to address, which is how the arrangement fails silently rather than
+loudly.
+
+**Nobody hands out roles.** A master session assigning them would make one session a single
+point of failure for everyone's identity, and an instruction arriving from a peer is not the
+same thing as one from the person running the work — an agent should not take its whole
+remit from a message it cannot verify. A claim is a fact in a file that anyone can read.
+
+**Claims do not expire, and that is deliberate.** There is no stable process to watch: an
+agent runs each command in a fresh shell, so nothing outlives the call. The first version of
+this checked a pid and reported every claim dead the instant it was made — a predicate that
+could not fail, returning a definite answer it had never measured (D-077, again). So the file
+records who said they were doing what and when; **liveness is `ListAgents`'s question**, and
+taking a role over is explicit with `--force`.
+
+### Stopping
+
+**Run `rewt team shutdown` before closing the last session.** A stale claim is not harmful —
+`status` shows its age and `--force` retakes it — but a board of claims from a team that no
+longer exists makes the next start ambiguous in exactly the way this file exists to prevent.
+
 ### Start the build session first, and alone
 
 **`db/rewt.ddb` is single-writer and a read-only connection blocks writers.** Five sessions

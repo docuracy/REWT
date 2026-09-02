@@ -33,3 +33,5 @@ tools/nls_layers.json
 # it out of the history is what makes rotation possible: a key in a public repository
 # can be rotated but never withdrawn from every clone of that history.
 docs/viewer/keys.json
+# Runtime state: which session holds which role on THIS machine, now.
+.team/
