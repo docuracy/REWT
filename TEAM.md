@@ -155,7 +155,15 @@ the thing an arriving session cannot infer from the code.
 ### The standing orders that made the cross-reading work
 
 These are decisions, but a session that has to discover them has already shipped the mistake.
-Give them at the start:
+Give them at the start.
+
+**Why six sessions and not one.** A session checking its own work re-runs its own
+assumptions and obtains agreement, which is D-067 committed against yourself. Six sessions
+produce *disagreements*, and a disagreement is the only thing that reliably makes somebody go
+and look. Nearly every finding in D-065–D-078 began as two accounts that did not match. The
+corollary is a duty rather than a courtesy: **contradict a peer plainly, and take a
+contradiction plainly** — the session that accepts a flattering account of its own care has
+removed the only mechanism the arrangement has.
 
 - **A figure with no file behind it is a rumour** (D-076). Before relaying another agent's
   measurement, find where it is recorded. **Where it names a source, ask that source** — one
@@ -169,6 +177,12 @@ Give them at the start:
   not.
 - **Before believing an aggregate, ask it to name a row** (D-074). A count implies an
   enumeration it may no longer have.
+- **Never truncate a check whose question is "is there anything else".** A `head` on an
+  exploratory listing is a convenience; on a completeness check it is a bug, and a quiet one,
+  because the thing you were looking for lands in the visible rows often enough to make the
+  output look whole. This was found on the last afternoon: a session reported the machine's
+  listening sockets from `ss -lntp | head -8`, of twenty-five. The two that mattered to the
+  conversation were inside the eight. A third, network-bound and four days old, was not.
 - **Unknown must fail towards the visible fault** (D-077). A thing that draws wrongly gets
   reported; a thing that quietly removes itself does not.
 - **Agreement is not correctness unless something anchors it outside the set** (D-067).
