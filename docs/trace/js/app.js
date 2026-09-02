@@ -7,12 +7,12 @@
  * work out of a browser and into this repository, with the network off included.
  */
 
-import { BUILD, REPO } from 'config';
-import * as gh from 'gh';
-import { ACTS, makeEvent, store, createSync, serialise, union } from 'log';
-import { createTracer } from 'tracer';
-import { traceAnnotation, boundFromSurveyYear, boundInWords, representativePoint } from 'anno';
-import { parseSlice, loadQueue, describeTask } from 'queue';
+import { BUILD, REPO } from './config.js';
+import * as gh from './gh.js';
+import { ACTS, makeEvent, store, createSync, serialise, union } from './log.js';
+import { createTracer } from './tracer.js';
+import { traceAnnotation, boundFromSurveyYear, boundInWords, representativePoint } from './anno.js';
+import { parseSlice, loadQueue, describeTask } from './queue.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -560,8 +560,34 @@ async function recordTrace() {
   }
 }
 
+/**
+ * THE BUILD STAMP, ACTUALLY CHECKED — which is what `config.js` has claimed since phase 1
+ * and what nothing did until now.
+ *
+ * `?v=` on the script tag versions the ENTRY POINT only. Sibling modules are separate URLs
+ * with no query, so they cache independently: this morning `app.js?v=0.4.0-p4` was running
+ * against a `config.js` from `0.3.3-p3`, and the only reason anyone noticed was that the
+ * console printed the older number. An import map fixes the caching and **breaks the
+ * checks**, because import maps are a browser feature and node cannot resolve a bare
+ * specifier — so the remedy disabled a guard, which is a worse trade than the problem.
+ *
+ * Detection is what was actually missing. If the modules disagree the page says so, loudly,
+ * rather than behaving like a version nobody is looking at.
+ */
+function checkBuild() {
+  const src = document.querySelector('script[type=module]')?.getAttribute('src') || '';
+  const tag = (src.match(/[?&]v=([^&]+)/) || [])[1];
+  if (tag && tag !== BUILD) {
+    advise(`This page is serving mixed versions: the entry point is ${tag} and the modules `
+      + `it loaded report ${BUILD}. Your browser is holding an old copy of part of the `
+      + `tool. Reload with Ctrl+Shift+R before trusting anything it does.`, true);
+    console.error(`[tracer] MIXED BUILD: entry ${tag}, modules ${BUILD}`);
+  }
+}
+
 /* The build stamp, checked rather than recorded. Browsers go on serving a cached module,
    and a contributor then reports behaviour of code that is not deployed. */
 console.info('[tracer] build ' + BUILD);
 
 boot();
+checkBuild();

@@ -8,7 +8,7 @@
  * worse than no gate at all.
  */
 
-import { REPO, TOKEN_KEYS, B64_CHUNK } from 'config';
+import { REPO, TOKEN_KEYS, B64_CHUNK } from './config.js';
 
 const API = 'https://api.github.com';
 

@@ -54,7 +54,7 @@
  * No DOM, no MapLibre. Still liftable.
  */
 
-import { publisher } from 'ids';
+import { publisher } from './ids.js';
 
 const CONTEXT = 'http://www.w3.org/ns/anno.jsonld';
 
