@@ -13,6 +13,7 @@ import { ACTS, makeEvent, store, createSync, serialise, union } from './log.js';
 import { createTracer } from './tracer.js';
 import { traceAnnotation, boundFromSurveyYear, boundInWords, representativePoint } from './anno.js';
 import { parseSlice, loadQueue, describeTask } from './queue.js';
+import { loadCounties, registerProtocol, compositeTileCached } from './composite.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -22,6 +23,7 @@ let TRACER = null;
 let BACKDROPS = [];
 let CURRENT = null;   // the backdrop being traced on
 let QUEUE = null;     // { spec, tasks, describe }
+let COUNTIES = null;  // Historic Counties polygons, for masking the first edition
 let AT = 0;           // index into QUEUE.tasks
 
 /* ── status: a count and a time, never a spinner ──────────────────────────── */
@@ -267,12 +269,20 @@ async function backdropOptions(lon, lat) {
      and centring correctly refuses. On the 25-inch it is two banks, so a middle exists to
      be found and a width can be read. Defaulting to the 25-inch put contributors on the
      sheet where the ordinary operation does not apply. */
+  /* EVERY GROUP, ENUMERATED FROM THE DATA. An earlier version listed the groups it knew
+     by name — seamless, 25_inch, modern — so when the composited first edition arrived in
+     a new group it was generated, shipped, and never offered, with nothing anywhere saying
+     a layer had gone missing. A picker that names its own categories silently drops any
+     category nobody remembered to add. */
+  const known = ['seamless', 'composite'];
   const order = [
-    ...BACKDROPS.filter((l) => l.group === 'seamless'),
+    ...BACKDROPS.filter((l) => known.includes(l.group)),
     ...(best ? [best] : []),
     ...BACKDROPS.filter((l) => l.group === '25_inch' && l !== best),
-    ...BACKDROPS.filter((l) => l.group === 'modern'),
+    ...BACKDROPS.filter((l) => !known.includes(l.group) && l.group !== '25_inch'),
   ];
+  /* Nothing may be dropped by the ordering: if a layer exists it is offered. */
+  for (const l of BACKDROPS) if (!order.includes(l)) order.push(l);
   $('backdrop').innerHTML = order.map((l) =>
     `<option value="${l.id}">${l.name}</option>`).join('');
   return order[0];
@@ -323,6 +333,10 @@ function paintWhen() {
 
 async function startMap() {
   BACKDROPS = (await (await fetch('./backdrops.json', { cache: 'no-store' })).json()).layers;
+  /* The composited first edition. Registered once: MapLibre then treats `firsted://` as an
+     ordinary raster source and nothing else in the style has to know it is assembled. */
+  COUNTIES = await loadCounties();
+  registerProtocol(maplibregl, { counties: COUNTIES });
   /* Ware, on the Lea — the calibration ground for the centring mode, and a place with a
      New Cut, a navigation and the New River within one screen. */
   const start = { lon: -0.0290, lat: 51.8080, zoom: 16 };
@@ -346,6 +360,11 @@ async function startMap() {
   TRACER = createTracer({
     map: MAP,
     backdrop: () => CURRENT,
+    /* A composited sheet has no URL, so the reader is handed the compositor itself rather
+       than a template. Cached, because this runs while a line is being dragged. */
+    tileSource: () => (CURRENT?.composited
+      ? (z, x, y) => compositeTileCached(z, x, y, { counties: COUNTIES })
+      : null),
     onChange: paintTrace,
   });
 

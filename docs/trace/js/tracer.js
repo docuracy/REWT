@@ -31,7 +31,7 @@ const SRC_VERTEX = 'trace-vertex-src';
 
 const emptyFC = () => ({ type: 'FeatureCollection', features: [] });
 
-export function createTracer({ map, backdrop, onChange, centring = false, snapping = false }) {
+export function createTracer({ map, backdrop, tileSource, onChange, centring = false, snapping = false }) {
   const state = {
     active: false,
     /* SNAPPING IS A SEPARATE SWITCH FROM TRACING, and conflating them made the predecessor's
@@ -179,7 +179,11 @@ export function createTracer({ map, backdrop, onChange, centring = false, snappi
     const radiusPx = Math.ceil(spanPx / 2 + (LIVEWIRE_DEFAULTS.corridorM / mPerPx) + 60);
     const key = `${source.id}|${zoom}|${Math.round(mid[0] * 4000)}|${Math.round(mid[1] * 4000)}|${radiusPx}`;
     if (state.patchKey === key && state.patch) return state.patch;
-    state.patch = await loadPatch({ template: source.tiles, zoom, lon: mid[0], lat: mid[1], radiusPx });
+    const tile = tileSource?.() ?? null;
+    state.patch = await loadPatch({
+      ...(tile ? { tile } : { template: source.tiles }),
+      zoom, lon: mid[0], lat: mid[1], radiusPx,
+    });
     state.patchKey = state.patch ? key : null;
     return state.patch;
   }

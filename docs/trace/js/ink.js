@@ -144,10 +144,19 @@ function loadImage(url) {
 /**
  * Fetch the tiles covering a small box and draw them into one canvas.
  *
- * Small on purpose: this is read at the moment a vertex is placed, not kept warm. A window
- * of a couple of tiles a side is a fraction of a second and costs nothing when idle.
+ * TWO KINDS OF SOURCE, BECAUSE NOT EVERY SHEET HAS A URL. An ordinary layer is a
+ * `{z}/{x}/{y}` template and an `Image` load. The composited first edition has no address
+ * at all: it is assembled in a canvas from up to three county mosaics, each masked to its
+ * own Historic Counties polygon, and exists only in memory. MapLibre reaches it through a
+ * registered `firsted://` protocol — **which is MapLibre's scheme and not the browser's**,
+ * so `img.src = 'firsted://…'` fetches nothing and this reader would have seen blank paper,
+ * classified the sheet unusable, and refused every vertex for a reason having nothing to do
+ * with the sheet. So a source may instead be a function returning an ImageBitmap, and the
+ * compositor is called directly rather than through a URL that does not exist.
+ *
+ * Small on purpose: this is read at the moment a vertex is placed, not kept warm.
  */
-export async function loadPatch({ template, zoom, lon, lat, radiusPx = 160 }) {
+export async function loadPatch({ template, tile, zoom, lon, lat, radiusPx = 160 }) {
   const centre = lonLatToWorld(lon, lat, zoom);
   const x0 = Math.floor((centre.x - radiusPx) / TILE);
   const x1 = Math.floor((centre.x + radiusPx) / TILE);
@@ -160,15 +169,18 @@ export async function loadPatch({ template, zoom, lon, lat, radiusPx = 160 }) {
   const canvas = document.createElement('canvas');
   canvas.width = w; canvas.height = h;
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  /* Unfetched ground must read as PAPER, not as transparent black, or every gap becomes
+     the cheapest route on the board for the livewire. */
   ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
 
   const jobs = [];
   for (let tx = x0; tx <= x1; tx += 1) {
     for (let ty = y0; ty <= y1; ty += 1) {
-      jobs.push(loadImage(tileUrl(template, zoom, tx, ty)).then((img) => {
+      const get = tile ? tile(zoom, tx, ty) : loadImage(tileUrl(template, zoom, tx, ty));
+      jobs.push(Promise.resolve(get).then((img) => {
         if (img) ctx.drawImage(img, (tx - x0) * TILE, (ty - y0) * TILE);
         return Boolean(img);
-      }));
+      }).catch(() => false));
     }
   }
   const got = await Promise.all(jobs);

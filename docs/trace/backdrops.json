@@ -24,6 +24,27 @@
    "attribution": "© OpenStreetMap contributors"
   },
   {
+   "id": "composite/six-inch-first",
+   "name": "OS Six-Inch, 1st edition — composited",
+   "group": "composite",
+   "tiles": "firsted://{z}/{x}/{y}",
+   "zooms": [
+    9,
+    17
+   ],
+   "bounds": [
+    -6.5,
+    49.8,
+    1.8,
+    55.9
+   ],
+   "surveyYear": null,
+   "historic": true,
+   "traceable": true,
+   "composited": true,
+   "attribution": "Reproduced with the permission of the National Library of Scotland. Re-use terms for these layers are not established (D-037). County boundaries: this mapping made use of data provided by the Historic County Borders Project, https://www.county-borders.co.uk"
+  },
+  {
    "id": "os/6inchsecond",
    "name": "OS Six-Inch, 2nd edition — seamless",
    "group": "seamless",

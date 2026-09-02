@@ -62,6 +62,29 @@ def build() -> dict:
         "attribution": '© OpenStreetMap contributors',
     })
 
+    # THE FIRST EDITION HAS NO SEAMLESS LAYER, so this project makes one. NLS publish it
+    # county by county, and the mosaics are not cut at the county line — each bleeds over
+    # its neighbours, so stacking them puts two different surveys of the same ground on top
+    # of each other with the join wherever the draw order happens to fall. MapLibre cannot
+    # clip a raster to a polygon, so the tile is composited in a canvas, each county masked
+    # to its own Historic Counties Standard polygon.
+    #
+    # It matters because **two in five reservoir valleys need the first edition** — 14
+    # first-edition-only and 26 surveyed while the dam was building, of 165 impounding
+    # reservoirs — and because 19 predate both editions and have no OS sheet at all.
+    out.append({
+        "id": "composite/six-inch-first", "name": "OS Six-Inch, 1st edition — composited",
+        "group": "composite",
+        # No URL: assembled in the browser. `tiles` is the scheme MapLibre is given.
+        "tiles": "firsted://{z}/{x}/{y}",
+        "zooms": [9, 17], "bounds": [-6.5, 49.8, 1.8, 55.9],
+        "surveyYear": None, "historic": True, "traceable": True,
+        "composited": True,
+        "attribution": NLS_ATTRIBUTION + " County boundaries: this mapping made use of "
+                       "data provided by the Historic County Borders Project, "
+                       "https://www.county-borders.co.uk",
+    })
+
     for lid, label in SEAMLESS.items():
         l = by_id.get(lid)
         if not l:
