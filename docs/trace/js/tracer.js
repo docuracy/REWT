@@ -99,6 +99,14 @@ export function createTracer({ map, backdrop, tileSource, onChange, centring = f
                casing vs paper                    4.4   <- correctly invisible where
                                                             nothing is wrong
 
+         Both of those lines are constraints, in opposite directions. The ring is 2 px, so
+         its OUTER edge is casing-against-ink and not marker-against-casing: it has to
+         clear the ink on its own account rather than merely give the marker something to
+         sit on. It does, by 33.5 at worst — better than any of the three markers managed
+         unaided. So do not thin the ring or tint it toward the paper to soften it. And do
+         not "fix" the 4.4: a ring that showed on blank paper would be decoration, since
+         the markers already clear paper at 21.3 and up.
+
          The same move as the viewer's line casings, for the same reason. Ring geometry is
          flush with the marker and does not overlap it: marker 5+2 px, casing 7..9;
          snapped marker 2.5+2, casing 4.5..6.5. */
