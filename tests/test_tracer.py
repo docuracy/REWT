@@ -171,3 +171,51 @@ def test_the_browser_composes_no_identifier_outside_its_own_module():
         "identifiers composed outside docs/trace/js/ids.js:\n  "
         + "\n  ".join(offenders)
     )
+
+
+# ─── THE CREDIT THAT IS PIXELS ────────────────────────────────────────────────────────
+# Raised by rewt-1d, whose page carries the figure. Every screenshot of the tracer has
+# the map credit burnt into it, and the tracer's credit currently reads "Re-use terms
+# for these layers are not established (D-037)". If D-037 ever resolves, the generated
+# attribution changes on the next build and the committed JPEGs do not — they are pixels,
+# so no generator refreshes them and no diff shows them going stale.
+#
+# This is the shape D-049 warned about, arriving somewhere nobody would look for it: an
+# artefact that stays internally consistent while the thing it asserts stops being true.
+# The remedy is not to remember. It is to make the end of the absence fail.
+
+CREDIT_FIGURES = (
+    "docs/assets/maps/tracer-lea-at-ware.jpg",
+)
+
+
+def test_a_resolved_D_037_fails_here_and_names_the_figures_to_reshoot():
+    """The burnt-in map credit, tied to the decision it quotes.
+
+    Passing means D-037 still records re-use as not established and the generated
+    attribution still says so. Failing means one of them moved, and the figures listed
+    below now assert something the project no longer claims. **A re-shoot is the only
+    fix** — nothing regenerates a screenshot — so the failure names them.
+    """
+    decisions = (paths.ROOT / "DECISIONS.md").read_text(encoding="utf-8")
+    heading = next((ln for ln in decisions.splitlines() if ln.startswith("**D-037")), None)
+    assert heading, "D-037 has been renumbered or removed; the figures quote it by number"
+
+    # The whole entry's heading, unwrapped: it runs onto the following line.
+    start = decisions.index(heading)
+    entry = " ".join(decisions[start:start + 400].split())
+    assert "re-use recorded as not established" in entry.lower(), (
+        "D-037 no longer records re-use as not established.\n"
+        "The tracer's map credit quotes that state, and these figures have it burnt in:\n"
+        + "\n".join(f"  {f}  — re-shoot" for f in CREDIT_FIGURES)
+    )
+
+    source = (TRACER / "gen_backdrops.py").read_text(encoding="utf-8")
+    assert "not established (D-037)" in source, (
+        "gen_backdrops.py no longer emits the D-037 credit, so the committed figures "
+        "and the live map now say different things:\n"
+        + "\n".join(f"  {f}  — re-shoot" for f in CREDIT_FIGURES)
+    )
+
+    for rel in CREDIT_FIGURES:
+        assert (paths.ROOT / rel).is_file(), f"{rel} is listed as carrying the credit but is missing"
