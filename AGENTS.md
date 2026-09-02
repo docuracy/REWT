@@ -111,3 +111,10 @@ works and never as an input to it. An audit handed its answers is not an audit.
   endpoint coordinates instead; a ten-minute query becomes seconds.
 - **Per-row inserts that parse geometry per row are pathological** — ten minutes for
   122,000 rows where a single bulk insert took moments.
+
+## Working as a team
+
+Six agents worked this repository in parallel, with hard directory ownership and a standing
+duty to check each other's artefacts. **[TEAM.md](TEAM.md) is how to start them** — the six
+scopes, the startup order, what to tell each session, and the standing orders that made the
+arrangement catch what the build could not. Read it if you are the only session running.
