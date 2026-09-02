@@ -149,9 +149,9 @@ def _split_link(link_id: str, easting: float, northing: float) -> tuple[str, lis
 @PIPELINE.stage(
     "repair",
     "apply the curated judgements and build the one routing graph",
-    reads=["link", "node", "correction"],
+    reads=["link", "node", "correction", "terrain50_unconditioned"],
     writes=["edge", "repair_link", "repair_node", "retirement"],
-    params=["repair", "forms"],
+    params=["repair", "forms", "connectors"],
     always=True,
 )
 def run() -> dict:
@@ -161,6 +161,7 @@ def run() -> dict:
 
     snap_node_m = float(p("repair.connector_snap_node_m"))
     split_link_m = float(p("repair.connector_split_link_m"))
+    max_rise_m = float(p("connectors.max_rise_m"))
 
     new_links: list[dict] = []
     new_nodes: list[dict] = []
@@ -173,8 +174,8 @@ def run() -> dict:
 
     corrections = db.df(
         """
-        SELECT correction_id, kind, subject, resolved_to, reason, detail, source_file,
-               source_row, easting, northing,
+        SELECT correction_id, kind, subject, resolved_to, reason, evidence, detail,
+               source_file, source_row, easting, northing,
                CASE WHEN geom IS NULL THEN NULL ELSE ST_AsWKB(geom) END AS wkb
         FROM correction ORDER BY kind, source_file, source_row
         """
@@ -261,6 +262,12 @@ def run() -> dict:
         applied[row.correction_id] = True
 
     # -------------------------------------------------------------- connectors
+    # SAMPLED ONCE FOR ALL OF THEM, and that is not a micro-optimisation.
+    # `raster.sample_points` reads the whole band on every call, so asking it per
+    # connector would read a 128 MB raster 1,200 times and turn an 18-second stage
+    # into a long one. The batched form reads it twice.
+    rises = _rises_by_correction(corrections)
+
     for row in corrections[corrections["kind"] == "connector"].itertuples():
         if row.wkb is None:
             skipped[row.correction_id] = "a connector with no geometry"
@@ -268,6 +275,54 @@ def run() -> dict:
         line = shapely.from_wkb(bytes(row.wkb))
         coords = list(shapely.get_coordinates(line))
         ends = [shapely.Point(coords[0]), shapely.Point(coords[-1])]
+
+        # A CONNECTOR THAT RISES IS WATER RUNNING UPHILL, AND IT IS REFUSED HERE.
+        #
+        # The rule that proposes these joins a stranded region to the nearest water
+        # that drains, and until v0.1.0-alpha it weighed only distance. Two channels
+        # can be close in plan and separated by an embankment, a road or a watershed:
+        # 104 of that release's 1,204 connectors rose more than a metre end to end, 23
+        # rose more than five, and the worst climbed 27.4 m in 462 m. Stephen found two
+        # of them on the map; the rest were found by measuring the class.
+        #
+        # THE VETO IS HERE AND NOT ONLY IN THE PROPOSER because the proposals are
+        # already authored — `data/curated/connectors.geojson` holds 1,205 of them, and
+        # fixing the proposer alone would leave every existing one applied. It also
+        # catches a connector authored by hand, which the proposer never sees.
+        #
+        # It works at this point in the pipeline only because `terrain` runs BEFORE
+        # `repair` and leaves the unconditioned mosaic on disk. That ordering is load
+        # bearing for this check: move `repair` earlier and the DEM would be absent,
+        # the veto would quietly pass everything, and a clean build would disagree with
+        # a rebuild. The stage declares `terrain50_unconditioned` as a read so the
+        # dependency is stated rather than assumed.
+        #
+        # NOT DELETED — REFUSED, WITH A REASON. The row stays in the curated file and
+        # the correction table records `applied = false` and why, which is the
+        # mechanism every other skip already uses.
+        #
+        # A PERSON OUTRANKS A 50 m TERRAIN MODEL. Where the evidence does not say
+        # JUDGED BY RULE, somebody has looked at the place, and Terrain 50 cannot
+        # resolve a lock, a culvert or a pumped outfall — which is what these joins
+        # usually are. Those are applied, and the rise is reported rather than hidden.
+        rise = rises.get(row.correction_id)
+        if rise is not None and rise > max_rise_m:
+            if "JUDGED BY RULE" in (row.evidence or "").upper():
+                skipped[row.correction_id] = (
+                    f"the connector climbs {rise:,.1f} m end to end on the "
+                    f"unconditioned Terrain 50 surface, more than the {max_rise_m:g} m "
+                    "that model can be trusted for. Two channels close in plan and "
+                    "separated by a bank are not a survey gap, and joining them would "
+                    "route water uphill. Judged by rule, so nobody has looked: left as "
+                    "a dead end, which the audit reports with the length behind it"
+                )
+                continue
+            log.detail(
+                f"    {row.subject}: climbs {rise:,.1f} m, applied anyway — the "
+                "evidence names a person, and a 50 m model cannot see a lock or a "
+                "pumped outfall"
+            )
+
         resolved_ends = []
         failed = None
         for end in ends:
@@ -584,3 +639,42 @@ def _build_edge(reversed_by, mode_by, merged_nodes, excluded, new_links) -> None
     finally:
         for name in frames:
             db.unregister(name)
+
+
+def _rises_by_correction(corrections) -> dict[str, float]:
+    """How far each connector climbs end to end, for all of them in one raster pass.
+
+    Positive is uphill: the water the connector invents would have to run up. A
+    correction is absent from the result where the terrain cannot answer — an end
+    offshore, or outside the clipped grid — because a question the model cannot answer
+    gets no vote.
+
+    **The unconditioned surface, and the distinction is D-007's.** The conditioned DEM
+    has this network burned into it, so asking it whether a connector runs downhill
+    would be asking whether the answer we assumed is the answer we get.
+    """
+    import numpy as np
+    import shapely
+
+    from .. import raster
+
+    rows = corrections[(corrections["kind"] == "connector")
+                       & corrections["wkb"].notna()]
+    if rows.empty:
+        return {}
+    raster.assert_unconditioned(raster.UNCONDITIONED)
+
+    ids, ax, ay, bx, by = [], [], [], [], []
+    for r in rows.itertuples():
+        cs = shapely.get_coordinates(shapely.from_wkb(bytes(r.wkb)))
+        ids.append(r.correction_id)
+        ax.append(cs[0][0]); ay.append(cs[0][1])
+        bx.append(cs[-1][0]); by.append(cs[-1][1])
+
+    with raster.open_unconditioned() as ds:
+        za = raster.sample_points(ds, np.array(ax, float), np.array(ay, float))
+        zb = raster.sample_points(ds, np.array(bx, float), np.array(by, float))
+
+    good = np.isfinite(za) & np.isfinite(zb)
+    return {cid: float(z2 - z1)
+            for cid, z1, z2, ok in zip(ids, za, zb, good) if ok}

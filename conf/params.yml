@@ -191,6 +191,25 @@ repair:
   # silently. Every skip is named by identifier.
   fail_on_unresolved: true
 
+connectors:
+  # A CONNECTOR THAT RISES IS WATER RUNNING UPHILL. The rule that proposes them joins a
+  # stranded region to the nearest water that already drains, and until v0.1.0-alpha it
+  # consulted only distance: 104 of 1,204 connectors rose more than a metre end to end,
+  # 23 rose more than five, and the worst climbed 27.4 m over 462 m. Those are joins
+  # across an embankment or a watershed, chosen because two channels happened to be
+  # close in plan. Found by Stephen looking at two of them on the map.
+  #
+  # The tolerance is the terrain model's noise, not a preference. Terrain 50 is a 50 m
+  # grid: over a few hundred metres of flat coast a metre of apparent rise means
+  # nothing, and rejecting on it would refuse good joins in the Fens and the Levels
+  # where most of this work is. Two metres is the observed 5th percentile of the fall
+  # distribution, so it is where real signal starts rather than a round number.
+  max_rise_m: 2.0
+  # How many approaches to consider before giving up on finding a downhill one. The
+  # nearest is tried first and a longer candidate is taken only to avoid climbing, so
+  # this widens the search rather than loosening it.
+  candidates: 12
+
 canals:
   # §5's measured bands for canal-only components and their nearest non-canal
   # watercourse. Reported so the shape of the work is visible before it is done.

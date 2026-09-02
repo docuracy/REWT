@@ -2330,3 +2330,60 @@ internally consistent — a correct deposit and a correct badge — produced by 
 mechanisms, never compared. Every gate passed: the assets were verified byte-for-byte,
 the record was checked file by file, and nothing asked whether the link a reader would
 click led to the thing that had been checked.
+
+---
+
+**D-069 — A connector that runs uphill is refused. The rule that proposed them weighed
+only distance.**
+
+*Stephen looked at two connectors on the map and asked whether they were symptomatic.
+They were, though not of what they looked like: both of his examples were defensible,
+and measuring the class found 104 of 1,204 connectors climbing.*
+
+**The rule, stated plainly.** `propose_component_outlets` takes a region of water that
+cannot reach the sea and joins it to the nearest link that can, at their closest
+approach — `ORDER BY gap_m LIMIT 1`. That is right in the large, and the measurement
+says so: 942 connectors joined something other than tidal water, and from those same
+points tidal water was a **median 26.8 km further**. Only 8 of 942 had tidal water at or
+nearer than the target chosen. **The rule was not passing over obvious better targets.**
+
+**What it could not see is the ground.** Two channels can be close in plan and separated
+by an embankment, a road, or a watershed. Sampling the unconditioned Terrain 50 surface
+at both ends of every connector: **104 of 1,204 rise more than a metre, 23 more than
+five, and the worst climbs 27.4 m in 462 m.** Devonport Leat is among them — a leat is an
+artificial contour-following channel, and a connector climbing 16 m out of one is not a
+survey gap.
+
+**Two metres is the model's noise, not a preference.** Terrain 50 is a 50 m grid; over a
+few hundred metres of flat coast a metre of apparent rise means nothing, and rejecting on
+it would refuse good joins in the Fens and the Levels where much of this work is. Two
+metres is the observed 5th percentile of the fall distribution, so it is where signal
+starts.
+
+**Fixed in two places, and both are needed.** The proposer now considers several
+approaches and takes the nearest that does not climb — terrain is a veto, never a
+preference, so a longer connector is accepted only to avoid running uphill. And `repair`
+refuses an uphill connector at apply time, because 1,205 proposals were already authored
+and a fix in the proposer alone would have left every one of them applied. **62 are
+refused**; the regions revert to dead ends, which the audit already reports with the
+length stranded behind them. A join nobody can justify is worse than a defect somebody
+can see.
+
+**A person outranks a 50 m model.** Where the evidence does not say JUDGED BY RULE,
+somebody looked at the place, and Terrain 50 cannot resolve a lock, a culvert or a pumped
+outfall — which is what these joins usually are. Neither of the two human-authored
+connectors climbs, so nothing is being overridden today; the exemption exists so that it
+never silently is. The audit counts what got through, because a gate that is also its own
+audit reports only that it ran.
+
+**The check works at apply time only because `terrain` runs before `repair`.** That
+ordering is load bearing: move `repair` earlier and the mosaic would be absent, the veto
+would quietly pass everything, and a clean build would disagree with a rebuild. The stage
+declares `terrain50_unconditioned` as a read so the dependency is stated rather than
+relied on.
+
+**And one performance trap, recorded because it nearly cost hours.** `raster.sample_points`
+reads the whole band on every call. Sampling per connector would have read a 128 MB
+raster 1,200 times; both the veto and the audit collect every coordinate first and read
+it twice. The docstring says the function is for questions that are national — it is, and
+that is exactly why calling it in a loop is wrong.

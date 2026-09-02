@@ -48,9 +48,10 @@ PLAN_BY_FORM = {
     "audit",
     "the audit: dead ends, direction faults, cycles, reachability, per basin",
     reads=["edge", "node", "link_reach", "link_scope", "basin", "node_basin",
-           "sea_entry", "sea_link", "raw_os_boundary_line"],
+           "sea_entry", "sea_link", "raw_os_boundary_line",
+           "terrain50_unconditioned", "link"],
     writes=["audit_finding", "audit_basin"],
-    params=["audit", "topology", "forms", "seeds"],
+    params=["audit", "topology", "forms", "seeds", "connectors"],
     sources=["os_boundary_line"],
     always=True,
 )
@@ -679,6 +680,7 @@ def run() -> dict:
         "stranded_km, since upstream_km counts water that has another way out"
     )
     _sweep_the_outletless_basins(report, findings)
+    _connectors_that_climb(report, findings)
 
     report.add("stranded_components", {
         "count": int(len(stranded)),
@@ -1288,3 +1290,86 @@ def _outletless_against_the_coast() -> pd.DataFrame:
     out = (basins.drop(columns="geometry")
            .merge(near_coast, on="basin_id").merge(near_tidal, on="basin_id"))
     return out.sort_values(["coast_m", "basin_id"], ascending=[False, True])
+
+
+def _connectors_that_climb(report: Report, findings: list[Finding]) -> None:
+    """Every connector in the built network, measured against the terrain it crosses.
+
+    **The veto in `repair` refuses these; this counts what got through.** A connector
+    whose evidence names a person is applied whatever the terrain says, because a 50 m
+    model cannot see a lock or a pumped outfall — so the class does not become empty,
+    it becomes small and attributable. Reporting it here is what makes that difference
+    visible instead of a silent exemption.
+
+    It also catches the case the veto cannot: a connector whose ends the terrain could
+    not answer for, and a connector added by some future path that does not go through
+    `repair`'s check. The gate and the count are deliberately separate — a gate that is
+    also its own audit reports only that it ran.
+    """
+    import numpy as np
+
+    from .. import raster
+
+    con_ = db.get()
+    import shapely
+
+    rows = con_.execute(
+        """
+        SELECT l.link_id, l.name, l.length_m, ST_AsWKB(l.geom) AS wkb
+        FROM link l WHERE l.origin = 'connector'
+        """
+    ).df()
+    if rows.empty:
+        report.add("connectors_that_climb", {"connectors": 0, "climbing": 0})
+        return
+
+    raster.assert_unconditioned(raster.UNCONDITIONED)
+    limit = float(config.param("connectors.max_rise_m"))
+
+    # ONE PASS, NOT ONE PER CONNECTOR. `raster.sample_points` reads the whole band on
+    # every call, so a loop over 1,200 connectors would read a 128 MB raster 1,200
+    # times. Two calls do the same work.
+    ends = [shapely.get_coordinates(shapely.from_wkb(bytes(r.wkb)))
+            for r in rows.itertuples()]
+    ax = np.array([c[0][0] for c in ends], dtype=float)
+    ay = np.array([c[0][1] for c in ends], dtype=float)
+    bx = np.array([c[-1][0] for c in ends], dtype=float)
+    by = np.array([c[-1][1] for c in ends], dtype=float)
+    with raster.open_unconditioned() as ds:
+        za = raster.sample_points(ds, ax, ay)
+        zb = raster.sample_points(ds, bx, by)
+
+    out = [
+        (r.link_id, r.name, float(r.length_m), float(z2 - z1), float(x), float(y))
+        for r, z1, z2, x, y in zip(rows.itertuples(), za, zb, ax, ay)
+        if np.isfinite(z1) and np.isfinite(z2)
+    ]
+
+    climbing = [o for o in out if o[3] > limit]
+    report.add("connectors_that_climb", {
+        "connectors": len(rows),
+        "measured": len(out),
+        "climbing": len(climbing),
+        "limit_m": limit,
+        "worst_rise_m": round(max((o[3] for o in out), default=0.0), 1),
+    })
+    log.detail(
+        f"connectors: {len(rows):,} built, {len(out):,} with terrain at both ends, "
+        f"{len(climbing):,} still climbing more than {limit:g} m — each one is a person's "
+        "judgement overriding the model, and is named"
+    )
+    for link_id, name, length_m, rise, e, n in sorted(climbing, key=lambda o: -o[3]):
+        findings.append(
+            Finding(
+                kind="connector_climbs",
+                subject=link_id,
+                detail=(
+                    f"{name or 'a connector'} of {length_m:,.0f} m rises {rise:,.1f} m "
+                    f"end to end on the unconditioned terrain: the water it invents "
+                    f"would run uphill. It was applied, so its evidence names a person "
+                    f"rather than a rule — check the place"
+                ),
+                easting=e, northing=n,
+                metrics={"rise_m": round(rise, 2), "length_m": round(length_m, 1)},
+            )
+        )

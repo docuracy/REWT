@@ -818,6 +818,8 @@ def propose_component_outlets(
     max_gap_m: float = 250.0,
     min_component_km: float = 1.0,
     limit: int = 400,
+    max_rise_m: float | None = None,
+    candidates: int | None = None,
 ) -> tuple[list[dict], list[tuple[str, str]]]:
     """Connect a stranded COMPONENT to draining water at their closest approach.
 
@@ -844,6 +846,9 @@ def propose_component_outlets(
     from shapely.ops import nearest_points
 
     from . import graph
+
+    max_rise_m = config.param("connectors.max_rise_m") if max_rise_m is None else max_rise_m
+    candidates = config.param("connectors.candidates") if candidates is None else candidates
 
     g = graph.load("edge")
     reach = db.df("SELECT link_id, reaches_tidal FROM link_reach")
@@ -938,7 +943,7 @@ def propose_component_outlets(
                 FROM mine m JOIN theirs t
                   ON ST_Distance(m.geom, t.geom) <= {max_gap_m}
                  AND ST_Distance(m.geom, t.geom) > 0
-                ORDER BY gap_m LIMIT 1
+                ORDER BY gap_m LIMIT {candidates}
                 """
             )
             # The zero-metre touches are asked for SEPARATELY rather than filtered out
@@ -987,11 +992,11 @@ def propose_component_outlets(
             )
         if not near:
             continue
-        my_name, my_form, their_pub, their_name, their_form, gap, mw, tw = near[0]
 
-        mine = shapely.from_wkb(bytes(mw))
-        theirs = shapely.from_wkb(bytes(tw))
-        a, b = nearest_points(mine, theirs)
+        chosen = _downhill_approach(near, max_rise_m, rejected, component, row["km"])
+        if chosen is None:
+            continue
+        my_name, my_form, their_pub, their_name, their_form, gap, a, b, fall = chosen
         connector = shapely.LineString([(a.x, a.y), (b.x, b.y)])
         drafts.append(
             {
@@ -1015,7 +1020,10 @@ def propose_component_outlets(
                     f"at {a.x:,.1f} E {a.y:,.1f} N, to {their_pub}. The approach is "
                     f"greater than zero, so this is a gap rather than a crossing — a "
                     f"0 m crossing with both ends elsewhere is an aqueduct or culvert "
-                    f"and is refused (D-016). THE POSITION IS THE CLOSEST APPROACH, "
+                    f"and is refused (D-016). The unconditioned Terrain 50 surface falls "
+                    f"{fall:+,.1f} m from the stranded side to the draining side, so the "
+                    f"water this connector invents runs downhill. THE POSITION IS THE "
+                    f"CLOSEST APPROACH, "
                     f"NOT A SURVEYED STRUCTURE, and should be checked at the place. "
                     f"JUDGED BY RULE: see rewt/candidates.py propose_component_outlets."
                 ),
@@ -1186,3 +1194,63 @@ def propose_water_crossings(
             }
         )
     return drafts, rejected
+
+
+def _downhill_approach(near, max_rise_m: float, rejected: list, component, km: float):
+    """The nearest approach whose water would actually run downhill.
+
+    **Distance alone was the whole rule, and it joined channels across banks.** The
+    proposer took the single closest approach between a stranded region and water that
+    drains, which is right in the large — but two channels can be close in plan and
+    separated by an embankment, a road or a watershed, and the rule could not tell.
+    Measured against v0.1.0-alpha: 104 of 1,204 connectors rose more than a metre end to
+    end, 23 rose more than five, and the worst climbed 27.4 m in 462 m.
+
+    So several approaches are considered and the nearest one that does not climb is
+    taken. A longer connector is accepted ONLY to avoid running uphill, never to find a
+    tidier target — the ordering is still by distance, and terrain is a veto rather than
+    a preference.
+
+    **The surface is the unconditioned one (D-007).** The conditioned DEM has this very
+    network burned into it, so asking it whether a connector runs downhill would be
+    asking whether the answer we assumed is the answer we get.
+
+    **A region with no downhill approach is refused and named**, not drafted with the
+    least-bad candidate. The rule cannot tell an embankment from a survey gap, and a
+    connector nobody can justify is worse than a dead end somebody can see: the dead end
+    is already reported, with the length stranded behind it.
+    """
+    import shapely
+    from shapely.ops import nearest_points
+
+    from . import raster
+
+    raster.assert_unconditioned(raster.UNCONDITIONED)
+    tried: list[str] = []
+    with raster.open_unconditioned() as ds:
+        for my_name, my_form, their_pub, their_name, their_form, gap, mw, tw in near:
+            a, b = nearest_points(shapely.from_wkb(bytes(mw)), shapely.from_wkb(bytes(tw)))
+            za, zb = raster.sample_points(
+                ds, np.array([a.x, b.x]), np.array([a.y, b.y]))
+            if not (np.isfinite(za) and np.isfinite(zb)):
+                # No elevation at one end — offshore, or outside the clipped grid. The
+                # terrain cannot answer, so it does not get a vote, and the approach is
+                # taken on distance as before.
+                return my_name, my_form, their_pub, their_name, their_form, gap, a, b, 0.0
+            fall = float(za - zb)
+            if fall >= -max_rise_m:
+                return (my_name, my_form, their_pub, their_name, their_form, gap,
+                        a, b, fall)
+            tried.append(f"{gap:,.0f} m rising {-fall:,.1f} m")
+
+    rejected.append((
+        f"component {component}",
+        f"a region holding {km:,.1f} km has no approach to draining water that runs "
+        f"downhill: the {len(tried)} nearest all climb more than {max_rise_m:g} m on the "
+        f"unconditioned Terrain 50 surface ({'; '.join(tried[:4])}"
+        + (", …" if len(tried) > 4 else "")
+        + "). Two channels close in plan and separated by a bank are not a survey gap, "
+        "and joining them would route water uphill. Left as a dead end, which is "
+        "reported with the length stranded behind it."
+    ))
+    return None
