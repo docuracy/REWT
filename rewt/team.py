@@ -129,12 +129,19 @@ def read_all() -> dict[str, Claim]:
 
 
 def claim(role: str | None = None, session: str | None = None,
-          force: bool = False) -> tuple[str, bool]:
+          force: bool = False) -> tuple[str, "Claim | None"]:
     """Take a role, or the first free one in startup order. Returns (role, was_stale).
 
-    Racing sessions are settled by the filesystem: `O_EXCL` gives one winner. A claim
-    whose process has gone is cleared and retaken, and the caller is told, because a
-    role that was held five minutes ago and is free now is worth a second look.
+    Racing sessions are settled by the filesystem: `O_EXCL` gives one winner.
+
+    Returns the role taken and **whatever claim was displaced**, or `None` if the role
+    was free. It used to return a bare `was_stale` flag, true for any forced claim — so
+    the caller could not tell *I reclaimed something abandoned* from *I evicted a
+    colleague*, and the CLI printed "held by a process that has gone" either way. There
+    is no liveness here to know that by (see below), so the honest report is who held it
+    and since when, and let the reader judge. rewt-6a, who declined to write a test
+    pinning the old behaviour on the grounds that it would record what the code did
+    rather than what it should.
     """
     DIR.mkdir(exist_ok=True)
     held = read_all()
@@ -143,8 +150,16 @@ def claim(role: str | None = None, session: str | None = None,
         if want not in BY_NAME:
             raise KeyError(f"no such role {want!r}; known: {', '.join(BY_NAME)}")
         existing = held.get(want)
-        stale = False
+        displaced: Claim | None = None
         if existing is not None:
+            # ALREADY YOURS IS SUCCESS, NOT A CRASH. Re-running the command in the same
+            # session raised, and told the caller to check `ListAgents` for whether the
+            # holder was still running — which is unfollowable when the holder is you:
+            # you find yourself alive and there is no path. `--force` would have worked
+            # and is documented as retaking a role "whose holder has gone", so following
+            # the advice meant asserting something false about your own claim.
+            if session and existing.session == session:
+                return want, None
             if not force:
                 if role:
                     raise RuntimeError(
@@ -155,31 +170,60 @@ def claim(role: str | None = None, session: str | None = None,
                     )
                 continue
             _path(want).unlink(missing_ok=True)
-            stale = True
+            displaced = existing
         try:
             fd = os.open(_path(want), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
         except FileExistsError:
-            continue          # lost the race; try the next role
+            # Lost the race. With a role named there is nothing else to try, and the
+            # fall-through said "every role is claimed by a live process" — false, and
+            # misleading in the one situation where somebody is already unsure who holds
+            # what. Two sessions forcing the same role can both unlink before either
+            # creates; the loser lands here.
+            if role:
+                raise RuntimeError(
+                    f"lost a race for {want}: another session claimed it between this "
+                    "one clearing it and taking it. Run `rewt team status` — somebody "
+                    "else is forcing the same role at the same moment."
+                )
+            continue
         with os.fdopen(fd, "w") as fh:
             json.dump({"session": session or os.environ.get(
                 "CLAUDE_SESSION_NAME", "unnamed"),
                 "claimed_at": time.strftime("%Y-%m-%dT%H:%M:%S")}, fh)
-        return want, stale
+        return want, displaced
     raise RuntimeError("every role is claimed by a live process")
 
 
-def release(role: str | None = None, session: str | None = None) -> list[str]:
+def release(role: str | None = None, session: str | None = None,
+            force: bool = False) -> list[str]:
     """Give back a role, by name or by the session holding it.
 
     **Not by pid**, which is what the first version matched on and which never survives
     the call. An agent knows its own session name, so that is the handle it has.
+
+    **A session may not release another session's role without `--force`.** The first
+    version had no ownership check at all: `release --role visualisation` deleted whoever
+    held it, silently, with no confirmation — so any session could unseat any other by
+    typing a name. `claim` had exactly this guard and `release` did not, which is the
+    asymmetry that made it invisible. Found by rewt-2b from the code, who declined to
+    demonstrate it by unseating a live session, and was saved from doing it by accident
+    only because they mistyped the role and got a warning.
     """
     held = read_all()
-    targets = []
     if role:
-        targets = [role] if role in held else []
+        c = held.get(role)
+        if c is None:
+            return []
+        if session and c.session != session and not force:
+            raise PermissionError(
+                f"{role} is held by {c.session}, not by {session}. Releasing another "
+                "session's role takes --force, and it is worth asking them first."
+            )
+        targets = [role]
     elif session:
         targets = [r for r, c in held.items() if c.session == session]
+    else:
+        return []
     for r in targets:
         _path(r).unlink(missing_ok=True)
     return targets

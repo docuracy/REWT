@@ -544,11 +544,20 @@ def team_cmd(
         return
 
     if action == "release":
-        freed = team.release(role, name)
+        try:
+            freed = team.release(role, name, force)
+        except PermissionError as exc:
+            log.error(str(exc))
+            raise typer.Exit(1) from None
         if not freed:
-            log.warn("nothing released — name the role with --role or the session with "
-                     "--name. There is no pid to match on: an agent runs each command in "
-                     "a fresh shell, so nothing on this side outlives the call.")
+            held = team.read_all()
+            if role:
+                log.warn(f"{role} is not on the board. Held: "
+                         + (", ".join(f"{r} ({c.session})" for r, c in held.items())
+                            or "nothing"))
+            else:
+                log.warn("nothing released — name the role with --role or the session "
+                         "with --name.")
             raise typer.Exit(1)
         log.done(f"released {', '.join(freed)}")
         return
@@ -563,7 +572,19 @@ def team_cmd(
         log.error(f"unknown action {action!r}; use claim, status, release or shutdown")
         raise typer.Exit(1)
 
-    got, was_stale = team.claim(role, name, force)
+    # An expected condition is a message and an exit code. Both of these arrived as raw
+    # tracebacks — an unknown role as a KeyError, a role already held as a RuntimeError —
+    # three lines below a branch that does it correctly for an unknown action. `--role
+    # viewer` is the easy slip, because `viewer` is what the directory is called.
+    try:
+        got, displaced = team.claim(role, name, force)
+    except KeyError:
+        log.error(f"no such role {role!r}. The roles are: "
+                  + ", ".join(r for r, _, _ in team.ROLES))
+        raise typer.Exit(1) from None
+    except RuntimeError as exc:
+        log.error(str(exc))
+        raise typer.Exit(1) from None
     _, owns, opening = team.BY_NAME[got]
     # The role, on stdout, alone on the first line: `role=$(rewt team claim)` is the
     # obvious thing a caller wants and it returned nothing at all.
@@ -571,9 +592,15 @@ def team_cmd(
     # Name the tab, because PyCharm will not and six terminals reading `zsh` are
     # indistinguishable to the person who has to pick the right one.
     team.terminal_title(f"REWT · {got}")
-    if was_stale:
-        log.warn(f"{got} was held by a process that has gone; taken over. Whatever it "
-                 "was doing is unfinished and nobody has said so.")
+    if displaced is not None:
+        # SAY WHAT HAPPENED, not what is comfortable. This claimed the role had been
+        # "held by a process that has gone" — a true-looking sentence about something
+        # nothing here can know, printed identically whether a dead session was
+        # reclaimed or a live colleague evicted.
+        log.warn(f"{got} was held by {displaced.session}, claimed "
+                 f"{displaced.age_hours:,.1f} h ago, and you have taken it. If that "
+                 "session is still running it has just lost its role and has not been "
+                 "told — check `ListAgents`.")
     log.done(f"you are the {got} session")
     log.detail(f"you own: {owns}")
     log.detail(f"opening task: {opening}")
