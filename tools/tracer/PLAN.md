@@ -258,9 +258,25 @@ is binding a historical claim to a line.
 **So the tiles are built at deploy and never committed.** rewt-d3 adds the export as a flag
 on the existing exporter rather than a separate stage, so it cannot drift from the
 GeoPackage: `link` and `node` vector tiles carrying `link_id` and `node_id` through to the
-tile. The Pages workflow fetches the current published network and tiles it into
-`docs/trace/data/` as part of the deploy, so the served site has them and the repository
-does not. History stays small, the rule stays intact, and the tiles cannot drift from the
+tile. The Pages workflow fetches the current published network and unpacks it as part of the
+deploy, so the served site has it and the repository does not.
+
+**As built, it lands in `docs/viewer/data/` and the tracer reads it from there.** This
+section said `docs/trace/data/`, and the plan was the thing that was wrong: the viewer's
+archive already carries a `link` layer with `link_id`, and a second copy of a 318 MB build
+under a different path would be two artefacts that can disagree — the failure this whole
+arrangement exists to avoid, reintroduced for the sake of a tidier URL. Verified on the
+deployed site rather than assumed: `viewer/data/rewt.pmtiles` answers a Range request with
+206, and its metadata declares `link` at z5–14 carrying `link_id`, `basin_id`, `name`,
+`form`, `parent_link_id` and `superseded_by`.
+
+**So this dependency is met, and phase 6 is not blocked on it.** Two things it does not
+settle. The link layer stops at z14 while tracing happens at the sheet's native zoom, so
+the geometry drawn under the cursor is generalised and only the identifiers are exact —
+adequate for binding, and to be measured rather than assumed for anything else. And the
+fingerprint comparison this section requires below **is not in `pages.yml`**: the workflow
+resolves the latest tag, downloads and untars, and checks nothing about what it got. That
+is rewt-d3's to land, and it is recorded here so it cannot be mistaken for done. History stays small, the rule stays intact, and the tiles cannot drift from the
 network they claim to draw.
 
 **A release asset is the vehicle, and rewt-d3 has agreed it.** A full Stage 1 build in an
