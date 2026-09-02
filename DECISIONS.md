@@ -2587,3 +2587,44 @@ an order and reading a log to check.**
 **150 m is not a new number.** It is the radius the audit already uses to corroborate a
 refused 0 m crossing against this same register, so the two tests agree about what "at
 this place" means.
+
+---
+
+**D-074 — An aggregate is not evidence that its members exist. Check that a number can
+name its rows.**
+
+*The audit published `connectors_that_climb: {climbing: 16}` and not one of the sixteen
+places. Both producers of those findings ran after the findings table had been written,
+so they appended to a list nobody read again. I then told rewt-fc the findings carried a
+kind and a position, having written the code that emits them and never looked at the
+output.*
+
+**Why the count was persuasive.** `climbing: 16` reads as though something counted sixteen
+things *it could name*. A summary carries an implicit claim about the enumeration it was
+computed from, and here the enumeration was thrown away one line later while the summary
+survived. Nothing was false: sixteen connectors do climb. The number was right and the
+thing it implied was not.
+
+**It is a different failure from D-070 and neither test catches the other.** D-070 is a
+*selector* standing in for a measurement — `'canal' in reason` matching 517 of 517. This is
+a *summary* standing in for its own members. The tests are separate:
+
+* **before believing a selector, confirm it excludes something** (D-070);
+* **before believing an aggregate, ask it to name a row** (this).
+
+A selector that excludes nothing and an aggregate that can name nothing both produce
+crisp, plausible output, and each passes the other's test.
+
+**The fix that matters is the second one.** Moving the producers above the persist block
+corrects today's instance. **Sealing the list corrects the class**: appending after the
+write now raises a `StageError` naming the caller, so the next producer added in the wrong
+place fails the build instead of quietly contributing nothing. rewt-fc's framing is right —
+converting a silent wrong answer into a loud failure is the only kind of change that
+survives someone who has not read the ordering. It is the same principle the viewer already
+runs on a different surface: **an absent layer and an empty one must not look alike**, so it
+names what is missing rather than drawing nothing.
+
+**And the aggregate had already been published under a DOI.** `v0.1.1-alpha` carries the
+count and none of the places. Stephen's call was to leave it rather than re-tag, which is
+right — the figure is true, the gap is in detail rather than in fact, and the next edition
+carries the repair.
