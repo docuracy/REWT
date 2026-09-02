@@ -129,6 +129,13 @@ it follows describes roads, railways and parish boundaries just as readily as ri
 is why it may only search among ink the contributor has already pointed at. It is confined
 to what a person indicated; it does not go looking.
 
+**What it does with those pixels is more than snap a line to them.** Where the surveyor drew
+two banks, it finds the middle between them and measures how wide the channel is at that
+point, across several transects rather than one. Where there is no middle to find, it says so
+and leaves the vertex where the hand put it. **Both answers are reported in words as the line
+is drawn**, so a contributor can see which one they just got — and a reach where the tool
+keeps declining is telling them something about the sheet.
+
 <figure class="sheet-figure narrow">
   <div class="frames">
     <img src="{{ '/assets/maps/tracer-lea-at-ware.jpg' | relative_url }}"
@@ -141,8 +148,9 @@ to what a person indicated; it does not go looking.
   discriminating. <strong>Ink-following produced nothing here, and was right not to:</strong>
   this reach is drawn as two banks, so the ink is the edges and not the middle. The clicks are
   the ones already recorded in the paired traces, replayed
-  rather than composed for the photograph, and the line under the map is the tool's own
-  account of what it just did. Every marker carries a white ring, which is why the ones
+  rather than composed for the photograph. Printed under the map is the tool's own account of
+  what it last did, in its own words: <em>Moved 0.7 m to the middle. The channel is 26.6 m
+  wide here, measured across 7 transects.</em> Every marker carries a white ring, which is why the ones
   crossing the lettering of <em>Wharves</em> can still be read.
   <span class="credit">Reproduced with the permission of the National Library of
   Scotland.</span></figcaption>
