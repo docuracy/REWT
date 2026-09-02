@@ -562,7 +562,20 @@ def pack() -> pathlib.Path:
     import tarfile
 
     out = paths.PUBLISHED / "viewer-data.tar"
-    files = sorted(f for f in OUT.iterdir() if f.suffix in (".pmtiles", ".geojson", ".json"))
+    # NOT release.json. It is written by pages.yml AFTER this asset is unpacked, because
+    # the deploy is the only thing that knows which release the data was attached to —
+    # the build cannot know, since the tag does not exist until after the build.
+    #
+    # It is excluded rather than merely not created here, because this function sweeps
+    # the directory by suffix and will pick up whatever a local preview left behind. It
+    # already did: a fixture written by hand at 08:40 to test the citation box shipped
+    # inside v0.2.0-alpha declaring itself v0.1.1-alpha. Harmless in the deploy, where
+    # the workflow overwrites it a moment later, and wrong for anyone who reads the
+    # asset directly — which is the exact failure that file exists to prevent, packaged
+    # inside the artefact.
+    files = sorted(f for f in OUT.iterdir()
+                   if f.suffix in (".pmtiles", ".geojson", ".json")
+                   and f.name != "release.json")
     if not files:
         raise FileNotFoundError(
             f"{OUT.relative_to(paths.ROOT)} is empty; run `rewt viewer-data` first"
