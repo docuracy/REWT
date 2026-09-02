@@ -122,39 +122,22 @@ draw.
 
 ## How the ink is followed
 
-The obvious approach does not work. **On these sheets the median blue fraction is 0.000%**
-— roughly one in twenty is a coloured printing and the rest are monochrome outline
-editions, where a blue-water detector finds nothing at all. What makes it tractable is that
-the distribution is *bimodal*: a tile reads either exactly zero or several per cent, with
-almost nothing between, so the sheet type can be decided from the pixels at the moment of
-use and the right method chosen — follow blue where it exists, follow ink darkness where it
-does not.
-
-**On a monochrome sheet, ink darkness describes roads, railways, contours and parish
-boundaries just as well as it describes rivers.** A shortest path across such a sheet will
-set off down a turnpike without hesitation. What makes it usable is a **corridor**: the
-search is confined to a band around the straight line between the vertex just placed and
-the cursor, so the algorithm may only choose among ink the contributor has already pointed
-at.
-
-**And a finer sheet is not automatically a better one to follow.** On the
-[25-inch](evidence#the-25-inch-is-not-a-better-six-inch) a channel above a modest width is
-drawn as two banks with the water between them, so ink-following locks to one bank and
-returns a line half a channel-width out — sharper raster, systematically wrong answer. Where a
-sheet is coloured the water can be segmented on hue instead — but **which sheets are coloured
-cannot be predicted from the scale**, and varies in both directions between the two series,
-so that too has to be decided from the pixels rather than assumed.
+**Most of these sheets are monochrome outline editions**, so a detector looking for blue
+water finds nothing on them. The tool therefore decides which method applies **from the
+pixels in front of it rather than from the sheet's name** — and on a monochrome sheet the ink
+it follows describes roads, railways and parish boundaries just as readily as rivers, which
+is why it may only search among ink the contributor has already pointed at. It is confined
+to what a person indicated; it does not go looking.
 
 <figure class="sheet-figure narrow">
   <div class="frames">
     <img src="{{ '/assets/maps/tracer-lea-at-ware.jpg' | relative_url }}"
-         alt="The tracer on the six-inch second edition at Ware: fourteen vertices along the Lea past the wharves, ten solid pink where a hand placed them and four hollow and cyan-ringed where centring moved them, with the message: moved 0.4 m to the middle, the channel is 25.8 m wide here, measured across 7 transects.">
+         alt="The tracer on the six-inch second edition at Ware: a traced line along the Lea past the wharves, most of its vertices drawn solid where a hand placed them and a few drawn hollow where the tool moved them to the middle of the channel.">
   </div>
   <figcaption><strong>Both operations, in one line, chosen vertex by vertex.</strong> The Lea
-  at Ware past the wharves, on the six-inch. Fourteen points: <strong>ten left where the hand
-  put them</strong>, four moved to the middle and drawn hollow. The tool decides from the ink
-  under each vertex, not from which sheet is loaded — and the ratio is the honest part. A
-  frame in which every vertex had been centred would be a frame of a tool that had stopped
+  at Ware past the wharves, on the six-inch. <strong>Most vertices are left where the hand put
+  them</strong>; a few are moved to the middle and drawn hollow. That ratio is the honest part
+  — a frame in which every vertex had been moved would be a frame of a tool that had stopped
   discriminating. Traced by a contributor, not staged for the photograph.
   <span class="credit">Reproduced with the permission of the National Library of
   Scotland.</span></figcaption>
@@ -177,17 +160,11 @@ carries the task is the right one.**
 The interface says as much where a contributor will read it: *a leat is a single stroke and a
 navigable river is a pair of banks, often on the same sheet.*
 
-**What the assist is calibrated on is one trace of one reach**, and it says so in its own
-code. The constants that decide when a corridor counts as a channel rest on that single
-piece of evidence, so they are a starting point rather than a measurement — and the first
-thing a second reach may do is move them.
-
 **And here is the limit, which is not a bug to be tuned away.** Two roughly parallel lines a
 constant distance apart are a channel — and are also a lane, a gap between terraces, a
 railway. **No test of the local pixels separates them.** Asked for the strongest such feature
-anywhere in Ware on the 25-inch, the assist returns the railway between the goods shed and the
-signal posts: 206 accepted points, a continuous 500 m run, a median width of 17.4 m, and
-correct about the geometry in every particular. What supplies the missing knowledge is the
+anywhere in Ware, the assist returns a railway — and is correct about the geometry in every
+particular. What supplies the missing knowledge is the
 contributor, who knows they are following a watercourse. Nothing in the raster does.
 
 **It is an assistant, not an interpreter**, and the interface says so rather than leaving it
@@ -198,17 +175,14 @@ to be inferred. Three consequences follow, and they are design rules and not cav
   them draw it without pretending otherwise.
 - **Blank paper is never snapped to.** Outside coverage, or where a tile is refused, a
   uniform field produces a confident-looking line and a false account of how it was made.
-  The classifier refuses rather than obliges.
+  The tool refuses rather than obliges.
 - **Which vertices were placed by hand and which by the algorithm is visible while
   tracing**, not only recorded in the file. A machine-placed vertex looks more authoritative
-  than a drawn one and is not — it is a reading of ink in a corridor a person pointed at. The
+  than a drawn one and is not — it is a reading of ink a person pointed at. The
   person most likely to over-trust it is the contributor, in the moment, and a provenance
-  field only a later reader sees does nothing for them. **This one is built**, and it
-  distinguishes three origins rather than two: a vertex a hand placed draws solid, one moved
-  to the middle of the channel draws hollow, and one the ink-following produced draws hollow
-  and **smaller** — deliberately, because a run of thirty vertices laid down in one step was
-  nobody's decision and should not carry the visual weight of a judgement. A line of text
-  says how far a vertex moved and how wide the channel was found to be.
+  field only a later reader sees does nothing for them. **This one is built**: a hand's
+  vertex, a moved one and a followed one each draw differently, and a machine-laid run is
+  drawn to look like less of a judgement than a placed point, because that is what it is.
 
 ## What the gate is, and what it is not
 
