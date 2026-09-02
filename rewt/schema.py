@@ -20,6 +20,13 @@ reason each, and each is a direct answer to something that went wrong before:
   so, so that a mouth the sea could not take is a named finding rather than a silent
   omission. It is the same defect as D-048 one turn later, and it was caught only
   because the count was compared against §10's words rather than against another count.
+* **A share is not a per-link answer** (`link_sea_reach`). The audit published what
+  proportion of the network reaches the sea; nothing carried the answer for a single
+  link. So the connector proposer could not ask the one question that would have stopped
+  it inventing geometry: *does the sea already drain this?* The flag is a filter on the
+  crawl's own result — reaches tidal water, and the terminus it drains to is in a system
+  the sea can take — which makes it a subset by construction, and the same computation
+  the audit reports rather than a second one that happens to agree.
 * **A sea route must be a `link` in one network, not a second graph** (`sea_link`).
   §10 is explicit that sea segments do not get a routing graph of their own, and §8
   records what happened last time two graphs were held over one geometry. This is the

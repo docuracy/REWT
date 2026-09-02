@@ -93,6 +93,11 @@ def test_the_model_stays_small():
         # than a definition. Their reasons are in schema.py's docstring with the
         # rest; this set is deliberately not the place to state them.
         "sea_entry", "sea_link",
+        # The second reachability reading, added 2026-09-02. The sea network was
+        # built, published and drawn while no per-link reading could see it, so
+        # nothing downstream could ask whether a region the sea already drains
+        # needs geometry invented to drain it.
+        "link_sea_reach",
     }
     unexplained = set(schema.TABLES) - four - derived
     assert not unexplained, (
