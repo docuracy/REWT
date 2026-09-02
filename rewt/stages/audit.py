@@ -1313,15 +1313,26 @@ def _connectors_that_climb(report: Report, findings: list[Finding]) -> None:
     con_ = db.get()
     import shapely
 
+    # `repair_link`, NOT `link`. Connectors are geometry this project added, so they
+    # live in the repair table; `link` is the survey's own. The first version of this
+    # asked `link` and reported "0 connectors, 0 climbing" while 1,142 were applied —
+    # a check that cannot fail, which is the failure its own docstring warns about. It
+    # was caught by the count being zero rather than by the check saying anything.
     rows = con_.execute(
         """
-        SELECT l.link_id, l.name, l.length_m, ST_AsWKB(l.geom) AS wkb
-        FROM link l WHERE l.origin = 'connector'
+        SELECT link_id, name, length_m, ST_AsWKB(geom) AS wkb
+        FROM repair_link WHERE origin = 'connector'
         """
     ).df()
     if rows.empty:
-        report.add("connectors_that_climb", {"connectors": 0, "climbing": 0})
-        return
+        raise StageError(
+            "no connectors are in repair_link, but the corrections table holds applied "
+            "connector judgements. Either the repair stage did not run or this query "
+            "is asking the wrong table again."
+            if con_.execute("SELECT count(*) FROM correction WHERE kind = 'connector' "
+                            "AND applied").fetchone()[0] else
+            "no connectors were applied, so there is nothing to measure"
+        )
 
     raster.assert_unconditioned(raster.UNCONDITIONED)
     limit = float(config.param("connectors.max_rise_m"))
