@@ -987,42 +987,202 @@ function dl(obj) {
   return '<dl>' + Object.keys(obj).filter((k) => obj[k] != null && obj[k] !== '')
     .map((k) => `<dt>${esc(k)}</dt><dd>${esc(obj[k])}</dd>`).join('') + '</dl>';
 }
-const popup = (ll, html) => new maplibregl.Popup({ maxWidth: '340px' })
-  .setLngLat(ll).setHTML(html).addTo(map);
 
-function wireClicks(o) {
-  map.on('mouseenter', o.id, () => { map.getCanvas().style.cursor = 'pointer'; });
-  map.on('mouseleave', o.id, () => { map.getCanvas().style.cursor = ''; });
-  map.on('click', o.id, (e) => {
-    const p = { ...e.features[0].properties };
-    let head = `<b>${esc(o.label)}</b>`, extra = '';
-    if (o.id === 'corrections') {
-      extra = `<div class="quote"><b>${p.by_rule
-        ? 'JUDGED BY RULE — no person has looked at this place'
-        : 'adjudicated at the place'}</b><br>${esc(p.evidence)}</div>`;
-      delete p.evidence; delete p.by_rule;
-    }
-    popup(e.lngLat, head + dl(p) + extra);
-  });
+/* ── One click, one popup (R-10, R-11) ─────────────────────────────────────────
+   EVERY CLICKABLE LAYER USED TO BIND ITS OWN `click` HANDLER, and a node drawn on
+   top of the link it terminates is two layers under one cursor: both fired, both
+   opened a popup, and the second landed on the first. At
+   os:node/7D63F86E-1FBE-4AC3-AEFE-B28073CDAF05 — a Grand Union Canal dead end with
+   two inflows — you got the node's panel over a link's panel, and the link shown was
+   whichever one MapLibre happened to hit-test first. The second inflow, which is the
+   whole reason that node is a defect, was not on the screen at all.
+
+   So the layers no longer bind anything. They register here, and one handler on the
+   map answers the click for all of them: query every registered layer at once, put
+   the marks first because a mark is what you were aiming at, and give each link its
+   own collapsible block. One popup, everything under the cursor in it, nothing
+   hidden behind anything else.
+
+   WHAT THIS CANNOT DO, SAID IN THE POPUP RATHER THAN GLOSSED. `from_node` and
+   `to_node` are deliberately not tiled — they are the two highest-cardinality columns
+   in the table and rewt/tiles.py drops them — so the deployed viewer holds no
+   node-to-link index and CANNOT enumerate the links attached to a node. What it can
+   do is return every link drawn within a few pixels of the click, which at a node is
+   the same set in practice and is not the same claim. The popup says which of the two
+   it is doing, and where a mark carries `inflows` it compares the count and says so
+   when they disagree, because a quietly short list is the failure that looks like
+   success. */
+
+const CLICKABLE = new Map();          // layer id -> { label, role, o }
+const HIT = 6;                        // pixels either side of the cursor
+
+const detail = new maplibregl.Popup({ maxWidth: '360px', closeOnClick: false });
+detail.on('close', () => highlight([]));
+const popup = (ll, html) => detail.setLngLat(ll).setHTML(html).addTo(map);
+
+/* Registered rather than bound. `role` decides which half of the popup a feature
+   lands in: a link is a channel, a mark is a place on one. `kept-pt` is a mark
+   standing for a link, so it is a link — it carries the link's own attributes. */
+function clickable(id, label, role, o) {
+  if (CLICKABLE.has(id)) return;
+  CLICKABLE.set(id, { label, role, o });
+  map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer'; });
+  map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
 }
 
-/* The network's own click detail comes out of the tile — there is no /api/link here. */
+function wireClicks(o) {
+  clickable(o.id, o.label, 'mark', o);
+}
+
 function wireNetwork() {
-  /* `kept-pt` is clickable too. At national view the mark is the only thing standing
-     for a defect, and a mark you cannot interrogate is a dot on a map — it carries the
-     same attributes as the line it stands for, so it answers the same question. */
   for (const id of ['network', 'kept', 'kept-pt']) {
-    if (!map.getLayer(id)) continue;
-    map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
-    map.on('click', id, (e) => {
-      const d = { ...e.features[0].properties };
-      const title = d.name
-        ? esc(d.name) + (d.name_alt ? ` <span style="color:var(--ink-dim)">/ ${esc(d.name_alt)}</span>` : '')
-        : (d.name_alt ? esc(d.name_alt) : '(unnamed)');
-      popup(e.lngLat, `<b>${title}</b>` + dl(d));
-    });
+    if (map.getLayer(id)) clickable(id, 'Link', 'link', null);
   }
+}
+
+/* THE HALO GOES UNDERNEATH, which is why it is a source of its own rather than a
+   filter on each layer. A clicked feature may come from a vector tile or from a
+   GeoJSON overlay; `queryRenderedFeatures` hands back geographic geometry either way,
+   so copying it into one source highlights both by the same mechanism. Drawn below
+   `network-out` so it reads as a glow behind the thing you clicked rather than as a
+   new mark on top of it — a highlight that covers the feature answers the question by
+   hiding the evidence. Yellow is Stephen's suggestion (R-11); it is wide, blurred and
+   half-transparent so that it cannot be mistaken for the solid yellow dot that means
+   a curated judgement. */
+const HALO = 'click-halo';
+function wireHighlight() {
+  map.addSource(HALO, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+  const under = map.getLayer('network-out') ? 'network-out' : undefined;
+  map.addLayer({
+    id: HALO + '-line', type: 'line', source: HALO,
+    filter: ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
+    layout: { 'line-cap': 'round', 'line-join': 'round' },
+    paint: { 'line-color': C.add, 'line-blur': 2,
+      'line-opacity': ['case', ['boolean', ['get', 'hover'], false], 0.35, 0.6],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 5, 6, 12, 12, 17, 18] },
+  }, under);
+  map.addLayer({
+    id: HALO + '-pt', type: 'circle', source: HALO,
+    filter: ['match', ['geometry-type'], ['Point', 'MultiPoint'], true, false],
+    paint: { 'circle-color': C.add, 'circle-blur': 0.5,
+      'circle-opacity': ['case', ['boolean', ['get', 'hover'], false], 0.35, 0.6],
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 7, 12, 12, 17, 18] },
+  }, under);
+}
+
+function highlight(features, hover = false) {
+  const src = map.getSource(HALO);
+  if (!src) return;
+  src.setData({ type: 'FeatureCollection', features: features.map((f) => ({
+    type: 'Feature', geometry: f.geometry, properties: { hover },
+  })) });
+}
+
+/* Only the layers that are registered AND currently in the style: a layer is removed
+   when its toggle goes off, and querying a missing one throws. */
+function hits(point) {
+  const layers = [...CLICKABLE.keys()].filter((id) => map.getLayer(id));
+  if (!layers.length) return [];
+  return map.queryRenderedFeatures(
+    [[point.x - HIT, point.y - HIT], [point.x + HIT, point.y + HIT]], { layers });
+}
+
+/* One feature per thing, not one per layer that draws it. A link in view at z9 is in
+   both `network` and `kept`; a link below z10 is in `kept` and `kept-pt` at once. */
+function split(features) {
+  const links = [], marks = [], seen = new Set();
+  for (const f of features) {
+    const d = CLICKABLE.get(f.layer.id);
+    if (!d) continue;
+    const p = f.properties || {};
+    const key = d.role === 'link'
+      ? 'link:' + (p.link_id ?? JSON.stringify(f.geometry.coordinates))
+      : `mark:${d.o?.id}:${p.node_id ?? p.correction_id ?? p.subject
+          ?? JSON.stringify(f.geometry.coordinates)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    (d.role === 'link' ? links : marks).push({ d, f });
+  }
+  return { links, marks };
+}
+
+const linkTitle = (d) => (d.name
+  ? esc(d.name) + (d.name_alt ? ` <span style="color:var(--ink-dim)">/ ${esc(d.name_alt)}</span>` : '')
+  : (d.name_alt ? esc(d.name_alt) : '(unnamed)'));
+
+function markBlock({ d, f }) {
+  const p = { ...f.properties };
+  let extra = '';
+  if (d.o && d.o.id === 'corrections') {
+    extra = `<div class="quote"><b>${p.by_rule
+      ? 'JUDGED BY RULE — no person has looked at this place'
+      : 'adjudicated at the place'}</b><br>${esc(p.evidence)}</div>`;
+    delete p.evidence; delete p.by_rule;
+  }
+  return `<b>${esc(d.label)}</b>` + dl(p) + extra;
+}
+
+function describe(links, marks) {
+  let html = marks.map(markBlock).join('');
+
+  /* A NODE'S OWN COUNT IS THE ONLY CHECK AVAILABLE HERE, so it is used. `inflows` is
+     arrivals only, never the full degree, so it can be met while an outflow is still
+     missing from the list — it can therefore disagree downwards and not upwards, and
+     only the downward disagreement is reported. That is the direction that matters:
+     it is the one where the popup is showing you less than there is. */
+  const expected = marks.map((m) => m.f.properties?.inflows)
+    .filter((n) => typeof n === 'number');
+  const wanted = expected.length ? Math.max(...expected) : null;
+
+  if (links.length) {
+    html += `<div class="hint">${links.length} link${links.length === 1 ? '' : 's'}`
+      + ` drawn within ${HIT} px of this point`
+      + (wanted != null && links.length < wanted
+        ? ` — <b style="color:var(--warn)">the node records ${wanted} inflows, so at`
+          + ` least ${wanted - links.length} more is attached and not drawn here.`
+          + ` Zoom in, or turn on the layer it belongs to.</b>`
+        : '')
+      + `</div>`;
+    for (const { f } of links) {
+      const p = { ...f.properties };
+      html += `<details${links.length === 1 ? ' open' : ''}>`
+        + `<summary>${linkTitle(p)}<span class="t"> · ${esc(p.form || 'link')}`
+        + `${p.length_m ? ' · ' + fmt(p.length_m / 1000, 2) + ' km' : ''}</span></summary>`
+        + dl(p) + '</details>';
+    }
+  }
+  /* Said once, at the bottom, in the popup rather than only in this file: proximity
+     is not topology and the reader is entitled to know which one they are looking at. */
+  if (links.length && marks.length) {
+    html += '<div class="hint">These are the links drawn near the click, not a list '
+      + 'of the links attached to the node — the tiles carry no node index.</div>';
+  }
+  return html;
+}
+
+function wireMapClicks() {
+  map.on('click', (e) => {
+    const { links, marks } = split(hits(e.point));
+    if (!links.length && !marks.length) { detail.remove(); return; }
+    popup(e.lngLat, describe(links, marks));
+    highlight([...marks, ...links].map((x) => x.f));
+  });
+
+  /* HOVER IS A PREVIEW AND CLICK IS A PIN, so hover never disturbs an open popup.
+     Above z12 only: below it a hover halo is wider than the features under it and
+     every mousemove over the network lights up half the screen. */
+  let last = '';
+  map.on('mousemove', (e) => {
+    if (detail.isOpen() || map.getZoom() < 12) return;
+    const { links, marks } = split(hits(e.point));
+    const feats = [...marks, ...links].map((x) => x.f);
+    const key = feats.map((f) => f.properties?.link_id ?? f.properties?.node_id
+      ?? JSON.stringify(f.geometry.coordinates)).join('|');
+    if (key === last) return;
+    last = key;
+    highlight(feats, true);
+  });
+  map.on('mouseout', () => { if (!detail.isOpen()) highlight([]); });
 }
 
 function renderBasins(filter = '') {
@@ -1257,6 +1417,8 @@ map.on('load', async () => {
   progress('Fetching the network…');
   await addNetwork();
   wireNetwork();
+  wireHighlight();
+  wireMapClicks();
   buildLayerPanel();
   buildAbout();
   await applyBackdrop();
@@ -1335,4 +1497,20 @@ map.on('load', async () => {
   progress('Painting…');
   map.once('idle', doneLoading);
   setTimeout(doneLoading, 30000);
+
+  /* A HANDLE FOR A TEST HARNESS, and for nothing else. `viewer.js` is a module, so
+     nothing in it is reachable from the page: a browser test can screenshot this map
+     and cannot ask it a question, which is the weakest possible way to check a map and
+     the reason the click collision above survived to be reported by a person.
+     `?debug` puts the map object and the click machinery within reach so a test can
+     do what this file's own comments say to do — ask the RENDERER what draws, never
+     the network (D-077, and whg3-9a hit the same thing on another project today).
+
+     Behind a query parameter rather than always on: the hash carries view state and a
+     search parameter does not disturb it, and a global that only appears when asked
+     for cannot be leant on by anything shipped. `ready` last, so a harness can wait on
+     one flag instead of racing boot. */
+  if (new URLSearchParams(location.search).has('debug')) {
+    window.rewt = { map, hits, split, describe, highlight, CLICKABLE, ready: true };
+  }
 });
