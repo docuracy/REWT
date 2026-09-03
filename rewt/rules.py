@@ -20,6 +20,7 @@ this arrangement exists to make loud.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Any
@@ -27,6 +28,29 @@ from typing import Any
 import yaml
 
 from . import config, paths
+
+
+# YAML 1.1 reads bare `on`, `off`, `yes`, `no`, `true` and `false` as booleans, INCLUDING
+# as mapping keys. `on: 2026-09-03` became `{True: date(2026, 9, 3)}`, so `declined["date"]`
+# returned nothing and a JSON export would have written the key as "true". The file is
+# machine-readable by design, so a key that is not a string is an error rather than a
+# curiosity. Found by rewt-16, who then scanned the whole file for others; there was one.
+_RULE_REF = re.compile(r"\bR-\d{2}\b")
+
+
+def _refuse_non_string_keys(node: Any, path: str = "") -> None:
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if not isinstance(k, str):
+                raise RuleError(
+                    f"conf/rules.yml has a non-string key {k!r} ({type(k).__name__}) "
+                    f"at {path or '<root>'}. YAML reads bare on/off/yes/no/true/false "
+                    "as booleans even as keys — quote it, or use a different word."
+                )
+            _refuse_non_string_keys(v, f"{path}.{k}" if path else k)
+    elif isinstance(node, list):
+        for i, v in enumerate(node):
+            _refuse_non_string_keys(v, f"{path}[{i}]")
 
 
 class RuleError(ValueError):
@@ -136,6 +160,7 @@ class RuleSet:
     """The list. Ordered, validated, and read from the file."""
 
     def __init__(self, doc: dict[str, Any]):
+        _refuse_non_string_keys(doc)
         self._doc = doc
         self._vocab = doc.get("vocabulary", {})
         statuses = set(self._vocab.get("status", {}))
@@ -221,6 +246,28 @@ class RuleSet:
             for other in (*rule.supersedes, *( [rule.superseded_by] if rule.superseded_by else [] )):
                 if other not in self._rules:
                     raise RuleError(f"{rule.id} references unknown rule {other!r}")
+            # A RULE ID IN PROSE MUST RESOLVE. `R-09` once carried the sentence "Read
+            # R-06 as ..." meaning itself, left behind when the rule was renumbered.
+            # R-06 by then was a different, real rule — so the reference resolved, to
+            # the wrong thing, which is worse than dangling because nothing looks
+            # broken. Found by rewt-16. This catches the dangling half; the pointing-at-
+            # the-wrong-rule half is caught by the rule below it.
+            for text in (rule.statement, rule.why, *rule.needs,
+                         *(str(v) for v in (rule.raw.get("declined") or {}).values())):
+                for ref in _RULE_REF.findall(text):
+                    if ref not in self._rules and ref not in {
+                        e["id"] for e in doc.get("rules", [])
+                    } and ref not in {r["id"] for r in doc.get("rules", [])}:
+                        raise RuleError(
+                            f"{rule.id} mentions {ref!r}, which conf/rules.yml does "
+                            "not declare."
+                        )
+                    if ref == rule.id:
+                        raise RuleError(
+                            f"{rule.id} refers to itself by id. Say 'this rule'; an id "
+                            "that used to mean something else is how a renumbering "
+                            "leaves a reference pointing at the wrong rule."
+                        )
             if rule.is_binding:
                 unresolved = rule.unresolved_parameters()
                 if unresolved:

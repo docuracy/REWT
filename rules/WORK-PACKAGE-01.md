@@ -166,6 +166,52 @@ to work down". The list of worst basins and the list of basins containing sea ar
 substantially the same list, which has not previously been noticed and is the reason to
 treat this before working the backlog rather than after.
 
+### The third instrument, which sees the failure the other two cannot
+
+There are now three ways to find a bad basin and each is blind to something.
+
+1. **Sea enclosed in the polygon** (rewt-e8, `sea_link`). Finds sea-filled basins. Moves
+   when R-01 moves, since it measures against the sea network R-01 redefines.
+2. **Area unaccounted by land** (rewt-68: `area_km2 − england_wales_area_km2 −
+   scotland_km2`, the last from `basins.json`'s seven `cross_border_basin` findings).
+   Uses no sea network, so it is stable under R-01, and it separates the genuine
+   cross-border basins by construction — Tweed reconciles to 3.2 km² and Esk to 0.0.
+   8,781 km² unaccounted over the 334; 12 basins over 100 km², 25 over 10, 57 over 1.
+3. **Drainage components per basin** (rewt-e8, at rewt-68's suggestion). A real
+   catchment is one drainage component. Needs no sea network and no land polygon.
+
+**rewt-68 named the blind spot that makes the third necessary, and it is the important
+one: neither of the first two can see a basin that is too big on land.** River Lea is
+6,110.5 km² with 6,038.2 km² in England and Wales, so it reconciles to 72.3 km² and looks
+nearly clean. **River Aire does not appear in the unaccounted list at all** — under 1 km²
+— and it is 11,873.5 km² against a real catchment near 1,000. Both are amalgams. Neither
+is a sea problem.
+
+The component count sees exactly those. Over the 361 in-scope basins carrying network:
+
+| components | names | links | km | basin |
+|---:|---:|---:|---:|---|
+| 188 | 1,062 | 5,111 | 3,975.4 | River Nith |
+| 64 | 315 | 1,543 | 1,436.1 | River Earn |
+| 58 | 413 | 2,451 | 1,958.2 | River Irwell |
+| **53** | **2,242** | **9,682** | **7,985.7** | **River Aire** — invisible to instruments 1 and 2 |
+| 51 | 559 | 3,538 | 2,129.8 | Lancaster Canal |
+| 37 | 750 | 5,584 | 5,632.1 | River Trent |
+| 32 | 426 | 3,481 | 2,949.5 | River Lea |
+| 28 | 682 | 6,478 | 5,197.2 | River Thames |
+| 15 | 5 | 106 | 61.8 | Afon Llifon |
+
+**214 of 361 are a single drainage component**, which is the correct shape. **25 hold ten
+or more.** A basin of 53 components carrying 2,242 distinct watercourse names is not a
+catchment under any reading.
+
+**State its blind spot too, because it has one.** River Tweed is 9 components and is a
+genuine basin; an unrepaired network has real gaps, so a high component count is
+consistent with a correct polygon that simply has not been closed yet. The count is a
+ranking, not a verdict — the same status PLAN.md §5 gives the terrain screen. What makes
+it evidence is agreement with the other two, and on the Aire it is the only one that
+speaks at all.
+
 ### Two failures, not one, and only one of them touches scope
 
 rewt-46's second distinction, and it matters more than the first. Cross-tabulating the

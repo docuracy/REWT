@@ -414,7 +414,7 @@ rules:
     declined:
       what: A national node sweep of the Mapzen terrarium tileset.
       ruled_by: rewt-16
-      on: 2026-09-03
+      date: 2026-09-03
       why: >-
         Three findings, each measured rather than inferred. (1) There is no licence
         over the tileset: the AWS Open Data `License:` field points at an attribution
@@ -423,7 +423,10 @@ rules:
         got is a property of the individual tile, so at tileset level it is
         `redistribution: not_established`. (2) It does not return one surface. Over
         England it is the EA LIDAR Composite at 2 m; everywhere else it falls to EUDEM
-        at 30.9 m. Against the real node population: 86.1% of 92,005 English nodes are
+        at 30.9 m, and at the coast mixes SRTM, GMTED and ETOPO1 bathymetry — ETOPO1
+        fills water at mean sea level, so it returns a 0.0 m that is not a measurement,
+        the same family as the EA zeros-over-Wales trap recorded below. That matters to
+        R-01, which is about estuaries. Against the real node population: 86.1% of 92,005 English nodes are
         inside the 2 m footprint and 3.5% of 26,106 WELSH nodes are. A flow-direction
         indicator built on it changes character at the Welsh border, which is precisely
         what AGENTS.md's "report per basin as well as nationally" exists to prevent.
@@ -436,7 +439,7 @@ rules:
         exactly complementary and both are better. Cost of the sweep, had it gone
         ahead: 106,702 distinct z15 tiles.
       instead: >-
-        Read R-06 as "acquire the two DEMs already declared and never fetched" — both
+        Read this rule as "acquire the two DEMs already declared and never fetched" — both
         carry `status: unverified` and `checksum: null`. When doing so, the trap
         already recorded on the EA entry is the one that matters: asked for a point in
         Wales it returns a full grid of 0.0 m, not nodata.
