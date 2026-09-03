@@ -53,6 +53,10 @@ vocabulary:
     repair:        "changes the network. Every one of these is auditable and reversible."
     reporting:     "changes what is said about the network, not the network."
     presentation:  "changes how the network is shown. tools/viewer/ and docs/viewer/."
+    capability:    >-
+      makes the network answer a question it could always have answered, and changes
+      neither the network nor what is said about it. A capability adds no geometry and
+      retires none; if one needs to, it is a repair wearing the wrong label.
 
 rules:
 
@@ -612,6 +616,52 @@ rules:
     raised: 2026-09-03
     raised_by: stephen
     source: rules/0001.md
+
+  - id: R-13
+    order: 13
+    kind: capability
+    title: A route between two chosen points, through the network and around the coast.
+    statement: >-
+      Given two points, return the shortest route through the river network and the
+      coastal grid together, as a chain of links and cells. Distance first; cost and
+      season deferred with the weights they depend on.
+    why: >-
+      Stephen, on what Leigh Shaw-Taylor and Max Satchell should see the first time they
+      open the viewer: its routing potential. The traversable network is the deliverable
+      and a reachability percentage does not show what it is FOR — a route between two
+      places does, in one gesture. It also tests the network harder than the audit does:
+      a route that cannot be found is a defect AT A PLACE, which is what PLAN.md §6 asks
+      for and what a national share conceals.
+    status: proposed
+    stage: router
+    owner: router
+    implements: []
+    params: []
+    needs:
+      - "THE ROUTING GRAPH IS NOT THE AUDIT GRAPH, and this is the part that is not
+         obvious. Stage 1 stores every link oriented so from_node is upstream and
+         to_node downstream, and the whole audit asks a DIRECTED question: can the water
+         get out. A boat goes upstream. So a route needs the UNDIRECTED network joined
+         to the coastal grid — a second graph over the same geometry, cheap to build and
+         easy to conflate. Do not reuse `edge` as it stands and do not re-orient it: the
+         direction is the audit's subject."
+      - "R-01 first, for the join. A route leaves the river at a terminus and enters the
+         grid at a cell centre, and R-01 moves where the termini are: 4,940 links wholly
+         seaward of high water are retired by it, so a route through them today is a
+         route through geometry that is about to leave."
+      - "The H3 grid and the terminus-to-centre links, which are the router's current
+         work. Weights are deferred by rules/H3.md and this rule inherits that. Shortest
+         BY DISTANCE is a complete and useful answer, and it stays honest only as long
+         as nothing calls it fastest, cheapest or likeliest."
+      - "SAY WHAT IT CANNOT ANSWER. Stage 1 makes no historical claim, so this is a
+         route through the MODERN network and the coast as it is now. Shown to two
+         historians without that sentence attached, it invites precisely the reading the
+         whole project is built to prevent."
+    evidence: []
+    supersedes: []
+    raised: 2026-09-03
+    raised_by: stephen
+    source: conversation, relayed by rewt-e8
 
 # Raised as a specific instance, kept as an instance. rules/0001.md files it under
 # "Specific" and it stays there: it is a judgement about one place, so its home is
