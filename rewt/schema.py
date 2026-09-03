@@ -250,7 +250,22 @@ CREATE TABLE link_sea_reach (
 )
 """
 
+# R-01. Every in-scope link against the Ordnance Survey high water line: landward of it,
+# crossing it, or wholly seaward of it. `form` and `is_repair` are carried so the classes
+# can be counted apart without a second join — an inlandRiver wholly below high water is
+# a different finding from a tidalRiver one, even though both are retired.
+HIGH_WATER_SIDE_DDL = """
+CREATE TABLE high_water_side (
+    link_id   VARCHAR PRIMARY KEY,
+    side      VARCHAR NOT NULL,      -- landward | crossing | seaward
+    length_m  DOUBLE,
+    form      VARCHAR,
+    is_repair BOOLEAN
+)
+"""
+
 TABLES = {
+    "high_water_side": HIGH_WATER_SIDE_DDL,
     "link": LINK_DDL,
     "node": NODE_DDL,
     "basin": BASIN_DDL,

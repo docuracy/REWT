@@ -10,6 +10,7 @@ from . import (  # noqa: F401  (imported to register)
     acquire_stage,
     load,
     census,
+    high_water,
     terrain,
     basins,
     structures,
