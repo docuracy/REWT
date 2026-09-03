@@ -84,8 +84,16 @@ there is a better way, and record the reason.
 
 ## Licensing, which is not a formality
 
-**This repository is private and is intended to become public.** Everything in it must
-stay open and redistributable.
+**This repository is public.** It has been since 31 August 2026 — `gh repo view` returns
+`visibility: PUBLIC` — and the GitHub Pages site at docuracy.github.io/REWT is built from
+`docs/**` on every push to `main`. Everything in it must stay open and redistributable.
+
+**There is no window before exposure, and this sentence used to say there was.** It read
+"private and is intended to become public" for the repository's whole life, which is a
+description of a state that never existed. Anything committed is published at that moment,
+by two routes — the repository itself and the Pages build — so a licence question is
+settled *before* the commit or it is settled in public. Every licence judgement recorded
+here before 3 September 2026 was reasoned under the wrong sentence.
 
 - Every source carries `access` and `redistribution` in `conf/sources.yml`. The exporter
   refuses to write a feature whose source is not openly licensed. Keep that check; do not
