@@ -49,6 +49,44 @@ sources:
       every cell actually costed is on LAT. It will matter to anyone reading a height off
       it, hence this note.
 
+      AND SOMEBODY IS NOW READING HEIGHTS OFF IT, so the note above stopped being a
+      caution and became load-bearing. The router role uses the land side as a DEM for
+      coastal sightlines. Established by rewt-16 rather than assumed:
+
+      LAND COVERAGE IS ITSELF A COMPOSITE and this entry must not be read as promising
+      one instrument. EMODnet's own product page: "Land coverage is based on a
+      combination of 30 arc second ASTER GDEM, SRTM3 (90m GDEM), EU-DEM (based on ASTER
+      and SRTM), and Global 1 second world-wide water body map for the topographic
+      part." So the land is ASTER, SRTM3 and EU-DEM blended — THE SAME KIND OF OBJECT AS
+      THE TERRARIUM TILESET D-085 DECLINED. The difference that decides it is the
+      licence and only the licence: one CC BY 4.0 over the whole product, against
+      terrarium's bundle of about twelve with no term at tileset level.
+
+      AND IT IS WORSE THAN TERRARIUM ON PROVENANCE, which is worth saying because this
+      entry rejected terrarium partly on provenance. `source_references` and
+      `quality_index` return ZERO features at every land point tested — Snowdon, Cross
+      Fell, Carrauntoohil, the Irish midlands, Brittany, the Harz, Birmingham — against a
+      North Sea control returning 10 and 4 in the same pass. For the sea every cell has a
+      named source; for the land none does. Terrarium, for all its licence mess, can name
+      the source of any pixel from an HTTP header; this cannot name any land pixel at all.
+      So the two products fail in opposite directions and we chose the one whose failure
+      is recoverable: a licence you can rely on and a provenance you cannot reconstruct,
+      rather than the reverse.
+
+      SUMMITS READ LOW, SYSTEMATICALLY — a coarse grid averaging peaks down. Snowdon
+      -2.6%, Carrauntoohil -2.2%, Scafell Pike -1.2%, Lugnaquilla -0.3%, each as the
+      maximum over a 0.02-degree window. A POINT sample near a sharp summit reads much
+      lower still: a point on Lugnaquilla read 12.6% low. SAMPLE A LOCAL MAXIMUM, NOT A
+      CELL — which matters directly to a sightline algorithm, whose whole question is
+      whether high ground is visible.
+
+      (The zero-features result is controlled. rewt-16's first run returned zero at the
+      SEA control too, because GeoServer wanted lat/lon in the CQL point and was given
+      lon/lat. Without the control in the same pass it would have been reported as
+      "EMODnet records no land provenance" off a broken query — D-082's shape, caught by
+      D-082's remedy. And the summit figures reproduce rewt-c7's at Carrauntoohil and
+      Snowdon to the decimal, by a different sampling rule.)
+
       THE WMS ABSTRACT FOR THIS LAYER IS WRONG. It says "Ocean overlay without land
       cover"; the WCS plainly returns land. Trust the probe.
 
