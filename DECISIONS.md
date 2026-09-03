@@ -3330,3 +3330,55 @@ saying the three files were untracked and would stay so pending their user — a
 a handover, which they volunteered. And I committed a step that runs a script without
 running `git ls-files` on it, which was available to me whatever anyone told me. The second
 is the one that would have caught it.
+
+---
+
+## D-088 — OS Open Rivers digitises canals at twice the vertex spacing of everything else
+
+**3 September 2026, rewt-68 (documentation), verified by rewt-e8 (implementer).**
+
+Measured over the as-shipped survey links, per segment:
+
+| population | segments | median | 5th–95th |
+|---|---:|---:|---:|
+| all as-shipped | 1,944,190 | **56.7 m** | 18.9–204.6 |
+| in scope only | 1,310,659 | 57.9 m | 18.9–210.1 |
+| inlandRiver + canal, in scope | 1,249,301 | 57.5 m | 19.2–204.6 |
+| **canal, GB** | 16,408 | **121.9 m** | 34.8–434.8 |
+| canal, in scope | 15,701 | 121.6 m | 34.8–433.7 |
+
+rewt-68 measured from `published/rewt_stage1_network.gpkg` through geopandas; I re-derived
+from the database through DuckDB and shapely. Every figure agrees to the decimal, including
+the segment count — a genuinely different route, not a re-run, which is the standard TEAM.md
+asks for and which most of today's cross-checks did not meet.
+
+**Why it was looked for at all, and the part I got wrong.** rewt-68 compared Satchell's
+corpus (median 62.8 m) against this network's 56.7 m to test whether splicing the two is
+merging one order of accuracy or two. I cautioned that their population and mine differed —
+Great Britain and every form against England-and-Wales navigable water — but predicted *"a
+6 m difference in medians is not going to be manufactured by the population difference."*
+
+**True of geography, false of form.** Great Britain to in-scope moves the median 1.2 m. All
+forms to canals moves it **65 m**. I named the geographic half of the population difference
+and missed the thematic half, which is where all the variance is — while making the point
+that a label must carry its population.
+
+**It reverses the comparison it was raised to test.** Against the network as a whole
+Satchell is slightly coarser. Against OS canals — the nearest thematic match for a
+navigable-water corpus — Satchell at 62.8 m is about **twice as fine** as the modern product
+at 121.9 m. The remaining hole is that Satchell's own corpus cannot yet be split into canal
+and improved river: that classification lives in `canalsattributes` in the deposit's Access
+database, so the 62.8 m is rivers and canals pooled and the comparison is not yet
+like-for-like on both sides.
+
+**What it means for Stage 1, which is not what it was measured for.** `conf/params.yml` sets
+`topology.coincidence_tolerance_m: 1.0` — endpoints within a metre sharing no node are
+"touching but not joined". A one-metre tolerance behaves differently against 121.9 m vertex
+spacing than against 56.7 m: a coarsely digitised line passes further from the true channel
+between its vertices, so two canals that meet on the ground are likelier to be recorded as
+missing each other. PLAN.md §5 records that canals are wildly over-represented in the fault
+list — 252 canal links totalling 812 km arriving at a node with no outflow, about 30% of
+canal length — and attributes it to canals not being drainage features, which is right and
+may not be the whole of it. **Coarser geometry is a second candidate cause for the same
+over-representation, and nothing has separated them.** Worth testing before R-04's crossing
+detection and R-06's alignment thresholds are built on a single tolerance for all forms.
