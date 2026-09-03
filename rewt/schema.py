@@ -312,7 +312,12 @@ SELECT s.link_id,
        COALESCE(l.name,     r.name)       AS name,
        COALESCE(l.from_node, r.from_node) AS from_node,
        COALESCE(l.to_node,   r.to_node)   AS to_node,
-       l.link_id IS NULL                  AS is_repair
+       -- `r.link_id IS NOT NULL`, NOT `l.link_id IS NULL`. The two agree for every row
+       -- that exists in one table or the other, and differ for a row in NEITHER — which
+       -- the second would label a repair link and the first labels nothing. rewt-c1
+       -- found that while reading the view rather than running it; the guard they wrote
+       -- catches such a row arriving, and this stops it being mislabelled if it does.
+       r.link_id IS NOT NULL              AS is_repair
 FROM link_scope s
 LEFT JOIN link        l USING (link_id)
 LEFT JOIN repair_link r USING (link_id)
