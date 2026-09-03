@@ -67,6 +67,35 @@ ROLES: list[tuple[str, str, str]] = [
      "Find, vet and licence evidentiary sources; measure what they do and do not carry; "
      "and read published artefacts against the code that claims to produce them. Start "
      "by auditing conf/sources.yml against published/ATTRIBUTION.md and the live terms."),
+    # SEVENTH, AND LAST IN THE ORDER DELIBERATELY. Roles are taken in the order of this
+    # list, so a seventh session claims this one; the six above are the team that was
+    # running when it was added. Stephen's instruction, rules/H3.md, 3 September 2026.
+    #
+    # It is Stage 1 and he has said why: a cost surface for coastal routing is valid at
+    # every date in the temporal window, 2026 included, so it carries no historical claim
+    # and CLAIMS.md's first override does not bite. Worth stating on the role, because
+    # "historical sea routing" is what the predecessor project is called and a session
+    # reading only the name would reasonably conclude the opposite.
+    ("router",
+     "tools/router/ and docs/router/; proposes conf/ entries and DECISIONS.md text to "
+     "the implementer, who owns them; NEVER opens the database, which the implementer "
+     "holds and which blocks its build — measure from published/ and data/raw/",
+     "Read rules/H3.md first; it is Stephen's own statement of the task and the last "
+     "paragraph is your remit. Then research the predecessor at "
+     "github.com/docuracy/Historical_Sea_Routing and its demonstration at "
+     "docuracy.github.io/Historical_Sea_Routing — he says the principles, algorithms and "
+     "data sources are sound and the code is not agent-written, so read it for the "
+     "reasoning rather than to copy it. rules/route_871973361ffffff_871874addffffff.geojson "
+     "is a worked return journey, Newcastle to Plymouth. PLAN, then build: an H3 grid "
+     "banded by decreasing resolution with distance from the coast, then the links from "
+     "high_water river termini to cell centres. COMPUTING WEIGHTS IS DEFERRED — say so "
+     "if you find yourself doing it. Two things he has already identified as hard: the "
+     "demonstration's cell resolution is too coarse to penetrate estuaries, so linking "
+     "rivers to the grid needs bathymetry and a path-to-centre algorithm; and the "
+     "sightline algorithm uses a DEM to find high ground, because ships' masters "
+     "preferred to stay within sight of land. YOU ARE DOWNSTREAM OF R-01, which "
+     "terminates rivers at Mean High Water and is not yet built — ask the implementer "
+     "where it stands before assuming a terminus is where it will end up."),
 ]
 BY_NAME = {r[0]: r for r in ROLES}
 

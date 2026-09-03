@@ -154,11 +154,31 @@ def run() -> dict:
         SELECT n.node_id, n.publisher_id, n.source_id, n.origin, n.category,
                n.terminus, n.easting, n.northing, nb.basin_id,
                coalesce(nb.basin_in_scope, false) AS basin_in_scope,
+               -- BOTH HALVES OF THE SCOPE RULE, not just the basin one.
+               --
+               -- A link is in scope if its downstream end falls in an in-scope basin OR
+               -- if it falls in England or Wales (§4.1) — the second exists because tidal
+               -- water is masked out of a DEM and sits on no basin at all. Only the first
+               -- half reached this layer, as `basin_in_scope`, so a reader of published/
+               -- could not reproduce the audit's own figures: deriving the dead ends at
+               -- tidal water gives 393 where audit.json says 474, and the 81 missing are
+               -- in scope by country. Found by rewt-46 building the local viewer, who had
+               -- to ship a warning naming the gap because the data could not answer.
+               --
+               -- This is the audit's own derivation (rewt/stages/audit.py:111), not a
+               -- second rendering of it: a node is in scope if any link ARRIVING at it is
+               -- in scope. Verified to give 474 where basin_in_scope alone gives 393.
+               coalesce(sc.in_scope, false) AS in_scope,
                sd.node_id IS NOT NULL AS is_seed,
                ST_AsWKB(n.geom) AS wkb
         FROM all_nodes n
         LEFT JOIN node_basin nb ON nb.node_id = n.node_id
         LEFT JOIN seed sd ON sd.node_id = n.node_id
+        LEFT JOIN (
+            SELECT e.to_node AS node_id, bool_or(s.in_scope) AS in_scope
+            FROM edge e JOIN link_scope s ON s.link_id = e.link_id
+            GROUP BY 1
+        ) sc ON sc.node_id = n.node_id
         ORDER BY n.node_id
         """
     ).df()
