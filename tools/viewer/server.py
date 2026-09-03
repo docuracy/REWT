@@ -509,6 +509,44 @@ def api_link(link_id: str) -> dict:
     return d
 
 
+def api_node(node_id: str) -> dict:
+    """One node and EVERY link attached to it. R-10, answered rather than approximated.
+
+    The deployed viewer cannot do this: `rewt/tiles.py` drops `from_node` and `to_node`
+    as two of the five highest-cardinality columns, so it falls back to "the links drawn
+    within a few pixels" and says so. The GeoPackage keeps both on all 195,568 rows, so
+    here the question has an actual answer — every link whose oriented ends name this
+    node, with `leaves` saying which way the water goes. A node reached by two inflows
+    and left by none is R-07's suspect canal dead end, and this is where you can see it.
+    """
+    node = DATA.frame(NETWORK, "node", geometry=False)
+    hit = node[node["node_id"] == node_id]
+    if hit.empty:
+        return {"error": f"no node {node_id}"}
+    d = {k: (v.item() if hasattr(v, "item") else v)
+         for k, v in hit.iloc[0].to_dict().items() if v is not None}
+
+    link = DATA.frame(NETWORK, "link", geometry=False)
+    touching = link[(link["from_node"] == node_id) | (link["to_node"] == node_id)]
+    attached = []
+    for r in touching.itertuples():
+        attached.append({
+            "link_id": r.link_id, "name": r.name, "name_alt": r.name_alt,
+            "form": r.form, "origin": r.origin, "length_m": float(r.length_m),
+            "in_scope": bool(r.in_scope), "reaches_tidal": bool(r.reaches_tidal),
+            "retired": bool(r.retired), "routing_reversed": bool(r.routing_reversed),
+            "screening_terrain_verdict": r.screening_terrain_verdict,
+            "leaves": bool(r.from_node == node_id),
+        })
+    # Arrivals first, then departures, longest first within each: at a dead end the
+    # inflows are the question and a list that opens with the outflow buries it.
+    attached.sort(key=lambda a: (a["leaves"], -a["length_m"]))
+    d["attached"] = attached
+    d["inflows"] = sum(1 for a in attached if not a["leaves"] and not a["retired"])
+    d["outflows"] = sum(1 for a in attached if a["leaves"] and not a["retired"])
+    return d
+
+
 def api_lines(kind: str) -> dict:
     """connectors, reversals, retired — the build's own SQL, run here on the file."""
     where = {"connectors": lambda f: f["origin"] == "connector",
@@ -633,6 +671,7 @@ ROUTES_JSON = {
     "/api/points": lambda q: api_points(q["kind"][0]),
     "/api/sea": lambda q: api_sea(q["kind"][0]),
     "/api/link": lambda q: api_link(q["id"][0]),
+    "/api/node": lambda q: api_node(q["id"][0]),
     "/api/network": lambda q: api_network(
         [float(v) for v in q["bbox"][0].split(",")], float(q["zoom"][0])),
     "/api/reload": lambda q: (DATA.reload(), {"reloaded": True,

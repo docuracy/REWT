@@ -613,6 +613,11 @@ map.on('load', async () => {
   map.addLayer({ id: 'network-hi', type: 'line', source: 'network',
     filter: ['==', ['get', 'link_id'], ''],
     paint: { 'line-color': '#ffffff', 'line-width': 6, 'line-opacity': 0.5 } });
+  /* Restyled and moved beneath `network` by `wireHighlight`, and registered for
+     clicking here rather than in a handler of its own — see the R-10/R-11 block. */
+  clickable('network', 'Link', 'link', null);
+  wireHighlight();
+  wireMapClicks();
 
   buildLayerPanel();
 
@@ -888,54 +893,179 @@ function dl(obj, order) {
     .map((k) => `<dt>${esc(k)}</dt><dd>${esc(obj[k])}</dd>`).join('') + '</dl>';
 }
 
-function popup(lngLat, html) {
-  new maplibregl.Popup({ maxWidth: '340px', closeButton: true })
-    .setLngLat(lngLat).setHTML(html).addTo(map);
+/* ── One click, one popup (R-10, R-11) ─────────────────────────────────────────
+   R-10: "Clicking a node opens one overlay listing every attached link, expandable."
+   Every clickable layer used to bind its own handler, so a node drawn on the link it
+   terminates was two layers under one cursor: both fired, and the second popup landed
+   on the first. At os:node/7D63F86E — a Grand Union Canal dead end at Berkhamsted —
+   you got a node overlay over a link overlay, and the link shown was whichever one
+   MapLibre hit-tested first, of two.
+
+   THIS VIEWER CAN ANSWER THE RULE AS WRITTEN, and the deployed one cannot. `/api/node`
+   reads `from_node` and `to_node` from the GeoPackage, which keeps them on all 195,568
+   rows; `rewt/tiles.py` drops them from the TILES as two of the five highest-cardinality
+   columns, so docs/viewer/ falls back to "the links drawn within six pixels" and says
+   so in its popup. Here "every attached link" is a join and not a guess, which is why
+   this popup makes the stronger claim and is entitled to. */
+
+const CLICKABLE = new Map();          // layer id -> { label, role, o }
+const HIT = 6;                        // pixels either side of the cursor
+
+const detail = new maplibregl.Popup({ maxWidth: '360px', closeButton: true,
+  closeOnClick: false });
+detail.on('close', () => highlight([]));
+function popup(lngLat, html) { detail.setLngLat(lngLat).setHTML(html).addTo(map); }
+
+function clickable(id, label, role, o) {
+  if (CLICKABLE.has(id) || !map.getLayer(id)) return;
+  CLICKABLE.set(id, { label, role, o });
+  map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer'; });
+  map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
 }
 
 function wireClicks(o) {
-  const target = o.kind === 'polygon' ? o.id + '-fill' : o.id;
-  map.on('mouseenter', target, () => { map.getCanvas().style.cursor = 'pointer'; });
-  map.on('mouseleave', target, () => { map.getCanvas().style.cursor = ''; });
-  map.on('click', target, (e) => {
-    const p = { ...e.features[0].properties };
-    let head = `<b>${esc(o.label)}</b>`;
-    let extra = '';
-    if (o.id === 'corrections') {
-      /* The distinction the whole layer turns on: whether a person looked at the
-         place, or a rule decided. Say it before anything else. */
-      extra = `<div class="quote"><b>${p.by_rule === true || p.by_rule === 'true'
-        ? 'JUDGED BY RULE — no person has looked at this place'
-        : 'adjudicated at the place'}</b><br>${esc(p.evidence)}</div>`;
-      if (p.placed && p.placed !== 'recorded with the judgement') {
-        head += `<br><span style="color:var(--warn)">position derived: ${esc(p.placed)}</span>`;
-      }
-      delete p.evidence; delete p.by_rule;
-    }
-    if (o.id.startsWith('dead_end')) {
-      head += `<br>${fmt(p.upstream_km, 1)} km drains here and stops`;
-    }
-    popup(e.lngLat, head + dl(p) + extra);
-  });
+  clickable(o.kind === 'polygon' ? o.id + '-fill' : o.id, o.label, 'mark', o);
 }
 
-map.on('click', 'network', async (e) => {
-  const f = e.features[0];
-  map.setFilter('network-hi', ['==', ['get', 'link_id'], f.properties.link_id]);
-  popup(e.lngLat, '<b>loading…</b>');
-  const d = await fetch('/api/link?id=' + encodeURIComponent(f.properties.link_id))
+/* THE HALO IS A FILTER, not a copy of the geometry, because everything highlightable
+   here lives in a source this page controls: the network is one GeoJSON source rewritten
+   per viewport, and each overlay is its own. Filtering by id keeps the halo exactly
+   under the feature at every zoom with nothing to keep in step.
+
+   Yellow, as Stephen asked (R-11) — but wide, blurred and half transparent, drawn
+   UNDER the network rather than over it. A highlight that covers the feature answers
+   the question by hiding the evidence, and a solid yellow here would read as the
+   curated-judgement colour it is not. `network-hi` was white, 6 px, on top, and one
+   link at a time. */
+let haloPoints = null;
+function wireHighlight() {
+  map.setPaintProperty('network-hi', 'line-color', C.add);
+  map.setPaintProperty('network-hi', 'line-blur', 2);
+  map.setPaintProperty('network-hi', 'line-opacity', 0.55);
+  map.setPaintProperty('network-hi', 'line-width',
+    ['interpolate', ['linear'], ['zoom'], 5, 6, 12, 12, 17, 18]);
+  map.moveLayer('network-hi', 'network');            // beneath the line it marks
+  map.addSource('mark-hi', { type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] } });
+  map.addLayer({ id: 'mark-hi', type: 'circle', source: 'mark-hi',
+    paint: { 'circle-color': C.add, 'circle-blur': 0.5, 'circle-opacity': 0.55,
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 7, 12, 12, 17, 18] } },
+    'network');
+  haloPoints = map.getSource('mark-hi');
+}
+
+function highlight(linkIds, points = []) {
+  if (map.getLayer('network-hi')) {
+    map.setFilter('network-hi', linkIds.length
+      ? ['in', ['get', 'link_id'], ['literal', linkIds]]
+      : ['==', ['get', 'link_id'], '']);
+  }
+  if (haloPoints) {
+    haloPoints.setData({ type: 'FeatureCollection', features: points.map((g) => ({
+      type: 'Feature', geometry: g, properties: {} })) });
+  }
+}
+
+function hits(point) {
+  const layers = [...CLICKABLE.keys()].filter((id) => map.getLayer(id));
+  if (!layers.length) return [];
+  return map.queryRenderedFeatures(
+    [[point.x - HIT, point.y - HIT], [point.x + HIT, point.y + HIT]], { layers });
+}
+
+function split(features) {
+  const links = [], marks = [], seen = new Set();
+  for (const f of features) {
+    const d = CLICKABLE.get(f.layer.id);
+    const p = f.properties || {};
+    const key = d ? `${d.o ? d.o.id : 'link'}:${p.link_id ?? p.node_id ?? p.correction_id
+      ?? JSON.stringify(f.geometry.coordinates)}` : null;
+    if (!d || seen.has(key)) continue;
+    seen.add(key);
+    (d.role === 'link' ? links : marks).push({ d, f });
+  }
+  return { links, marks };
+}
+
+const linkTitle = (d) => (d.name
+  ? esc(d.name) + (d.name_alt ? ` <span style="color:var(--ink-dim)">/ ${esc(d.name_alt)}</span>` : '')
+  : (d.name_alt ? esc(d.name_alt) : '(unnamed)'));
+
+/* One attached link, collapsed. The summary carries the three things you decide on
+   without opening it: which way the water goes, what kind of channel, and how long. */
+function linkBlock(a, open) {
+  const arrow = a.leaves
+    ? '<span style="color:var(--rev)">leaves →</span>'
+    : '<span style="color:var(--warn)">→ arrives</span>';
+  return `<details${open ? ' open' : ''}><summary>${arrow} ${linkTitle(a)}`
+    + `<span class="t"> · ${esc(a.form || 'link')} · ${fmt(a.length_m / 1000, 2)} km`
+    + `${a.retired ? ' · RETIRED' : ''}</span></summary>${dl(a)}</details>`;
+}
+
+function markBlock({ d, f }) {
+  const p = { ...f.properties };
+  let head = `<b>${esc(d.label)}</b>`, extra = '';
+  if (d.o && d.o.id === 'corrections') {
+    extra = `<div class="quote"><b>${p.by_rule === true || p.by_rule === 'true'
+      ? 'JUDGED BY RULE — no person has looked at this place'
+      : 'adjudicated at the place'}</b><br>${esc(p.evidence)}</div>`;
+    if (p.placed && p.placed !== 'recorded with the judgement') {
+      head += `<br><span style="color:var(--warn)">position derived: ${esc(p.placed)}</span>`;
+    }
+    delete p.evidence; delete p.by_rule;
+  }
+  if (d.o && d.o.id.startsWith('dead_end')) {
+    head += `<br>${fmt(p.upstream_km, 1)} km drains here and stops`;
+  }
+  return head + dl(p) + extra;
+}
+
+/* A NODE'S OWN ARITHMETIC, SAID OUT LOUD. R-07: a canal dead end reached by two
+   inflows and left by none is suspect and must NOT be reversed on that account. The
+   server counts both from the same rows the list is built from, so the sentence and
+   the list cannot disagree; the rule's own wording is quoted rather than paraphrased,
+   because this popup reports a rule and does not decide it. */
+function nodeVerdict(n) {
+  const canal = (n.attached || []).some((a) => a.form === 'canal');
+  if (n.outflows === 0 && n.inflows >= 2) {
+    return `<div class="quote"><b>${n.inflows} inflows and no outflow</b>${canal
+      ? ' on a canal — R-07: reported as a candidate direction fault, and NOT reversed'
+        + ' on that account'
+      : ' — water arrives here from more than one direction and leaves by none'}.</div>`;
+  }
+  return '';
+}
+
+async function describeNode(nodeId, seed) {
+  const n = await fetch('/api/node?id=' + encodeURIComponent(nodeId))
+    .then((r) => r.json()).catch(() => null);
+  /* A FAILED READ IS NOT AN EMPTY NODE, and the two must not look alike: "no links
+     listed" and "the server did not answer" are opposite facts about the network, and
+     silence here would read as the first (D-077). */
+  if (!n || n.error) {
+    return { html: `${seed}<div class="hint" style="color:var(--warn)">Could not read
+      this node from the server, so its links are NOT listed. That is this page
+      failing, not a node without links.</div>`, linkIds: [] };
+  }
+  const rows = n.attached || [];
+  const head = `<div class="hint">${rows.length} link${rows.length === 1 ? '' : 's'}
+    attached — ${n.inflows} in, ${n.outflows} out. Every one, joined on the
+    GeoPackage's own <code>from_node</code>/<code>to_node</code>: this is the whole
+    list, not the links that happen to be drawn nearby.</div>`;
+  return { html: seed + nodeVerdict(n) + head
+    + rows.map((a) => linkBlock(a, rows.length === 1)).join(''),
+    linkIds: rows.map((a) => a.link_id) };
+}
+
+async function describeLink(linkId) {
+  const d = await fetch('/api/link?id=' + encodeURIComponent(linkId))
     .then((r) => r.json());
   const corr = d.corrections || [];
-  delete d.corrections;
+  const attached = d.attached || [];
   const fromN = d.from_node_detail; const toN = d.to_node_detail;
+  delete d.corrections; delete d.attached;
   delete d.from_node_detail; delete d.to_node_detail;
-  /* `name` is OS's `watercourseName`, which carries the WELSH form where one exists;
-     the English sits in `name_alt`. On a map of England and Wales both belong in the
-     heading, or half the country reads as unnamed to an English speaker. */
-  const title = d.name
-    ? esc(d.name) + (d.name_alt ? ` <span style="color:var(--ink-dim)">/ ${esc(d.name_alt)}</span>` : '')
-    : (d.name_alt ? esc(d.name_alt) : '(unnamed)');
-  let html = `<b>${title}</b>` + dl(d);
+  let html = `<b>${linkTitle(d)}</b>` + dl(d);
   if (fromN || toN) {
     html += `<b>Ends</b><dl>
       <dt>upstream</dt><dd>${esc(fromN?.category ?? '?')} / ${esc(fromN?.terminus ?? '?')}</dd>
@@ -945,10 +1075,59 @@ map.on('click', 'network', async (e) => {
     html += `<div class="quote"><b>${esc(k.kind)} — ${esc(k.correction_id)}</b><br>
       ${esc(k.reason)}<br><br>${esc(k.evidence)}</div>`;
   }
-  popup(e.lngLat, html);
-});
-map.on('mouseenter', 'network', () => { map.getCanvas().style.cursor = 'pointer'; });
-map.on('mouseleave', 'network', () => { map.getCanvas().style.cursor = ''; });
+  if (attached.length) {
+    html += `<div class="hint">${attached.length} other link${attached.length === 1
+      ? '' : 's'} meet${attached.length === 1 ? 's' : ''} this one at its ends.</div>`
+      + attached.map((a) => linkBlock(a, false)).join('');
+  }
+  return { html, linkIds: [linkId, ...attached.map((a) => a.link_id)] };
+}
+
+/* ONE HANDLER FOR EVERY LAYER. A node under a link is one click and one popup, and the
+   node goes first because a mark is the smaller target and therefore the thing you were
+   aiming at. Everything the click found is in it; nothing is behind anything else. */
+function wireMapClicks() {
+  map.on('click', async (e) => {
+    const { links, marks } = split(hits(e.point));
+    if (!links.length && !marks.length) { detail.remove(); return; }
+
+    const seed = marks.map(markBlock).join('');
+    const nodeId = marks.map((m) => m.f.properties?.node_id).find(Boolean);
+    popup(e.lngLat, seed + '<div class="hint">reading the links…</div>');
+    highlight(links.map((l) => l.f.properties.link_id),
+      marks.map((m) => m.f.geometry).filter((g) => g && g.type === 'Point'));
+
+    /* A NODE ANSWERS FOR ITS OWN LINKS; a bare link answers for itself. Clicking a node
+       must not list only the links that happen to be drawn under the cursor, because
+       that is the deployed viewer's compromise and this one does not need it. */
+    const pts = marks.map((m) => m.f.geometry).filter((g) => g && g.type === 'Point');
+    let html = seed;
+    if (nodeId) {
+      const got = await describeNode(nodeId, seed);
+      html = got.html;
+      highlight(got.linkIds, pts);
+    } else if (links.length) {
+      const got = await describeLink(links[0].f.properties.link_id);
+      html = got.html;
+      highlight(got.linkIds, pts);
+    }
+    if (detail.isOpen()) detail.setHTML(html);
+  });
+
+  /* Hover previews, click pins, and hover never disturbs a pinned popup. Above z12
+     only: below it the halo is wider than the features under it. */
+  let last = '';
+  map.on('mousemove', (e) => {
+    if (detail.isOpen() || map.getZoom() < 12) return;
+    const { links, marks } = split(hits(e.point));
+    const ids = links.map((l) => l.f.properties.link_id);
+    const pts = marks.map((m) => m.f.geometry).filter((g) => g && g.type === 'Point');
+    const key = ids.join('|') + '#' + pts.length;
+    if (key === last) return;
+    last = key;
+    highlight(ids, pts);
+  });
+}
 
 /* ── The lists: worst first, click to fly ─────────────────────────────────── */
 
