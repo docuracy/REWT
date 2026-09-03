@@ -282,6 +282,22 @@ sources:
     author: "Southall, Humphrey; Aucott, Paula; and the GB1900 volunteers"
     publisher: "Great Britain Historical GIS Project, University of Portsmouth"
     year: 2018
+    # THE SERVER SENDS ONLY ITS LEAF CERTIFICATE, with an empty chain and no
+    # intermediate. Browsers fetch the missing intermediate themselves; curl, requests
+    # and urllib do not, so this url is clickable by a person and UNFETCHABLE by the
+    # build — `SSL certificate problem: unable to get local issuer certificate`. Every
+    # other https url in this file verifies from the same machine, so it is the host and
+    # not our CA bundle. Found by rewt-16 with `openssl s_client`.
+    #
+    # Invisible today because the bytes are already held at data/raw/gb1900/ and match
+    # the checksum below exactly. A rebuild from scratch on a clean machine fails at
+    # acquisition, and it would surface in a Stage 2 fetch a long way from the cause.
+    #
+    # DO NOT FIX THIS BY DISABLING VERIFICATION. Turning off certificate checking in a
+    # public repository to work around someone else's misconfigured chain is a bad trade
+    # that outlives the reason for it. The options are to supply the intermediate for
+    # this host explicitly, or to accept that this source is fetched by hand and rests
+    # on the pin — which it already does.
     url: "https://www.visionofbritain.org.uk/downloads/GB1900_final_raw_dump_july_2018.zip"
     licence: "CC0 1.0 Universal (public domain dedication)"
     attribution: "GB1900 Gazetteer, Great Britain Historical GIS Project (University of
@@ -938,7 +954,7 @@ sources:
     # evidence the endpoint does not repack per request. It is NOT evidence the publisher
     # will not reissue: the record says created 2020-09-22, metadata updated 2025-07-25,
     # update frequency "irregular". A reissue should break the build and be looked at.
-    checksum: sha256:b3f068eb29cd8dceb03e41b3f04d5f2817db967f5393a75b7280c499c6e7fe64
+    checksum: b3f068eb29cd8dceb03e41b3f04d5f2817db967f5393a75b7280c499c6e7fe64
     status: unverified
     # A THIRD KIND OF UNREAD, AND THE TEST HAS NO WORD FOR IT.
     # test_every_stage_1_source_is_read_by_a_stage_or_says_why_not distinguishes two:
