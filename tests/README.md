@@ -27,6 +27,29 @@ it. Where a test exists for a recorded reason, the docstring says which.
 | `test_team.py` | The role board: a claim is recorded with who and when, a held role is refused, and exactly one process wins a contested one. |
 | `test_tracer.py` | The tracer mints no identifier in the browser, composes none outside its own module, and draws and names every vertex origin it emits. |
 
+## Failures that are expected, and what clears them
+
+**A suite with a standing red test trains people to read a failure count as weather**,
+and the difference between *red because the work is not done* and *red because something
+broke* is invisible from the summary line. Raised by rewt-46, who nearly triaged one of
+these before reading its docstring. So the standing ones are named here, and **a failure
+not on this list is new**.
+
+They are not marked `xfail`. The defects are real, they are in the published output, and
+an expected-failure marker turns a red line into a green run with a footnote — which is
+the same trade this repository refused when it chose to deselect rather than skip in CI.
+The cost of a visible failure is that somebody asks about it; that is the point.
+
+| test | why it is red | what clears it |
+|---|---|---|
+| `test_basins_and_the_sea.py::test_no_in_scope_basin_holds_more_sea_than_river` | D-080. Twelve in-scope basins enclose more sea network than river network, because the tidal surface is not removed before delineation. rewt-46's finding. | The delineation, not a rebuild. R-01 (OS Mean High Water as the coast) is the change most likely to move it. |
+| `test_published_output.py::test_every_published_in_scope_total_is_the_same_number` | D-079. `basins.json` publishes 105,462.8 km against 105,699.0 in three other audit files. | A rebuild **and** a fix: `rewt/stages/basins.py` still counts `link_scope JOIN link`, which is not the in-scope population, so a rebuild alone republishes the same wrong figure. |
+
+Anything else red is transient or new. At the time of writing four others were failing
+because two sources had been registered without the rebuild and conf work that follows;
+those are not listed, because they clear themselves and a list that includes them would
+be stale within the hour.
+
 ## Markers
 
 - `db` — needs the build database. Run `pytest -m "not db"` to skip them all.
