@@ -838,3 +838,94 @@ def test_the_audit_ships_as_its_own_release_asset():
         f"a release asset is an archive: {names}. The audit must not end up inside "
         "one, and an archive alongside it invites exactly that consolidation later."
     )
+
+
+def _published_in_scope_totals():
+    """Every figure published under `published/audit/` that claims to be the length of
+    the in-scope network, found by name across all of them.
+
+    Discovered rather than listed, because the fault this catches is a new producer
+    computing the total its own way — and a hand-written list of files is exactly what
+    a new file is not on. The selector is the key's tokens: it must be `in`, `scope`
+    and `km`, with `total` allowed anywhere among them, and nothing else. That admits
+    `in_scope_km`, `total_in_scope_km` and `in_scope_total_km`, and refuses
+    `reached_in_scope_km` (a part, not the whole), `in_scope_km2` (an area) and
+    `in_scope_share`.
+    """
+    import json
+    import re
+
+    directory = paths.PUBLISHED / "audit"
+    if not directory.is_dir():
+        pytest.skip(f"{paths.rel(directory)} does not exist; the audit has not run")
+
+    found, rejected = [], []
+
+    def walk(node, path, source):
+        if isinstance(node, dict):
+            for key, value in node.items():
+                where = f"{path}.{key}".lstrip(".")
+                if isinstance(value, (int, float)) and not isinstance(value, bool):
+                    tokens = set(re.split(r"[^a-z0-9]+", key.lower())) - {""}
+                    if {"in", "scope", "km"} <= tokens <= {"total", "in", "scope", "km"}:
+                        found.append((source, where, float(value)))
+                    elif "scope" in tokens:
+                        rejected.append((source, where))
+                walk(value, where, source)
+        elif isinstance(node, list):
+            for index, value in enumerate(node):
+                walk(value, f"{path}[{index}]", source)
+
+    for path in sorted(directory.glob("*.json")):
+        walk(json.loads(path.read_text(encoding="utf-8")), "", path.name)
+    return found, rejected
+
+
+def test_every_published_in_scope_total_is_the_same_number():
+    """One network, one length, however many files say so.
+
+    **D-079.** `published/audit/basins.json` published 125,321 links / 105,462.8 km
+    beside `sea_reach.json`'s 105,699.0 km, in the same directory, in the same
+    release. The smaller pair is `link_scope JOIN link`, which is not the in-scope
+    population: 2,435 in-scope link ids live in `repair_link` rather than `link`, and
+    635 in-scope rows are retired. The naive join loses 1,800 links and 236.2 km and
+    is plausible enough to survive review — the implementer wrote it, believed it, and
+    caught it only because a total failed to match somewhere else.
+
+    It is the sibling of `test_the_two_reachability_readings_are_computed_the_same_way`
+    above, which compares two sections inside `audit.json` and could not see this
+    because the disagreement was between two *files*. Two artefacts, each internally
+    consistent, produced by different mechanisms and never compared (D-067).
+
+    **What this cannot check**: the in-scope LINK COUNT is published in one place only,
+    `basins.json`, so nothing anchors it. A count with no second reading is not tested
+    here and is not thereby correct.
+    """
+    found, rejected = _published_in_scope_totals()
+
+    # The check is only worth its output if the selector really selected. `517 of 517`
+    # says it at once and a plausible percentage does not (D-070).
+    files = {source for source, _, _ in found}
+    assert len(files) >= 3, (
+        f"only {len(files)} audit file(s) publish an in-scope total: {sorted(files)}. "
+        "This test compares figures across files, so it says nothing unless several "
+        "carry one. Either the audit stopped publishing them or the key names moved."
+    )
+    assert rejected, (
+        "the selector rejected nothing. It is meant to admit the in-scope length and "
+        "refuse its neighbours — reached_in_scope_km, in_scope_km2, in_scope_share — "
+        "and a filter that matches everything is indistinguishable from a correct one."
+    )
+
+    spread = max(value for _, _, value in found) - min(value for _, _, value in found)
+    assert spread < 0.5, (
+        f"the audit publishes {len({round(v, 1) for _, _, v in found})} different "
+        f"lengths for one in-scope network, {spread:,.1f} km apart:\n      "
+        + "\n      ".join(
+            f"{value:>12,.1f} km  {source}  {where}"
+            for source, where, value in sorted(found, key=lambda row: -row[2])
+        )
+        + "\n      The in-scope population is `link_scope WHERE in_scope`, minus "
+        "`retirement`, with length from `link` OR `repair_link` (D-079). A figure "
+        "smaller by about 236 km is the naive join."
+    )

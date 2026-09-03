@@ -18,11 +18,20 @@ it. Where a test exists for a recorded reason, the docstring says which.
 | `test_rasters.py` | **A derived raster holds at least one finite, in-range value.** WhiteboxTools' `FillBurn` returns 0 and writes an entirely NaN/3.3e38 grid when the streams it is given extend beyond the DEM. Nothing in the return code says so. |
 | `test_stage1_scope.py` | **Stage 1 and nothing else.** No network table declares a date, an old course, an attestation or a flow. The one legitimate date is on a `correction`: the day a person looked, which is evidence. |
 | `test_config.py` | The registry and the parameter file refuse what they are supposed to refuse — an undeclared source, a parameter with no value. |
+| `test_published_output.py` | **The deliverable as a reader finds it.** PLAN.md §7. Reads `published/` only, so it holds no lock: every correction visible in the network, the audit's headline figures re-derived from the artefact that published them, and **every in-scope total published anywhere under `published/audit/` the same number** (D-079). |
+| `test_basins_and_the_sea.py` | **A catchment may not contain the sea.** The tidal surface is not removed before delineation, so a shared estuary accumulates to one sink and the firth falls inside the basin. Threshold-free, because the enclosure distribution is continuous from one 50 m cell upward and any km cut would be a preference. |
+| `test_derived_distributions.py` | The **shape** of what was derived, not merely its validity: no single basin holds most of the country, the median basin is not a sliver, this project introduced no self-loop. |
+| `test_docs_sources.py` | The public citations page, which must not drift from the manifest — and every count on it derived rather than typed. |
+| `test_release_assets.py` | The release's own artefacts, including that each drift check **can actually fail**. A gate that has never been seen to fail is not known to be a gate. |
+| `test_repository_is_publishable.py` | **This repository is intended to become public.** No credential in a tracked file, no build artefact tracked, the curated judgements tracked. |
+| `test_team.py` | The role board: a claim is recorded with who and when, a held role is refused, and exactly one process wins a contested one. |
+| `test_tracer.py` | The tracer mints no identifier in the browser, composes none outside its own module, and draws and names every vertex origin it emits. |
 
 ## Markers
 
 - `db` — needs the build database. Run `pytest -m "not db"` to skip them all.
 - `interim` — reads a derived raster under `data/interim/`, read-only.
+- `published` — reads `published/` only, so it holds no database lock and can run while a build is in progress. Any session may run these; the `db` ones belong to whoever holds the database.
 
 ## Skips
 
