@@ -23,7 +23,24 @@ composite.js
 counties.json
 
 # The local viewer's own backdrop list. Same reason again: 67 filled-in bucket URLs.
-# The published viewer's docs/viewer/backdrops.json is a different file and is
-# committed — it offers OpenStreetMap and nothing else, and its `_removed_nls` note is
-# the record of why.
+#
+# THE LINE THAT DECIDES IS THE HOST, NOT WHETHER THE LAYER IS HISTORIC, and this comment
+# said the opposite until 3 September. It read "the published viewer's
+# docs/viewer/backdrops.json ... offers OpenStreetMap and nothing else", which was true
+# when it was written and is not now: that file has twelve options — OpenStreetMap,
+# three Carto basemaps, and SEVEN historic NLS layers delivered through MapTiler
+# (mt_six_inch_1888, mt_one_inch_1885, mt_osgb_1900s, mt_osgb_1919, mt_prov_1937,
+# mt_seventh_1955, mt_london_1893). Nothing is wrong with the file; MapTiler is the
+# route the Library's own sentence points at, "please use our Historic Maps API layers".
+# What was wrong was this note, which is the reasoning somebody reads before deciding
+# whether a new layer may go in the published viewer — and as written it said no
+# historic mapping may, so the next reader would either believe something false about
+# the file or conclude the rule had been quietly broken.
+#
+# The rule, stated so it cannot go stale the same way: a published backdrop may not
+# serve tiles from mapseries-tilesets.s3.amazonaws.com. That is the whole of it. The
+# sanctioned route is fine and is used. `_removed_nls` in docs/viewer/backdrops.json is
+# the record of the decision, and tests/test_licence.py now holds its first half — the
+# comment is no longer the only thing standing between the rule and a rebuild. Found by
+# rewt-c1; the file was measured before this was rewritten.
 backdrops.json
