@@ -184,10 +184,20 @@ const thin = backdrops.thinning;
    broken map instead of as an unconfigured one, and it invites someone to "fix" it by
    committing a credential. See `_no_keys` in backdrops.json.
 
-   THIS HIDES THE HISTORIC LAYERS FROM EVERY LOCAL PREVIEW, and that is correct rather
-   than inconvenient: the key is restricted by Allowed HTTP Origins to
-   https://docuracy.github.io and returns 403 from localhost, so a local preview could
-   not draw them even holding it. They can only be checked on the deployed site. */
+   THIS HIDES THE HISTORIC LAYERS FROM A PREVIEW THAT HAS NO KEY — which is not the
+   same as "from every local preview", as this comment said until 3 September. The
+   deploy writes `keys.json`, and a machine that has ever run that workflow, or has
+   copied the file, HAS one: `docs/viewer/keys.json` is gitignored, not absent. On such
+   a machine the ten keyed layers ARE offered locally, the key is restricted by Allowed
+   HTTP Origins to https://docuracy.github.io, and every tile 403s — so the layer draws
+   blank, silently, which is precisely the failure the paragraph above says this test
+   prevents. The test is right; the claim about its reach was a snapshot of a machine
+   that happened not to have the file.
+
+   So the gate stays, and `wireTileErrors` below covers the case the gate cannot: an
+   offered layer whose tiles do not arrive says so on the page. Two mechanisms, because
+   "not offered" and "offered and failing" are different states and only the first can
+   be decided before a tile is requested. */
 const usable = Object.entries(opts).filter(([, o]) => !o.requires_key || keys[o.requires_key]);
 const sel = $('#backdrop');
 const GROUPS = [
@@ -895,6 +905,37 @@ async function applyBackdrop() {
   $('#historic-note').hidden = !o.historic;
   $('#backdrop-note').innerHTML = o.note ? esc(o.note) : '';
   $('#backdrop-note').hidden = !o.note;
+  tileErrors = 0;                    // a new backdrop is a new question
+}
+
+/* A BACKDROP THAT DRAWS NOTHING MUST SAY SO, because blank is the one state a reader
+   cannot tell from a correct answer: an empty historic sheet and an empty stretch of
+   country look identical, and the second is a real thing this map shows. The key gate
+   above stops a layer being offered without a key; it cannot stop a key being present
+   and refused, which is what an origin-restricted key does on localhost and what an
+   expired or over-quota one does everywhere including the deployed site.
+
+   Counted rather than reported on the first failure: a raster source 404s routinely
+   at the edges of its own coverage — a county mosaic is bounded and the tiles outside
+   it legitimately do not exist — so one error means nothing and a run of them means
+   the layer is not going to draw. Three is enough to distinguish the two and low
+   enough to fire before a reader has decided the map is broken. The message names the
+   layer and the likely cause and does not guess between them. */
+let tileErrors = 0;
+function wireTileErrors() {
+  map.on('error', (e) => {
+    if (e?.sourceId !== 'backdrop' || !e.error) return;
+    if (++tileErrors !== 3) return;
+    const o = opts[backdropId] || {};
+    $('#backdrop-note').hidden = false;
+    $('#backdrop-note').innerHTML = `<b style="color:var(--warn)">This backdrop is not
+      drawing.</b> Its tiles are being refused${o.requires_key
+        ? `, and it needs the <code>${esc(o.requires_key)}</code> key — which is
+           restricted to https://docuracy.github.io, so it will not draw on a local
+           preview even when the key is present`
+        : ''}. The network above it is unaffected: what you are looking at is a missing
+      backdrop, not missing water.`;
+  });
 }
 sel.onchange = () => {
   const prev = opts[backdropId];
@@ -1419,6 +1460,7 @@ map.on('load', async () => {
   wireNetwork();
   wireHighlight();
   wireMapClicks();
+  wireTileErrors();
   buildLayerPanel();
   buildAbout();
   await applyBackdrop();
