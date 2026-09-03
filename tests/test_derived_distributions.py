@@ -314,9 +314,11 @@ def test_the_in_scope_population_is_a_projection_and_not_a_join(con):
         "show up as fan-out — two left joins on one id return one row per PAIR, and "
         "1 x 1 is 1, so the count invariant above passes cleanly through it. What "
         "happens instead is that `COALESCE(l.length_m, r.length_m)` silently prefers "
-        "`link`'s length, along with its form, name and nodes. That may be the right "
+        "`link`'s length, along with its form, name and BOTH node ids — so the row "
+        "would publish the pre-repair attributes under a repaired link, which is a "
+        "wrong answer rather than a missing one (rewt-46). That may be the right "
         "preference; nothing states it, and until something does the two tables must "
-        "stay disjoint, which is how the export can be an unfiltered UNION ALL."
+        "stay disjoint, which is also what lets the export be an unfiltered UNION ALL."
     )
     assert unmeasured == 0, (
         f"{unmeasured:,} row(s) of `in_scope_link` have no length: their `link_scope` "
