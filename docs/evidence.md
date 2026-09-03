@@ -15,7 +15,7 @@ evidence in the places where most has changed.
 
 **[Victorian six-inch sheets](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}** (National Library of Scotland, georeferenced) are the base
 for tracing. The surveyors sometimes state which of two channels is superseded —
-*Old Course*, *New Cut* — and **[GB1900](http://www.gb1900.org/){:target="_blank"}**, a volunteer transcription of every label on
+*Old Course*, *New Cut* — and **[GB1900](https://maps.nls.uk/projects/gb1900/){:target="_blank"}**, a volunteer transcription of every label on
 those sheets, makes those statements findable. A label is an assertion by someone who
 was there, which is worth more than an inference from the modern line.
 

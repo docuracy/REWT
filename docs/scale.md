@@ -28,6 +28,14 @@ misdrawn junction strands everything above it. The scoping exercise cleared the 
 them with **73 hand-authored corrections** — roughly one judgement per thirty defects —
 each checked at the place by one person in a few minutes.
 
+**This build has not repeated that ratio, and the difference is in what counts as a
+judgement.** It carries **1,205 corrections** and still has **1,303 dead ends
+outstanding**; of those corrections, 1,203 record *judged by rule, not by a person looking
+at the place*, and **two** were adjudicated at the place. A rule that proposes a connector
+where one river resumes under its own name 56 m away is worth having and is not the thing
+the 73 were. The bounded quantity on this page is the number of places a person must still
+look at, and this build has not yet measured it.
+
 <figure class="sheet-figure">
   <div class="frames">
     <img src="{{ '/assets/maps/network-as-assembled.jpg' | relative_url }}"
@@ -71,7 +79,7 @@ generates the queue automatically and ranks it by how much water is at stake.
 
 ### Old courses the Victorian surveyors labelled
 
-Volunteers have already transcribed **2.6 million labels** ([GB1900](http://www.gb1900.org/){:target="_blank"}) from the
+Volunteers have already transcribed **2.6 million labels** ([GB1900](https://maps.nls.uk/projects/gb1900/){:target="_blank"}) from the
 [six-inch County Series second edition](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}. Within them, in England and
 Wales:
 
@@ -109,7 +117,9 @@ are nearly the same number.**
 
 **361 labels at some 274 distinct places** for *Old Course* and *New Cut* together, taking
 the two classes as one and clustering on position alone — the two captions describe the
-same event from either side, and often sit on the same reach. Each is a statement by
+same event from either side, and often sit on the same reach. **361 and not 363**, which is
+what the two rows above add up to: each row is a pattern rather than a literal caption, two
+labels answer to both patterns, and a union counts those once. Each is a statement by
 someone who was there, not an inference from the modern line. At ten minutes to find the
 sheet and trace the channel, that is **about six working days**.
 
@@ -143,8 +153,9 @@ reason the pass has to be made by a person.
 > decided on basins: a basin with any part in England or Wales is in scope entire, Scottish
 > headwaters included, and only ground draining *solely* to Scotland is out. So these counts
 > are a slight undercount, by whatever labels sit in the Scottish parts of the Tweed and
-> Border Esk. The direction is known and the magnitude is not, because the basins are not yet
-> delineated. Earlier drafts of this page gave 161, 219, 2,214 and
+> Border Esk. The direction is known and the magnitude is not, because the labels have not
+> been counted against the basins — which are now delineated, 1,049 of them, 334 in scope.
+> Earlier drafts of this page gave 161, 219, 2,214 and
 > 10,738 for the four classes. Two of those reproduce exactly; the mill-channel figure does
 > not reproduce at all from the source, at any extent, and has been replaced by the measured
 > one.
@@ -505,7 +516,7 @@ publication and interoperation, not assimilation.
 
 | strand | count | who |
 |---|---|---|
-| network repair | ~73 judgements over 2,516 defects | in house, days |
+| network repair | 1,205 corrections applied, 1,303 defects outstanding | in house, days |
 | *Old Course* / *New Cut* traces | ~274 places | in house, ~6 days |
 | reservoir valleys | count not yet earned; 165 impounding reservoirs inventoried | in house or volunteers, months |
 | mill channels | ~4,068 places | volunteers, or publish undated |
@@ -534,6 +545,6 @@ deployed:
   the dataset extractable](evidence#licensing-and-why-this-repository-is-structured-as-it-is)
   should the project's reading of what a traced line *is* ever need revisiting.
 
-**[GB1900](http://www.gb1900.org/){:target="_blank"} is the proof that this scale of volunteer work succeeds**: 2.6 million labels,
+**[GB1900](https://maps.nls.uk/projects/gb1900/){:target="_blank"} is the proof that this scale of volunteer work succeeds**: 2.6 million labels,
 transcribed by the public, and the reason the assertions this project most needs are
 already findable. The same constituency exists for river courses.

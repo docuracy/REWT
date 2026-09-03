@@ -44,7 +44,7 @@ disagree with the manifest is exactly the case that credits the wrong people.
 
 | Source | Made by | Licence | Terms |
 |---|---|---|---|
-{% for s in site.data.sources.sources %}| [{{ s.title }}]({{ s.homepage | default: s.url }}){:target="_blank"}{% if s.doi %}<br>[doi:{{ s.doi }}](https://doi.org/{{ s.doi }}){:target="_blank"}{% endif %} | {% if s.author %}{{ s.author }}{% if s.year %} ({{ s.year }}){% endif %}<br>{% endif %}{{ s.publisher }} | {{ s.licence }} | {{ s.access }}, redistribution **{{ s.redistribution_label }}**{% if s.use_constraint %}<br>*{{ s.use_constraint }}*{% endif %} |
+{% for s in site.data.sources.sources %}| {% if s.link %}[{{ s.title }}]({{ s.link }}){:target="_blank"}{% else %}{{ s.title }}{% endif %}{% if s.doi %}<br>[doi:{{ s.doi }}](https://doi.org/{{ s.doi }}){:target="_blank"}{% endif %} | {% if s.author %}{{ s.author }}{% if s.year %} ({{ s.year }}){% endif %}<br>{% endif %}{{ s.publisher }} | {{ s.licence }} | {{ s.access }}, redistribution **{{ s.redistribution_label }}**{% if s.use_constraint %}<br>*{{ s.use_constraint }}*{% endif %} |
 {% endfor %}
 
 ## What the terms mean here

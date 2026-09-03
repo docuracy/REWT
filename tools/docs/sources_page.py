@@ -72,6 +72,23 @@ def project(manifest: dict) -> dict:
         # value nobody has seen yet arrives on the page as itself instead of silently
         # matching nothing.
         row["redistribution_label"] = row["redistribution"].replace("_", " ")
+
+        # WHERE THE CITATION POINTS, decided here rather than by a Liquid filter, because
+        # the manifest holds two kinds of URL and only one of them is for a reader.
+        # `url` is what the BUILD fetches -- an OGC endpoint, an S3 tile pattern, an API
+        # route -- and several of those answer a browser with a 400 or a 500 while being
+        # perfectly correct as manifest entries. `homepage` is the human landing page
+        # where a publisher offers one. A reader following a citation to a 500 concludes
+        # the source is gone, so the homepage wins wherever it exists.
+        #
+        # And a URL TEMPLATE is not a URL. `{layer}/{z}/{x}/{y}` cannot resolve for
+        # anybody, so it is never published as a link -- the page renders the title
+        # unlinked instead, which is visibly missing rather than quietly broken (D-077).
+        # Today no source reaches that branch, because the one template in the manifest
+        # also carries a homepage. That is a fact about today's manifest, which is
+        # exactly the kind of thing this project keeps discovering it had relied on.
+        link = row.get("homepage") or row.get("url")
+        row["link"] = None if (link and ("{" in link or "}" in link)) else link
         out.append(row)
     out.sort(key=lambda r: r["title"].lower())
 

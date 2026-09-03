@@ -1,0 +1,348 @@
+# GENERATED FILE -- do not edit.
+#
+# Written by tools/docs/rules_page.py from conf/rules.yml, which is the only
+# copy of the rule list. Edit the manifest and regenerate; an edit made here is
+# lost at the next run and, in the meantime, tells a reader the build does
+# something it does not do.
+#
+# `evidence`, `instances`, `implements` and `params` are not projected: they are
+# written for whoever implements the rule. See conf/rules.yml.
+generated_from: conf/rules.yml
+generator: tools/docs/rules_page.py
+version: 1
+count: 12
+by_status:
+  proposed: 11
+  accepted: 1
+implemented_count: 0
+instance_count: 1
+status_vocabulary:
+- term: proposed
+  meaning: raised, not yet agreed. Carries no obligation on the build.
+- term: accepted
+  meaning: agreed as a rule; not yet applied. `implements` is empty.
+- term: implemented
+  meaning: applied by the module named in `implements`.
+- term: rejected
+  meaning: considered and declined. `why` says so, and it stays in the file.
+- term: superseded
+  meaning: replaced by the rule named in `superseded_by`.
+kind_vocabulary:
+- term: specification
+  meaning: changes what a thing IS — the definition the build works from.
+- term: detection
+  meaning: finds candidates. Proposes; never edits the network.
+- term: repair
+  meaning: changes the network. Every one of these is auditable and reversible.
+- term: reporting
+  meaning: changes what is said about the network, not the network.
+- term: presentation
+  meaning: changes how the network is shown. tools/viewer/ and docs/viewer/.
+rules:
+- id: R-01
+  order: 1
+  kind: specification
+  title: The sea is the Mean High Water line, not a set of survey nodes.
+  statement: Define tidal water by the Ordnance Survey Mean High Water line. A watercourse
+    that crosses it is truncated at the crossing and connected there; a watercourse lying
+    entirely below it is dropped from the network. This is settled before any synthetic connector
+    is added, because a connector built against the wrong sea cannot be recognised as wrong
+    afterwards.
+  why: The present sea network is a specification, not a measurement, and a great many sea
+    entries lie a long way from it. A distance-from-a-node test decides the question at exactly
+    the estuaries where the answer matters — which is the objection PLAN.md §5 makes to deciding
+    it from a coastline, and it applies to the current network for the same reason.
+  status: proposed
+  stage: sea
+  needs:
+  - THE NAME IS NOT THE SAME NAME. OS calls this High Water Mark, the administrative coastline,
+    not Mean High Water, a tidal datum. The products carrying MHW/MHWS as a named tidal feature
+    are VectorMap District and MasterMap, neither registered. HWM is the right line and costs
+    nothing, but the substitution goes on the record rather than being assumed away.
+  - 'DEDUPE BEFORE MEASURING ANYTHING. The layer has 32,850 rows and 13,002 geometries: each
+    segment repeats once per administrative file that bounds on it, mean 2.5x, across 380
+    File_Name values. Global_Link_ID is the exact key (13,002 distinct, confirmed independently
+    by hashing the geometry blobs). Any coastline length measured without dedupe is ~2.5x.'
+  - The row count is Scotland-dominated — Highlands and Islands alone is 6,443 rows. England
+    and Wales is 6,191 segments and 16,057 km against 13,002 and 34,792 km for GB. Do not
+    read a GB figure as a scope figure.
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  evidence_count: 1
+- id: R-02
+  order: 2
+  kind: specification
+  title: A basin may not contain the sea.
+  statement: Remove tidal water from the surface before delineating catchments, and hold no
+    basin whose polygon contains the sea network. Where watercourses share an estuary they
+    do not share a catchment, and a delineation that says otherwise is to be reported as a
+    defect rather than carried into scope.
+  why: 'Measured on the v0.2.0-alpha build: 110 of 334 in-scope basins have polygons that
+    intersect this project''s own sea network and 25 hold 10 km or more of it, measured clipped
+    to the polygon — an unclipped count says 51 and is wrong. Two — labelled River Earn and
+    River Nith — are 4,176.3 and 9,655.0 km2 against real catchments near 800 and 1,230, contain
+    open sea off Arbroath, the mid Firth of Forth, the mid Solway and the mid Firth of Clyde,
+    and pull 5,411.5 km of network into scope — the whole network in the two basins, of which
+    46.1% and 49.9% of the AREA is Scottish and the length split is unmeasured — carrying
+    118 of the 1,303 declared defects. It is not a Scottish fault: River Deben contains sea
+    off its own mouth and River Lea contains the mid Thames estuary. The build does not miss
+    them; it files them where they look right — published/audit/basins.json reports the Nith
+    and the Earn as `cross_border_basin` findings beside the Tweed and the Esk, which are
+    the legitimate cross-border cases D-024 names, so an amalgam is reported as an instance
+    of a category working as designed. 12 in-scope basins enclose more sea network than river
+    network; 99 enclose sea at all, 2,896.9 km clipped. This is PLAN.md §4.1''s shared-estuary
+    trap occurring in the topographic delineation rather than in the component test the warning
+    was written about. There are two failures here and only one shows in the scope figures.
+    The Nith and the Earn drag Scottish network into scope, which is how they were found.
+    The `rewt:basin-unanchored/` coalescences do not: "River Aire" is 11,873.5 km2 with `outlet_node`
+    NULL and an England-and-Wales area of the whole 11,873.5, so no scope figure can see it
+    and nothing else looks. That is the more dangerous kind.'
+  status: proposed
+  stage: basins
+  needs:
+  - R-01 first. What the sea IS is R-01's question; this rule only says a basin may not contain
+    it, and cannot be tested until the answer is stable.
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: rewt-46
+  source: rules/WORK-PACKAGE-01.md
+  evidence_count: 5
+- id: R-03
+  order: 3
+  kind: repair
+  title: A sea entry within reach of the sea network is connected to it.
+  statement: A terminus classified as a sea entry that lies within the connection tolerance
+    of a sea network node is connected to that node. A sea entry recorded as blocked is offered
+    a longer tolerance than an unobstructed one, and the two tolerances are separate parameters
+    because they answer different questions.
+  why: Sea entries that plainly reach the sea are being left unattached, which strands everything
+    above them and puts the length into the defect list under a cause it does not have.
+  status: proposed
+  stage: sea
+  needs:
+  - Both parameters to be added to conf/params.yml. Neither exists; this rule states no number
+    and must not.
+  - 'R-01 first: if the sea becomes the Mean High Water line, some of these entries are truncations
+    rather than connections.'
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  evidence_count: 2
+- id: R-04
+  order: 4
+  kind: detection
+  title: Every crossing that does not join is marked as one.
+  statement: 'Where two watercourses cross without sharing a node, the crossing is recorded
+    as a non-join, whatever its provenance. The record is complete or it is not a record:
+    a crossing the build does not mark cannot be adjudicated, and its absence is indistinguishable
+    from a decision that it joins.'
+  why: Crossings that do not join are being missed, and both a survey link and a synthetic
+    one are among the misses — so the gap is in the detection and not in one class of geometry.
+  status: proposed
+  stage: repair
+  needs:
+  - A completeness check, not a sample. The question is 'is there anything else', and a truncated
+    listing cannot answer it (TEAM.md).
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  evidence_count: 2
+- id: R-05
+  order: 5
+  kind: detection
+  title: Corroboration of a non-join must corroborate that non-join.
+  statement: A feature may corroborate a non-join only where it explains the crossing at that
+    place. Proximity is not corroboration. Where no feature explains it, the non-join stays
+    uncorroborated and remains a candidate; where a feature is merely nearby, it is not cited
+    at all.
+  why: The failure runs in both directions from one cause, which is why this is one rule and
+    not two. A node at E 396919.51 N 161634.75 that should be a junction is marked a corroborated
+    non-join on the strength of a Canal and River Trust culvert that happens to be near it
+    — so a real connection is barred by evidence that was never about it. In the other direction
+    an uncorroborated non-join is barring a connection that nothing argues against. A corroborated
+    verdict is the strongest thing this build says about a place, and it is being reached
+    by distance.
+  status: proposed
+  stage: repair
+  needs:
+  - A decision entry on what may corroborate what, before any code. The present behaviour
+    is a definite answer that was never measured (D-077).
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  evidence_count: 3
+- id: R-06
+  order: 6
+  kind: repair
+  title: An aligned dead end near an unattached end is a candidate join.
+  statement: 'Where extending a link beyond a dead-end node along its own bearing passes within
+    the search distance of the unattached end of another link, and the two bearings agree
+    within the angular tolerance, the pair is a candidate for connection. It is a candidate
+    and not a connection: the rule proposes, and adjudication records the judgement in data/curated/.'
+  why: Two channels that continue each other's line and stop a few metres apart are the commonest
+    shape of a real gap, and the pair is recognisable from geometry alone without appeal to
+    elevation.
+  status: proposed
+  stage: repair
+  needs:
+  - Both parameters to be added to conf/params.yml. Neither exists.
+  - 'Before believing the selector, confirm it excludes something (D-070): print what it matches
+    against the population of dead ends, not a percentage.'
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  evidence_count: 1
+- id: R-07
+  order: 7
+  kind: detection
+  title: A canal dead end with two inflows is suspect, and is not reversed on that account.
+  statement: A dead-end node on a canal reached by two inflows and no outflow is reported
+    as a candidate direction fault, and more strongly where a terrain screen disagrees with
+    one of the inflows. It is reported and not acted on. No canal link is reversed because
+    reversing it improves a total.
+  why: 'Water leaves a canal through locks, weirs and feeders the survey does not draw, so
+    two inflows meeting at a dead end usually means one is drawn backwards. But PLAN.md §5
+    measures the trap on the other side: a canal is level by construction, 82.3% of canal
+    links fall inside Terrain 50''s own error bar, and the Monmouthshire and Brecon falls
+    0.00 m over 3.91 km on a 1 m surface. Neither direction is defensible from the terrain,
+    so the screen may rank a candidate and may never settle one. A canal may also legitimately
+    drain two ways from a summit pound, which is the `mode: both` case and is not a fault
+    at all.'
+  status: proposed
+  stage: repair
+  needs:
+  - The rule must be written so it cannot reverse a canal link. PLAN.md §5 says the remedy
+    for flat water is a connector at the structure, never a reversal (D-011).
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  evidence_count: 1
+- id: R-08
+  order: 8
+  kind: repair
+  title: A gap through a water body is closed by the polygon's medial axis.
+  statement: Where the survey gives no route through a lake, reservoir or broad, the route
+    is the medial axis of the water-body polygon, skeletonised from OS OpenMap – Local. Where
+    the survey gives a schematic straight line across standing water, the line is kept and
+    flagged as a routing device rather than a channel. Skeletonise only where it earns its
+    place, and never through tidal water, where a medial axis is a line down the middle of
+    a bay.
+  why: This is PLAN.md §5's specification and the question is whether the build still does
+    it. Gaps of exactly this shape are open in the current network. It is recorded here as
+    a rule because the answer "we used to" is the one that needs finding out.
+  status: proposed
+  stage: water
+  needs:
+  - First establish what rewt/stages/water.py does now. This is a question about the present
+    build, not a proposal, and the answer may be that the rule is already implemented and
+    failing at these places for another reason.
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  evidence_count: 3
+- id: R-09
+  order: 9
+  kind: detection
+  title: Elevation may rank a direction candidate and may never settle one.
+  statement: A terrain surface is a screen. It orders candidates for adjudication and it does
+    not flip a link. No direction correction is recorded as made on terrain evidence where
+    the fall lies inside the surface's own error bar, and no sampler infers coverage from
+    the absence of nodata.
+  why: PLAN.md §5 measured both halves. Terrain 50 is mute on 24.3% of links and on 82.3%
+    of canals, and the English LiDAR service returns zeros over Wales rather than nodata —
+    a sampler without an explicit coverage test computes confident nonsense for the whole
+    of Wales and it does not look like an error. A proposal to lean harder on a higher-resolution
+    surface does not change either fact, and this rule is what any such proposal has to survive.
+  status: accepted
+  stage: screen
+  needs:
+  - The rule is accepted on PLAN.md §5's own measurements. What was DECLINED is the proposal
+    that raised it — see `declined` below — and the rule stands either way.
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  evidence_count: 0
+- id: R-10
+  order: 10
+  kind: presentation
+  title: A node's popup shows every link attached to it.
+  statement: Clicking a node opens one overlay listing every attached link, expandable, rather
+    than a node overlay and a single link overlay that can collide. The count of links shown
+    equals the count attached.
+  why: A viewer that shows one of two attached links tells the reader the node has one. Overlays
+    that collide lose whichever is underneath, silently.
+  status: proposed
+  stage: viewer
+  needs: []
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  owner: visualisation
+  evidence_count: 1
+- id: R-11
+  order: 11
+  kind: presentation
+  title: A feature showing a popup is visibly the feature that was clicked.
+  statement: A link or node with an open popup carries a highlight, and carries one on hover
+    above a practical zoom threshold.
+  why: Without it the reader cannot tell which of several nearby features the panel is describing,
+    which is the situation at exactly the crossings and dead ends the map exists to adjudicate.
+  status: proposed
+  stage: viewer
+  needs: []
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  owner: visualisation
+  evidence_count: 0
+- id: R-12
+  order: 12
+  kind: repair
+  title: A person can set and unset the non-join verdict on a node, in the tracer.
+  statement: Above a threshold zoom the tracer draws a marker on every node that can carry
+    a non-join verdict, and a person can toggle that verdict on or off at the place. The toggle
+    authors the marking; it does not merely show or hide it. Every change is a curated judgement
+    and is recorded as one, with a reason in words and evidence, in data/curated/.
+  why: R-04 says the marking must be complete and R-05 says the corroboration must corroborate.
+    Neither can be settled by a rule alone, because the cases that defeat both are cases where
+    a person has to look — a culvert that happens to lie near a node is not evidence about
+    that node, and no threshold distinguishes it from one that is. So the build proposes and
+    a person adjudicates, which is the arrangement PLAN.md already uses for connectors, reversals
+    and junctions.
+  status: proposed
+  stage: tracer
+  needs:
+  - This is NOT a layer switch, and it was written as one. An earlier version of this rule
+    said 'the viewer offers a control that shows and hides crossings marked as non-joins',
+    which docs/viewer already does — a refused_crossings layer, on by default, all 425, three
+    icons splitting corroborated from uncorroborated-in-Trust-country from outside. Stephen
+    was almost certainly looking at that layer when he wrote the note, and his sentence opens
+    'Not all crossings that do not join are being MARKED as such'. rewt-46 declined to build
+    the small wrong thing and asked instead, and Stephen confirmed on 2026-09-03 that the
+    tool is for the tracer and not the viewer.
+  - tracer.crossing_marker_min_zoom to be added to conf/params.yml. A marker on every eligible
+    node is unreadable at national zoom and is the point of the threshold; the number is a
+    judgement about legibility and belongs in configuration.
+  - R-04 supplies the candidates. The tool is worth little until the marking is complete,
+    and R-04 is what makes it complete.
+  - Decide what a node that CAN carry the verdict is, before drawing anything. If that set
+    is every node the marker is useless; if it is only nodes the build already marked, the
+    tool cannot add the ones R-04 says are missing, which is the whole purpose. Confirm the
+    selector excludes something (D-070).
+  supersedes: []
+  raised: 2026-09-03
+  raised_by: stephen
+  source: rules/0001.md
+  owner: tracer
+  evidence_count: 0

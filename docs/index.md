@@ -30,7 +30,7 @@ milling, settlement and industrialisation rather than about rivers, and no open 
 been able to put them on the same lines.
 
 It is assembled from open, evidenced sources — the modern [Ordnance Survey](https://www.ordnancesurvey.co.uk/products/os-open-rivers){:target="_blank"}
-network, [GB1900](http://www.gb1900.org/){:target="_blank"} volunteer transcriptions of Victorian map labels, [historic sheets](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}
+network, [GB1900](https://maps.nls.uk/projects/gb1900/){:target="_blank"} volunteer transcriptions of Victorian map labels, [historic sheets](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"}
 traced by hand, and the documentary record of drainage and navigation works — with **every
 line carrying what it rests on**. Where the evidence runs out, the map is meant to show that it has run
 out.

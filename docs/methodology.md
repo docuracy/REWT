@@ -58,6 +58,13 @@ Three shapes of fault account for nearly all of it, and one question separates t
 Getting that question wrong produces a fix that looks right nationally and is wrong at
 the place. **Check at the place, never in the total.**
 
+**And a fault found at one place is repaired everywhere or it is not repaired.** Each of
+the remedies above is a general rule applied across the network, never a targeted mend at
+the junction somebody happened to look at; the rules are stated once, in order, with the
+reasoning that produced them and the rows they were raised from, on [the rules
+page](rules). That page is generated from the file the build reads, so it cannot claim a
+rule is applied when it is not.
+
 > ### Why start from OS Open Rivers at all?
 >
 > Because the alternatives are worse, and for instructive reasons. The choice was made
@@ -221,7 +228,7 @@ exception is named with a reason.
 Only once the modern network is sound, because a traced course must attach to something.
 
 **From the maps.** [Victorian six-inch sheets](https://maps.nls.uk/os/6inch-england-and-wales/){:target="_blank"} label some channels outright as
-superseded — *Old Course*, *New Cut* — and [GB1900](http://www.gb1900.org/){:target="_blank"}, a volunteer transcription of every label on
+superseded — *Old Course*, *New Cut* — and [GB1900](https://maps.nls.uk/projects/gb1900/){:target="_blank"}, a volunteer transcription of every label on
 them, has made those statements searchable.
 Each is an assertion by the surveyor, not an inference. Trace them at the resolution the
 sheet supports, snapping to the printed ink.
@@ -425,6 +432,7 @@ committed text file with its evidence, not in code.
 
 | | |
 |---|---|
+| [The rules](rules) | every general rule the build works to, in the order they apply, with what each one waits on |
 | [The rebuilt landscapes](regions/) | the regions where the modern channel is worthless, and the sources that record what was there before |
 | [The scale of the work](scale) | how much is bounded, how much is not, and who does it |
 | [Temporality](epochs) | which dates get published, and why an epoch is a build rather than a filter |
