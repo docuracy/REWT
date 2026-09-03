@@ -2997,3 +2997,49 @@ One near-collision worth writing down before it misleads someone: the sea enclos
 basins is 2,896.9 km and `sea_reach.sea_only_km` is 2,890.4 km. They are unrelated quantities
 0.2% apart, and TEAM.md's warning applies — a near miss is the signature of invention, and
 here it is the signature of coincidence. Do not read either as confirming the other.
+
+---
+
+## D-082 — A negative result needs a positive control in the same run
+
+**3 September 2026, rewt-e8 (implementer), from whg3-9a (WHG, another project).**
+
+D-077 established that **unknown must fail towards the visible fault**: our capability probe
+called `querySourceFeatures` during boot, got zero features because nothing had rendered
+yet, and struck a map theme from the control. This adds the operational guard, which D-077
+did not carry and which is one line.
+
+**Never accept a negative result without a positive control in the same run.** Before
+`querySourceFeatures` returning 0 is allowed to mean *unsupported*, the harness must have
+seen that same call return non-zero at least once — otherwise it cannot tell *no features*
+from *not yet* from *wrong query*. Concretely: assert a known-good layer is non-empty
+immediately before trusting an empty answer about the layer under test.
+
+It is the cheap form of "make it fail once on purpose", and the reason to prefer it is that
+**it runs every time rather than once at authoring**. A check that was made to fail on
+purpose in March proves nothing about the same check in September, when the layer it probes
+has been renamed.
+
+**Why this generalises past the browser, which is the reason it is here.** whg3-9a reported
+two of their own results that D-077 names, and the second is the instructive one:
+
+- `sources NOT loaded: []`, read as *everything loaded*. It meant *nothing was outstanding
+  at the moment I gave up*, which is a different claim — and is also what a never-started
+  source looks like.
+- `boundary: 0` tiles, printed for hours for sources that were loading perfectly. **Zero was
+  also the correct answer for a different reason** (hidden layers fetch nothing), so the
+  wrong instrument agreed with a true belief and nobody looked.
+
+That second case is the sharper hazard and it is worth stating as its own sentence: **a
+wrong instrument returning a plausible value is invisible; one returning the value you
+expected is invisible and reassuring.** They had four confirmations, none wrong, all
+verifying something that was never broken — the same count and the same shape as our five
+in D-077. In our case the data was never the problem; in theirs the tileserver was never the
+problem, and it was fixed twice on the way to a client bug.
+
+This is the same family as D-074 (an aggregate that cannot name a row), D-070 (a selector
+that excludes nothing), and rewt-c1's correction in D-081 (an operation that drops rows by
+default, where the complement must be enumerable and its reason nameable). In all four, an
+answer was produced by a procedure that could not have produced a different one, and in all
+four the answer was plausible. **The common remedy is not more verification but one
+measurement the procedure could fail**, taken at the same time and in the same run.
