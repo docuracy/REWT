@@ -5,26 +5,20 @@
 Read this if you are the only session running. `PLAN.md` is what to build; `AGENTS.md` is
 how to work; this is who does which part and how they keep each other honest.
 
-# TEAM.md
-
-**How to start the other agents, and what each one owns.**
-
 Six agents worked this repository in parallel on 1–2 September 2026 and the arrangement was
 effective — but **its value was not the parallelism**. Every serious defect found in those two
-days was found by one agent reading an artefact another had produced. None by the build, and the suite is not small. The division of labour is what made that possible; the cross-reading is what did
-the work. **If you restart the team, restart both.**
+days was found by **one agent reading an artefact another had produced**. None was found by the
+build, and the suite is not small. The division of labour is what made the cross-reading
+possible; the cross-reading is what did the work. **If you restart the team, restart both.**
 
-**Read this first if you are the only session running.** Six agents worked this repository
-in parallel and the arrangement was effective, but its value was not the parallelism. Every
-serious defect found on 1–2 September was found by **one agent reading an artefact another
-had produced** — none by the build, which and the suite is not small. The division of labour is what made
-that possible; the cross-reading is what did the work. If you restart the team, restart both.
+It was tested again on 3 September and held: four sessions each published a wrong figure that
+afternoon and not one was caught by the session that produced it (D-081).
 
 ### Starting: the whole procedure
 
 **Open six terminals and run `rewt team claim` in each.** That is the whole of it. Roles are
 taken in the order below, so the first is the implementer; each session is told what it owns
-and what to do first, and is told what it owns. **The role is printed on stdout**, so
+and what to do first. **The role is printed on stdout**, so
 `role=$(rewt team claim)` works.
 
 **It cannot name the terminal tab, and an earlier version claimed it could.** An agent runs

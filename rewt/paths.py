@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parent.parent
 CONF = ROOT / "conf"
 SOURCES_YML = CONF / "sources.yml"
 PARAMS_YML = CONF / "params.yml"
+# The canonical rule list (R-00). rules/ is the raw intake; this is the list.
+RULES_YML = CONF / "rules.yml"
 
 DATA = ROOT / "data"
 RAW = DATA / "raw"

@@ -202,6 +202,121 @@ def sources(
     typer.echo(config.sources().attribution_block())
 
 
+@app.command("rules")
+def rules_cmd(
+    rule_id: Optional[str] = typer.Argument(None, help="one rule, in full"),
+    status: Optional[str] = typer.Option(None, "--status", help="filter by status"),
+    owner: Optional[str] = typer.Option(None, "--owner", help="filter by owning role"),
+    check: bool = typer.Option(
+        False, "--check", help="resolve every evidence identifier against the database"
+    ),
+) -> None:
+    """The canonical rule list, in the order the rules apply.
+
+    `rules/` is the raw intake — what was observed, in the words of whoever observed
+    it. `conf/rules.yml` is the list, and this prints it. A rule is stated in one place
+    and everything else points at it by id, because two renderings of one fact drift
+    apart within the hour (D-067).
+
+    With `--check`, every identifier a rule cites as evidence is resolved against the
+    database. A rule whose examples no longer resolve has either been fixed or was
+    never right, and a mistyped identifier does nothing while everything reports
+    success (AGENTS.md).
+    """
+    from . import rules as rules_mod
+
+    ruleset = rules_mod.rules()
+
+    if rule_id:
+        r = ruleset[rule_id]
+        log.rule(f"{r.id}  {r.title}")
+        typer.echo(f"  order       {r.order} of {len(ruleset)}")
+        typer.echo(f"  status      {r.status}   kind: {r.kind}   stage: {r.stage}")
+        typer.echo(f"  owner       {r.owner}")
+        typer.echo(f"  raised      {r.raised} by {r.raised_by}, in {r.source}")
+        typer.echo(f"\n  {r.statement}\n")
+        typer.echo(f"  WHY: {r.why}\n")
+        if r.params:
+            typer.echo("  thresholds (conf/params.yml is the authority):")
+            for path in r.params:
+                unresolved = path in r.unresolved_parameters()
+                value = "NOT YET DECLARED" if unresolved else config.param(path)
+                typer.echo(f"    {path} = {value}")
+            typer.echo("")
+        if r.needs:
+            typer.echo("  before this can be applied:")
+            for n in r.needs:
+                typer.echo(f"    - {' '.join(n.split())}")
+            typer.echo("")
+        if r.evidence:
+            typer.echo("  raised from:")
+            for e in r.evidence:
+                typer.echo(f"    {e.kind:<6} {e.id}")
+                if e.note:
+                    typer.echo(f"           {e.note}")
+        return
+
+    rows = []
+    for r in ruleset:
+        if status and r.status != status:
+            continue
+        if owner and r.owner != owner:
+            continue
+        rows.append((str(r.order), r.id, r.status, r.kind, r.stage, r.owner, r.title))
+    log.table(
+        "conf/rules.yml — in the order they apply, which is semantic",
+        ["#", "id", "status", "kind", "stage", "owner", "rule"],
+        rows,
+    )
+    binding = ruleset.binding
+    log.info(
+        f"{len(ruleset)} rules; {len(binding)} binding "
+        f"({', '.join(r.id for r in binding) or 'none'}). "
+        "A proposed rule is something somebody said, not something the build owes."
+    )
+    for inst in ruleset.instances:
+        log.info(
+            f"instance: {inst['id']} — {inst['claim']} ({inst['why']}); "
+            f"an instance of {', '.join(inst['rules'])}"
+        )
+    if not check:
+        return
+
+    # EVERY IDENTIFIER IS RESOLVED, none is trusted. Same argument as the curated
+    # files: a mistyped id does nothing while the stage reports success, and that has
+    # happened twice, once through a column nothing read (AGENTS.md).
+    tables = {"node": "node", "link": "link", "basin": "basin"}
+    unresolved: list[tuple[str, str, str]] = []
+    checked = 0
+    for r in ruleset:
+        for e in r.evidence:
+            if e.is_point:
+                continue
+            table = tables.get(e.kind)
+            if table is None:
+                unresolved.append((r.id, e.id, f"no table for kind {e.kind!r}"))
+                continue
+            if not db.table_exists(table):
+                unresolved.append((r.id, e.id, f"table {table!r} does not exist; build first"))
+                continue
+            checked += 1
+            column = f"{e.kind}_id"
+            found = db.scalar(f"select 1 from {table} where {column} = ? limit 1", [e.id])
+            # A synthetic link lives in repair_link, not link. 2,435 in-scope ids do.
+            if not found and e.kind == "link" and db.table_exists("repair_link"):
+                found = db.scalar(
+                    "select 1 from repair_link where link_id = ? limit 1", [e.id]
+                )
+            if not found:
+                unresolved.append((r.id, e.id, f"not in {table}"))
+    if unresolved:
+        log.error(f"{len(unresolved)} of {checked} evidence identifier(s) do not resolve:")
+        for rid, ident, why in unresolved:
+            log.error(f"  - {rid}: {ident} — {why}")
+        raise typer.Exit(1)
+    log.done(f"all {checked} evidence identifiers resolve against the database")
+
+
 @app.command()
 def acquire(
     source: Optional[list[str]] = typer.Argument(None, help="source id(s); default all national"),

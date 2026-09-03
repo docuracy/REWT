@@ -2776,3 +2776,206 @@ choose the loud failure over the quiet one, and that is a design rule rather tha
 markers against markers rather than against the ground they sit on, and a capability probe
 sampling a race. Each measurement was sound. **In each, the frame excluded the thing that
 decided the answer.**
+
+---
+
+## D-078 — The canonical rule list lives in `conf/rules.yml`, and `rules/` is the intake
+
+**3 September 2026, rewt-e8 (implementer).**
+
+`rules/0001.md` asks for "a canonical machine+human-readable ordered list of rules", and
+records the reason in its own first line: *"None of the examples given here should be fixed
+with a one-off targeted fix, but rather by a general rule that should be applied across the
+network."* Twelve observations, each given as an example of something general.
+
+**The list is `conf/rules.yml` and there is one of it.** `rules/` keeps the raw intake — what
+was observed, in the words of whoever observed it — and is never edited to agree with the
+list. That separation is D-067's lesson applied before it can bite: TEAM.md and `rewt/team.py`
+carried two renderings of one fact and had drifted apart within an hour of both being written,
+in the file that records why that is dangerous. An intake note and a rule are genuinely
+different documents, so they may both exist; two copies of the *rule* may not.
+
+**Four things the file deliberately does not hold**, each because the alternative is a second
+copy of a fact that will drift from the first:
+
+- **No thresholds.** A rule names its parameters by dotted path into `conf/params.yml` and
+  carries no number. `Rule.parameters()` resolves them, and raises for a path a rule names and
+  the parameter file does not declare. A threshold written in two files will disagree with
+  itself, and AGENTS.md already says where thresholds live.
+- **No judgements about places.** A decision about one river belongs in `data/curated/` with a
+  reason and evidence. `rules/0001.md`'s "Specific" entry — that `rewt:link/03cfec6fd5a1`
+  should not exist because the streams it links cross with an aqueduct — stays an instance,
+  recorded under `instances:` and pointing at the general rules it is an instance of (R-04,
+  R-05). It is not promoted to a rule because it is not one.
+- **No intent.** `status` says what is true of the build, not what anyone means to do. A rule
+  is `implemented` only when `implements` names a module, and the loader refuses a rule that
+  claims otherwise. Eleven of the twelve are `proposed`, which is the honest state of them.
+- **No unresolved thresholds on a binding rule.** `proposed` may name a parameter that does
+  not exist yet; `accepted` and `implemented` may not, and the loader raises. Otherwise a rule
+  reads as binding while the number it depends on was never chosen.
+
+**Order is semantic and is checked rather than assumed.** `order` runs 1..n with no gaps and
+no ties, and the loader raises on either. R-01 redefines the sea before any connector is
+invented, because a connector built against the wrong sea cannot be recognised as wrong
+afterwards — the sequence is part of what the file says, and a tie means somebody added a rule
+without deciding where in it the rule belongs.
+
+**Every rule names a row.** Each carries the identifiers it was raised from, and
+`rewt rules --check` resolves every one against the database. Same argument as the curated
+files: a mistyped identifier does nothing while the stage reports success, which has happened
+twice in the predecessor, once through a column nothing read. All 16 of Stephen's hand-typed
+identifiers resolve, which is worth knowing rather than assuming. The check also has to look
+in `repair_link` as well as `link`, for the reason in D-079.
+
+**What this does not settle.** Whether each rule is *right* is not a question this file
+answers, and eleven of twelve are `proposed` precisely so that the list can exist before the
+argument is had. The failure mode to watch is a proposed rule quietly acquiring the authority
+of an agreed one because it is written down in a configuration directory next to things the
+build obeys. `rewt rules` prints the binding count for that reason, and it is 1.
+
+---
+
+## D-079 — The in-scope link population is not `link_scope JOIN link`, and the build has already got this wrong
+
+**3 September 2026, rewt-e8 (implementer), with rewt-c1 (tests).**
+
+Establishing what is in scope looks like a join and is not. `link_scope` carries 127,756
+in-scope rows. 2,435 of those link ids are **not in `link`** — they are synthetic repair links
+and live in `repair_link`. A further 635 in-scope rows are **retired**, and retired links are
+kept in `link` rather than deleted, exactly as AGENTS.md requires. So:
+
+    link_scope WHERE in_scope                      127,756
+      minus retirement                                 635
+      length from link OR repair_link
+      = 127,121 links, 105,699.0 km
+
+`link_scope JOIN link WHERE in_scope` gives **125,321 links and 105,462.8 km** — 1,800 links
+and 236.2 km light. I wrote that join, believed it for several minutes, and was only caught
+because the total failed to match `sea_reach.json`.
+
+**This is not a hypothetical.** `published/audit/basins.json` publishes
+`links.in_scope: 125321` and `in_scope_km: 105462.8`. `published/audit/sea_reach.json`, in the
+same directory, publishes `in_scope_km: 105699.0`. **The repository ships two in-scope totals
+that differ by 1,800 links, and nothing compares them.** Found by rewt-c1, who is widening the
+suite to require every in-scope total published anywhere under `published/audit/` to agree.
+
+**The general shape, which is why this is a decision and not a bug report.** The retirement
+rule and the repair tables are each individually correct and each individually documented. The
+population that satisfies both is stated nowhere, so every query that needs it re-derives it,
+and the obvious derivation is wrong. **A rule about what is kept and a rule about where new
+things live compose into a rule about what to count, and that third rule had no owner.** The
+remedy is a single named view of the in-scope population that every consumer reads, rather
+than four correct joins and one plausible one.
+
+---
+
+## D-080 — A delineated basin may not contain the sea, and the report that should have caught it filed it as correct
+
+**3 September 2026, rewt-e8 (implementer), raised by rewt-46 (visualisation).**
+
+Two in-scope basins labelled River Earn (4,176.3 km²) and River Nith (9,655.0 km²) are not
+catchments. `ST_Contains` puts open sea off Arbroath and the mid Firth of Forth inside the
+first, and the mid Solway and the mid Firth of Clyde inside the second. Both are single
+contiguous polygons. The tidal surface was not removed before delineation, so every
+watercourse entering a common firth accumulates to one sink and the firth ends up inside the
+catchment. Between them they pull 5,411.5 km of network into scope, carrying 118 of the
+1,303 declared defects — 9.1% of the backlog the deployed map calls the work.
+
+**That 5,411.5 km is not "Scottish network", and an earlier draft of this entry said it
+was.** It is the whole network in the two basins. `basins.json` puts 46.1% of the Nith's
+area and 49.9% of the Earn's in Scotland, but that is area and not length, and every one
+of the 6,654 links is in scope by the basin rule with none by the country rule, so the
+build carries no measurement of the split. rewt-68 caught the overstatement, correctly,
+on the ground that the claim would not survive being checked.
+
+It is not two Scottish basins. Measured against this repository's own `sea_link` table, **99
+in-scope basins enclose sea, totalling 2,896.9 km clipped to the polygon**, and **12 enclose
+more sea network than river network** — Fleet Haven Outfall 104.2 km of sea against 102.3 km
+of network, Afon Llifon 93.9 against 61.8. River Deben encloses sea off its own mouth; River
+Lea encloses the mid Thames estuary. PLAN.md §4.1 warns about the shared-estuary trap in the
+component census; this is the same trap in the topographic delineation, which the warning does
+not cover.
+
+**The part worth recording is not the defect. It is that the audit reported it as a success.**
+`published/audit/basins.json` carries seven `cross_border_basin` findings. The Nith and the
+Earn are two of them, next to the Tweed and the Esk, which are the genuine cross-border cases
+D-024 exists to permit. The report says of the Nith: *"4,449 km2 of 9,655 km2 lies in
+Scotland, and is in scope because the basin is"* — which is true, is the scope rule working
+exactly as designed, and is completely uninformative about whether the 9,655 km² is a
+catchment. **An amalgam was filed as an instance of a category that was working correctly, and
+so was reviewed by everyone and questioned by nobody.**
+
+That is worse than silence, and it is the generalisable part. D-077 says unknown must fail
+towards the visible fault. This is the neighbouring case: **a correct measurement, reported
+under a heading that supplies a reason for it.** The reason was real, so the reading stopped
+there. The check that would have caught it does not need new data — the sea network was
+already built, and no catchment may contain it.
+
+**A one-row disagreement inside the audit, found while checking this.**
+`audit.json`'s `shortfall_reason` for the Nith says *"93 dead end(s) remain"* and for the
+Earn *"24 dead end(s) remain"*, totalling 117. `dead_ends.json` joined to `node_basin`
+gives Nith 94 and Earn 24, totalling 118, and 118 is the figure rewt-46 reported and I
+re-derived. One of the two attributions is wrong and both are published. rewt-68 found the
+disagreement by reading the two files against each other; nothing in the build compares
+them. Open, and in this directory.
+
+**A second failure, and only one of them is visible to any check we have.** The Earn and the
+Nith are findable because they drag Scotland into scope. The `rewt:basin-unanchored/`
+coalescences are not: "River Aire" is 11,873.5 km² against a real catchment near 1,000 km²,
+`outlet_node` NULL, and **100% of it in England and Wales**, so no scope figure can see it and
+nothing else looks. Recorded as R-02 in `conf/rules.yml`; the remedy is R-01's, and neither is
+implemented.
+
+**On the labels, which are not the defect.** rewt-50 established that
+`rewt/stages/basins.py:347 _label_for` takes the named river contributing the most
+link-kilometres to the polygon, and its docstring says *"Purely for legibility in a report.
+Nothing is decided on it."* So "River Aire, 11,873.5 km²" is a correct measurement printed
+where it reads as a catchment name. Their warning is the useful half: **if the amalgams split,
+these labels will start looking right without anything having been fixed, so that must not be
+read as evidence the delineation improved.**
+
+---
+
+## D-081 — Four sessions, four different wrong numbers, and every one was caught by a peer
+
+**3 September 2026, rewt-e8 (implementer).**
+
+Recorded because the arrangement TEAM.md describes was tested on its first afternoon and the
+tally is more useful than the conclusion. Working on D-080, four sessions each produced a
+figure that was wrong, and **not one was caught by the session that produced it**:
+
+- **rewt-e8**: summed whole `sea_link` lengths over an `ST_Intersects` join, so a sea link
+  that merely touched a basin contributed its entire length. Afon Braint came out three times
+  too large. Caught by rewt-46, who reproduced the wrong method exactly before clipping it.
+- **rewt-e8**: added `reaches_tidal_km` to `sea_only_km` and reported a 58.3 km gap in
+  `sea_reach.json`. The first already contains `reaches_tidal_only_km`, which is 58.3.
+  `audit.json` sets `readings_are_nested: false` on that very section. Caught independently by
+  rewt-46 and rewt-c1.
+- **rewt-e8**: inner-joined to `audit_basin`, which 4 of 110 basins have no row in, and so
+  reported 51 basins where there are 52 and bands summing to 106 against a headline of 110.
+  Caught by rewt-c1 and rewt-46.
+- **rewt-46**: grouped on `label`, which is NULL for 76 in-scope basins, and lost 23 of them —
+  pandas drops null group keys where SQL keeps them.
+- **rewt-c1**: the same fault in their own tooling, reporting 87 basins instead of 110, caught
+  only because two sessions' numbers disagreed.
+
+**Three things follow.**
+
+**The disagreement did the work, not the re-derivation.** Several of these were found because
+two sessions produced numbers that did not match, and one of them then went and looked. A
+session re-checking its own figure re-runs its own assumption and obtains agreement (D-067).
+
+**A different method beats the same method.** rewt-46 read the GeoPackage through geopandas
+and rewt-c1 through shapely while I queried DuckDB. Where all three agreed the number is worth
+something; the four errors above all survived at least one re-run by their author.
+
+**Two of the five errors were the same error — a selector silently dropping NULL keys — in
+two different sessions' tooling on the same afternoon.** Neither would have found it alone.
+D-070 says confirm a selector excludes something; the sharper form is that a selector can
+exclude something *and still return a plausible total*, and the only cheap detector is
+somebody else's count.
+
+One near-collision worth writing down before it misleads someone: the sea enclosed by in-scope
+basins is 2,896.9 km and `sea_reach.sea_only_km` is 2,890.4 km. They are unrelated quantities
+0.2% apart, and TEAM.md's warning applies — a near miss is the signature of invention, and
+here it is the signature of coincidence. Do not read either as confirming the other.
