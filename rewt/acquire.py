@@ -603,3 +603,68 @@ def one(source_id: str, pattern: str) -> Path:
             + ", ".join(paths.rel(h) for h in hits[:5])
         )
     return hits[0]
+
+
+def resolve_declared_urls() -> list[dict]:
+    """Request every `url` in the manifest and report what it answers.
+
+    **Here and not in the CLI, because this fetches declared sources.**
+    `test_only_one_module_may_do_it` holds that no module but this one may reach the
+    network for a source, so that an unregistered source is an error rather than a quiet
+    download. The first version of this check lived in `rewt/cli.py` and tripped that
+    invariant; rewt-c1 declined to widen the rule to fit the new caller and offered the
+    choice, which was the right way round. A HEAD from the CLI is not a download, but it
+    *is* a request to a declared source, and the rule's reason covers it.
+
+    **Why it exists.** `conf/sources.yml` stopped being only a build input the day
+    `docs/_data/sources.yml` became a projection of it: every `url` is now a link on the
+    published Sources page. Two were wrong at once — an invented data.gov.uk slug that
+    404s for want of a uuid segment, and a bare `spatialdata.gov.scot` that 403s without
+    its www — and both were plausible enough that no human would click them and no test
+    would exercise them. Suggested by rewt-16: the failure was invisible by construction.
+
+    **Two kinds of url are asked different questions**, because the first version of this
+    reported three failures and two were its own. A bare GET on a WCS endpoint returns
+    500 where `GetCapabilities` returns 200; and a tile template with `{layer}/{z}/{x}/{y}`
+    is not an address at all. A check that cries wolf teaches the reader to skip the line.
+    """
+    import requests
+
+    out: list[dict] = []
+    with requests.Session() as session:
+        for src in sorted(config.sources(), key=lambda s: s.id):
+            url = src.raw.get("url")
+            row = {"id": src.id, "url": url, "status": "—", "note": "", "ok": True}
+            if not url:
+                row["note"] = "no url declared"
+                out.append(row)
+                continue
+            if "{" in url:
+                row["note"] = "a tile template, not an address"
+                out.append(row)
+                continue
+            # Detected from the entry's own declaration rather than by sniffing the path,
+            # so a service that fails to declare itself is still checked as a page.
+            service = next(
+                (s for s in ("wcs", "wfs", "wms")
+                 if isinstance(src.raw.get(s), dict) or f"/{s}" in url.lower()),
+                None,
+            )
+            params = {"service": service.upper(), "request": "GetCapabilities"} if service else None
+            try:
+                reply = session.get(url, params=params, timeout=40, allow_redirects=True)
+                row["status"] = str(reply.status_code)
+                notes = []
+                if not reply.ok:
+                    notes.append("does not resolve")
+                    row["ok"] = False
+                if service:
+                    notes.append(f"as a {service.upper()} service")
+                if reply.history:
+                    notes.append(f"via {len(reply.history)} redirect(s)")
+                row["note"] = " ".join(notes) or "ok"
+            except Exception as exc:
+                row["note"] = type(exc).__name__
+                row["ok"] = False
+            out.append(row)
+    return out

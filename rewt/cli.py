@@ -158,73 +158,27 @@ def sources(
     from . import acquire
 
     if links:
-        # NOTHING CHECKED THAT A DECLARED URL RESOLVES, and the manifest stopped being
-        # only a build input the day docs/_data/sources.yml became a projection of it:
-        # every `url` here is now a link on the published Sources page. Two were wrong
-        # at once — an invented data.gov.uk slug that 404s because the site needs a uuid
-        # segment, and a bare spatialdata.gov.scot that 403s without its www — and both
-        # were plausible enough that no human would have clicked them and no test looked.
-        # Suggested by rewt-16, whose phrase for it is the argument: the failure was
-        # invisible by construction.
-        #
-        # Not a pytest, deliberately. Sixteen requests to public services on every CI run
-        # is rude and flaky, and a check that fails when someone else's site is briefly
-        # down teaches people to ignore it. This is a command a person runs before a
-        # release, and `release-check` is where it belongs if it ever becomes automatic.
-        # THE FIRST VERSION OF THIS CHECK REPORTED THREE FAILURES AND TWO WERE ITS OWN.
-        # A bare GET on `ows.emodnet-bathymetry.eu/wcs` returns 500; the same endpoint
-        # answers a WCS GetCapabilities with 200 and 15,688 bytes of Capabilities. And
-        # `mapseries-tilesets.s3.amazonaws.com/{layer}/{z}/{x}/{y}.png` is a TEMPLATE,
-        # not an address — requesting it literally asks for a tile called "{z}".
-        # A check that cries wolf is worse than none, because it teaches the reader to
-        # skip the line, so the two kinds of url are asked the question they can answer.
-        import requests
+        # THE REQUESTING LIVES IN `acquire`, not here. Reaching the network for a
+        # declared source is that module's job and only that module's, so that an
+        # unregistered source is an error rather than a quiet download
+        # (test_only_one_module_may_do_it). The first version of this imported
+        # `requests` into the CLI and broke that invariant; rewt-c1 found it and
+        # declined to widen the rule to fit the caller, which was the right way round.
+        from . import acquire
 
-        bad = []
-        rows = []
-        with requests.Session() as session:
-            for src in sorted(config.sources(), key=lambda s: s.id):
-                url = src.raw.get("url")
-                if not url:
-                    rows.append((src.id, "—", "no url declared"))
-                    continue
-                if "{" in url:
-                    rows.append((src.id, "—", "a tile template, not an address"))
-                    continue
-                # An OWS endpoint is a service, and the only question it answers is
-                # GetCapabilities. Detected from the entry's own declaration rather than
-                # by sniffing the path, so a service that does not say so is still asked
-                # as a page and still checked.
-                service = next(
-                    (s for s in ("wcs", "wfs", "wms")
-                     if isinstance(src.raw.get(s), dict) or f"/{s}" in url.lower()),
-                    None,
-                )
-                params = (
-                    {"service": service.upper(), "request": "GetCapabilities"}
-                    if service else None
-                )
-                try:
-                    reply = session.get(url, params=params, timeout=40, allow_redirects=True)
-                    code = str(reply.status_code)
-                    note = "" if reply.ok else "does not resolve"
-                    if service:
-                        note = (note + " " if note else "") + f"as a {service.upper()} service"
-                    if reply.history:
-                        note = (note + " " if note else "") + f"via {len(reply.history)} redirect(s)"
-                    if not reply.ok:
-                        bad.append((src.id, url, code))
-                except Exception as exc:
-                    code, note = "—", f"{type(exc).__name__}"
-                    bad.append((src.id, url, note))
-                rows.append((src.id, code, note or "ok"))
-        log.table("every declared url, requested", ["id", "status", "note"], rows)
+        results = acquire.resolve_declared_urls()
+        log.table(
+            "every declared url, requested",
+            ["id", "status", "note"],
+            [(r["id"], r["status"], r["note"]) for r in results],
+        )
+        bad = [r for r in results if not r["ok"]]
         if bad:
             log.error(f"{len(bad)} declared url(s) do not resolve:")
-            for sid, url, why in bad:
-                log.error(f"  - {sid}: {why} — {url}")
+            for r in bad:
+                log.error(f"  - {r['id']}: {r['note']} — {r['url']}")
             raise typer.Exit(1)
-        log.done(f"all {len(rows)} declared url(s) resolve")
+        log.done(f"all {len(results)} declared url(s) resolve")
         return
 
     rows = []
