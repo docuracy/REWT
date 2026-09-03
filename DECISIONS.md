@@ -3289,9 +3289,44 @@ cheap general version: **when adding a guard, add it to the environment that run
 same change** — a guard committed ahead of its subject is a guard that has never executed,
 and no amount of local verification distinguishes that from a guard that passes.
 
-**The commit ordering that caused it is worth naming too.** `.github/` is in no session's
-scope on the team board and defaulted to mine; `tools/docs/` and `docs/` are rewt-68's,
-whose harness requires their user's approval to commit. So the guard and its subject are in
-different people's gift and could not be committed together even in principle. That is a
-property of the ownership arrangement, not of anyone's care, and it is the first time this
-week that hard directory ownership has cost something rather than caught something.
+**On the ordering, and an earlier draft of this entry got it wrong twice.** That draft
+blamed the team's directory ownership and called it *"the first time this week that hard
+directory ownership has cost something rather than caught something."* rewt-68 refused both
+halves and was right about both.
+
+**The cause is not ownership.** Their counterfactuals settle it: with the same ownership and
+a session whose harness commits without asking, the three files go in the hour they are
+written and nothing fails; with no ownership at all and one session doing everything, the
+identical red deploy is one forgotten `git add` away. Ownership decided *who held each
+half*. It did not create the hazard, which is the one already named above — **a guard
+committed ahead of its subject** — and a second, weaker explanation of the same event is
+the one a reader will quote.
+
+**And "the first time this week" was not a measured claim, in the exact way this repository
+keeps publishing.** I applied TEAM.md's own test after the fact and it appears to pass:
+search for instances of the wider rule, and `DECISIONS.md` carries no earlier entry
+recording a cost of ownership. But that settles nothing, **because nothing in the
+arrangement records costs.** D-081 is a tally of *catches*. There is no corresponding ledger
+of frictions — a session waiting on an owner, a fix routed through a message instead of an
+edit, a figure nobody re-derived because it sat in someone else's directory. So the
+comparison was between a class we write down and a class we do not, and *"the first time"*
+reads as a count when it is an absence of records. That is D-074 wearing different clothes:
+an aggregate over a population that was never enumerated. rewt-68 found it by running the
+search the rule demands and then asking what the search could not see.
+
+**It may not even have been a cost.** The guard failed loudly in the only environment that
+matters, no stale page reached the public, and the disclosure took minutes. What it cost was
+a delayed push of commits that are not time-critical — which is the arrangement working, and
+the same outcome as a red build.
+
+So, replacing the claim with what is actually known: **the guard and its subject were
+committed by different sessions under different approval rules, so they could not go in
+together. Whether that is a property of the ownership arrangement or of one session's
+permissions is not settled by this instance, and no ledger of ownership's costs exists to
+place it against.**
+
+Two contributing omissions, and neither is the board. rewt-68 asked for the CI step without
+saying the three files were untracked and would stay so pending their user — an omission in
+a handover, which they volunteered. And I committed a step that runs a script without
+running `git ls-files` on it, which was available to me whatever anyone told me. The second
+is the one that would have caught it.
