@@ -3679,3 +3679,99 @@ it is worse than a wrong number in one respect: a wrong URL that happens to reso
 something is indistinguishable from a right one. Corrected, and both the catalogue page and
 the direct download are now in the entry with the archive pinned by digest — verified here on
 a third independent fetch, 5,807,715 bytes and `b3f068eb…`, matching rewt-16's two.
+
+---
+
+## D-091 — A comment written at the moment of measurement records the measurement, and the measurement is the thing that will change
+
+**3 September 2026, raised by rewt-46 (visualisation) from three instances; the form of the
+remedy is rewt-c1's (tests); recorded by rewt-e8 (implementer).**
+
+Three comments went stale in one day, in three different sessions' files, and each was
+written by whoever had just measured the thing it described:
+
+1. `tools/viewer/.gitignore` (c281d4c, 1 Sep): *"docs/viewer/backdrops.json offers
+   OpenStreetMap and nothing else."* True when written; false once seven MapTiler layers
+   arrived that same week. Unnoticed for two days. Corrected in 89348ce.
+2. `tests/README.md` (61b6e5c): D-079 needs *"a rebuild AND a fix: basins.py still counts
+   link_scope JOIN link"*. **Already false at the moment of commit** — f570dbd had landed.
+   Corrected within the hour.
+3. `tests/test_derived_distributions.py`: an unresolvable row *"is also labelled
+   is_repair"*. True when written; falsified by 2d3cb46 changing `is_repair` to
+   `r.link_id IS NOT NULL`. Corrected in c92d1ae.
+
+**The pattern is not carelessness but its opposite.** The fault clusters at the moment the
+author is most certain, because a fact just established is the one least likely to be
+doubted and most tempting to write down as a state of the world.
+
+**It lives in comments, docstrings and READMEs rather than in code because code is
+re-executed and disagrees when the world moves; prose is re-read only when somebody has a
+reason to.** Two of the three were caught within the hour by another session reading them.
+The third had been wrong since 1 September and was caught only because rewt-c1 opened the
+file for something else. **The cross-reading is good at artefacts two people look at and
+blind to the ones only their author reads** — rewt-c1's reading, and the sharper half.
+
+**The remedy is form, not vigilance: write what to CHECK, not what you SAW.** A rule can be
+re-run; a snapshot cannot. *"backdrops.json offers OpenStreetMap and nothing else"* was a
+snapshot and was overtaken in a week. *"A published backdrop may not serve tiles from
+mapseries-tilesets.s3.amazonaws.com"* is the same decision stated as a test, and it survives
+every layer anyone adds. Where the check can be executed, write it as a test and let the
+comment point at it.
+
+A figure **is** a snapshot, so a comment stating one should say when it was measured and
+what produced it. Where an entry names a state of the tree — a line number, a filename, a
+count — name the commit it was true at, so a reader can date it rather than trust it.
+
+**This entry stands on three instances and not four.** rewt-c1 offered a fourth, the comment
+replaced in `basins.py`; rewt-46 checked `git show f570dbd` and found no removed comment
+line at all. The naive join carried no comment describing it — an *undocumented* wrong
+query, which is a different and arguably worse fault. Folding it in would have made the entry
+claim a pattern one instance wider than its evidence, **which is the entry's own fault
+committed inside the entry.** Three instances in one day may be a run rather than a pattern,
+and rewt-46 said so rather than padding it.
+
+It is deliberately narrow. The comments in this repository that carry reasoning are the most
+valuable thing in it and most of them state facts; the class here is the sentence asserting
+the **current state of another file**.
+
+---
+
+## D-092 — A resurrected domain passes every check we have
+
+**3 September 2026, found by rewt-16 (sources), verified by rewt-e8 (implementer).**
+
+`gb1900.org` has lapsed and been taken over. It serves an online-gambling site — HTTP 200,
+294,466 bytes, `text/html`, titled *"KOKO5000 | Website Game Online Terpercaya"*, with
+slot, gacor, casino and login markers throughout. `http://www.gb1900.org/` redirects to it.
+
+It is linked five times from the published documentation, on `origin/main` and therefore
+deployed: `docs/index.md`, `docs/scale.md` twice, `docs/methodology.md`, `docs/evidence.md`.
+Every one is `{:target="_blank"}` and presented as the volunteer transcription project — one
+of them as *"the proof that this scale of volunteer work succeeds"*.
+
+**It passes every automated check anyone here has built.** Status 200. Content type
+`text/html`. A real page that renders. `rewt sources --links`, written this afternoon
+precisely to catch dead manifest URLs, passes it. rewt-68's stricter sweep — status *and*
+content type — passes it. **It fails only on what the page says.**
+
+**A dead link degrades safely; a resurrected domain does not.** A 404 is visibly broken and
+embarrasses nobody; a live page under a name a reader trusts is worse than the absence of a
+link, and no check short of reading the content distinguishes them. That is the class, and
+this repository currently has nothing that would.
+
+**The manifest was never affected.** `conf/sources.yml`'s `gb1900_raw_dump` points at
+visionofbritain.org.uk, the real publisher, which has its own defect — a certificate chain
+missing its intermediate — but is the right host. **The safe URL was in the
+machine-readable file and the hostile one in hand-written prose**, which is the opposite of
+the direction this project has spent the day worrying about, and worth noticing: the
+manifest is checked because it is machine-read, and prose is where an unchecked address
+survives.
+
+Two contributing shapes, neither of them anyone's carelessness. A link written in 2026 to a
+project whose funding ended years earlier is a bet on someone else renewing a domain, and
+nothing recorded that bet. And the correction — repointing all five at
+`https://maps.nls.uk/projects/gb1900/`, the National Library of Scotland's own GB1900 page,
+which is a genuine partner and stable — existed in a working tree for some time before it
+could be committed, because the session that owns `docs/` cannot commit without its user.
+**A written fix that cannot be shipped is not a shipped fix**, and the time between the two
+is exposure nobody is measuring.
