@@ -3379,6 +3379,42 @@ between its vertices, so two canals that meet on the ground are likelier to be r
 missing each other. PLAN.md §5 records that canals are wildly over-represented in the fault
 list — 252 canal links totalling 812 km arriving at a node with no outflow, about 30% of
 canal length — and attributes it to canals not being drainage features, which is right and
-may not be the whole of it. **Coarser geometry is a second candidate cause for the same
-over-representation, and nothing has separated them.** Worth testing before R-04's crossing
-detection and R-06's alignment thresholds are built on a single tolerance for all forms.
+may not be the whole of it. Coarser geometry is a second candidate cause for the same
+over-representation.
+
+**rewt-68 then separated them, within the hour, and the answer is that my hypothesis is
+real and far too small.** Holding form constant — comparing links that arrive at a dead-end
+node against links of the same form that do not:
+
+| form | at an in-scope dead end | everything else | enrichment |
+|---|---:|---:|---:|
+| canal | 130.9 m | 117.7 m | +11% |
+| inlandRiver | 64.1 m | 55.8 m | +15% |
+
+Fault-bearing links **are** coarser than their own form's average, so the association is not
+empty. But **the enrichment is the same size in rivers as in canals**, and a mechanism
+specific to coarse canals would show up as a much larger enrichment in canals than in
+rivers. Then the magnitudes settle it: canal links arriving at an in-scope dead end are
+19.8% of canal links against 0.67% for inlandRiver — a **thirty-fold** difference in fault
+rate against a 2.2-fold difference in spacing and a within-form elasticity near 13%.
+Coarseness cannot carry thirty-fold. PLAN.md §5's reading survives.
+
+*(Their figures and mine differ slightly on canals — 322 of 1,707 against my 312 of 1,576 —
+because they counted the published GeoPackage's 195,568-row link layer and I counted the
+database's 193,040. D-079 again, in a third place. The ratio is 28-fold or 30-fold; nothing
+turns on which.)*
+
+**So the parameter question stays and the expectation attached to it does not.** A
+one-metre tolerance against 121.6 m spacing is still a different instrument from the same
+tolerance against 55.8 m, and +11%/+15% says geometry bites at the margin. A form-aware
+tolerance is still worth building for R-04's crossing detection and R-06's alignment
+thresholds. What it will not do is clear the canal fault list, and **if those thresholds are
+tuned expecting it to, the tuning will chase a residue of a few per cent while the real
+cause sits untouched.**
+
+That is the failure this amendment exists to prevent, and rewt-68's phrasing for it is the
+one to keep: **a real second cause, correctly identified, sized wrongly.** D-070 and D-074
+are about answers that were never measured; this is a different fault — a measurement that
+is sound, an inference from it that is sound, and no estimate of how much of the effect it
+accounts for. **Establishing that a cause is real is not the same as establishing that it
+matters**, and the step between them is arithmetic nobody had done.
