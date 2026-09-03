@@ -23,6 +23,12 @@ whitebox==2.3.6
 # Graph work: components, crawl, spanning trees
 networkx==3.4.2
 
+# H3 for the coastal cost surface (rules/H3.md, the router role). Pinned here because
+# it was installed into .venv on Stephen's instruction and the manifest did not know —
+# an environment and a manifest that disagree is a gap that survives until somebody
+# else's build fails. Flagged by rewt-c7, who installed it.
+h3==4.5.0
+
 # Tabular
 pandas==2.3.3
 pyarrow==22.0.0
