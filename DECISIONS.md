@@ -2859,6 +2859,39 @@ same directory, publishes `in_scope_km: 105699.0`. **The repository ships two in
 that differ by 1,800 links, and nothing compares them.** Found by rewt-c1, who is widening the
 suite to require every in-scope total published anywhere under `published/audit/` to agree.
 
+**Fixed 3 September, and the fix was nearly missed twice.** `rewt/schema.py` now defines
+an `in_scope_link` view and every consumer reads it: 127,121 links, 105,699.0 km, 2,435 of
+them repair links, matching `sea_reach.in_scope_km` exactly. rewt-c1 found the published
+disagreement; rewt-46 then asked the question nobody had — whether the *writer* still
+computed it, or whether a rebuild would clear it — and it was `rewt/stages/basins.py:286`,
+the naive join verbatim. **A rebuild would have reproduced 105,462.8 exactly, and the test
+would have gone on failing with the same number**, which is as convincing a disguise as a
+live defect can wear.
+
+**And the figure was not the worst of it.** rewt-c1 pointed out that the same two queries
+feed the table headed *"scope against PLAN.md §4.1's calibration"* — the comparison a reader
+uses to decide whether to question the delineation at all:
+
+| measure | published (wrong) | corrected | PLAN.md §4.1 |
+|---|---:|---:|---:|
+| links in scope | 125,321 | **127,121** | 122,104 |
+| km in scope | 105,463 | **105,699** | 101,875 |
+| links out of scope | 67,719 | **67,809** | 72,367 |
+| km out of scope | 47,064 | **47,126** | 50,851 |
+
+§4.1 says a few per cent of difference from the predecessor is expected. **A calibration band
+wide enough to be useful is wide enough to hide a defect the size of the thing it calibrates
+against** — 1,800 links and 236.2 km sat inside it unremarked. Worse, the error ran *towards*
+agreement: 125,321 is nearer the predecessor's 122,104 than the true 127,121 is. **A defect
+that improves agreement with the benchmark is the one least likely to be questioned**, and
+nothing in the arrangement was watching that direction.
+
+The out-of-scope side carried both faults too and is fixed with it — 90 links and 62.0 km,
+small because most repair links are in scope by construction. rewt-c1's note on it stands as
+the more important half: **nothing publishes a second reading of the out-of-scope total, so
+no test can catch that side the way `test_every_published_in_scope_total_is_the_same_number`
+caught the first.** Wrong and untestable together is worse than either.
+
 **The general shape, which is why this is a decision and not a bug report.** The retirement
 rule and the repair tables are each individually correct and each individually documented. The
 population that satisfies both is stated nowhere, so every query that needs it re-derives it,
