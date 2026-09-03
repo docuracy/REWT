@@ -443,6 +443,42 @@ rules:
         carry `status: unverified` and `checksum: null`. When doing so, the trap
         already recorded on the EA entry is the one that matters: asked for a point in
         Wales it returns a full grid of 0.0 m, not nodata.
+    committed:
+      # Stephen, 2026-09-03. He did not overrule the decline; he took the `instead` and
+      # went further, promoting the two 1 m sources from PLAN.md §5's per-section
+      # adjudication to a NATIONAL node pre-sweep. D-085 has the reasoning and the cost.
+      what: >-
+        A national pre-sweep marking every node with an elevation from
+        ea_lidar_composite_dtm_1m (England) and nrw_lidar_dtm_1m (Wales), stored once
+        per node, used as a discriminator against OS's stated direction on every link.
+      by: stephen
+      date: 2026-09-03
+      the_node_is_the_unit: >-
+        197,734 nodes against 195,568 links with two ends each. Sampling per node and
+        reusing the value at both ends of every link is 197,734 samples rather than
+        391,136 — half the work before anything is optimised, and it falls out of
+        choosing the node as the unit rather than the link.
+      measured_cost: >-
+        51,892 distinct 1 km squares hold a node in an in-scope basin; 87,102 hold any
+        node; 6,302 five-kilometre squares hold an in-scope one. Median 2 nodes per
+        square, mean 2.2, max 58. Fetching per SQUARE and sampling every node inside it
+        is therefore roughly half the requests of fetching an 80 m window per node.
+      the_edge_case_that_decides_the_tiling: >-
+        PLAN.md §5 requires a WINDOW and not a point — the 10th percentile of an 80 m
+        box, because a single cell lands on a bank, a bridge deck or a building. The box
+        around a node within 40 m of a square's edge crosses into the neighbouring
+        square, so squares must be fetched with a buffer or edge nodes handled
+        explicitly. Getting it wrong is silent: the box truncates and the percentile is
+        taken over whatever remains.
+      still_binding: >-
+        The rule above is unchanged by any of this. A 1 m surface makes the screen
+        sharper and does not make it an authority. A level canal is level at any
+        resolution — the Monmouthshire and Brecon falls 0.00 m over 3.91 km on the 1 m
+        surface — so no sweep will ever settle those. Coverage must be tested explicitly
+        per tile and never inferred from nodata, because the English service answers for
+        Wales with a full grid of 0.0 m. And the surface sampled must be the
+        UNCONDITIONED one: a DEM with the network burned into it has had the network's
+        own direction stamped on it, so checking direction against it proves nothing.
     evidence: []
     supersedes: []
     raised: 2026-09-03

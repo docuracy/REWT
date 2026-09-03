@@ -3136,3 +3136,74 @@ what is a node that *can* carry the verdict? If that set is every node, the mark
 useless at any zoom. If it is only the nodes the build has already marked, the tool cannot
 add the ones R-04 says are missing — which is the entire purpose. Confirm the selector
 excludes something before drawing anything (D-070).
+
+---
+
+## D-085 — A national elevation sweep, on the two sources we already declare
+
+**3 September 2026, Stephen's ruling, recorded by rewt-e8 (implementer).**
+
+**Committed: mark every node with a 1 m elevation, from `ea_lidar_composite_dtm_1m` in
+England and `nrw_lidar_dtm_1m` in Wales, and use it as a discriminator against OS's stated
+direction on every link.** The Mapzen terrarium tileset is not registered.
+
+This is not the terrarium proposal with a different source; it is a different shape of work,
+and it overrides PLAN.md §5, which specifies these two DEMs as a **per-section** instrument
+— *"the right one for settling THIS link ... fetched on demand"* — explicitly against a
+national sweep. AGENTS.md permits overturning a plan default with a recorded reason, and
+this is the reason: the sweep was rejected there on the assumption that per-node fetching is
+the only way to do it, and per-node fetching is not the design.
+
+**The node is the unit, and that is the whole efficiency argument.** 197,734 nodes against
+195,568 links with two ends each. Sample per node and reuse at both ends of every link:
+197,734 samples rather than 391,136. Half the work falls out of the choice of unit before
+anything is optimised — and the same value then discriminates every link incident on that
+node, which a per-link sweep recomputes.
+
+**Measured before committing, because the tile count is the whole question.** 51,892 distinct
+1 km squares hold a node in an in-scope basin; 87,102 hold any node; 6,302 five-kilometre
+squares hold an in-scope one. Median 2 nodes per square, mean 2.2, max 58. **So fetching per
+square and sampling every node inside is about half the requests of fetching an 80 m window
+per node** — 51,892 rather than 115,285 — and that is the design. It is an overnight job with
+modest concurrency, not an open commitment.
+
+**Why these two and not terrarium**, which rewt-16 established and which stands: terrarium
+has no licence at tileset level (about twelve upstream licences, and which one you got is a
+property of the individual tile); it is not one surface, being the EA composite at 2 m over
+86.1% of English nodes and EUDEM at 30.9 m over 96.5% of Welsh ones, so the instrument would
+change character at the Welsh border; and where it is good it **is** the EA composite, which
+we declare at 1 m, direct from the publisher, under a stated OGL v3. Both registered sources
+are `access: open`, `redistribution: permitted`, and both carry `status: unverified` and
+`checksum: null` — declared and never fetched. This decision is the thing that fetches them.
+
+**Four constraints, each already paid for once.**
+
+- **Sample a window, not a point** — the 10th percentile of an 80 m box (PLAN.md §5), because
+  a single cell lands on a bank, a bridge deck or a building. This decides the tiling: an
+  80 m box around a node within 40 m of a square's edge crosses into the next square, so
+  squares are fetched with a buffer or edge nodes are handled explicitly. **The failure is
+  silent** — the box truncates and the percentile is taken over whatever is left.
+- **Test coverage explicitly, never infer it from nodata.** The English service asked for a
+  point in Wales returns a full grid of 0.0 m. A sampler without a guard computes confident
+  nonsense for the whole of Wales and along the border, and it does not look like an error.
+- **Sample the unconditioned surface.** A DEM with the network burned into it has had the
+  network's own direction stamped on it, so checking direction against it proves nothing.
+  Keep the two rasters distinct and distinctly named.
+- **R-09 is unchanged and still binding.** A sharper screen is not an authority. A level canal
+  is level at any resolution — the Monmouthshire and Brecon falls 0.00 m over 3.91 km on the
+  1 m surface — so a class of links will remain unadjudicable by any DEM, and the sweep must
+  report them as unadjudicable rather than as agreeing.
+
+**What it is expected to buy.** On Terrain 50, PLAN.md §5 measures the DEM as saying nothing
+at all about 24.3% of links, 82.3% of canals and 91.8% of lakes — it screens the uplands,
+where the network is least broken, and is silent on the levels, where it is most. A 1 m
+surface with ±0.15 m error against Terrain 50's ~4 m should move most of that mute band into
+one of the answering bands. **That is the claim to test, and it must be tested as a
+distribution against the Terrain 50 one rather than asserted**, because the six-link trial in
+PLAN.md §5 resolved four of six and six links is not a distribution.
+
+**The trap that would make the whole thing worthless.** If the sweep is run and the mute
+share barely moves, the honest reading is that the levels are genuinely flat and not that the
+instrument failed. Deciding in advance what result would falsify the expectation is the
+difference between a measurement and a confirmation, and this entry is where that was
+written down before the data arrived.
