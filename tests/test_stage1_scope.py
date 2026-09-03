@@ -107,6 +107,37 @@ def test_the_model_stays_small():
     )
 
 
+def test_every_derived_table_says_why_it_exists():
+    """The instruction the previous test gives, enforced rather than asked for.
+
+    Its failure message says *add the reason to schema.py's docstring and to this
+    test together* — a convention, followed by whoever read the message, and
+    checked by nothing. So the test above goes green the moment somebody adds a
+    name to a Python set, and the reason it exists to demand need never be written.
+
+    It has already happened three times. `link_scope`, `link_reach` and `link_flag`
+    are in the derived set with no mention in `rewt/schema.py`'s docstring, and the
+    set's own comment says of the sea tables *their reasons are in schema.py's
+    docstring with the rest* — which is true for those two and was not true for the
+    three that went in before them.
+
+    **§3 says keep it small.** A table with no stated reason is how a small model
+    stops being one: nothing is ever added without a reason at the time, and the
+    reason is what a reader needs a year later to know whether it still applies.
+    Naming the table in the docstring is the cheapest possible enforcement — it
+    does not check that the sentence is a good one — and it is enough to make the
+    two halves move together, which is all the previous test's message asks for.
+    """
+    doc = schema.__doc__ or ""
+    unexplained = sorted(name for name in schema.TABLES if name not in doc)
+    assert not unexplained, (
+        f"tables in rewt/schema.py that its own docstring never names: "
+        f"{', '.join(unexplained)}. §3 allows four tables and each of the others "
+        "exists for one reason; the reason belongs where a reader of the schema "
+        "will find it. One line each — what it holds and what asked for it."
+    )
+
+
 def test_a_correction_may_carry_the_date_a_person_looked():
     """The exception, and the reason it is one.
 
