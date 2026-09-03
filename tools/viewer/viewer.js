@@ -86,13 +86,35 @@ const R = summary.reachability || {};
 // the newest build is a viewer that cannot open last week's published output.
 const inScopeKm = need(R, 'total_in_scope_km', 'in_scope_km');
 const inScopeShare = need(R, 'in_scope_share');
-$('#f-share').textContent = pct(inScopeShare);
+/* THE HEADLINE SAID "REACHES THE SEA" OVER THE TIDAL FIGURE. The deployed viewer was
+   corrected for this (735b017); this one was not, because until today it could not be
+   run and so nobody read it. It printed 93.58% under "reaches the sea" — that is the
+   share reaching TIDAL WATER — and "6,785 km cannot reach the sea" where the figure for
+   that sentence is 3,894 km, overstating the work left by three quarters of it. The
+   difference is 2,890 km of coastal drainage that discharges at a sea wall without ever
+   touching a tidalRiver, and `readings_are_nested: false` is stated in the audit's own
+   section, so the data was saying this about itself while the panel rounded the two
+   together. The label decides which number belongs under it, and where the audit has no
+   sea section the panel falls back to the tidal reading AND relabels itself, because a
+   stale number under a confident label is the failure being fixed. */
+const SEA = summary.reachability_tested_against_the_sea || {};
+const haveSea = SEA.reaches_the_sea_share != null;
+$('#f-share').textContent = pct(haveSea ? SEA.reaches_the_sea_share : inScopeShare);
+$('#f-share-label').textContent = haveSea
+  ? 'of in-scope length reaches the sea'
+  : 'of in-scope length reaches tidal water — this build does not test the sea';
 $('#f-defects').textContent = fmt(c.dead_ends_defect);
 $('#f-detail').innerHTML = `
   ${fmt(inScopeKm)} km in scope, of which
-  <b>${fmt(inScopeKm == null || inScopeShare == null ? null
-        : inScopeKm * (1 - inScopeShare))} km
-  cannot reach the sea</b>. ${fmt(summary.stranded.count)} components holding
+  <b>${fmt(haveSea ? SEA.reaches_neither_km
+        : (inScopeKm == null || inScopeShare == null ? null
+           : inScopeKm * (1 - inScopeShare)))} km
+  reaches neither tidal water nor the sea</b>.
+  ${haveSea ? `<br><b>${fmt(SEA.reaches_sea_only_km)} km reaches the SEA ONLY</b> —
+  coastal drainage with no tidal link, which the tidal reading alone counts as stranded;
+  ${fmt(SEA.reaches_tidal_only_km)} km reaches tidal water the sea cannot take. The two
+  readings are not nested.` : ''}
+  ${fmt(summary.stranded.count)} components holding
   ${fmt(summary.stranded.km)} km reach it nowhere at all.<br>
   ${fmt(c.links)} links · ${fmt(c.nodes)} nodes · ${fmt(c.basins)} basins
   (${fmt(c.basins_in_scope)} in scope, ${fmt(c.no_outlet_in_scope)} of those with no
