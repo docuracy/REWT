@@ -3207,3 +3207,45 @@ share barely moves, the honest reading is that the levels are genuinely flat and
 instrument failed. Deciding in advance what result would falsify the expectation is the
 difference between a measurement and a confirmation, and this entry is where that was
 written down before the data arrived.
+
+---
+
+## D-086 — The sweep fetches per node in England and per tile in Wales, and caches neither
+
+**3 September 2026, rewt-e8 (implementer).** Amends D-085, which had the fetch unit wrong.
+
+D-085 committed to a national 1 m elevation sweep and recorded, as its measured cost, that
+fetching per kilometre **square** is about half the requests of fetching an 80 m window per
+node — 46,792 against 115,285. That is arithmetically true and it was **the wrong quantity
+to count.** Measured against the live services before writing any fetcher:
+
+| | per square | per node |
+|---|---:|---:|
+| English payload | 9.44 MB | **25.4 KB** |
+| English request time | 2.16 s | **0.45 s** |
+| England, all of it | **358 GB** | **2.4 GB**, ~1.9 h at concurrency 6 |
+
+Per-node is 2.5× the requests, **150× less data, and faster per request**, because the
+payload is 370× smaller and most of a kilometre square is wasted — the median square holds
+two nodes. I counted requests because requests were what I had already counted for the
+terrarium comparison, and never measured bytes until the pilot returned 9.44 MB.
+
+**Wales has no such choice.** The NRW catalogue serves whole kilometre tiles at 2.29 MB and
+will not window, so Wales stays per-square: 8,894 tiles, 20 GB, sampling every node in a
+tile before discarding it. The two countries therefore use different fetch units for a
+reason that is a property of the services and not of the design.
+
+**Nothing is cached.** 380 GB of rasters to extract 197,734 numbers is not a defensible use
+of the disk, and the durable artefact is the elevation, not the tile. `data/raw/` keeps a
+manifest instead — per tile, the source, the request, a SHA-256 of the bytes, the
+publisher's own survey date where it gives one, and when it was fetched — so any reading can
+be re-derived and verified against what was actually sampled. That is what `checksum: null`
+on those two `conf/sources.yml` entries becomes.
+
+**The general form, and it is the third instance today.** D-081 records rewt-c1's version:
+after any operation that can silently drop rows, name what it dropped. This is the same
+fault in a different place — **a quantity measured carefully, chosen carelessly.** The
+terrarium comparison had made requests the salient number, and salience carried into a
+decision where it was not the constraint. The check that catches it is cheap and I did not
+run it until forced: *before optimising a quantity, measure the one you are trading it
+against.*

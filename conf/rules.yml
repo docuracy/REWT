@@ -457,12 +457,21 @@ rules:
         197,734 nodes against 195,568 links with two ends each. Sampling per node and
         reusing the value at both ends of every link is 197,734 samples rather than
         391,136 — half the work before anything is optimised, and it falls out of
-        choosing the node as the unit rather than the link.
+        choosing the node as the unit rather than the link. That much survived the
+        measurement below; only the FETCH unit changed.
       measured_cost: >-
-        51,892 distinct 1 km squares hold a node in an in-scope basin; 87,102 hold any
-        node; 6,302 five-kilometre squares hold an in-scope one. Median 2 nodes per
-        square, mean 2.2, max 58. Fetching per SQUARE and sampling every node inside it
-        is therefore roughly half the requests of fetching an 80 m window per node.
+        THE FIRST VERSION OF THIS BLOCK OPTIMISED THE WRONG QUANTITY. It said fetching
+        per SQUARE is about half the requests of an 80 m window per node — 46,792 against
+        115,285 — which is true and was the wrong thing to count. Measured against the
+        live services on 3 Sep 2026: an English square-plus-buffer is 9.44 MB and takes
+        2.16 s, so 37,898 English squares is 358 GB; an 80 m window around one node is
+        25.4 KB and takes 0.45 s, so 92,005 English nodes is 2.4 GB and about 1.9 hours
+        at concurrency 6. Per-node is 2.5x the requests, 150x less data, and FASTER per
+        request because the payload is 370x smaller. Wales has no such choice — the NRW
+        catalogue serves whole kilometre tiles at 2.29 MB, so Wales stays per-square,
+        8,894 tiles and 20 GB, sampling every node in a tile before discarding it.
+        Nothing is cached: the manifest records the request and a digest per tile, which
+        is what makes a refetch verifiable without keeping 380 GB on disk.
       the_edge_case_that_decides_the_tiling: >-
         PLAN.md §5 requires a WINDOW and not a point — the 10th percentile of an 80 m
         box, because a single cell lands on a bank, a bridge deck or a building. The box
