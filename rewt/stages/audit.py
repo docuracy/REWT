@@ -1435,8 +1435,30 @@ class _Sealed(list):
         "rewt/stages/audit.py — every producer of findings must run before it."
     )
 
-    def append(self, item):  # noqa: D102
+    # EVERY MUTATOR, NOT THE TWO THAT WERE IMAGINED. The first version overrode
+    # `append` and `extend` only, and the docstring above promised "a findings list that
+    # refuses to grow" — a claim eight times wider than the code. Probed by rewt-c1 and
+    # then exhaustively here: `findings += [...]` grew it, because `list.__iadd__`
+    # concatenates in place at the C level and never reaches an overridden `extend`; so
+    # did `insert`, slice assignment and `*=`; and `clear()` emptied it outright. A
+    # producer added below the persist block with `+=` — the other natural way to write
+    # the same line — was discarded in exactly the silence this class exists to end.
+    #
+    # Listing the methods is deliberate. A `__getattribute__` trap would catch more and
+    # would also catch reads, and a subclass that refuses to be read is a worse bug than
+    # one that can be appended to.
+    def _refuse(self, *_args, **_kwargs):
         raise StageError(self._MESSAGE)
 
-    def extend(self, items):  # noqa: D102
-        raise StageError(self._MESSAGE)
+    append = _refuse
+    extend = _refuse
+    insert = _refuse
+    remove = _refuse
+    pop = _refuse
+    clear = _refuse
+    sort = _refuse
+    reverse = _refuse
+    __setitem__ = _refuse
+    __delitem__ = _refuse
+    __iadd__ = _refuse
+    __imul__ = _refuse
