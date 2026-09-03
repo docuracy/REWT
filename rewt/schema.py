@@ -283,3 +283,46 @@ def index(*specs: tuple[str, str]) -> None:
         name = f"idx_{table}_{column.replace(', ', '_').replace(',', '_')}"
         con.execute(f"DROP INDEX IF EXISTS {name}")
         con.execute(f"CREATE INDEX {name} ON {table} ({column})")
+
+# THE IN-SCOPE POPULATION, DEFINED ONCE.
+#
+# D-079: establishing what is in scope looks like a join and is not.
+# `link_scope JOIN link WHERE in_scope` gives 125,321 links and 105,462.8 km. The
+# correct population is 127,121 links and 105,699.0 km, and the difference is two rules
+# that compose into a third nobody owned:
+#
+#   * a retired link is KEPT in `link`, never deleted, because the audit trail is part
+#     of the product (AGENTS.md) — so it must be excluded here rather than by absence;
+#   * a repair link lives in `repair_link` and NOT in `link` — 2,435 in-scope ids do —
+#     so an inner join to `link` silently drops every synthetic connector.
+#
+# Each rule is documented on its own and the population that satisfies both was stated
+# nowhere, so every consumer re-derived it and the obvious derivation is wrong. It
+# reached `published/audit/basins.json`, where 105,462.8 km sat beside four other files
+# saying 105,699.0 and nothing compared them (found by rewt-c1, confirmed by rewt-46).
+#
+# So there is one definition and it is this view. Read it; do not rebuild it.
+IN_SCOPE_LINK_DDL = """
+CREATE VIEW in_scope_link AS
+SELECT s.link_id,
+       s.basin_id,
+       s.scope_rule,
+       COALESCE(l.length_m, r.length_m)   AS length_m,
+       COALESCE(l.form,     r.form)       AS form,
+       COALESCE(l.name,     r.name)       AS name,
+       COALESCE(l.from_node, r.from_node) AS from_node,
+       COALESCE(l.to_node,   r.to_node)   AS to_node,
+       l.link_id IS NULL                  AS is_repair
+FROM link_scope s
+LEFT JOIN link        l USING (link_id)
+LEFT JOIN repair_link r USING (link_id)
+WHERE s.in_scope
+  AND NOT EXISTS (SELECT 1 FROM retirement t WHERE t.link_id = s.link_id)
+"""
+
+
+def in_scope_view() -> None:
+    """(Re)create `in_scope_link`. Cheap, idempotent, and safe to call before use."""
+    con = db.get()
+    con.execute("DROP VIEW IF EXISTS in_scope_link")
+    con.execute(IN_SCOPE_LINK_DDL)

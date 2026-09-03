@@ -282,13 +282,25 @@ def run() -> dict:
     ).df()
     log.frame("links by scope rule", stats)
 
+    # THE VIEW, NOT A JOIN. This was
+    #     FROM link_scope s JOIN link l USING (link_id) WHERE s.in_scope
+    # which loses the 2,435 in-scope ids that live in `repair_link` and counts the 635
+    # retired ones — 125,321 links and 105,462.8 km against the true 127,121 and
+    # 105,699.0. It published 105,462.8 into audit/basins.json, beside four other files
+    # saying 105,699.0, and nothing compared them until rewt-c1 wrote a test that did.
+    # D-079. `in_scope_link` is the one definition; see rewt/schema.py.
+    schema.in_scope_view()
     kept = con.execute(
-        "SELECT count(*), sum(l.length_m)/1000.0 FROM link_scope s JOIN link l "
-        "USING (link_id) WHERE s.in_scope"
+        "SELECT count(*), sum(length_m)/1000.0 FROM in_scope_link"
     ).fetchone()
+    # The out-of-scope side has the same two faults and the same fix: a repair link that
+    # is out of scope is still a link, and a retired one is not.
     dropped = con.execute(
-        "SELECT count(*), sum(l.length_m)/1000.0 FROM link_scope s JOIN link l "
-        "USING (link_id) WHERE NOT s.in_scope"
+        "SELECT count(*), sum(COALESCE(l.length_m, r.length_m))/1000.0 "
+        "FROM link_scope s "
+        "LEFT JOIN link l USING (link_id) LEFT JOIN repair_link r USING (link_id) "
+        "WHERE NOT s.in_scope "
+        "AND NOT EXISTS (SELECT 1 FROM retirement t WHERE t.link_id = s.link_id)"
     ).fetchone()
     cal = p("basins.calibration")
     log.table(
