@@ -78,6 +78,46 @@ terrain:
   screen_bands_m:
     clear_agree: 4.0
     weak: 0.5
+
+  # THE 1 m SWEEP (D-085). Every node gets an elevation from the two registered 1 m
+  # LiDAR sources, sampled once and reused at both ends of every link incident on it.
+  sweep:
+    # PLAN.md §5: sample a WINDOW, not a point — a single cell lands on a bank, a
+    # bridge deck or a building. The 10th percentile of an 80 m box is what §5's own
+    # trial used, so a half-width of 40 m.
+    window_half_m: 40
+    percentile: 10
+    # The fetch unit. Both services align on the OSGB kilometre square: the Welsh
+    # catalogue IS one tile per square, and the English WCS will serve any window, so a
+    # square plus the window half-width is one request either way and the 40 m edge
+    # problem never arises. 51,892 squares hold an in-scope node.
+    square_m: 1000
+    # Fetched with the window's half-width added on every side, so a node anywhere in
+    # the square has its full box inside one raster. Without this the box truncates at
+    # the square edge and the percentile is silently taken over whatever remains.
+    fetch_buffer_m: 40
+    # A reading is REFUSED, not defaulted, when the box has fewer than this many valid
+    # cells. An 80x80 box is 6,400; a node on the coast may legitimately have fewer.
+    min_valid_cells: 400
+    # THE COVERAGE GUARD, and it is not optional. Asked for a point in Wales the
+    # English service returns HTTP 200 and a valid GeoTIFF of 0.0 m with no nodata set
+    # — measured live on 3 Sep 2026 at a node where the Welsh tile reads 498.10 m.
+    # Coverage is decided by country from Boundary-Line and then CONFIRMED by the
+    # reading; it is never inferred from nodata, whose value differs between the two
+    # services and is absent in exactly the failing case.
+    refuse_all_zero_box: true
+    # POLITENESS, AND IT IS NOT ONE NUMBER. Measured on 3 Sep 2026: at six concurrent
+    # workers the Environment Agency's WCS returns HTTP 403 on about 6% of requests —
+    # rate limiting, not a permissions fault, and it clears on its own. The Welsh tiles
+    # come from an Azure blob store that does not complain. So the two services get
+    # different budgets, and the retry backs off geometrically rather than linearly:
+    # the first version slept 1.5, 3.0 and 4.5 s and retried straight back into the
+    # limit, which is how a retry turns a transient refusal into a permanent one.
+    concurrency_england: 3
+    concurrency_wales: 6
+    timeout_s: 300
+    retries: 5
+    backoff_base_s: 2.0
   # Conditioning for basin delineation only. The burned raster and the raw raster are
   # kept distinctly named because sampling the burned one to check direction is
   # circular (§5, D-007).

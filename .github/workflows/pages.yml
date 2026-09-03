@@ -98,6 +98,23 @@ jobs:
           pip install --quiet pyyaml
           python tools/docs/sources_page.py --check
 
+      - name: Refuse to publish a stale rules page
+        run: |
+          # docs/_data/rules.yml is a PROJECTION of conf/rules.yml, for the same reason
+          # and with the same hazard as the citations page above: Jekyll runs in safe
+          # mode, cannot read conf/, and ignores a symlink out of the source, so the copy
+          # is written by a script somebody has to remember to run.
+          #
+          # THE STALE DIRECTION THAT MATTERS IS ONE-WAY. conf/rules.yml is the canonical
+          # list (D-078) and `status` there says what is true of the BUILD, not what
+          # anyone intends. A projection left behind therefore publishes a rule as
+          # `implemented` when the build has it `proposed` — telling a reader the network
+          # obeys something it does not. That is the failure this step exists for, and
+          # `rules_page.py --check` was verified to fail on exactly that perturbation
+          # before this step was added: a check nobody has seen fail is not a check
+          # (D-082).
+          python tools/docs/rules_page.py --check
+
       - name: Fetch what the map reads from the latest release
         env:
           GH_TOKEN: ${{ github.token }}
