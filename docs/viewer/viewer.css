@@ -271,3 +271,10 @@ details.block[open] > summary::before { content: '▾ '; }
 }
 .maplibregl-ctrl-attrib-button:hover { background-color: #fff; }
 .maplibregl-ctrl-bottom-left { z-index: 2; }
+
+/* A layer's own provenance, printed under it. Denser than the panel's other lists
+   because it is reference rather than reading: you come to it with a question. */
+.note dl.stamp { margin: 5px 0 0; display: grid; grid-template-columns: auto 1fr;
+  gap: 1px 8px; font-size: 11px; }
+.note dl.stamp dt { color: var(--ink-dim); }
+.note dl.stamp dd { margin: 0; word-break: break-word; }

@@ -60,9 +60,16 @@ const C = {
 const DATA = 'data/';
 const problems = [];
 
+/* `name` is normally a file in `data/`, which pages.yml fills from the release. A name
+   beginning `../` escapes it deliberately, for a layer that is NOT part of the release
+   and must not borrow its provenance — see the sightline overlay, which comes from
+   docs/router/ and carries its own stamp. Jekyll publishes everything under docs/, so
+   the path is live on the deployed site and in a local preview alike. */
 async function grab(name, what) {
   try {
-    const r = await fetch(DATA + name);
+    // KEEP the `../`: the browser resolves it against /viewer/, which is the point.
+    // Slicing it off made it relative to /viewer/ and asked for /viewer/router/.
+    const r = await fetch(name.startsWith('../') ? name : DATA + name);
     if (!r.ok) throw new Error('HTTP ' + r.status);
     return await r.json();
   } catch (e) {
@@ -518,8 +525,45 @@ const OVERLAYS = [
     legend: [['the crawl started here', C.tidal], ['tidal, but not a crawl seed', '#4a5568']] },
   { id: 'seeds', label: 'Seed nodes', file: 'seeds.geojson', kind: 'point',
     colour: C.seed, count: c.seeds },
+  /* ── WHERE LAND CAN THEORETICALLY BE SEEN FROM THE SEA ──────────────────────
+     Built by rewt-c7 for the coastal cost surface (rules/H3.md), and the first layer
+     on this map that comes from OUTSIDE the release. It is not derived from the REWT
+     build at all — EMODnet's land side on an H3 grid — so it would be wrong to give it
+     the release's fingerprint, which is why it loads from docs/router/ and prints its
+     own stamp in the note below rather than inheriting the panel's.
+
+     THREE STATES, AND THE THIRD IS THE ONE THAT MATTERS. The cached bathymetry stops
+     at longitude -8, so a cell out there computes as "no land visible" when the truth
+     is "not knowable" — the land that would have been seen lies outside the data. That
+     is D-077 in a picture: the blank sea is the invisible fault and it looks exactly
+     like an answer. rewt-c7 first offered the extent rectangle for this, but the
+     rectangle marks where the DATA is and the ANSWER is unknowable for a wide band
+     inside it; 6,735 of the 7,748 negatives, 87%, are unanswerable rather than
+     negative. So it is a per-cell `known` flag and the unknown gets a colour of its
+     own. When the cache is extended westward that band shrinks and the map visibly
+     gains an answer, which is the right thing for it to do.
+
+     Drawn at all, rather than waited for, BECAUSE the third state will move: a layer
+     that arrives after the extension shows a confident zone with no history, and one
+     that arrives now shows a reader where the edge of knowledge was. */
+  { id: 'sightline', label: 'Where land can be seen from the sea',
+    file: '../router/data/sightline_r6.geojson', kind: 'polygon', count: 15861,
+    colour: ['case',
+      ['get', 'visible'], '#5ce1e6',
+      ['get', 'known'], '#39414d',
+      C.warn],
+    opacity: 0.28,
+    legend: [['land is theoretically in sight', '#5ce1e6'],
+             ['no land in sight, and that is the answer', '#39414d'],
+             ['NOT KNOWN — the land that would be visible lies outside the '
+              + 'bathymetry cache, so this is not a negative', C.warn]],
+    note: 'theoretical sight of land: curvature and refraction only, no occlusion by '
+      + 'intervening land and no weather. Click a cell for the hill that governs it and '
+      + 'the line to it.' },
 ];
 const loaded = new Set();
+/* A layer's own provenance, keyed by layer id, read from the file it came in. */
+const stamps = new Map();
 
 /* ── The network, from vector tiles ────────────────────────────────────────
  * TWO SOURCE LAYERS, and the second is the whole point. `link` may drop features at
@@ -717,8 +761,24 @@ async function ensure(o) {
     : await grab(o.file, o.label.toLowerCase());
   if (!data) return;
   if (o.findings && !data.features.length) { loaded.delete(o.id); return; }
+  /* A LAYER'S OWN STAMP, PRINTED FROM THE FILE AND NOT TYPED HERE. A FeatureCollection
+     may carry top-level `properties`, and the sightline layer uses them to say what
+     computed it: resolution, observer height, the refraction constant, the extent, and
+     the bathymetry release with its digest. That belongs on the page, because this
+     panel's own `built_at` and `config_fingerprint` describe the REWT build and cover
+     nothing that came from outside it. Read from the data so it cannot drift from what
+     was actually loaded — a stamp retyped into this file would be a second rendering of
+     one fact, which is how the last four went wrong. */
+  if (data.properties) stamps.set(o.id, data.properties);
   map.addSource(o.id, { type: 'geojson', data });
-  if (o.kind === 'line') {
+  if (o.kind === 'polygon') {
+    map.addLayer({ id: o.id, type: 'fill', source: o.id,
+      paint: { 'fill-color': o.colour, 'fill-opacity': o.opacity ?? 0.3 } },
+      map.getLayer('network-out') ? 'network-out' : undefined);
+    map.addLayer({ id: o.id + '-edge', type: 'line', source: o.id,
+      paint: { 'line-color': o.colour, 'line-width': 0.4, 'line-opacity': 0.35 } },
+      map.getLayer('network-out') ? 'network-out' : undefined);
+  } else if (o.kind === 'line') {
     // A casing, so an overlay line never reads as a network line whatever the theme.
     map.addLayer({ id: o.id + '-casing', type: 'line', source: o.id,
       layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -814,14 +874,43 @@ function buildLayerPanel() {
     row.querySelector('input').onchange = async (e) => {
       if (e.target.checked) { await ensure(o); setVisible(o, true); } else setVisible(o, false);
       applyTheme(); writeHash();
+      showStamp(o);
     };
     host.append(row);
     if (o.note) {
       const n = document.createElement('p');
       n.className = 'note'; n.style.margin = '0 0 6px 22px'; n.textContent = o.note;
+      n.id = `note-${o.id}`;
       host.append(n);
     }
   }
+}
+
+/* THE STAMP GOES UNDER THE LAYER THAT CARRIES IT, once the file has actually arrived —
+   before that there is nothing to print and a placeholder would be a claim. Only the
+   fields a reader needs to judge the layer: what computed it, at what resolution, with
+   what assumption about the observer, over what data, and — first, because it is the
+   one that changes what the picture MEANS — the warning the file itself carries. */
+const STAMP_FIELDS = [
+  ['h3_resolution', 'H3 resolution'],
+  ['observer_height_m', 'observer height, metres'],
+  ['horizon_formula', 'horizon'],
+  ['max_landmark_reach_km', 'furthest any landmark reaches, km'],
+  ['source_release', 'elevation'],
+  ['source_checksum', 'digest'],
+];
+function showStamp(o) {
+  const st = stamps.get(o.id);
+  const el = document.getElementById(`note-${o.id}`);
+  if (!st || !el || el.dataset.stamped) return;
+  el.dataset.stamped = '1';
+  const rows = STAMP_FIELDS.filter(([k]) => st[k] != null)
+    .map(([k, label]) => `<dt>${esc(label)}</dt><dd>${esc(k === 'source_checksum'
+      ? String(st[k]).slice(0, 12) + '…' : st[k])}</dd>`).join('');
+  el.innerHTML = `${esc(o.note || '')}
+    ${st.warning ? `<br><b style="color:var(--warn)">${esc(st.warning)}</b>` : ''}
+    <dl class="stamp">${rows}</dl>
+    ${st.use_constraint ? `<b>${esc(st.use_constraint)}</b>` : ''}`;
 }
 
 function applyTheme() {
@@ -1058,7 +1147,7 @@ const CLICKABLE = new Map();          // layer id -> { label, role, o }
 const HIT = 6;                        // pixels either side of the cursor
 
 const detail = new maplibregl.Popup({ maxWidth: '360px', closeOnClick: false });
-detail.on('close', () => highlight([]));
+detail.on('close', () => { highlight([]); drawRay(null); });
 const popup = (ll, html) => detail.setLngLat(ll).setHTML(html).addTo(map);
 
 /* Registered rather than bound. `role` decides which half of the popup a feature
@@ -1109,6 +1198,20 @@ function wireHighlight() {
       'circle-opacity': ['case', ['boolean', ['get', 'hover'], false], 0.35, 0.6],
       'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 7, 12, 12, 17, 18] },
   }, under);
+
+  /* The sightline ray: the line from a sea cell to the hill that governs it. A dashed
+     line, because it is a claim about sight and not a channel — every solid line on
+     this map is water. Drawn ABOVE the network, unlike the halo, because it is the
+     answer to the click rather than an emphasis of it. */
+  map.addSource('sightline-ray', { type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] } });
+  map.addLayer({ id: 'sightline-ray', type: 'line', source: 'sightline-ray',
+    layout: { 'line-cap': 'round' },
+    paint: { 'line-color': '#5ce1e6', 'line-width': 1.6, 'line-opacity': 0.9,
+      'line-dasharray': [3, 2] } });
+  map.addLayer({ id: 'sightline-ray-end', type: 'circle', source: 'sightline-ray',
+    paint: { 'circle-color': '#5ce1e6', 'circle-radius': 3.5,
+      'circle-stroke-color': '#0d1117', 'circle-stroke-width': 1 } });
 }
 
 function highlight(features, hover = false) {
@@ -1160,7 +1263,55 @@ function markBlock({ d, f }) {
       : 'adjudicated at the place'}</b><br>${esc(p.evidence)}</div>`;
     delete p.evidence; delete p.by_rule;
   }
+  /* A SIGHTLINE CELL ANSWERS IN A SENTENCE OR IT ANSWERS IN NOTHING. Three states and
+     the reader must not have to work out which one they are looking at from a colour:
+     the unknown case says what it does NOT mean, because "no land visible" is the
+     reading it will otherwise get. Where there is a landmark, `drawRay` puts the line
+     on the map so the claim is inspectable rather than asserted — you can see which
+     hill, and how far, and judge it. */
+  if (d.o && d.o.id === 'sightline') {
+    const st = stamps.get('sightline') || {};
+    if (!p.known) {
+      extra = `<div class="quote"><b style="color:var(--warn)">NOT KNOWN, which is not
+        the same as no land in sight.</b> The land that would be visible from here lies
+        outside the bathymetry cache, so this cell has no answer — it is not a
+        negative.</div>`;
+    } else if (p.visible) {
+      extra = `<div class="quote">Land is theoretically in sight: a
+        <b>${fmt(p.landmark_h_m)} m</b> summit <b>${fmt(p.distance_km, 1)} km</b> away,
+        with ${fmt(p.margin_km, 1)} km to spare before it drops below the horizon.
+        Curvature and refraction only — nothing here accounts for intervening land,
+        haze or an observer above sea level${st.observer_height_m === 0
+          ? ', and the observer is AT sea level, so this is a floor and not the real'
+            + ' envelope' : ''}.</div>`;
+    } else {
+      extra = '<div class="quote">No land in sight, and this cell is far enough inside '
+        + 'the data for that to be the answer rather than a gap.</div>';
+    }
+    drawRay(p, f.geometry);
+  }
   return `<b>${esc(d.label)}</b>` + dl(p) + extra;
+}
+
+/* The line from the cell to the hill that governs it. Its own source, because it is a
+   claim about the world and not a highlight — the halo says "you clicked this", and
+   this says "and THAT is why". Cleared whenever there is nothing to say. */
+function drawRay(p, geom) {
+  const src = map.getSource('sightline-ray');
+  if (!src) return;
+  const ok = p && p.visible && p.landmark_lat != null && p.landmark_lon != null && geom;
+  /* The cell's own centre, averaged from its ring: the file gives the landmark's
+     position and the cell's shape, and the observer is the cell. */
+  let from = null;
+  if (ok) {
+    const ring = geom.type === 'Polygon' ? geom.coordinates[0] : geom.coordinates[0][0];
+    from = [ring.reduce((a, c) => a + c[0], 0) / ring.length,
+            ring.reduce((a, c) => a + c[1], 0) / ring.length];
+  }
+  src.setData({ type: 'FeatureCollection', features: ok ? [{
+    type: 'Feature', properties: {},
+    geometry: { type: 'LineString', coordinates: [from, [p.landmark_lon, p.landmark_lat]] },
+  }] : [] });
 }
 
 function describe(links, marks) {
