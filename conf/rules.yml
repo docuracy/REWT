@@ -521,6 +521,27 @@ rules:
     implements: []
     params:
       - tracer.crossing_marker_min_zoom
+    threshold_not_yet_declared:
+      # DELIBERATELY NOT IN conf/params.yml. R-12 is `proposed`, and a proposed rule may
+      # name a threshold nobody has chosen — the loader allows exactly that and refuses
+      # it the moment the rule binds. This block is the working, not the answer.
+      measured_by: rewt-50
+      date: 2026-09-03
+      population: published/audit/refused_crossings.geojson — 425 points, all distinct
+      method: >-
+        Projected to web mercator, gridded at a 1024x768 viewport, markers in the
+        busiest screenful at each zoom: z10 86, z11 53, z12 24, z13 17, z14 10, z15 7,
+        z16 4. On ten-a-screen as legible that is z14; on fifteen to twenty, z13.
+      provisional: 14
+      why_it_is_a_floor: >-
+        Those 425 are the crossings the build has ALREADY marked, and R-12 exists
+        because R-04 says the marking is incomplete. The eligible set is strictly
+        larger by an amount nobody has measured, so every density above is a lower
+        bound and 14 is a lower bound on the threshold: the true number is at or above
+        it and cannot be below it. rewt-50 declined to hand this over as a bare figure
+        on the ground that it would read as measured when it is a correct measurement
+        of the wrong population — the same frame error as the basin labels in D-080.
+        Re-derive against the real candidate set once R-04 lands.
     needs:
       - "This is NOT a layer switch, and it was written as one. An earlier version of
          this rule said 'the viewer offers a control that shows and hides crossings
