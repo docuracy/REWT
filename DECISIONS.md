@@ -3418,3 +3418,150 @@ are about answers that were never measured; this is a different fault — a meas
 is sound, an inference from it that is sound, and no estimate of how much of the effect it
 accounts for. **Establishing that a cause is real is not the same as establishing that it
 matters**, and the step between them is arithmetic nobody had done.
+
+---
+
+## D-089 — An open Scottish DEM, and why its coverage is good for us and poor for Scotland
+
+**3 September 2026, Stephen's instruction, researched by rewt-16 (sources), recorded by rewt-e8 (implementer).**
+
+The 1 m sweep of D-085 leaves 9,988 in-scope nodes with no reading, because they are in
+Scotland: the headwaters of the Tweed, Nith, Esk and Earn. Stephen: *"We should register an
+open 1m Scottish DEM source and scan that. Let's be thorough for this intended
+academic-grade dataset."*
+
+**The seam was the objection, not the count.** It was accepted here that a Scottish gap was
+tolerable because it touched only cross-border basins. That is the same argument D-085
+rejected for the terrarium tileset — an instrument that changes character at a border defeats
+AGENTS.md's per-basin reporting — and moving the seam from the Welsh border to the Scottish
+one relocates it rather than answering it.
+
+**What is registered.** Seven open DTM datasets published by the Scottish Government and
+served by JNCC from one endpoint: *LiDAR for Scotland* Phases 1 to 6, and the *Scottish Land
+LiDAR Programme* 2025 capture, published 2026-01-29 and still growing to 2027. The seventh
+was found only by enumerating all 75 catalogue results rather than the first 20; it is the one
+with a national remit and it was in the back half of the list.
+
+**Licence: "Open Government Licence", with no version stated.** All seven ISO records give
+the same three constraints — "No limitations to public access", "Open Government Licence",
+and a per-phase attribution statement — and the licence link carries no version segment in
+any of them. It is recorded here as unversioned. Six other entries in `conf/sources.yml` say
+v3 and it would have been easy to make this the seventh; asserting a version the publisher
+did not state is precisely the drift D-067 is about. **The attribution is per phase**, seven
+distinct statements naming SEPA, Scottish Water or Fugro according to who funded the flight,
+and the entry carries all seven, because a short attribution may never attribute less than
+this file does.
+
+**Coverage was measured against the node population, not read off a description.** Each
+layer's WMS was rendered as a transparency mask over Scotland at 500 m and tested against the
+actual nodes. The method was validated before it was trusted: Phase 1 renders 11,512 km²
+against the publisher's stated 11,845 km², 2.8% apart on 500 m quantisation.
+
+    Union of all seven phases: 29,348 km² of a country of about 78,000.
+    Of the 9,988 in-scope nodes outside England and Wales: 7,927 covered — 79.4%.
+    Nith 87.7% · Tweed 83.7% · Esk 72.9% · Earn 58.0% · Kirtle Water 99.2% · Eden 90.0%
+
+**Both figures are true and they are not in tension.** Phases 3 to 6 were flown for Scottish
+Power Energy Networks along their overhead line network, which runs through southern
+Scotland — where the cross-border basins are. Phase 3 alone covers 53.1% of the nodes. The
+instrument is biased towards the need rather than away from it, and the mechanism is what
+makes that a claim rather than a coincidence. Earn at 58.0% is the basin to watch.
+
+91 of the 97 basins involved have zero coverage, which alarms until it is counted: 182 nodes
+between them, and they are Afon Braint, the Lancaster Canal, the Tamar and the Crouch. Not
+Scotland.
+
+**Two nodata shapes, both loud, and the second was nearly missed.** Outside a layer's data
+extent `GetFeatureInfo` returns an empty feature list; inside the extent with no data it
+returns `GRAY_INDEX: -9999`. Neither is 0.0 m, so this service does not have the English
+failure recorded on `ea_lidar_composite_dtm_1m`. But a single-layer probe shows only the
+first shape, and a report that the service "fails loudly" would have been true of half of it.
+The sweep must handle both, and -9999 must never reach a gradient. Our sampler already bounds
+out anything below -1000 m for the float32 sentinel reason, so it would have survived — by
+accident, which is not the same as by design, and this entry is what makes it explicit.
+
+**`GetFeatureInfo` samples the rendered image, not the source raster.** Ask for a wide
+bounding box and you are returned a resampled number with no warning that it was resampled.
+The query is specified as a 0.1 m box at width=height=1, to land inside a single native cell.
+
+**A third fetch unit, and it is a property of the service.** There is no WCS here — the
+endpoint returns an exception for a WCS `GetCapabilities` — so this is neither the English
+per-node window nor the Welsh per-tile GeoTIFF but a per-node WMS point query. A multi-layer
+`query_layers` returns one value per layer in the order given, so one request per node covers
+all seven phases and the caller takes the first that is not -9999. D-086 already records that
+the fetch unit belongs to the service and not to our design; three services and three units
+is that decision holding, not untidiness.
+
+**Resolution: 0.5 m, measured, not stated.** No ISO record gives a ground resolution — they
+give a 1:10,000 scale denominator, which is not one — and only the 2025 record states point
+density. A transect sampled at 0.25 m on Phase 3 steps every 0.5 m in clean plateaus. Phase 3
+only; unconfirmed for the others. **An earlier attempt to read cell size off a fine WMS render
+returned "8 m" and was discarded**: the run lengths were the colour ramp quantising, not the
+grid. A plausible number from a method that cannot measure the thing is the failure mode this
+project keeps meeting, and it is recorded here because it nearly went in as a fact.
+
+**Also found, and not a DEM problem.** Of the 9,988, only 9,775 are inside Scotland. 213 fall
+in no country polygon at all, every one within 1 km of one, and 124 of those abut England or
+Wales — coastal slivers just outside Boundary-Line's polygons. No Scottish source will ever
+give them a reading; they need a tolerance in the country test in `rewt/elevation.py`.
+Independently derived as 9,988 here against 9,985 in the sweep: three apart, which is the
+reassuring part.
+
+---
+
+## D-090 — Internal Drainage Districts, and a percentage that cannot be repaired by substituting a number
+
+**3 September 2026, Stephen's ruling, researched by rewt-16 (sources), recorded by rewt-e8 (implementer).**
+
+`/scale`, `/evidence` and `/regions` all state *"A tenth of England lies inside an Internal
+Drainage District: 12,779 km, 13.3% of the mapped network"*. rewt-68 found that no source for
+it exists: no IDD entry in `conf/sources.yml`, no IDD data in `data/raw/`, so the kilometres
+could not be re-derived here at all. It is the predecessor's result quoted as this
+repository's, which AGENTS.md forbids in terms. The recommendation from this side was to drop
+the figure; **Stephen overruled it** — *"Register the ADA/IDD boundaries and re-measure, for
+the same reason"*, the reason being academic-grade thoroughness — and he is right, because a
+dropped sentence leaves the question unanswered where a measured one answers it.
+
+**What is registered.** *Association of Drainage Authorities: Administrative Boundaries —
+Internal Drainage Districts in England*, published by the Environment Agency on ADA's behalf.
+OGL v3, stated in terms in the harvested metadata. Required attribution, in the publisher's
+own words: *"© Association of Drainage Authorities copyright and/or database right 2020. All
+rights reserved."* One layer, 113 polygons, EPSG:27700, one attribute `idb_name`. Direct
+download, no key; the GeoPackage archive is byte-identical across separate fetches, so the
+checksum pin holds.
+
+**"All rights reserved" sits inside the attribution, and does not override the licence.** It
+is the same construction as the two NRW entries already in this file, which is what makes the
+reading checkable rather than a judgement call.
+
+**The trap that was nearly fallen into.** The dataset page's only visible licence is the
+site footer — *"All content is available under the Open Government Licence v3.0, except where
+otherwise stated"* — and this dataset does state otherwise, in a copyright line. A footer
+settles nothing for a dataset that carries its own terms. The dataset-level statement is in
+the harvested ISO metadata and that is what this entry rests on. D-023's shape again.
+
+**Re-measured.** The districts total 11,713 km², which is 8.8% of England's 132,915 km².
+Network length inside a district depends on the rule, so all three were computed: whole link
+inside 8,756 km; **clipped, the portion actually inside, 12,274 km**; any link touching
+14,871 km. Against candidate denominators the clipped figure is 8.0% of the mapped network,
+11.4% of in-scope, 12.4% of England and Wales, and **15.2% of England**.
+
+**Neither 12,779 km nor 13.3% reproduces under any of them.**
+
+**And the frame is wrong beneath the arithmetic.** The dataset is England-only by
+construction, so the numerator is England-only whichever rule produces it, and dividing it by
+a GB-wide mapped network is wrong whatever number sits on top. That survives the transposition
+being corrected, which means **the sentence cannot be repaired by substituting a number** — it
+has to name its denominator. The replacement is 12,274 km, 15.2% of the English network, with
+the "tenth of England" clause separated out as what it actually is: a different measurement of
+a different thing, 8.8% of England's *area*. Two quantities in one sentence, neither
+explaining the other, was how the original came to be wrong in a way nobody could see.
+
+**This is not a Stage 1 input.** Nothing in the traversable-network build reads it and
+nothing should; its only consumer is a documentation sentence. The entry says so, so that a
+later reader does not go looking for the stage that uses it and conclude something is missing.
+
+*(An 8.0% against 8.4% disagreement with rewt-68 on the mapped-network share is open between
+them, and is being settled between them rather than averaged. The likely cause is the
+population trap of D-079 in a fourth place: rewt-68's denominators are about 1.4% smaller,
+close to the 195,568/193,040 ratio between the published GeoPackage and the database.)*

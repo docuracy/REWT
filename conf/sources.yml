@@ -754,3 +754,119 @@ sources:
       County names in the first-edition layer's URL are NLS's own filenames, which
       differ from the Historic Counties Standard in three places. D-034 governs: refer
       to counties by the Standard, and map to the filename at the point of use.
+
+  - id: scottish_gov_lidar_dtm
+    title: LiDAR for Scotland Phases 1-6, and the Scottish Land LiDAR Programme 2025 capture
+    publisher: Scottish Government (served by JNCC)
+    url: https://spatialdata.gov.scot/
+    # NO VERSION, AND THAT IS THE FINDING. All seven ISO records carry the same three
+    # gmd:otherConstraints — "No limitations to public access", "Open Government Licence",
+    # and a per-phase attribution — and the licence link has no version segment in any of
+    # them. Six other entries in this file say v3 and it would have been easy to make this
+    # the seventh. Asserting a version the publisher did not state is the drift D-067 is
+    # about. Checked across all seven records by rewt-16 (D-089).
+    licence: Open Government Licence (version not stated in the publisher's metadata)
+    # SEVEN STATEMENTS, ONE PER PHASE, naming whoever funded each flight. All of them are
+    # carried because a short attribution may never attribute less than this file does.
+    attribution: >-
+      Contains Scottish Government LiDAR data. Phase 1: Crown copyright Scottish Government,
+      SEPA and Scottish Water (2012). Phase 2: Copyright Scottish Government and SEPA (2014).
+      Phase 3: Crown copyright Scottish Government, SEPA and Fugro (2020). Phase 4: Crown
+      copyright Scottish Government and Fugro (2020). Phase 5: Crown copyright Scottish
+      Government and Fugro (2021). Phase 6: Crown copyright Scottish Government and Fugro
+      (2022). Scottish Land LiDAR Programme: Crown copyright Scottish Government (c) Crown
+      copyright and database right (2025).
+    access: open
+    redistribution: permitted
+    format: ["wms"]
+    crs: EPSG:27700
+    cache_path: data/raw/scottish_lidar/
+    checksum: null
+    status: unverified
+    # A THIRD FETCH UNIT, and it belongs to the service rather than to our design (D-086).
+    # There is NO WCS — the endpoint answers a WCS GetCapabilities with an ExceptionReport —
+    # so this is neither England's per-node window nor Wales's per-tile GeoTIFF. WMS
+    # GetFeatureInfo returns the elevation itself as GRAY_INDEX, and a multi-layer
+    # query_layers returns one value per layer in the order given, so ONE request per node
+    # covers all seven phases and the caller takes the first that is not -9999.
+    wms:
+      base: https://srsp-ows.jncc.gov.uk/ows
+      layers:
+        - scotland:scotland-lidar-1-dtm
+        - scotland:scotland-lidar-2-dtm
+        - scotland:scotland-lidar-3-dtm
+        - scotland:scotland-lidar-4-dtm
+        - scotland:scotland-lidar-5-dtm
+        - scotland:scotland-lidar-6-dtm
+        - scotland:nlp-dtm
+      value_field: GRAY_INDEX
+      nodata_value: -9999
+      # GetFeatureInfo SAMPLES THE RENDERED IMAGE, not the source raster. Ask for a wide
+      # bounding box and you are handed a resampled number with no warning that it was
+      # resampled. A 0.1 m box at width=height=1 lands inside a single native cell.
+      probe_box_m: 0.1
+      probe_pixels: 1
+    resolution_m: 0.5
+    notes: >-
+      RESOLUTION IS MEASURED, NOT STATED. No ISO record gives a ground resolution — they give
+      a 1:10,000 scale denominator, which is not one — and only the 2025 record states point
+      density. A transect at 0.25 m on Phase 3 steps every 0.5 m in clean plateaus. Phase 3
+      only; unconfirmed for the other six. An earlier attempt to read cell size off a fine
+      WMS render returned 8 m and was discarded: the run lengths were the colour ramp
+      quantising, not the grid.
+
+      TWO NODATA SHAPES, BOTH LOUD, and a single-layer probe shows only the first. Outside a
+      layer's data extent GetFeatureInfo returns an empty feature list; inside the extent
+      with no data it returns GRAY_INDEX -9999. Neither is 0.0 m, so this service does not
+      have the failure recorded on ea_lidar_composite_dtm_1m — but -9999 must never reach a
+      gradient.
+
+      COVERAGE IS PARTIAL FOR SCOTLAND AND GOOD FOR US, and both are true. The union of all
+      seven phases is 29,348 km2 of a country of about 78,000. But it covers 7,927 of the
+      9,988 in-scope nodes outside England and Wales — 79.4% — because Phases 3 to 6 were
+      flown for Scottish Power Energy Networks along their overhead line network through
+      southern Scotland, which is where the cross-border basins are. Per basin: Nith 87.7%,
+      Tweed 83.7%, Esk 72.9%, Earn 58.0%, Kirtle Water 99.2%, Eden 90.0%. Earn is the one to
+      watch. Measured against the node population by rewt-16, method validated first: Phase 1
+      renders 11,512 km2 against the publisher's stated 11,845, 2.8% apart at 500 m.
+
+      The 2025 programme is 1,979 kilometre tiles in NR, NS and NX and will grow to 2027.
+
+  - id: ada_internal_drainage_districts
+    title: "ADA Administrative Boundaries: Internal Drainage Districts in England"
+    publisher: Environment Agency, on behalf of the Association of Drainage Authorities
+    url: https://www.data.gov.uk/dataset/internal-drainage-districts
+    licence: Open Government Licence v3
+    # The publisher's own wording. "All rights reserved" sits INSIDE the required
+    # attribution and does not override the licence — the same construction as the two NRW
+    # entries above, which is what makes the reading checkable rather than a judgement.
+    attribution: >-
+      © Association of Drainage Authorities copyright and/or database right 2020.
+      All rights reserved.
+    access: open
+    redistribution: permitted
+    format: ["geopackage"]
+    crs: EPSG:27700
+    cache_path: data/raw/ada_idd/
+    checksum: null
+    status: unverified
+    # NOT A STAGE 1 INPUT. Nothing in the traversable-network build reads this and nothing
+    # should; its only consumer is a documentation sentence. Recorded so a later reader does
+    # not go hunting for the stage that uses it and conclude something is missing (D-090).
+    stage1_input: false
+    notes: >-
+      THE DATASET PAGE'S FOOTER SETTLES NOTHING. Its only visible licence is the site-wide
+      "All content is available under the Open Government Licence v3.0, except where
+      otherwise stated" — and this dataset does state otherwise, in a copyright line. The
+      dataset-level statement is in the harvested ISO metadata and that is what this entry
+      rests on. D-023's shape again.
+
+      One layer, 113 polygons, one attribute idb_name. The districts total 11,713 km2,
+      8.8% of England's 132,915 km2 — which is an AREA share and is not the network share
+      the documentation was reaching for. Clipped network length inside a district is
+      12,274 km, 15.2% of the English network. Neither the previously published 12,779 km
+      nor 13.3% reproduces under any rule tried (D-090).
+
+      A first request returned HTTP 403 from the Azure gateway and every request since has
+      returned 200 across four User-Agents. The user-agent theory was tested and was wrong;
+      it was transient. Retry rather than conclude.
