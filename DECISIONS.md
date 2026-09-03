@@ -3775,3 +3775,67 @@ which is a genuine partner and stable — existed in a working tree for some tim
 could be committed, because the session that owns `docs/` cannot commit without its user.
 **A written fix that cannot be shipped is not a shipped fix**, and the time between the two
 is exposure nobody is measuring.
+
+---
+
+## D-093 — A partly-current artefact is more dangerous than a wholly stale one, because its true parts underwrite its false ones
+
+**3 September 2026, raised by rewt-68 (documentation) with rewt-46 (visualisation), verified
+and extended by rewt-e8 (implementer).**
+
+Where a reader can only sample — a screenshot, a summary table, a quoted panel, a dashboard
+— they check two or three figures and infer the rest.
+
+**If everything is old, the first check fails and the artefact is discarded correctly. If
+most things are old and a few are current, the sample can land on the current ones, and the
+reassurance is then manufactured by the true parts:** the artefact has vouched for itself
+with the only evidence the reader was going to gather. So the dangerous case is the artefact
+that is *mostly right*, which inverts the intuition that a more accurate artefact is a safer
+one.
+
+The remedy is not "check your figures". It is that **a composite artefact is a single claim
+and must be used whole or not at all** — quoting one figure out of a panel silently asserts
+the rest — and that where one is published, what it was true of is stated with it rather
+than left for a reader to sample.
+
+**The instance.** `docs/assets/maps/network-as-assembled.jpg`, on /scale, is a screenshot of
+the viewer, stamped *"Built 2026-09-01 13:59, fingerprint 8c2a20956396d720"*. Its summary
+block carries fifteen figures. **Three are still current** — 1,049 basins, 334 in scope, 103
+of those with no outlet node. The other twelve have moved: 93.29% against 93.58, 1,290 dead
+ends against 1,303, 104,830 km in scope against 105,699, 7,033 km unreached against 6,785,
+953 components against 986, 3,416 km stranded against 3,683, 195,690 links against 195,568,
+198,457 nodes against 198,419, 1,551 curated judgements against 1,560, 674 retired against
+638, 1,144 direction faults against 1,114, 7 closed loops against 8.
+
+**The three that survive are basin counts — exactly what a reader spot-checking a picture of
+basins would look at.**
+
+**The entry records that its authors got the instance wrong while stating the general rule.**
+rewt-68 wrote "a composite claim that is 40% current"; rewt-46 wrote "of the seven figures,
+two are today's". Neither had counted. It is three of fifteen. **Two sessions produced two
+different unenumerated fractions for the same panel, in the course of agreeing about the
+danger of unenumerated fractions** — D-074 committed inside the sentence warning about it.
+The corrected count came from listing all fifteen against `audit.json`, `summary.json` and
+the GeoPackage, which took four minutes and which neither did before asserting a number.
+
+**And the denominator was unenumerated too, which is the same fault a third time.** I read
+the image to check the count rather than take a third fraction on trust, and fifteen is the
+*summary block*. The panel also carries a layers list with its own figures — connectors
+1,204, reversals 367, dead ends at tidal water 474, the audit's own findings 232, refused
+crossings 335 — of which 474 is current and 1,204 and 335 have moved (the refused crossings
+are now 425). So the panel holds about twenty figures and roughly four are current, and
+"three of fifteen" quietly fixed a boundary nobody had stated. The percentage barely moves;
+what moves is whether the count can be checked, and each of the three statements was
+unfalsifiable until somebody said which figures they were counting.
+
+**Where it sits.** Not D-070, which is a selector that excludes nothing: this is a *reader
+who samples*, not a filter that fails. Adjacent to D-091, which is about a claim that was
+true when written; this is about a claim whose true parts conceal its false ones. Same
+family as the `screen.json` label that omitted its population — an artefact correct in
+itself and silent about the frame in which it is correct.
+
+**A note this entry earns immediately.** Every "current" figure above was measured against a
+build that a rebuild, running as this was written, is replacing. They will be wrong within
+the hour, which is the entry's own subject arriving on schedule. They are true of the build
+at fingerprint 920ab4af8848330d, and that is the sentence the picture on /scale should have
+carried and did not.
