@@ -219,26 +219,56 @@ def test_the_surveys_own_self_loops_are_still_the_five_we_know_about(con):
     )
 
 
-def test_the_in_scope_population_has_a_length_for_every_link(con):
-    """`in_scope_link` is now the one definition of the in-scope network, so a row it
-    cannot measure is a row four published figures silently disagree about.
+def test_the_in_scope_population_is_a_projection_and_not_a_join(con):
+    """`in_scope_link` is now the one definition of the in-scope network, and the
+    disagreement that would have contradicted it is what consolidating it removed.
 
-    **D-079's remedy, guarded.** The view resolves length as
-    `COALESCE(l.length_m, r.length_m)` over left joins to `link` and `repair_link`. A
-    `link_scope` row naming an id in NEITHER table survives both joins, arrives with a
-    null length, and is counted by `count(*)` while contributing nothing to
-    `sum(length_m)` — so the link count and the kilometre total would come apart with
-    nothing to say they had. It would also be labelled `is_repair`, because that column
-    is `l.link_id IS NULL` and an absent row satisfies it exactly as a repair link does.
+    **D-079 was caught because five files disagreed.** Four said 105,699.0 km and
+    `basins.json` said 105,462.8, and the fix — one named population, read by every
+    caller — is right and also spends the mechanism that found it. What replaces it has
+    to be an invariant, because there is no longer a second opinion.
 
-    Nothing suggests such a row exists today. The test is here because the view is new
-    and four audit files, the calibration table against PLAN.md §4.1 and the release
-    notes now read from it, so the cost of it being quietly wrong went up when the
-    duplication that would have contradicted it went away. **One definition is right,
-    and it is also the removal of the disagreement that caught the last defect.**
+    Three things are asserted, and none of them subsumes another.
 
-    Written by rewt-c1, who holds no database connection and could not run it: it is
-    `db`-marked and first runs inside `rewt check` on a machine that has built.
+    **The population is not empty.** `require_tables` establishes that the tables exist,
+    not that they hold rows: against an empty `link_scope` every count below is 0, every
+    comparison holds, and the test passes green having measured nothing (D-082 — before
+    an empty answer may mean *absent*, the same call must have returned non-empty once).
+    rewt-46 found this test committing the fault it was written to guard.
+
+    **The view neither multiplies nor loses rows.** It LEFT JOINs `link` and
+    `repair_link` on `link_id`, and two left joins return one row per matching pair: an
+    id appearing twice in `repair_link`, or once in each table, returns two rows. Both
+    `count(*)` and `sum(length_m)` inflate together, so they stay consistent with each
+    other and nothing looks wrong. Equality with the underlying `link_scope` selection
+    is what catches it, and it catches any join added to the view later without anyone
+    having to think about this again. rewt-46's invariant.
+
+    **Every row has a length**, which the equality does NOT cover and which is worth
+    saying because it is easy to assume it does. An id in NEITHER table still yields
+    exactly one row from two left joins, so the counts stay equal while `length_m` is
+    null: `count(*)` counts it, `sum(length_m)` skips it, and the published link count
+    and kilometre total quietly measure different populations. It is also labelled
+    `is_repair`, since that column asks only whether the `link` row is absent — so the
+    row wears a known category rather than looking like an error.
+
+    **Nothing suggests any of the three occurs today**, and that is measured rather than
+    assumed. `published/rewt_stage1_network.gpkg`'s `link` layer is an unfiltered
+    `UNION ALL` of `link` and `repair_link` joined to `link_scope`
+    (`rewt/stages/export.py:69`), and it holds 195,568 rows with 195,568 distinct
+    `link_id`s and no null `length_m` — so on the last build the two tables were
+    disjoint, neither held a duplicate id, and `link_scope` had at most one row per id.
+    `in_scope AND NOT retired` over that layer gives 127,121 links and 105,699.0 km,
+    which is `sea_reach.in_scope_km` to the decimal. Those are properties of one build's
+    data, not constraints on the schema, which is why they are asserted here.
+
+    **Written without a database connection, and exercised anyway.** Every branch was
+    run against synthetic tables in an in-memory DuckDB built from this same
+    `IN_SCOPE_LINK_DDL`: a healthy population and a retired-exclusion case pass, and an
+    orphan id, a duplicate in `repair_link`, an id in both tables, and an empty
+    population each fail on their own assertion and no other. What has not been run is
+    this test against the BUILD, which is rewt-e8's connection and first happens inside
+    `rewt check`.
     """
     from conftest import require_tables, table_names
 
@@ -248,13 +278,49 @@ def test_the_in_scope_population_has_a_length_for_every_link(con):
 
         schema.in_scope_view()
 
-    orphans = con.execute(
-        "SELECT count(*) FROM in_scope_link WHERE length_m IS NULL"
+    shared = con.execute(
+        "SELECT count(*) FROM link l JOIN repair_link r USING (link_id)"
     ).fetchone()[0]
-    assert orphans == 0, (
-        f"{orphans:,} row(s) of `in_scope_link` have no length: their `link_scope` id "
-        "is in neither `link` nor `repair_link`. `count(*)` counts them and "
-        "`sum(length_m)` does not, so the published link count and kilometre total are "
-        "measuring different populations — and each is labelled `is_repair`, since "
-        "that column asks only whether the `link` row is absent."
+    base = con.execute(
+        "SELECT count(*) FROM link_scope s WHERE s.in_scope "
+        "AND NOT EXISTS (SELECT 1 FROM retirement t WHERE t.link_id = s.link_id)"
+    ).fetchone()[0]
+    rows, unmeasured = con.execute(
+        "SELECT count(*), count(*) FILTER (WHERE length_m IS NULL) FROM in_scope_link"
+    ).fetchone()
+
+    assert base > 0, (
+        "no link is in scope and unretired, so every comparison below holds vacuously "
+        "and this test has measured nothing. Either the build did not run the scope "
+        "stage or `link_scope` is empty."
+    )
+    assert rows == base, (
+        f"`in_scope_link` returns {rows:,} rows where `link_scope` selects {base:,}. "
+        + (
+            "More means the left joins fanned out: a link_id in both `link` and "
+            "`repair_link`, or twice in one of them, returns a row per pair and "
+            "inflates the count and the kilometres together, so they agree with each "
+            "other and with nothing else."
+            if rows > base
+            else "Fewer means the view is dropping rows the population contains, which "
+            "two LEFT JOINs cannot do — so something else in it is filtering."
+        )
+    )
+    assert shared == 0, (
+        f"{shared:,} link_id(s) are in BOTH `link` and `repair_link`. This does not "
+        "show up as fan-out — two left joins on one id return one row per PAIR, and "
+        "1 x 1 is 1, so the count invariant above passes cleanly through it. What "
+        "happens instead is that `COALESCE(l.length_m, r.length_m)` silently prefers "
+        "`link`'s length, along with its form, name and nodes. That may be the right "
+        "preference; nothing states it, and until something does the two tables must "
+        "stay disjoint, which is how the export can be an unfiltered UNION ALL."
+    )
+    assert unmeasured == 0, (
+        f"{unmeasured:,} row(s) of `in_scope_link` have no length: their `link_scope` "
+        "id is in neither `link` nor `repair_link`. The row count above still matches, "
+        "because two left joins yield exactly one row for an id they cannot resolve — "
+        "so `count(*)` counts it, `sum(length_m)` does not, and the published link "
+        "count and kilometre total measure different populations. Each is also "
+        "reported as `is_repair`, since that column asks only whether the `link` row "
+        "is absent."
     )
