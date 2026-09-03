@@ -277,9 +277,25 @@ def test_the_in_scope_population_is_a_projection_and_not_a_join(con):
 
     require_tables(con, "link_scope", "link", "repair_link", "retirement")
     if "in_scope_link" not in table_names(con):
-        from rewt import schema
-
-        schema.in_scope_view()
+        # NOT `schema.in_scope_view()`. That does DROP VIEW / CREATE VIEW through
+        # `db.get()`, and the `con` fixture opens READ-ONLY whenever the build's own
+        # connection is not already in the process — which is every run outside
+        # `rewt check`. DuckDB refuses: "Cannot execute statement of type CREATE on
+        # database rewt which is attached in read-only mode". So the fallback could not
+        # run in the one circumstance it existed for, and the test failed for a reason
+        # that had nothing to do with its subject. rewt-e8 hit it within the hour.
+        #
+        # The alternative offered was to inline the DDL as a subquery, which works
+        # read-only. Declined, because it would move the subject: the three faults here
+        # — an unresolvable id, a duplicate, an id in both tables — are properties of
+        # the DATA and not of the DDL text, and what the audit read is the view the
+        # BUILD created. Testing a freshly-composed copy of the definition would answer
+        # a question nobody is asking.
+        pytest.skip(
+            "the database has no `in_scope_link` view. It is created during the build "
+            "by rewt/stages/basins.py, so this describes a database built since "
+            "f570dbd. Run `rewt build`."
+        )
 
     shared = con.execute(
         "SELECT count(*) FROM link l JOIN repair_link r USING (link_id)"
