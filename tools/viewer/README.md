@@ -1,26 +1,21 @@
 # The viewer
 
-    .venv/bin/python tools/viewer/serve.py      # then open http://localhost:8010/
+    .venv/bin/python tools/viewer/server.py     # then open http://127.0.0.1:8010/
 
 A local map of the network as currently assembled, for looking at the place behind a
 number. Run from the repository root.
 
-> **THIS DOES NOT RUN, AND THE MISSING PIECE IS THE SERVER.** `viewer.js` here asks nine
-> endpoints of its own — `/api/network`, `/api/points`, `/api/lines`, `/api/link`,
-> `/api/basins.geojson`, `/api/sea`, `/api/summary`, `/api/backdrops`, `/api/reload` —
-> and nothing in this repository serves any of them. `tools/viewer/serve.py` is a
-> different program: a Range-honouring static server for `docs/`, on port 8021, with no
-> API and no `--fetch-counties`, so the command line above is describing something that
-> is not there. It was never committed and never deleted — `git log --diff-filter=D`
-> over this directory is empty — so it was written, used, and lost before it reached
-> the index. `counties.py`'s docstring names the same absent program: "the compositing
-> is done here, in this project's own server".
+> **THE SERVER IS `server.py`, NOT `serve.py`, AND THE TWO ARE DIFFERENT PROGRAMS.**
+> `server.py` is this viewer's own: it serves `published/` through nine `/api/*`
+> endpoints on port 8010 and composites the county sheets. `serve.py` is a
+> Range-honouring static server for `docs/` on port 8021, which is what the
+> DEPLOYED viewer needs and has nothing to do with this one.
 >
-> The five files it needs are committed now rather than left untracked, because
-> untracked work is work one `git clean` from gone. **The DEPLOYED viewer under
-> `docs/viewer/` is a separate and complete program** that reads `published/` through
-> the tiles and needs no API; that is the one to use, and `serve.py` is its preview
-> server. Found by rewt-46 on 3 September 2026.
+> For most of 2–3 September this tool could not be run at all: `viewer.js` asked
+> for those nine endpoints and nothing in the repository served them. The server
+> had been spun up ad hoc, used, and lost before it reached the index —
+> `git log --diff-filter=D` over this directory is empty, so it was never even
+> deleted. It is in version control now, on Stephen's ruling that it should be.
 
 ## Why it exists
 
@@ -81,14 +76,26 @@ draw.
 
 ## It checks itself against the audit before it serves anything
 
-Dead ends are not published as geometry; only the worst fifty reach `audit.json`. The
-server recomputes all of them from `link` and `node` and prints the comparison at boot
-— the four totals and the fifty published upstream lengths. If they ever disagree, it
-serves anyway and puts the disagreement on the page, because hiding it is worse.
+`/api/summary.json` carries a `warnings` array and the panel prints it. The one that
+fires today: the audit counts **474** dead ends at tidal water and this server derives
+**393** from the published network, because `node.basin_in_scope` is the only half of
+the scope rule the GeoPackage carries. The layer draws the 393 it counts, and the
+disagreement is on the page rather than resolved silently — a mark count that describes
+a different set from the marks is the failure to avoid.
 
-It also reports, at boot, that per-basin in-scope km in `audit.json` differs from what
-the GeoPackage says for about a quarter of the 200 basins published there. The map
-draws the GeoPackage's figures. That difference is not this tool's to resolve.
+Every other count was checked against `published/audit/audit.json` and against the layer
+it labels: 1,303 dead ends drawn under a count of 1,303, and the same for corrections,
+seeds, tidal termini, sea routes, sea entries, connectors, reversals, retired and
+findings.
+
+> **WHAT THE REBUILT SERVER DOES NOT DO.** The paragraphs below this line describe the
+> server as it was before it was lost, and two of its habits were not reconstructed
+> because nothing recorded how they worked: it does **not** print a boot-time comparison
+> of every recomputed dead end against the fifty in `audit.json`, and it does **not**
+> probe each keyed backdrop from its own origin at boot to report what will draw. Both
+> are worth having and neither is here. Said plainly rather than left to be discovered,
+> because a README describing a program that does not exist is exactly what cost a day
+> on 3 September.
 
 ## Backdrops and keys
 
@@ -200,7 +207,7 @@ attribution may never attribute less than it does.
 
 Acquire the polygons with:
 
-    .venv/bin/python tools/viewer/serve.py --fetch-counties
+    .venv/bin/python tools/viewer/server.py --fetch-counties
 
 They are free for personal, educational, non-commercial **and commercial** use, no
 permission required, acknowledgement requested — which is why they can be used in a

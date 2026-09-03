@@ -59,6 +59,7 @@ from __future__ import annotations
 import argparse
 import http.server
 import json
+import os
 import sys
 import threading
 import time
@@ -390,6 +391,11 @@ def api_backdrops() -> dict:
     kf = HERE / "keys.local.json"
     if kf.exists():
         keys = json.loads(kf.read_text())
+    # The environment wins over the file, so a key can be supplied for one run without
+    # writing a credential to disk at all. README.md states both sources.
+    for name, var in (("carto", "CARTO_API_KEY"), ("maptiler", "MAPTILER_API_KEY")):
+        if os.environ.get(var):
+            keys[name] = os.environ[var]
     return {"basemap": catalogue, "keys": keys}
 
 
