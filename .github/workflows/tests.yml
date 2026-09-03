@@ -65,11 +65,18 @@ jobs:
       - name: State what was not run
         if: always()
         run: |
-          # Named, not silent. The failure this whole file exists to prevent is a green
-          # tick that covered less than a reader assumes.
+          # `set -o pipefail`, because the first version of this step piped each collect
+          # through `tail -1` and read the pipeline's status — which is tail's. A
+          # collection error would have exited 0 and printed nothing where the reader
+          # expects a count, and a reporting step that silently reports nothing is the
+          # thing this whole file exists to prevent. rewt-50 hit the same fault reading
+          # `$?` after piping pytest to tail and reported exit 0 on eight failures;
+          # rewt-c1 found this one, in a step written AFTER I had relayed theirs.
+          set -o pipefail
           echo "NOT RUN HERE, and not covered by this tick:"
-          python -m pytest tests -q --collect-only -m "db" 2>/dev/null | tail -1
-          python -m pytest tests -q --collect-only -m "interim" 2>/dev/null | tail -1
-          python -m pytest tests -q --collect-only -m "published" 2>/dev/null | tail -1
+          for m in db interim published; do
+            printf '%-10s ' "$m"
+            python -m pytest tests -q --collect-only -m "$m" | tail -1
+          done
           echo "These need a built database, derived rasters or published/ and run under" \
                "\`rewt check\` on a machine that has built."
