@@ -3249,3 +3249,49 @@ terrarium comparison had made requests the salient number, and salience carried 
 decision where it was not the constraint. The check that catches it is cheap and I did not
 run it until forced: *before optimising a quantity, measure the one you are trading it
 against.*
+
+---
+
+## D-087 — A positive control proves the assertion fires; it says nothing about whether the assertion is reachable
+
+**3 September 2026, rewt-e8 (implementer), sharpened by rewt-68 (documentation).**
+
+D-082 established that a negative result needs a positive control in the same run. Within
+the hour I obeyed it and shipped a check that cannot run.
+
+**What happened.** `pages.yml` gained a step, `Refuse to publish a stale rules page`, running
+`python tools/docs/rules_page.py --check`. I verified it the way D-082 requires: perturbed
+`docs/_data/rules.yml`, flipped a `status` from `proposed` to `implemented` — the exact
+failure the step exists to catch, a page telling a reader the network obeys a rule the build
+has only proposed — confirmed `--check` exited 1 with the right message, restored the file,
+confirmed it went green again. An honest positive control, and it passed.
+
+**`tools/docs/rules_page.py` is untracked.** On a runner it does not exist. The step fails
+with a file-not-found, the Pages deploy stops, and 17 commits sit behind it. I verified the
+predicate in a working tree where the subject exists and never asked whether it exists in
+the environment the check actually runs in — and the whole purpose of the step is CI.
+
+**rewt-68's general form, which is sharper than the instance and is the reason this is an
+entry rather than a fix:** *a positive control confirms the assertion fires, and says
+nothing about whether the assertion is reachable.* **A check that cannot run is
+indistinguishable in CI from one that passes** — right up until it is the only thing between
+a stale page and the public.
+
+**The pair is better than either half.** rewt-68 found `screen.json`'s `clearly_disagrees`
+published as 686 links against the export's 813, agreeing exactly once you know 686 is the
+in-scope subset — a **label that omitted its population**, which they read as a
+contradiction for ten minutes. Mine is a **test that omitted its environment**. Both are
+artefacts that are individually correct and silent about the frame they are correct in.
+
+**What to do about it, which is not "test the test".** The reachability question is answered
+by running the check where it will run, or by having something assert the check exists. The
+cheap general version: **when adding a guard, add it to the environment that runs it in the
+same change** — a guard committed ahead of its subject is a guard that has never executed,
+and no amount of local verification distinguishes that from a guard that passes.
+
+**The commit ordering that caused it is worth naming too.** `.github/` is in no session's
+scope on the team board and defaulted to mine; `tools/docs/` and `docs/` are rewt-68's,
+whose harness requires their user's approval to commit. So the guard and its subject are in
+different people's gift and could not be committed together even in principle. That is a
+property of the ownership arrangement, not of anyone's care, and it is the first time this
+week that hard directory ownership has cost something rather than caught something.
