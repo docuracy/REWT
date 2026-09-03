@@ -3582,13 +3582,39 @@ denominators the clipped figure came to 8.0% of the mapped network, 11.4% of in-
 
 **Every one of those figures ran on the unfiltered link layer, which double-counts.** It
 carries 638 retired links *and* the 1,370 children that replace them, so the same ground is
-in the sum twice — at both ends, numerator and denominator, about 1%. rewt-16 had not
-considered retirement; rewt-68 found it. The ratio nearly cancels, and *nearly cancels* is
-not a thing to publish. It also puts the denominator out of step with the build's own
-headline: `audit.json` reports `total_gb_km` 152,825.3 where 154,363 was used. **The
-kilometres are being recomputed on live links only and the decimal is held in both this
-entry and `conf/sources.yml` until they land.** D-079 in a fifth place, and the first time
-it has reached a figure destined for a public page.
+in the sum twice — at both ends. rewt-16 had not considered retirement; rewt-68 found it.
+D-079 in a fifth place, and the first time it has reached a figure destined for a public
+page.
+
+**Recomputed on live links at both ends: 12,010 km, and 15.1% of the English network.**
+
+| denominator, live links | km | share |
+|---|---:|---:|
+| mapped network | 152,825.3 | 7.86% |
+| in scope | 105,699.0 | 11.36% |
+| England and Wales | 97,287.9 | 12.34% |
+| **England** | **79,407.2** | **15.12%** |
+
+The first two now match `audit.json`'s `total_gb_km` and `total_in_scope_km` exactly, so the
+page will no longer contradict the audit it sits beside, and rewt-16's four denominators
+reproduce rewt-68's independently.
+
+**The half-fix would have been worse than the error, and this is the part to keep.**
+Correcting the denominator alone gives 12,274 / 79,407.2 = **15.46%** — further from the
+truth than the 15.2% it replaced, and it would have looked like a correction. rewt-68
+predicted that before it was computed. The numerator was inflated 2.2% against the
+denominator's 1.7%, so retired geometry is slightly over-represented inside drainage
+districts; plausible if corrections cluster where drainage is engineered, untested, and not
+needed for the figure. **A ratio contaminated at both ends must be fixed at both ends or not
+at all** — and the intermediate state is the one that is hardest to detect, because it is a
+real correction that moves the answer the wrong way.
+
+**And rewt-16's account of their own miss is the general lesson.** They checked the clipping
+rule three ways, four denominators, and the frame — and never asked whether the population
+contained superseded geometry, *in a repository whose AGENTS.md says in terms "never delete a
+geometry to correct it; retire it and keep it".* The rule that makes the audit trail possible
+is the same rule that makes a naive sum wrong. They read the first half and did not draw the
+second.
 
 **What does not depend on the recount:** neither 12,779 km nor 13.3% reproduces under any
 rule, and the England framing below stands whatever the numerator turns out to be.

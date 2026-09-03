@@ -784,6 +784,25 @@ sources:
     cache_path: data/raw/scottish_lidar/
     checksum: null
     status: unverified
+    # DELIBERATELY NOT `per_section: true`, AND THAT LEAVES A TEST RED.
+    #
+    # Marking it so would have made two tests green and asserted something false. D-006
+    # says LiDAR is fetched per section, when a person is adjudicating a place, and
+    # NEVER nationally — and `test_a_per_section_source_cannot_be_fetched_in_bulk`
+    # enforces it by requiring acquire.fetch() to refuse. D-085 overrode D-006 on
+    # Stephen's instruction: the sweep IS national, every node, deliberately.
+    #
+    # So the flag is now false for this source and false for
+    # ea_lidar_composite_dtm_1m and nrw_lidar_dtm_1m, which still carry it. Two tests
+    # stay red until that is resolved, and both are right to be:
+    #   - the bulk-fetch test enforces a superseded decision, and belongs to rewt-c1;
+    #   - the unread-source test is correct, because the elevation sweep is not a stage.
+    #     A script somebody remembers to run is not part of the build (AGENTS.md), and
+    #     that is a defect in this session's work, not a category to declare around.
+    #
+    # I recorded D-085 as an override of PLAN.md §5 and did not look for what ENFORCED
+    # the thing being overridden. A decision with a test is a decision you cannot
+    # supersede in prose alone.
     # A THIRD FETCH UNIT, and it belongs to the service rather than to our design (D-086).
     # There is NO WCS — the endpoint answers a WCS GetCapabilities with an ExceptionReport —
     # so this is neither England's per-node window nor Wales's per-tile GeoTIFF. WMS
@@ -921,6 +940,26 @@ sources:
     # update frequency "irregular". A reissue should break the build and be looked at.
     checksum: sha256:b3f068eb29cd8dceb03e41b3f04d5f2817db967f5393a75b7280c499c6e7fe64
     status: unverified
+    # A THIRD KIND OF UNREAD, AND THE TEST HAS NO WORD FOR IT.
+    # test_every_stage_1_source_is_read_by_a_stage_or_says_why_not distinguishes two:
+    # `stage: 2`, a source waiting for a stage that does not exist yet, and
+    # `per_section: true`, a source consumed by something that is not a stage. This is
+    # neither. Nothing in the repository reads it and nothing should; its consumer is a
+    # sentence on a documentation page, and the reason it is declared at all is that the
+    # sentence has to be re-derivable (D-090, AGENTS.md's rule against quoting the
+    # predecessor's results as ours).
+    #
+    # Declared here rather than silenced. The test stays RED until rewt-c1 decides
+    # whether that is a category or drift — marking it `stage: 2` or `per_section` to
+    # get a green tick would be asserting something false to quiet a check that is
+    # working. rewt-16 flagged this as `stage1_input: false` and I removed that key on
+    # the argument that it had no reader; the reader is that test, and neither of us
+    # looked in tests/.
+    read_by: documentation-only
+    read_by_reason: >-
+      No stage reads this and none should. It exists so that the Internal Drainage
+      District figure on /scale, /evidence and /regions can be re-derived rather than
+      inherited from the predecessor.
     notes: >-
       THE DATASET PAGE'S FOOTER SETTLES NOTHING. Its only visible licence is the site-wide
       "All content is available under the Open Government Licence v3.0, except where
@@ -930,12 +969,12 @@ sources:
 
       One layer, 113 polygons, one attribute idb_name. The districts total 11,713 km2,
       8.8% of England's 132,915 km2 — which is an AREA share and is not the network share
-      the documentation was reaching for. Clipped network length inside a district is being
-      recomputed on LIVE links only; see D-090. The first pass ran on the unfiltered link
-      layer, which carries 638 retired links AND the 1,370 children that replace them, so
-      the same ground was counted twice at both ends. Neither the previously published
-      12,779 km nor 13.3% reproduces under any rule tried, and that does not depend on the
-      recount (D-090).
+      the documentation was reaching for. Clipped network length inside a district, measured
+      on LIVE links at both ends, is 12,010 km — 15.1% of the English network. Neither the
+      previously published 12,779 km nor 13.3% reproduces under any rule tried (D-090).
+      An earlier pass gave 12,274 km and 15.2% from the unfiltered link layer, which
+      carries 638 retired links AND the 1,370 children that replace them, so the same
+      ground was counted twice at both ends.
 
       NOT A STAGE 1 INPUT. Nothing in the traversable-network build reads this and nothing
       should; its only consumer is a documentation sentence. Said here rather than as a

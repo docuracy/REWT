@@ -1,0 +1,75 @@
+# THE SUITE RUNS IN THE BUILD, NOT WHEN SOMEBODY REMEMBERS.
+#
+# AGENTS.md: "If a step only runs when a person remembers to run it, it is not part of
+# the build." Until this file existed, no workflow invoked pytest or `rewt check` —
+# pages.yml, site-after-release.yml and zenodo.yml between them ran neither — so a red
+# test was red only on the machine of whoever happened to run it. Two of the three
+# failures open on 3 September 2026 were in exactly that state. Found by rewt-c1.
+#
+# WHAT THIS CAN AND CANNOT ASSERT, which is the whole design question.
+#
+# The database is a build artefact and is gitignored; data/raw/ is fetched, large and
+# licence-bearing; published/ is written by a build that cannot run here. So a runner
+# can honestly execute the 172 tests that need none of them, and no more. The remaining
+# 77 carry `db`, `interim` or `published` and would SKIP — and a suite that skips is not
+# a suite that passed (the argument release-check already makes about a held lock).
+#
+# So this deselects them by marker rather than letting them skip, because a deselected
+# test is visibly not run and a skipped one is a green tick with a footnote.
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+
+      - name: Install
+        run: pip install --quiet -r requirements.txt
+
+      - name: Refuse a suite that has quietly shrunk
+        run: |
+          # D-087: a check that cannot reach its subject is indistinguishable from one
+          # that passes. If someone marks a test `db` that did not need the database, or
+          # a module stops importing, the run below gets smaller and stays green. So the
+          # count is asserted before the tests are trusted, and the floor is raised
+          # deliberately when the suite grows rather than tracking it automatically —
+          # a floor that follows the number it guards is not a floor.
+          n=$(python -m pytest tests -q --collect-only \
+                -m "not db and not interim and not published" 2>/dev/null \
+              | grep -oE '^[0-9]+/[0-9]+ tests collected' | cut -d/ -f1)
+          echo "collected: ${n:-0}  floor: 165"
+          if [ "${n:-0}" -lt 165 ]; then
+            echo "::error::only ${n:-0} data-free tests collected; the floor is 165." \
+                 "Either the suite shrank or tests acquired markers they do not need."
+            exit 1
+          fi
+
+      - name: Run the tests that need no build artefact
+        run: |
+          # -rs prints the reason for every skip. There should be none here, since the
+          # markers are deselected rather than skipped; if a skip appears anyway it means
+          # a test is guarding on something this job did not know about, and the reason
+          # is the thing worth reading.
+          python -m pytest tests -q -rs \
+            -m "not db and not interim and not published"
+
+      - name: State what was not run
+        if: always()
+        run: |
+          # Named, not silent. The failure this whole file exists to prevent is a green
+          # tick that covered less than a reader assumes.
+          echo "NOT RUN HERE, and not covered by this tick:"
+          python -m pytest tests -q --collect-only -m "db" 2>/dev/null | tail -1
+          python -m pytest tests -q --collect-only -m "interim" 2>/dev/null | tail -1
+          python -m pytest tests -q --collect-only -m "published" 2>/dev/null | tail -1
+          echo "These need a built database, derived rasters or published/ and run under" \
+               "\`rewt check\` on a machine that has built."
