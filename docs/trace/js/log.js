@@ -159,13 +159,44 @@ export const store = {
 
 /* ── the flusher ──────────────────────────────────────────────────────────── */
 
-export function createSync({ token, login, batch, onStatus }) {
+/**
+ * ── HOLD MODE, AND WHY THE GATE IS HERE RATHER THAN AT THE CALL SITES ──────────────
+ *
+ * The repository is public, so a commit is a publication — `tools/tracer/PLAN.md` §2:
+ * *the moment of contribution is the moment of publication*. For an invited contributor
+ * that was argued through and disclosed on the sign-in wall. For a third party working
+ * against a corpus whose terms are unresolved it is not acceptable at all: their false
+ * starts and withdrawn judgements would be world-readable as they were committed, and
+ * **there is no private branch to escape to, because every branch of a public repository
+ * is public.** Hold mode is therefore the only held-back path available.
+ *
+ * THERE ARE FIVE WAYS THIS MODULE PUBLISHES and only one of them is a button:
+ * `touch()` at ten events, `touch()` after sixty idle seconds, the `online` listener,
+ * `beforeunload`, and `Save now`. Gating them one by one in `app.js` would work today
+ * and would leak the first time somebody adds a sixth — and the leak is unrecoverable,
+ * because nothing can be unpublished. So the gate is INSIDE `push`, which every route
+ * already funnels through: a new caller added in ignorance of hold mode does nothing
+ * instead of publishing.
+ *
+ * **`release()` is the only way out**, and it is one-shot. It does not clear the hold; it
+ * lets exactly one push through and closes again, so a released batch cannot be followed
+ * by a silent automatic one.
+ *
+ * WHAT HOLD MODE COSTS, stated because it is a real trade and not a free win. Held work
+ * lives in IndexedDB in one browser. Clearing site data, a private window, or a different
+ * machine loses it, and no push has happened to recover it from. Publication risk is
+ * traded for loss risk — which is why `Export` exists, works signed out, and is the thing
+ * to reach for before trusting the hold overnight.
+ */
+export function createSync({ token, login, batch, hold = false, onStatus }) {
   const path = () => `traces/${login}/${batch}.jsonl`;
+  let held = hold;
   let sha = null;
   let dirty = 0;
   let timer = null;
   let busy = false;
   let lastPush = null;
+  let releasing = false;
 
   const say = (msg, bad) => onStatus && onStatus({ msg, bad, dirty, lastPush });
 
@@ -176,6 +207,15 @@ export function createSync({ token, login, batch, onStatus }) {
   }
 
   async function push(force) {
+    /* THE GATE. Held work is not a failure and must not be reported as one: the events are
+       in the store, the count is on screen, and nothing is lost. Saying so on every
+       suppressed push is what keeps the hold visible rather than silent — a mode that
+       stops publishing and stops mentioning it is indistinguishable from a broken one. */
+    if (held && !releasing) {
+      say(dirty ? `held — ${dirty} event${dirty === 1 ? '' : 's'} not published`
+                : 'held — nothing to publish');
+      return;
+    }
     if (busy || (!dirty && !force)) return;
     busy = true;
     say('saving…');
@@ -208,9 +248,39 @@ export function createSync({ token, login, batch, onStatus }) {
   function touch() {
     dirty += 1;
     clearTimeout(timer);
+    /* No timer at all in hold mode, rather than a timer whose push is refused. A pending
+       timer that fires into the gate every sixty seconds would repaint the status line
+       out of nowhere while somebody is tracing, and would look like the tool trying to
+       save and failing. */
+    if (held) { say(`held — ${dirty} event${dirty === 1 ? '' : 's'} not published`); return; }
     if (dirty >= SYNC_EVERY_EVENTS) { push(); return; }
     timer = setTimeout(() => push(), SYNC_IDLE_MS);
   }
 
-  return { pull, push, touch, path, get dirty() { return dirty; }, get lastPush() { return lastPush; } };
+  /* One push, then closed again. `finally` rather than a trailing assignment because a
+     failed release must re-arm the gate: a network error during the one permitted push
+     would otherwise leave it open for whatever fires next, which is precisely the
+     automatic publication hold mode exists to prevent. */
+  async function release() {
+    if (!held) return push(true);
+    releasing = true;
+    try { await push(true); } finally { releasing = false; }
+  }
+
+  return {
+    pull, push, touch, release, path,
+    /* A getter and a setter rather than a captured boolean, so a mode change takes
+       effect on the next event instead of at the next sign-in. Turning the hold ON also
+       cancels any timer already counting down towards a push — otherwise the switch
+       would be followed, up to sixty seconds later, by exactly the automatic publication
+       the person had just asked to stop. */
+    get hold() { return held; },
+    setHold(v) {
+      held = Boolean(v);
+      if (held) clearTimeout(timer);
+      return held;
+    },
+    get dirty() { return dirty; },
+    get lastPush() { return lastPush; },
+  };
 }

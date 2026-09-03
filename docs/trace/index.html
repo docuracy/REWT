@@ -51,6 +51,10 @@
   button { font:inherit; padding:.45rem .9rem; border-radius:4px; cursor:pointer;
            border:1px solid var(--water); background:var(--water); color:#fff; }
   button.ghost { background:transparent; color:var(--water); }
+  /* The armed publish button. Colour is not the signal — the label changes to name the
+     count and say "publicly, permanently" — but it should not look like the press that
+     did nothing. */
+  button.arm { background:var(--bad); color:#fff; border-color:var(--bad); }
   button[disabled] { opacity:.5; cursor:not-allowed; }
   .warn { border-left:3px solid var(--bad); padding-left:.8rem; }
   #advice { background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--bad);
@@ -100,6 +104,23 @@
        true — how much is held here, and when it last reached GitHub. -->
   <p id="advice" class="warn" hidden></p>
 
+  <!-- THE HOLD BANNER. Above the work rather than beside it, and permanent rather than
+       announced once: the mode decides whether the last hour of somebody's judgement is
+       on the public internet, and that is not a thing to state at sign-in and never
+       again. The status strip carries the same fact in four words; this carries the
+       consequence, including the one that cuts the other way — held work lives in one
+       browser and is lost with it. -->
+  <section id="modebanner" class="warn" hidden>
+    <p><strong>Held. Nothing you record is published until you say so.</strong>
+      Your work stays in this browser. Press <strong>Publish held work</strong> when you
+      want it to go to the repository, where it becomes public and permanent.</p>
+    <p>Because it is held here and nowhere else, <strong>it is lost if this browser's
+      data is cleared</strong>, and it is not on your other machines. Use
+      <strong>Export JSONL</strong> to keep a copy of anything you are not ready to
+      publish.
+      <button id="modeswitch" class="ghost">Switch to publishing as I work</button></p>
+  </section>
+
   <!-- THE WALL. Nothing beyond this point requests a historic tile or any project data
        until a token has validated. The shell is public because GitHub Pages serves
        docs/ publicly even from a private repository; it is inert, which is the part
@@ -115,15 +136,37 @@
         repositories owned by your own account, so one will not work here however it is
         configured — that is a gap in GitHub, not a setting you have missed.</p>
       <p id="scopeline"></p>
-      <p><strong>Everything you record here is public the moment you save it.</strong>
-        This repository is open, so a trace is world-readable as soon as it is committed —
-        not at the next edition, and not after review. That includes work in progress: a
-        half-traced channel, a trace you later withdraw, and a note saying you were unsure.
-        Nothing can be unpublished afterwards.</p>
+      <p><strong>Your work is held in this browser until you publish it.</strong>
+        That is the default, and nothing you record reaches the repository until you press
+        <em>Publish held work</em>. You can switch to publishing as you go, and the tool
+        says which mode you are in at all times.</p>
+      <p><strong>Once published, it is public and permanent.</strong> This repository is
+        open, so a trace is world-readable as soon as it is committed — not at the next
+        edition, and not after review. Whatever you publish includes what you publish by
+        accident: a half-traced channel, a trace you later withdraw, and a note saying you
+        were unsure. Nothing can be unpublished afterwards, which is the whole reason the
+        default is to hold.</p>
       <p><strong>Your GitHub username is on every contribution</strong>, visible to anyone,
         and contributed work is credited under your name. That is the arrangement rather
         than a side effect — but you should know it before you start rather than discover
         it after.</p>
+      <!-- THE TERMS, WHICH THE WALL DID NOT STATE UNTIL NOW. It described the exposure
+           thoroughly and never said under what licence the work was released, so a
+           contributor could read every word here and still not know what they were
+           granting. Stephen ruled CC-BY-4.0 on 3 Sep 2026, matching .zenodo.json and
+           CITATION.cff, which is what the project already declares it publishes under.
+           Note this is NOT the repository's MIT LICENSE: that covers the code, and a
+           traced watercourse is data. -->
+      <p><strong>What you are granting, stated plainly.</strong> Traces you publish are
+        released under
+        <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank"
+           rel="noopener">CC&nbsp;BY&nbsp;4.0</a>, the same licence this project publishes
+        its dataset under. Anyone may use and redistribute your work, including
+        commercially, provided you are credited — and you are credited by the GitHub
+        username above. You keep the copyright in what you draw; you are giving everyone
+        else permission to use it. If you are contributing work that belongs to an
+        employer or an institution rather than to you, settle that before you publish
+        rather than after.</p>
     </div>
 
     <label for="token">Classic personal access token</label>
@@ -166,6 +209,7 @@
     <p>
       <button id="emit">Record</button>
       <button id="pushnow" class="ghost">Save now</button>
+      <button id="releasenow" class="ghost" hidden>Publish held work</button>
       <button id="export" class="ghost">Export JSONL</button>
     </p>
     <p class="note" id="pathline"></p>
@@ -247,7 +291,7 @@
 
 </main>
 
-<script type="module" src="./js/app.js?v=0.7.0-pen"></script>
+<script type="module" src="./js/app.js?v=0.8.0-hold"></script>
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 </body>
 </html>

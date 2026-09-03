@@ -13,7 +13,7 @@
 /* Must match the ?v= on the script tag in index.html. Browsers go on serving a cached
    module, and the page then reports the behaviour of code that is not deployed —
    which arrives as a bug report about something nobody can reproduce. */
-export const BUILD = '0.7.0-pen';
+export const BUILD = '0.8.0-hold';
 
 export const REPO = {
   owner: 'docuracy',
@@ -39,6 +39,26 @@ export const REPO = {
    rather than copying, so revoking or replacing a token anywhere propagates instead of
    leaving a stale duplicate behind. */
 export const TOKEN_KEYS = ['rewt_gh_token', 'github_token'];
+
+/* WHICH WAY THE UNKNOWN FAILS, and it is the only real decision in this file.
+ *
+ * Hold is the DEFAULT and publishing is the opt-in, which is the opposite of what the
+ * tool did through phase 1. The asymmetry decides it: an unwanted hold is visible on
+ * every screen (the header carries the count and the status line says so on every
+ * suppressed push) and is undone by one click; an unwanted publication is invisible to
+ * the person who caused it and cannot be undone at all, because the repository is public
+ * and history is world-readable the moment it is pushed.
+ *
+ * So a contributor whose stored choice is missing — cleared site data, a private window,
+ * a second machine, a browser that lost its localStorage — resumes HELD rather than
+ * resuming published. That case is not hypothetical: it is the ordinary way a volunteer
+ * comes back on Monday. TEAM.md's rule is that the unknown must fail towards the visible
+ * fault, and between these two only the hold is visible. */
+export const HOLD_BY_DEFAULT = true;
+
+/* Per-login, because one browser may be shared and the mode is a property of the working
+   arrangement rather than of the machine. `rewt_tracer_mode:<login>`. */
+export const MODE_KEY = (login) => `rewt_tracer_mode:${login}`;
 
 export const SYNC_EVERY_EVENTS = 10;
 export const SYNC_IDLE_MS = 60_000;

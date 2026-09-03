@@ -7,7 +7,7 @@
  * work out of a browser and into this repository, with the network off included.
  */
 
-import { BUILD, REPO } from './config.js';
+import { BUILD, REPO, HOLD_BY_DEFAULT, MODE_KEY } from './config.js';
 import * as gh from './gh.js';
 import { ACTS, makeEvent, store, createSync, serialise, union } from './log.js';
 import { createTracer } from './tracer.js';
@@ -52,6 +52,11 @@ async function paint(msg, bad) {
   bits.push(`${held} held locally`);
   bits.push(last ? `last saved ${last.toLocaleTimeString()}` : 'not yet saved');
   if (!navigator.onLine) bits.push('offline');
+  /* The mode is in the strip on EVERY repaint, not announced once at sign-in. A person
+     who traced for an hour is not going to remember a sentence from the wall, and the
+     one question hold mode has to answer at a glance is whether the last hour is on the
+     internet or in this browser. */
+  if (SESSION?.sync?.hold) bits.push('HELD — nothing published');
   const el = $('status');
   el.textContent = bits.join(' · ');
   el.classList.toggle('bad', Boolean(bad));
@@ -82,6 +87,37 @@ async function paintLedger() {
 const escapeHtml = (s) => String(s).replace(/[&<>"]/g,
   (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+/* ── hold or publish ──────────────────────────────────────────────────────── */
+
+/* A stored value decides; ANYTHING ELSE resumes held. Not a `=== 'hold'` test, because
+   that reads a corrupt or half-written value as consent to publish. Only the exact
+   string 'publish' turns publishing on. */
+function readMode(login) {
+  try { return localStorage.getItem(MODE_KEY(login)) !== 'publish'; }
+  catch { return HOLD_BY_DEFAULT; }   // storage refused: fail towards the hold
+}
+
+function writeMode(login, hold) {
+  try { localStorage.setItem(MODE_KEY(login), hold ? 'hold' : 'publish'); }
+  catch { /* a browser that refuses storage still gets the mode for this session */ }
+}
+
+/* The banner and the two buttons are one function, so a mode that changed cannot leave
+   half the interface describing the other one. */
+function paintMode() {
+  const hold = Boolean(SESSION?.sync?.hold);
+  $('modebanner').hidden = !hold;
+  $('pushnow').hidden = hold;
+  $('releasenow').hidden = !hold;
+  $('pathline').innerHTML = hold
+    ? `Held in this browser. Nothing is published until you press
+       <strong>Publish held work</strong>, and it then goes to
+       <code>${REPO.owner}/${REPO.name}</code>, branch <code>${REPO.branch}</code>,
+       at <code>${SESSION.sync.path()}</code> — publicly and permanently.`
+    : `Writing to <code>${REPO.owner}/${REPO.name}</code>,
+       branch <code>${REPO.branch}</code>, at <code>${SESSION.sync.path()}</code>.`;
+}
+
 /* ── sign in ──────────────────────────────────────────────────────────────── */
 
 function scopeLine() {
@@ -103,8 +139,12 @@ async function signIn(token) {
     const login = await gh.whoami(token);
     gh.storeToken(token);
     const batch = 'phase1';
+    /* READ AFTER whoami, because the key is per-login and the login is what GitHub says
+       it is rather than what was typed. An absent value is not "publish": see
+       HOLD_BY_DEFAULT in config.js for why a missing choice resumes held. */
+    const hold = readMode(login);
     const sync = createSync({
-      token, login, batch,
+      token, login, batch, hold,
       onStatus: ({ msg, bad }) => paint(msg, bad).then(paintLedger),
     });
     SESSION = { token, login, sync };
@@ -120,10 +160,12 @@ async function signIn(token) {
     $('wall').hidden = true;
     $('workbench').hidden = false;
     $('mapsection').hidden = false;
+    paintMode();
     await startMap();
     $('signout').hidden = false;
-    $('pathline').innerHTML = `Writing to <code>${REPO.owner}/${REPO.name}</code>,
-      branch <code>${REPO.branch}</code>, at <code>${sync.path()}</code>.`;
+    /* The path line is paintMode's, and used to be set here as well. Two writers to one
+       element, the second winning, is how the banner would have gone up while the line
+       beneath it still said the work was being written to the branch. */
     await paint(`signed in as ${login}` + (remote.length ? ` — recovered ${remote.length} events` : ''));
     await paintLedger();
   } catch (e) {
@@ -514,6 +556,47 @@ function boot() {
 
   $('pushnow').onclick = () => SESSION && SESSION.sync.push(true);
 
+  /* PUBLISHING IS THE IRREVERSIBLE ACT, so it is the one that asks. The confirm names the
+     count and says the word public, because "are you sure?" tells somebody nothing they
+     did not already know. Not a `confirm()` on the map page — a browser dialog blocks the
+     page and this one is raised while a trace may be half-drawn — so the button asks in
+     place and the second press is the consent. */
+  let armed = false;
+  $('releasenow').onclick = async () => {
+    if (!SESSION) return;
+    const n = await store.unsyncedCount().catch(() => 0);
+    if (!n) { await paint('nothing held to publish'); return; }
+    if (!armed) {
+      armed = true;
+      $('releasenow').textContent = `Publish ${n} — publicly, permanently`;
+      $('releasenow').classList.add('arm');
+      setTimeout(() => {
+        armed = false;
+        $('releasenow').textContent = 'Publish held work';
+        $('releasenow').classList.remove('arm');
+      }, 8000);
+      return;
+    }
+    armed = false;
+    $('releasenow').textContent = 'Publish held work';
+    $('releasenow').classList.remove('arm');
+    await SESSION.sync.release();
+  };
+
+  $('modeswitch').onclick = () => {
+    if (!SESSION) return;
+    /* Switching mode does NOT publish, and does not un-publish. It changes what happens
+       next and nothing else — so a person who switches to publishing still has to press
+       the button for the work already held, and a person who switches to holding has not
+       recalled anything they already sent. Said in the status line because both of those
+       are the opposite of what the word "mode" suggests. */
+    const now = SESSION.sync.setHold(!SESSION.sync.hold);
+    writeMode(SESSION.login, now);
+    paintMode();
+    paint(now ? 'held from now on — anything already published stays published'
+              : 'publishing from now on — press Save now for the work already held');
+  };
+
   /* Always available, and working signed out, offline, or refused by GitHub. The
      difference between an annoyance and a lost evening. */
   $('export').onclick = async () => {
@@ -527,8 +610,19 @@ function boot() {
   addEventListener('online', () => SESSION && SESSION.sync.push(true));
   addEventListener('offline', () => paint('offline — work is held here'));
 
-  addEventListener('beforeunload', () => {
-    if (SESSION && SESSION.sync.dirty) SESSION.sync.push(true);
+  /* In hold mode this must WARN rather than push, and the two are not interchangeable.
+     `push` here is a convenience that saves an unsaved tail on the way out; in hold mode
+     the same call would publish a third party's work at the exact moment they were least
+     expecting it — closing the tab. So the tail is protected by telling them it is there,
+     which is all the browser permits: `returnValue` raises the generic leave-site prompt
+     and the string is not shown by any current browser. */
+  addEventListener('beforeunload', (e) => {
+    if (!SESSION) return;
+    if (SESSION.sync.hold) {
+      if (SESSION.sync.dirty) { e.preventDefault(); e.returnValue = ''; }
+      return;
+    }
+    if (SESSION.sync.dirty) SESSION.sync.push(true);
   });
 
   $('starttrace').onclick = () => {
