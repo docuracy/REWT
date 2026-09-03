@@ -217,3 +217,44 @@ def test_the_surveys_own_self_loops_are_still_the_five_we_know_about(con):
         f"the survey now ships {count:,} self-looping links, not the 5 measured on "
         "OS Open Rivers issue 2026-04. Check the issue before trusting the audit."
     )
+
+
+def test_the_in_scope_population_has_a_length_for_every_link(con):
+    """`in_scope_link` is now the one definition of the in-scope network, so a row it
+    cannot measure is a row four published figures silently disagree about.
+
+    **D-079's remedy, guarded.** The view resolves length as
+    `COALESCE(l.length_m, r.length_m)` over left joins to `link` and `repair_link`. A
+    `link_scope` row naming an id in NEITHER table survives both joins, arrives with a
+    null length, and is counted by `count(*)` while contributing nothing to
+    `sum(length_m)` — so the link count and the kilometre total would come apart with
+    nothing to say they had. It would also be labelled `is_repair`, because that column
+    is `l.link_id IS NULL` and an absent row satisfies it exactly as a repair link does.
+
+    Nothing suggests such a row exists today. The test is here because the view is new
+    and four audit files, the calibration table against PLAN.md §4.1 and the release
+    notes now read from it, so the cost of it being quietly wrong went up when the
+    duplication that would have contradicted it went away. **One definition is right,
+    and it is also the removal of the disagreement that caught the last defect.**
+
+    Written by rewt-c1, who holds no database connection and could not run it: it is
+    `db`-marked and first runs inside `rewt check` on a machine that has built.
+    """
+    from conftest import require_tables, table_names
+
+    require_tables(con, "link_scope", "link", "repair_link", "retirement")
+    if "in_scope_link" not in table_names(con):
+        from rewt import schema
+
+        schema.in_scope_view()
+
+    orphans = con.execute(
+        "SELECT count(*) FROM in_scope_link WHERE length_m IS NULL"
+    ).fetchone()[0]
+    assert orphans == 0, (
+        f"{orphans:,} row(s) of `in_scope_link` have no length: their `link_scope` id "
+        "is in neither `link` nor `repair_link`. `count(*)` counts them and "
+        "`sum(length_m)` does not, so the published link count and kilometre total are "
+        "measuring different populations — and each is labelled `is_repair`, since "
+        "that column asks only whether the `link` row is absent."
+    )

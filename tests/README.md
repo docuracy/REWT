@@ -43,7 +43,7 @@ The cost of a visible failure is that somebody asks about it; that is the point.
 | test | why it is red | what clears it |
 |---|---|---|
 | `test_basins_and_the_sea.py::test_no_in_scope_basin_holds_more_sea_than_river` | D-080. Twelve in-scope basins enclose more sea network than river network, because the tidal surface is not removed before delineation. rewt-46's finding. | The delineation, not a rebuild. R-01 (OS Mean High Water as the coast) is the change most likely to move it. |
-| `test_published_output.py::test_every_published_in_scope_total_is_the_same_number` | D-079. `basins.json` publishes 105,462.8 km against 105,699.0 in three other audit files. | A rebuild **and** a fix: `rewt/stages/basins.py` still counts `link_scope JOIN link`, which is not the in-scope population, so a rebuild alone republishes the same wrong figure. |
+| `test_published_output.py::test_every_published_in_scope_total_is_the_same_number` | D-079. `basins.json` publishes 105,462.8 km against 105,699.0 in three other audit files. | **A rebuild, now that the writer is fixed.** It was `rewt/stages/basins.py` counting `link_scope JOIN link`, which a rebuild would have reproduced; `f570dbd` replaced both queries with `schema.in_scope_view()`'s `in_scope_link`, so the artefact on disk is now genuinely stale rather than freshly wrong. |
 
 Anything else red is transient or new. At the time of writing four others were failing
 because two sources had been registered without the rebuild and conf work that follows;
