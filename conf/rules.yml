@@ -500,22 +500,47 @@ rules:
 
   - id: R-12
     order: 12
-    kind: presentation
-    title: Non-joining crossings can be toggled in the viewer.
+    kind: repair
+    title: A person can set and unset the non-join verdict on a node, in the tracer.
     statement: >-
-      The viewer offers a control that shows and hides crossings marked as non-joins.
+      Above a threshold zoom the tracer draws a marker on every node that can carry a
+      non-join verdict, and a person can toggle that verdict on or off at the place.
+      The toggle authors the marking; it does not merely show or hide it. Every change
+      is a curated judgement and is recorded as one, with a reason in words and
+      evidence, in data/curated/.
     why: >-
-      R-04 says the marking must be complete and R-05 says the corroboration must be
-      sound. Neither can be checked by a person without being able to see the marks
-      against the network they were made on.
+      R-04 says the marking must be complete and R-05 says the corroboration must
+      corroborate. Neither can be settled by a rule alone, because the cases that
+      defeat both are cases where a person has to look — a culvert that happens to lie
+      near a node is not evidence about that node, and no threshold distinguishes it
+      from one that is. So the build proposes and a person adjudicates, which is the
+      arrangement PLAN.md already uses for connectors, reversals and junctions.
     status: proposed
-    stage: viewer
-    owner: visualisation
+    stage: tracer
+    owner: tracer
     implements: []
-    params: []
+    params:
+      - tracer.crossing_marker_min_zoom
     needs:
-      - "R-04 supplies what is drawn. The toggle is worth little until the marking is
-         complete."
+      - "This is NOT a layer switch, and it was written as one. An earlier version of
+         this rule said 'the viewer offers a control that shows and hides crossings
+         marked as non-joins', which docs/viewer already does — a refused_crossings
+         layer, on by default, all 425, three icons splitting corroborated from
+         uncorroborated-in-Trust-country from outside. Stephen was almost certainly
+         looking at that layer when he wrote the note, and his sentence opens 'Not all
+         crossings that do not join are being MARKED as such'. rewt-46 declined to
+         build the small wrong thing and asked instead, and Stephen confirmed on
+         2026-09-03 that the tool is for the tracer and not the viewer."
+      - "tracer.crossing_marker_min_zoom to be added to conf/params.yml. A marker on
+         every eligible node is unreadable at national zoom and is the point of the
+         threshold; the number is a judgement about legibility and belongs in
+         configuration."
+      - "R-04 supplies the candidates. The tool is worth little until the marking is
+         complete, and R-04 is what makes it complete."
+      - "Decide what a node that CAN carry the verdict is, before drawing anything. If
+         that set is every node the marker is useless; if it is only nodes the build
+         already marked, the tool cannot add the ones R-04 says are missing, which is
+         the whole purpose. Confirm the selector excludes something (D-070)."
     evidence: []
     supersedes: []
     raised: 2026-09-03

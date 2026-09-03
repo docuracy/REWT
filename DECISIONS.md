@@ -3043,3 +3043,96 @@ default, where the complement must be enumerable and its reason nameable). In al
 answer was produced by a procedure that could not have produced a different one, and in all
 four the answer was plausible. **The common remedy is not more verification but one
 measurement the procedure could fail**, taken at the same time and in the same run.
+
+---
+
+## D-083 — The NLS layer index may be public; the repository already was
+
+**3 September 2026, Stephen's ruling, recorded by rewt-e8 (implementer).**
+
+**Reaching `docs/trace/backdrops.json`, `docs/trace/counties.json` and
+`docs/trace/js/composite.js` publicly is fine.** They may stay as they are. This closes a
+question rewt-50 opened and I had wrongly raised as a breach.
+
+**The question, stated properly, because it took three of us to get it right.** The
+`_removed_nls` note in `docs/viewer/backdrops.json` records two separate findings about the
+National Library of Scotland's S3 tile bucket, and it never crosses them:
+
+- *for the viewer*, that removing the 68 layers was not sufficient, because `composite.js`
+  still held the bucket's base URL and `counties.json` still enumerated the 53 slugs that
+  complete it — "a published index to the removed layers, with a working fetcher attached";
+- *for the tracer*, that all 90 layers may stay, on the ruling that NLS's request concerns
+  **public presentation** and does not reach a tool that presents to nobody without a token.
+
+Nothing in the note considers **an ungated index behind a gated map**, which is what
+`docs/trace/` is. rewt-50 established both halves of the fact: the render gate is real and
+server-verified — `startMap()` has one call site, inside `signIn()`, downstream of
+`gh.whoami(token)`, and `#mapsection` is `hidden` in the markup, so no tile URL is
+constructed for a visitor without a token GitHub itself accepts — while the three JSON and
+JS files are static assets that no gate can cover. Stephen has now ruled on the case the
+note did not reach: the index is fine.
+
+**How I got there wrongly, which is the part worth keeping.** I read the `_removed_nls`
+note through `json.dumps(v)[:1500]`. The paragraph beginning "THE TRACER DIVERGES FROM THIS
+DELIBERATELY" is the fifth and last; the cut fell in the middle of the fourth. I then sent
+the owner of `docs/trace/` an urgent message calling their directory a licence breach,
+citing the very note whose final paragraph answers it — and commit `c288c02` exists for no
+other purpose than to prevent that, saying in terms: *"Someone finding the two side by side
+would otherwise read the difference as an oversight in one of them, and go looking for
+which. It is neither."*
+
+Third truncation of the day on a question whose whole form is *is there anything else*, and
+the only one that cost anybody else anything. The first two cost wrong counts. TEAM.md names
+the rule; I had quoted it at another session that same afternoon. **A truncation does not
+announce itself as one — the visible part reads as the whole, and it read as a complete
+argument that happened to omit the case in front of me.**
+
+**And the frame everyone was reasoning in was wrong.** `AGENTS.md:87` said *"This repository
+is private and is intended to become public"* — for the repository's entire life. `gh repo
+view` returns `isPrivate: false`, `visibility: PUBLIC`, created 2026-08-31T14:32:59Z, and
+`pages.yml` publishes `docs/**` to docuracy.github.io/REWT on every push to `main`. There
+was never a window. Every licence judgement recorded before today — the `tools/viewer/`
+`.gitignore` rationale, the `_removed_nls` note, rewt-46's decision to track `counties.py`,
+my alarm and retraction — was made under a sentence promising time that did not exist.
+Corrected in `be0768e`. Found by rewt-50 while checking the premise of the ruling I had
+wrongly called a breach, which is to say: **the false alarm was worth more than the thing
+it alleged.**
+
+---
+
+## D-084 — R-12 is a tracer authoring tool, and was written as a layer switch
+
+**3 September 2026, Stephen's ruling, recorded by rewt-e8 (implementer).**
+
+`rules/0001.md` asked for "a tool ... to enable toggling them in the viewer", of crossings
+that do not join. I wrote that into `conf/rules.yml` as R-12, *"the viewer offers a control
+that shows and hides crossings marked as non-joins"* — a layer switch.
+
+**That already exists.** `docs/viewer` draws a `refused_crossings` layer, on by default, all
+425 of them, with three icons separating corroborated from uncorroborated-in-Trust-country
+from outside. Stephen was almost certainly looking at it when he wrote the note.
+
+rewt-46 was asked to build R-12, read it, found the thing already built, and **declined to
+build the small wrong thing** — putting it to Stephen instead on the reading that his
+sentence opens *"Not all crossings that do not join are being **marked** as such"*, so the
+tool wanted is one for toggling **the marking**, not the visibility. Stephen has confirmed
+it: the tool is for the **tracer**, not the viewer, and each eligible node needs a marker
+above a threshold zoom so the verdict can be toggled at the place.
+
+R-12 is restated accordingly — kind `repair` rather than `presentation`, stage and owner
+`tracer` rather than `viewer`, with `tracer.crossing_marker_min_zoom` named as a parameter
+and not yet declared.
+
+**Two things this cost, both worth the price.** The rule was wrong in the canonical file for
+four hours, in the file written to be the one true statement of each rule — so a canonical
+list is only as good as the reading behind each entry, and mine compressed a sentence about
+authoring into a sentence about display because display was the cheaper thing to imagine.
+And it was caught by the session assigned to *implement* it, not by the one who wrote it or
+the one who reviewed it. **The most reliable reader of a specification is whoever has to
+build from it**, which argues for assigning a rule before believing it is well stated.
+
+**The design question left open on the rule**, because it decides whether the tool works:
+what is a node that *can* carry the verdict? If that set is every node, the marker is
+useless at any zoom. If it is only the nodes the build has already marked, the tool cannot
+add the ones R-04 says are missing — which is the entire purpose. Confirm the selector
+excludes something before drawing anything (D-070).
