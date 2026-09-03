@@ -846,13 +846,26 @@ sources:
     # enforces it by requiring acquire.fetch() to refuse. D-085 overrode D-006 on
     # Stephen's instruction: the sweep IS national, every node, deliberately.
     #
-    # So the flag is now false for this source and false for
-    # ea_lidar_composite_dtm_1m and nrw_lidar_dtm_1m, which still carry it. Two tests
-    # stay red until that is resolved, and both are right to be:
-    #   - the bulk-fetch test enforces a superseded decision, and belongs to rewt-c1;
-    #   - the unread-source test is correct, because the elevation sweep is not a stage.
-    #     A script somebody remembers to run is not part of the build (AGENTS.md), and
-    #     that is a defect in this session's work, not a category to declare around.
+    # THAT LAST SENTENCE WAS WRONG AND rewt-c1 CORRECTED IT. D-006 makes two claims,
+    # not one: per section is the UNIT, and only-when-a-person-adjudicates is the
+    # OCCASION. D-085 overrode the OCCASION. The bulk-fetch test enforces the UNIT, and
+    # the unit still holds — rewt/elevation.py fetches a kilometre square at a time
+    # through its own WCS and WMS code, and `national_sources()` returns only the
+    # `api: os_downloads` products, which these are not. A national SWEEP made of
+    # per-square requests is not a national DOWNLOAD.
+    #
+    # So `per_section: true` remains TRUE for ea_lidar_composite_dtm_1m and
+    # nrw_lidar_dtm_1m, the bulk-fetch test is not superseded, and what had gone stale
+    # was only its docstring's justification. My own line cuts both ways: a decision
+    # with a test cannot be superseded in prose alone, and a test cannot be retired
+    # because a decision moved next to it.
+    #
+    # This source stays unflagged and one test stays red, which is correct: the
+    # unread-source test is right, because the elevation sweep is not a stage. A script
+    # somebody remembers to run is not part of the build (AGENTS.md) — a defect in this
+    # session's work, not a category to declare around. `read_by:` is NOT the answer
+    # either; that category is for a source nothing should read, and something reads
+    # this one.
     #
     # I recorded D-085 as an override of PLAN.md §5 and did not look for what ENFORCED
     # the thing being overridden. A decision with a test is a decision you cannot

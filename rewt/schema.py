@@ -34,6 +34,27 @@ reason each, and each is a direct answer to something that went wrong before:
   each route, so the clearance the network was constructed to respect can be checked
   against the geometry rather than assumed from the parameter that produced it.
 
+* **Scope, reachability and flags each need a table because none may be a column**
+  (`link_scope`, `link_reach`, `link_flag`). These are the narrow tables the bullet
+  above requires, and they are named here because until rewt-c1 wrote a test for it
+  they were the three in the model with no line in this docstring — while the sea
+  bullet said of its own pair that "their reasons are in schema.py's docstring with the
+  rest", which was true of those two and false of the three that preceded them. A
+  sentence about a file, written while adding to it, describing a state that had
+  already lapsed (D-091). `link_scope` holds which rule put a link in scope, basin or
+  country, because §4.1's second rule exists for tidal water that sits on no basin and
+  "in scope" without "why" cannot be argued with. `link_reach` holds the crawl's own
+  per-link answer and the seed it drains to. `link_flag` holds what a later stage must
+  not mistake for a channel — flat water, a schematic crossing, a canal summit — flagged
+  now because §5 says the information is free at this point and expensive to recover.
+* **Which side of the sea a watercourse falls on is decided once** (`high_water_side`).
+  R-01 defines tidal water by the Ordnance Survey high water line, and the classification
+  has to exist before `repair` invents a connector, because a connector built against
+  the wrong sea cannot be recognised as wrong afterwards. It is a proposal and not an
+  edit: `repair` reads it and retires or truncates. `form` and `is_repair` ride along so
+  the classes can be counted apart without a second join — an `inlandRiver` wholly below
+  high water is a different finding from a `tidalRiver` one, even when both are retired.
+
 Geometry is EPSG:27700 throughout; EPSG:4326 only at export (AGENTS.md).
 """
 
