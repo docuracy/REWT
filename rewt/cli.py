@@ -825,6 +825,26 @@ def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) 
             f"{len(tracked_dirty)} tracked file(s) are modified. A release nobody can "
             "reconstruct is not a release:\n      " + "\n      ".join(tracked_dirty[:6])
         )
+    # UNTRACKED IS A DIFFERENT FAULT, AND IT USED TO BE INVISIBLE. This filtered "??"
+    # out and then reported "tree clean", which was not a measurement of the tree: at
+    # v0.2.0-alpha the whole local viewer — index.html, viewer.js, viewer.css — was
+    # untracked, and `git ls-files tools/viewer/` returned two files. A modified
+    # tracked file means the release cannot be reconstructed; an untracked one means
+    # part of it was never in the repository at all, which is worse and reads as
+    # tidier. Reported separately because the two need different answers: commit it,
+    # or gitignore it with the reason, and either is a decision somebody has to take.
+    #
+    # git does not list ignored files here, so build outputs and data/ never appear.
+    # What appears is genuinely undeclared.
+    untracked = [l[3:] for l in dirty.splitlines() if l.startswith("??")]
+    if untracked:
+        problems.append(
+            f"{len(untracked)} untracked file(s) are not in the repository and not "
+            "ignored. Either commit them or gitignore them with the reason; a release "
+            "must not depend on a file that is neither:\n      "
+            + "\n      ".join(untracked[:8])
+            + (f"\n      ... and {len(untracked) - 8} more" if len(untracked) > 8 else "")
+        )
 
     network = paths.PUBLISHED / "rewt_stage1_network.gpkg"
     if not network.exists():
