@@ -249,24 +249,110 @@ def test_every_stage_1_source_is_read_by_a_stage_or_says_why_not():
     specification: the figure exact, the sentence false.
 
     A count cannot catch that and this can. The one distinction it needs is that
-    *unread* covers two different things — a source waiting for a stage that does
-    not exist yet, which is `stage: 2`, and a source consumed by something that is
-    not a stage at all, which is `per_section: true`. Neither is drift. Anything
-    else is.
+    *unread* covers three different things:
+
+    * `stage: 2` — waiting for a stage that does not exist yet;
+    * `per_section: true` — consumed by something that is not a stage;
+    * `read_by:` — read by nothing in this repository, and nothing should read it.
+
+    Neither of the first two fits a source whose only consumer is a sentence on a
+    documentation page. `ada_internal_drainage_districts` is declared so that the
+    Internal Drainage District figure on /scale, /evidence and /regions can be
+    RE-DERIVED rather than inherited from the predecessor, which AGENTS.md forbids
+    and D-090 records. It is not waiting for anything and nothing consumes it
+    programmatically at all. Stephen's ruling: teach the test the third category.
+
+    **It is the category most likely to be abused, and that shaped how it is
+    written.** The other two name a future in which the source becomes read, and
+    go stale loudly when that future arrives. This one names a permanent state, so
+    it is the one somebody reaching for green will find first. Three things make
+    that expensive: the value must be from a declared vocabulary rather than a
+    free string, the reason must be a sentence rather than a flag, and — the part
+    with teeth — **a source that claims nothing reads it must really be read by no
+    stage**, so the claim breaks loudly if a stage ever starts.
     """
     unread = sorted(
         src.id
         for src in config.sources()
         if src.get("stage", default=1) == 1
         and not src.get("per_section", default=False)
+        and not src.get("read_by", default=None)
         and src.id not in _read_by_a_stage()
     )
     assert not unread, (
         "sources declared for Stage 1 that no stage reads: " + ", ".join(unread)
         + ". Either a stage should read it, or the declaration should say why "
         "nothing does — `stage: 2` for one waiting on later work, `per_section: "
-        "true` for one fetched a place at a time. The sentence that was missing is "
-        "the point of this failing, not the flag."
+        "true` for one fetched a place at a time, `read_by:` with a "
+        "`read_by_reason` for one nothing in this repository reads or should. The "
+        "sentence that was missing is the point of this failing, not the flag."
+    )
+
+
+# THE VOCABULARY, DECLARED. A free string here would be a `reason` column all over
+# again (D-070, D-039): prose that becomes a controlled vocabulary the moment a
+# template makes every value share a phrase, with nothing saying it is one. Adding a
+# value is a decision somebody takes here, in front of this comment, rather than a
+# word typed into conf/sources.yml at the moment a test is inconvenient.
+_NON_STAGE_READERS = {
+    # Read by no code at all. Its consumer is a sentence on a documentation page, and
+    # it is declared so that sentence can be re-derived rather than inherited.
+    "documentation-only",
+}
+
+
+def _declares_a_non_stage_reader():
+    return sorted(src.id for src in config.sources() if src.get("read_by", default=None))
+
+
+@pytest.mark.parametrize("source_id", _declares_a_non_stage_reader())
+def test_a_non_stage_reader_is_one_of_the_declared_kinds(source_id):
+    """`read_by` is a vocabulary, not a comment field."""
+    value = str(config.source(source_id).get("read_by")).strip()
+    assert value in _NON_STAGE_READERS, (
+        f"{source_id} declares `read_by: {value}`, which is not one of "
+        f"{sorted(_NON_STAGE_READERS)}. The point of the vocabulary is that adding a "
+        "kind is a decision taken in tests/test_config.py rather than a string typed "
+        "into conf/sources.yml — the flag exempts a source from D-059's rule, and an "
+        "exemption anyone can invent in passing is not an exemption."
+    )
+
+
+@pytest.mark.parametrize("source_id", _declares_a_non_stage_reader())
+def test_a_non_stage_reader_says_why_in_a_sentence(source_id):
+    """The flag is the mechanism; the reasoning is what a reader needs.
+
+    Same argument as the `per_section` pair above, and it matters more here: this
+    category describes a state that never resolves, so the sentence is the only
+    thing that will look wrong to a reader when it stops being true. A flag cannot
+    look wrong.
+    """
+    reason = str(config.source(source_id).get("read_by_reason") or "").strip()
+    assert len(reason) > 40 and " " in reason, (
+        f"{source_id} declares `read_by` and gives no reason worth reading "
+        f"({reason!r}). Say what does consume it and why no stage should — the "
+        "sentence is what somebody checks in a year, and the flag is what they "
+        "would have to take on trust."
+    )
+
+
+@pytest.mark.parametrize("source_id", _declares_a_non_stage_reader())
+def test_a_non_stage_reader_is_really_read_by_no_stage(source_id):
+    """The part with teeth, and the reason this is a category rather than an
+    exemption.
+
+    `per_section` is enforced — the fetcher refuses a national pass — and this is
+    the equivalent: a declaration that nothing reads a source is checkable against
+    the pipeline that would read it. Without this the flag would be the one thing
+    in the file that means whatever the last person to type it wanted, and the
+    drift it was written to permit would cover the drift it was not.
+    """
+    assert source_id not in _read_by_a_stage(), (
+        f"{source_id} declares `read_by: "
+        f"{config.source(source_id).get('read_by')}` — nothing in this repository "
+        "reads it — and a stage reads it. One of the two is wrong: if the stage is "
+        "right, remove the declaration, because the source is no longer exempt from "
+        "D-059's rule and should not be counted as though it were."
     )
 
 
@@ -277,13 +363,32 @@ def test_every_stage_1_source_is_read_by_a_stage_or_says_why_not():
     ),
 )
 def test_a_per_section_source_cannot_be_fetched_in_bulk(source_id):
-    """D-006: LiDAR is fetched **per section**, when a person is adjudicating a
-    place, and never nationally.
+    """LiDAR has no bulk national download, and this is what enforces it.
 
     `per_section` is the declaration that stops the previous test reading these as
-    drift, so it has to mean something enforced rather than something asserted. A
-    national pass over a 1 m surface is a large expense for no gain — *LiDAR earns
-    its place per section, where the differences are decimetres* (§6).
+    drift, so it has to mean something enforced rather than something asserted.
+
+    **THE FLAG CONFLATES TWO THINGS AND ONLY ONE OF THEM SURVIVED D-085.** D-006
+    said LiDAR is fetched per section, *when a person is adjudicating a place*, and
+    never nationally — a claim about the OCCASION and a claim about the UNIT. D-085
+    overrode the first on Stephen's instruction: the elevation sweep is national,
+    every node, deliberately. rewt-e8 recorded that override without looking for
+    what enforced the thing being overridden, and wrote in `conf/sources.yml` that
+    this test now enforces a superseded decision.
+
+    It does not, and the distinction is worth keeping rather than deleting the
+    guard. What this asserts is the UNIT: there is no bulk national file for these
+    products, and `acquire.fetch()` refuses to pretend there is. That is still true
+    under D-085 — `rewt/elevation.py` fetches a kilometre square at a time through
+    its own WCS and WMS code, and `national_sources()` returns only the
+    `api: os_downloads` products, of which these are not any. A national SWEEP made
+    of per-square requests is not a national DOWNLOAD.
+
+    So the flag stays true for `ea_lidar_composite_dtm_1m` and `nrw_lidar_dtm_1m`,
+    and the sentence that had gone stale was this docstring's, not the assertion's.
+    **A decision with a test cannot be superseded in prose alone** — which is
+    rewt-e8's own line, and it cuts both ways: the test also cannot be retired
+    because a decision moved next to it.
     """
     from rewt import acquire
 
