@@ -287,9 +287,22 @@ def test_no_configured_secret_appears_in_a_tracked_file(tracked):
     )
 
 
+# The name of an environment variable, which is what code holds when it is doing
+# this correctly. At least one underscore, so a bare uppercase token still fails.
+_ENV_VAR_NAME = re.compile(r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+")
+
 _BASEMAP_PROVIDER = re.compile(
-    r"(maptiler|mapbox|thunderforest|stadiamaps|carto(?:cdn)?)\b[^\n]{0,40}?"
-    r"[\"']([A-Za-z0-9_\-]{16,})[\"']",
+    # `[\w-]*` AND NOT `\b`: the word boundary refused to match `maptiler_key = "..."`,
+    # because `_` is a word character and there is no boundary between the provider's
+    # name and the suffix. That is the most natural way anyone would ever name the
+    # variable they leaked, and the gate could not see it. Found by asking this pattern
+    # to catch a fabricated key rather than by reading it.
+    r"(maptiler|mapbox|thunderforest|stadiamaps|carto(?:cdn)?)[\w-]*[^\n]{0,40}?"
+    # `.` IS IN THE VALUE CLASS BECAUSE A MAPBOX TOKEN CONTAINS ONE — `pk.eyJ1...`.
+    # Without it the pattern read the most recognisable credential of the five
+    # providers it names as not a credential at all. A URL cannot be mistaken for one:
+    # the class has no `/`, `:` or `{`, so a quoted tile template never matches whole.
+    r"[\"']([A-Za-z0-9_.\-]{16,})[\"']",
     re.IGNORECASE,
 )
 
@@ -316,7 +329,17 @@ def test_a_basemap_key_cannot_hide_under_a_bare_name(tracked):
             continue
         for lineno, line in enumerate(text.splitlines(), 1):
             m = _BASEMAP_PROVIDER.search(line)
-            if m and not _INNOCENT.match(m.group(2).strip()):
+            # AN ENVIRONMENT VARIABLE'S NAME IS NOT ITS VALUE. `("maptiler",
+            # "MAPTILER_API_KEY")` in tools/viewer/server.py is a lookup table saying
+            # where to read a key from, and the pattern cannot tell a name that long
+            # from a token. SCREAMING_SNAKE_CASE with an underscore is the shape of a
+            # name and of none of these providers' keys — MapTiler's are mixed-case
+            # alphanumeric, Mapbox's begin `pk.`, Carto's are hex — so this narrows the
+            # check without blinding it. Written down because it is a deliberate
+            # weakening of a CREDENTIAL gate: a gate that fires on a correct line is
+            # one somebody eventually deletes.
+            if (m and not _INNOCENT.match(m.group(2).strip())
+                    and not _ENV_VAR_NAME.fullmatch(m.group(2).strip())):
                 findings.append(f"{name}:{lineno}: {m.group(1)} … {m.group(2)[:6]}…")
     assert not findings, (
         f"{len(findings)} tracked line(s) put an opaque value beside a tile "

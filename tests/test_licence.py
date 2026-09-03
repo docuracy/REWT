@@ -15,11 +15,13 @@ check deleted.
 
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from conftest import require_tables
 
-from rewt import config
+from rewt import config, paths
 from rewt.config import Source, UnlicensedSource, UnregisteredSource
 
 
@@ -188,6 +190,13 @@ def test_no_url_is_hard_coded_in_the_code():
                 and isinstance(node.value, str)
                 and id(node) not in docstrings
                 and ("http://" in node.value or "https://" in node.value)
+                # A BARE SCHEME IS NOT A URL. `"https://" + url` completes an address
+                # the NRW tile catalogue returns without one (rewt/elevation.py) — the
+                # address is data from a declared source, and the literal names no host
+                # to fetch from. Matching it made this gate fire on a correct line, and
+                # a gate that cries wolf is the one somebody deletes. Anything with a
+                # host after the scheme is still an offender.
+                and not re.fullmatch(r"https?://", node.value.strip())
             ):
                 offenders.append(f"{paths.rel(path)}:{node.lineno}: {node.value[:80]!r}")
     assert not offenders, (
@@ -309,3 +318,116 @@ def test_the_drift_check_can_actually_fail(tmp_path, monkeypatch):
     drift = release.attribution_drift()
     assert drift, "an ATTRIBUTION.md naming no source at all was accepted"
     assert any("ATTRIBUTION.md" in d for d in drift)
+
+
+# --------------------------------------------------------------------------- D-072
+# THE VIEWER AND THE TRACER TREAT THE SAME NLS LAYERS OPPOSITELY, AND THE DIFFERENCE IS
+# WHETHER THERE IS A GATE.
+#
+# The National Library of Scotland state one condition on their georeferenced layers:
+# *"Re-use of these layers is intended within a desktop or local environment. If you
+# wish to present these layers online in a public website, please use our Historic Maps
+# API layers, or contact us."*
+#
+# Stephen's ruling (D-072): the request concerns PUBLIC PRESENTATION, and does not reach
+# a tool that presents to nobody. The viewer renders to any visitor and is squarely
+# inside that sentence, so it serves no layer taken from the Library's tile bucket. The
+# tracer renders nothing without a token — an anonymous visitor gets a wall and fetches
+# no tile — so it may carry all of them.
+#
+# Nothing but this compares the ruling to the files. Both halves are one JSON file and
+# one JavaScript file, and either could be undone by an edit that looks like a feature.
+
+VIEWER_BACKDROPS = paths.ROOT / "docs" / "viewer" / "backdrops.json"
+TRACER_APP = paths.ROOT / "docs" / "trace" / "js" / "app.js"
+
+# The bucket the Library does not publish addresses for, harvested by enumerating a
+# bucket that permits ListBucket. `tools/nls_layers.json` — the catalogue of 2,016 of
+# them — is gitignored for the same reason.
+NLS_BUCKET = "mapseries-tilesets.s3.amazonaws.com"
+
+
+def test_the_public_viewer_serves_no_layer_from_the_library_s_own_bucket():
+    """D-072's first half, and the one with a licence behind it.
+
+    68 layers served directly from the bucket were removed from the viewer and the
+    file records it. What replaced them is the Library's mapping through MapTiler,
+    which is the route NLS's own sentence points at — so this is not a test that the
+    viewer shows no historic mapping, which it does. It is a test that it does not
+    reach past the sanctioned route to the bucket.
+    """
+    import json
+
+    if not VIEWER_BACKDROPS.exists():
+        pytest.skip(f"{paths.rel(VIEWER_BACKDROPS)} does not exist; run the viewer build")
+    text = VIEWER_BACKDROPS.read_text(encoding="utf-8")
+    options = json.loads(text).get("options", {})
+    assert options, f"{paths.rel(VIEWER_BACKDROPS)} declares no backdrops at all"
+
+    offending = sorted(
+        name
+        for name, option in options.items()
+        if isinstance(option, dict)
+        and any(NLS_BUCKET in str(option.get(field, "")) for field in ("tiles", "url"))
+    )
+    assert not offending, (
+        f"{len(offending)} backdrop(s) in {paths.rel(VIEWER_BACKDROPS)} serve tiles "
+        f"from {NLS_BUCKET} to a public website:\n      " + "\n      ".join(offending)
+        + f"\n      NLS ask that online public presentation go through their Historic "
+        "Maps API rather than these layers (D-072, D-043). The tracer may carry them "
+        "because it presents to nobody without a token; the viewer presents to "
+        "everybody."
+    )
+    # The selector reads the tile URLs, so it says nothing unless there are tile URLs
+    # to read. A backdrops file that had lost its layers would pass it silently.
+    with_tiles = [o for o in options.values() if isinstance(o, dict) and o.get("tiles")]
+    assert len(with_tiles) >= 2, (
+        f"only {len(with_tiles)} backdrop(s) in {paths.rel(VIEWER_BACKDROPS)} carry a "
+        "tile URL, so this check inspected almost nothing. Either the file changed "
+        "shape or the layers are gone."
+    )
+
+
+def test_the_tracer_draws_no_map_before_a_token_is_accepted():
+    """D-072's second half: the gate is what earns the layers.
+
+    The ruling turns entirely on `startMap()` being unreachable without a successful
+    sign-in. If it is ever called from boot — to show a preview, to warm a cache, to
+    make the wall less stark — the tracer becomes a public presentation of every NLS
+    layer it carries, and the ruling that permits them stops applying at that moment.
+
+    A shape test, and it says so: it reads where the call sits in the source, not what
+    the browser does. It cannot see a gate defeated some other way, and a stronger
+    check belongs with the tracer's own harness (`tools/tracer/check_*.mjs`), which
+    exercises the real module.
+    """
+    if not TRACER_APP.exists():
+        pytest.skip(f"{paths.rel(TRACER_APP)} does not exist")
+    source = TRACER_APP.read_text(encoding="utf-8")
+
+    definition = re.search(r"(?:async\s+)?function\s+startMap\s*\(", source)
+    assert definition, (
+        f"{paths.rel(TRACER_APP)} defines no `startMap`; this test was written around "
+        "the tracer starting its map in one place and no longer knows where to look."
+    )
+    calls = [
+        m.start() for m in re.finditer(r"\bstartMap\s*\(", source)
+        if m.start() != definition.start() + (definition.group(0).find("startMap"))
+    ]
+    assert len(calls) == 1, (
+        f"`startMap()` is called from {len(calls)} places in "
+        f"{paths.rel(TRACER_APP)}. D-072 permits the tracer to carry every NLS layer "
+        "ONLY because it renders nothing to an anonymous visitor, so the map must "
+        "start in exactly one place and that place must be behind the token."
+    )
+
+    sign_in = re.search(r"(?:async\s+)?function\s+signIn\s*\(", source)
+    assert sign_in, f"{paths.rel(TRACER_APP)} defines no `signIn`"
+    following = re.compile(r"\n(?:async\s+)?function\s+\w+\s*\(")
+    end = following.search(source, sign_in.end())
+    end = end.start() if end else len(source)
+    assert sign_in.start() < calls[0] < end, (
+        f"`startMap()` is called from outside `signIn()` in {paths.rel(TRACER_APP)}. "
+        "An anonymous visitor must get a wall and fetch no tile: that is the whole of "
+        "why this tool may publish the layers the viewer may not (D-072)."
+    )

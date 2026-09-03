@@ -191,3 +191,69 @@ def test_a_stage_that_touches_the_terrain_declares_the_terrain_source():
             f"stage {name!r} works on Terrain 50 without declaring it as a source, "
             "so a new issue of it would not invalidate the cache"
         )
+
+
+def test_a_finding_added_after_the_audit_was_written_is_an_error():
+    """D-074, and it is the only mechanism in the repository that is *about* ordering
+    inside a stage rather than between stages.
+
+    The audit builds `audit_finding` from its findings list at one moment. Two
+    producers — the outlet-less basin sweep and the climbing-connector check — were
+    called two hundred lines after that moment, so they appended to a list nobody read
+    again. Their COUNTS were published and not one of their places: `connectors_that
+    _climb: {climbing: 16}` with sixteen findings that existed nowhere. Nothing was
+    false, and the number was right; what it implied about an enumeration it could name
+    was not.
+
+    Moving the producers fixes the instance. Sealing the list fixes the class, and this
+    is the negative control for the seal: **a gate that has never been seen to fail is
+    not known to be a gate.** Without it the seal could be removed, or its exception
+    swallowed, and every test in this suite would still pass while the next producer
+    added in the wrong place contributed silently nothing.
+    """
+    from rewt.pipeline import StageError
+    from rewt.stages.audit import _Sealed
+
+    sealed = _Sealed([{"kind": "already_written"}])
+
+    with pytest.raises(StageError) as appended:
+        sealed.append({"kind": "too_late"})
+    with pytest.raises(StageError) as extended:
+        sealed.extend([{"kind": "too_late"}])
+
+    for raised in (appended, extended):
+        message = str(raised.value)
+        assert "audit" in message, (
+            "the seal raises without naming where the fix goes. The whole value of "
+            f"raising is a traceback somebody can act on, and this says: {message!r}"
+        )
+
+    # AND THE OTHER WAYS A LIST GROWS. `_Sealed` overrides `append` and `extend`, which
+    # are what the existing producers happen to call. `findings += [...]` is the same
+    # act written the other natural way, and on a list subclass it does NOT route
+    # through the overridden `extend` — `list.__iadd__` concatenates in place at the C
+    # level. `insert` and slice assignment go the same way round.
+    #
+    # The seal's own docstring says "a findings list that refuses to grow", and that is
+    # the claim worth testing rather than the subset it implements: a producer added in
+    # the wrong place using `+=` is discarded in exactly the silence this exists to end.
+    slipped = []
+    for name, mutate in (
+        ("+= [finding]", lambda: sealed.__iadd__([{"kind": "too_late"}])),
+        ("insert()", lambda: sealed.insert(0, {"kind": "too_late"})),
+        ("slice assignment", lambda: sealed.__setitem__(slice(1, 1), [{"kind": "x"}])),
+    ):
+        try:
+            mutate()
+        except StageError:
+            continue
+        slipped.append(name)
+        del sealed[1:]
+
+    assert not slipped, (
+        "the seal refuses `append` and `extend` and lets the list grow by "
+        + ", ".join(slipped)
+        + ". A producer written that way is discarded in silence, which is the whole "
+        "of D-074. `rewt/stages/audit.py` — refusing every mutator rather than the two "
+        "that were used on the day closes it."
+    )
