@@ -3540,13 +3540,25 @@ otherwise stated"* — and this dataset does state otherwise, in a copyright lin
 settles nothing for a dataset that carries its own terms. The dataset-level statement is in
 the harvested ISO metadata and that is what this entry rests on. D-023's shape again.
 
-**Re-measured.** The districts total 11,713 km², which is 8.8% of England's 132,915 km².
-Network length inside a district depends on the rule, so all three were computed: whole link
-inside 8,756 km; **clipped, the portion actually inside, 12,274 km**; any link touching
-14,871 km. Against candidate denominators the clipped figure is 8.0% of the mapped network,
-11.4% of in-scope, 12.4% of England and Wales, and **15.2% of England**.
+**Re-measured — and the first pass is superseded, on rewt-68's finding.** The districts
+total 11,713 km², which is 8.8% of England's 132,915 km². Network length inside a district
+depends on the rule, so all three were computed: whole link inside 8,756 km; clipped, the
+portion actually inside, 12,274 km; any link touching 14,871 km. Against candidate
+denominators the clipped figure came to 8.0% of the mapped network, 11.4% of in-scope,
+12.4% of England and Wales, and 15.2% of England.
 
-**Neither 12,779 km nor 13.3% reproduces under any of them.**
+**Every one of those figures ran on the unfiltered link layer, which double-counts.** It
+carries 638 retired links *and* the 1,370 children that replace them, so the same ground is
+in the sum twice — at both ends, numerator and denominator, about 1%. rewt-16 had not
+considered retirement; rewt-68 found it. The ratio nearly cancels, and *nearly cancels* is
+not a thing to publish. It also puts the denominator out of step with the build's own
+headline: `audit.json` reports `total_gb_km` 152,825.3 where 154,363 was used. **The
+kilometres are being recomputed on live links only and the decimal is held in both this
+entry and `conf/sources.yml` until they land.** D-079 in a fifth place, and the first time
+it has reached a figure destined for a public page.
+
+**What does not depend on the recount:** neither 12,779 km nor 13.3% reproduces under any
+rule, and the England framing below stands whatever the numerator turns out to be.
 
 **And the frame is wrong beneath the arithmetic.** The dataset is England-only by
 construction, so the numerator is England-only whichever rule produces it, and dividing it by
@@ -3561,7 +3573,17 @@ explaining the other, was how the original came to be wrong in a way nobody coul
 nothing should; its only consumer is a documentation sentence. The entry says so, so that a
 later reader does not go looking for the stage that uses it and conclude something is missing.
 
-*(An 8.0% against 8.4% disagreement with rewt-68 on the mapped-network share is open between
-them, and is being settled between them rather than averaged. The likely cause is the
-population trap of D-079 in a fourth place: rewt-68's denominators are about 1.4% smaller,
-close to the 195,568/193,040 ratio between the published GeoPackage and the database.)*
+*(The 8.0% against 8.4% disagreement between rewt-16 and rewt-68 was left to them rather
+than averaged, and settling it is what turned up the double-count above. Two sessions
+disagreeing by 0.4% found a defect neither was looking for, which is the arrangement doing
+the thing it is for — and neither would have found it alone, because each figure is
+internally consistent.)*
+
+**A URL was invented in this entry's first version and it 404s.** `conf/sources.yml` carried
+`data.gov.uk/dataset/internal-drainage-districts` — a plausible address reconstructed from a
+dataset named in prose, because rewt-16 named it and did not send the link. data.gov.uk
+requires the uuid segment. **That is the plausible-number failure applied to an address**, and
+it is worse than a wrong number in one respect: a wrong URL that happens to resolve to
+something is indistinguishable from a right one. Corrected, and both the catalogue page and
+the direct download are now in the entry with the archive pinned by digest — verified here on
+a third independent fetch, 5,807,715 bytes and `b3f068eb…`, matching rewt-16's two.

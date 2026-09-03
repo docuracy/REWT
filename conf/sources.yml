@@ -835,7 +835,11 @@ sources:
   - id: ada_internal_drainage_districts
     title: "ADA Administrative Boundaries: Internal Drainage Districts in England"
     publisher: Environment Agency, on behalf of the Association of Drainage Authorities
-    url: https://www.data.gov.uk/dataset/internal-drainage-districts
+    # THE UUID SEGMENT IS REQUIRED; the bare slug 404s. An earlier version of this line
+    # carried the slug alone — a plausible URL reconstructed from a dataset named in prose,
+    # which is the plausible-number failure applied to an address. Verified 404 and 200.
+    url: >-
+      https://www.data.gov.uk/dataset/59af775e-efc7-458b-bdc3-593651d08aa8/association-of-drainage-authorities-administrative-boundaries-internal-drainage-districts-in-en
     licence: Open Government Licence v3
     # The publisher's own wording. "All rights reserved" sits INSIDE the required
     # attribution and does not override the licence — the same construction as the two NRW
@@ -848,12 +852,23 @@ sources:
     format: ["geopackage"]
     crs: EPSG:27700
     cache_path: data/raw/ada_idd/
-    checksum: null
+    # NO URL IS EVER HARD-CODED IN CODE (AGENTS.md), so the fetcher needs the file here and
+    # not a catalogue page. No key. GeoJSON, Shapefile and File GDB exist at the same
+    # endpoint with the extension swapped in `fileName`; for 113 polygons the file beats
+    # the WMS at
+    # environment.data.gov.uk/spatialdata/administrative-boundaries-internal-drainage-districts-in-england/wms
+    download:
+      url: >-
+        https://environment.data.gov.uk/api/file/download?fileDataSetId=4d2d76fc-2cfa-4f35-a6fc-bf537cca9fca&fileName=Association_of_Drainage_Authorities_Administrative_Boundaries_Internal_Drainage_Districts_in_England.gpkg.zip
+      bytes: 5807715
+    # PINNED AS A THING THE BUILD FAILS ON WHEN IT MOVES, the way os_open_rivers is pinned,
+    # not as documentation. What the pin rests on and what it does not: three separate
+    # fetches — two by rewt-16, one here — returned byte-identical archives, which is
+    # evidence the endpoint does not repack per request. It is NOT evidence the publisher
+    # will not reissue: the record says created 2020-09-22, metadata updated 2025-07-25,
+    # update frequency "irregular". A reissue should break the build and be looked at.
+    checksum: sha256:b3f068eb29cd8dceb03e41b3f04d5f2817db967f5393a75b7280c499c6e7fe64
     status: unverified
-    # NOT A STAGE 1 INPUT. Nothing in the traversable-network build reads this and nothing
-    # should; its only consumer is a documentation sentence. Recorded so a later reader does
-    # not go hunting for the stage that uses it and conclude something is missing (D-090).
-    stage1_input: false
     notes: >-
       THE DATASET PAGE'S FOOTER SETTLES NOTHING. Its only visible licence is the site-wide
       "All content is available under the Open Government Licence v3.0, except where
@@ -863,9 +878,18 @@ sources:
 
       One layer, 113 polygons, one attribute idb_name. The districts total 11,713 km2,
       8.8% of England's 132,915 km2 — which is an AREA share and is not the network share
-      the documentation was reaching for. Clipped network length inside a district is
-      12,274 km, 15.2% of the English network. Neither the previously published 12,779 km
-      nor 13.3% reproduces under any rule tried (D-090).
+      the documentation was reaching for. Clipped network length inside a district is being
+      recomputed on LIVE links only; see D-090. The first pass ran on the unfiltered link
+      layer, which carries 638 retired links AND the 1,370 children that replace them, so
+      the same ground was counted twice at both ends. Neither the previously published
+      12,779 km nor 13.3% reproduces under any rule tried, and that does not depend on the
+      recount (D-090).
+
+      NOT A STAGE 1 INPUT. Nothing in the traversable-network build reads this and nothing
+      should; its only consumer is a documentation sentence. Said here rather than as a
+      `stage1_input:` key, which an earlier version carried: a key with one user and no
+      reader is a second rendering of a fact the notes already state, and nothing iterating
+      sources would know to look for it (D-067).
 
       A first request returned HTTP 403 from the Azure gateway and every request since has
       returned 200 across four User-Agents. The user-agent theory was tested and was wrong;
