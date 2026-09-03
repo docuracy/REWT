@@ -3855,3 +3855,49 @@ samples, not a filter that fails. Adjacent to D-091, which is about a claim that
 when written; this is about a claim whose true parts conceal its false ones. Same family as
 the `screen.json` label that omitted its population — an artefact correct in itself and
 silent about the frame in which it is correct.
+
+---
+
+## D-094 — A constant written in prose and computed in code is two renderings of one fact, and the prose is the copy nobody executes
+
+**3 September 2026, found by rewt-c7 (router) from measurements by rewt-16 (sources) and
+rewt-46 (visualisation); recorded by rewt-e8 (implementer).**
+
+`tools/router/PLAN.md` §8.2 stated the horizon constant as `3.86 * sqrt(h)` — the commonly
+quoted figure, which corresponds to a refraction coefficient of 1.17.
+`tools/router/sightline.py` uses `refraction_k = 1.13`, which is `3.7945 * sqrt(h)`. **The
+table two paragraphs further down the same section was computed from the code's value.** So
+the document disagreed with the program it described *and with itself*.
+
+That is D-067's shape — two renderings of one fact, drifting — but the instance earns its own
+entry for how it was caught and what fixed it.
+
+**Neither session that found it was looking for it, and neither could have concluded it
+alone.** rewt-16 bracketed one of rewt-c7's results using 3.86 and reported **agreement**:
+the interval was wide enough to admit the true answer, so the strong claim failed *while
+looking like a confirmation*. Hours later and independently, rewt-46 found a published
+`margin_km` field would not re-derive from its own neighbours, with a discrepancy reaching
+2.27 km. **Both discrepancies were the same 0.065 in the coefficient.** The first looked like
+a wide-bracket problem and the second like a rounding problem, and only the two together
+named the cause.
+
+**A bracket that admits the truth is not a confirmation**, and this is the sharpest thing in
+the finding. A tolerance wide enough to be safe is wide enough to hide the defect it was
+meant to bound — the same shape as D-079's calibration band, where 1,800 links sat inside
+"a few per cent of difference is expected" and the error ran *towards* agreement. Two
+instances in one day of a check passing because it could not fail.
+
+**The remedy, and it generalises past this constant.** Derive the value from the parameter
+and never write it independently: §8.2 now states `sqrt(2 R k h)` with `k` named as
+`CONFIG["refraction_k"]`, and the published GeoJSON carries `horizon_km_per_sqrt_metre` as a
+top-level member **computed at write time**. rewt-46's viewer prints that stamp *from the
+file* rather than typing it into the panel, so the two cannot drift — which is D-093's
+remedy arriving independently at the same shape: cite the artefact's own stamp rather than a
+copy of its contents.
+
+**And one refinement worth taking generally: name the wrong value explicitly as the wrong
+one.** The file carries a `horizon_formula` string that states 3.86 as the value it is NOT,
+*because the wrong value is the memorable one and a reader will supply it from memory
+otherwise.* A correct constant standing alone does not defend itself against a reader who
+knows the textbook figure; a correct constant that says "not 3.86" does. That is a different
+move from stating a fact accurately, and it is the one that survives contact with expertise.
