@@ -98,6 +98,14 @@ def test_the_model_stays_small():
         # nothing downstream could ask whether a region the sea already drains
         # needs geometry invented to drain it.
         "link_sea_reach",
+        # R-01's classification, added 2026-09-03: which side of Mean High Water a
+        # watercourse falls on, decided ONCE and before any connector is invented,
+        # because Stephen's rule is that the sea is settled first. It is a table
+        # rather than a column so the stage that decides it can run at position 5,
+        # ahead of `repair` — a `link_scope` dependency would have placed it at 11,
+        # after the connectors it must precede, and scope is not needed: which side
+        # of the line a watercourse falls on is a fact about geometry.
+        "high_water_side",
     }
     unexplained = set(schema.TABLES) - four - derived
     assert not unexplained, (
