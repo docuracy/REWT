@@ -248,9 +248,12 @@ def test_the_in_scope_population_is_a_projection_and_not_a_join(con):
     saying because it is easy to assume it does. An id in NEITHER table still yields
     exactly one row from two left joins, so the counts stay equal while `length_m` is
     null: `count(*)` counts it, `sum(length_m)` skips it, and the published link count
-    and kilometre total quietly measure different populations. It is also labelled
-    `is_repair`, since that column asks only whether the `link` row is absent — so the
-    row wears a known category rather than looking like an error.
+    and kilometre total quietly measure different populations. Such a row also USED to
+    be labelled `is_repair` — the column was `l.link_id IS NULL`, which an absent row
+    satisfies exactly as a repair link does, so it wore a known category rather than
+    looking like an error. `2d3cb46` made it `r.link_id IS NOT NULL`, so the mislabelling
+    is gone and the null length is the only remaining signal, which is why this
+    assertion is the one that has to hold.
 
     **Nothing suggests any of the three occurs today**, and that is measured rather than
     assumed. `published/rewt_stage1_network.gpkg`'s `link` layer is an unfiltered
@@ -320,7 +323,8 @@ def test_the_in_scope_population_is_a_projection_and_not_a_join(con):
         "id is in neither `link` nor `repair_link`. The row count above still matches, "
         "because two left joins yield exactly one row for an id they cannot resolve — "
         "so `count(*)` counts it, `sum(length_m)` does not, and the published link "
-        "count and kilometre total measure different populations. Each is also "
-        "reported as `is_repair`, since that column asks only whether the `link` row "
-        "is absent."
+        "count and kilometre total measure different populations. Nothing else marks "
+        "such a row: since 2d3cb46 `is_repair` is `r.link_id IS NOT NULL`, so an "
+        "unresolvable id is correctly not called a repair link and is called nothing "
+        "at all."
     )
