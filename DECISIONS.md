@@ -3492,10 +3492,43 @@ all seven phases and the caller takes the first that is not -9999. D-086 already
 the fetch unit belongs to the service and not to our design; three services and three units
 is that decision holding, not untidiness.
 
-**Resolution: 0.5 m, measured, not stated.** No ISO record gives a ground resolution — they
+**Three corrections found by probing the service rather than reading about it**, after the
+entry was first committed. Each was invisible to the reading that produced the entry.
+
+**Axis order, and it fails silently.** WMS 1.3.0 makes axis order a property of the CRS, and
+EPSG:27700 is easting-northing. A northing-first bounding box returns **HTTP 200 with an
+empty feature list** — byte-identical to the honest answer for a point outside every layer's
+extent. Four real Nith nodes returned nothing before the order was corrected, and every one
+looked like legitimate absence of coverage. **A sweep built that way would have reported
+Scotland as uncovered, everywhere, and it would have looked exactly like the truth.** That is
+D-082 in a third place, and the control that catches it is a point known to be covered
+returning a real number in the same run.
+
+**A second nodata sentinel.** The six numbered phases answer `-9999`; the 2025 programme
+answers **`-32767`**. Both appeared in one multi-layer response. The entry now refuses
+anything below -1000 m rather than matching either exactly, because a third sentinel is
+likelier than a third meaning.
+
+**A multi-layer query cannot carry provenance.** `query_layers` with all seven returned
+**four** features, only those whose extent covers the point — so "take the first that is not
+-9999, in the order you listed them" cannot work positionally. And every feature comes back
+with `id=''` and no layer name, so the values cannot be mapped to phases at all. That would
+not matter if an elevation were all that was wanted. It matters here because **resolution and
+attribution both vary by phase**, so a reading whose layer is unknown is a reading whose
+resolution and required credit are unknown. The sweep queries one layer at a time, ordered by
+coverage of our own nodes, and stops at the first real value.
+
+**Resolution: per layer, and the caveat was load-bearing.** No ISO record gives a ground resolution — they
 give a 1:10,000 scale denominator, which is not one — and only the 2025 record states point
-density. A transect sampled at 0.25 m on Phase 3 steps every 0.5 m in clean plateaus. Phase 3
-only; unconfirmed for the others. **An earlier attempt to read cell size off a fine WMS render
+density. A transect sampled at 0.25 m steps every 0.5 m in clean plateaus on Phase 3 — and the entry
+first recorded that as a single `resolution_m: 0.5` with the caveat "unconfirmed for the
+others". **rewt-16 then measured the other six because the caveat was written down**, and it
+splits exactly on provenance: Phases 1 and 2 are the original Scottish Public Sector LiDAR,
+flown 2011-2014 for flood risk at **1.0 m**; Phases 3 to 6 and the 2025 programme derive from
+the Fugro captures at **0.5 m**. Phase 1 covers 22.9% of our Scottish nodes and Phase 2
+another 3.1%, so about a quarter of the readings will be 1 m, and anything assuming the
+declared 0.5 m would assume it wrongly for them. A recorded caveat did the work here that a
+recorded certainty would have prevented. **An earlier attempt to read cell size off a fine WMS render
 returned "8 m" and was discarded**: the run lengths were the colour ramp quantising, not the
 grid. A plausible number from a method that cannot measure the thing is the failure mode this
 project keeps meeting, and it is recorded here because it nearly went in as a fact.
