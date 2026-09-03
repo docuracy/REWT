@@ -816,8 +816,15 @@ def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) 
 
     problems: list[str] = []
 
+    # `--untracked-files=all`, NOT the default. git collapses an untracked DIRECTORY to
+    # a single porcelain line, so "N untracked file(s)" counted entries and not files:
+    # this repository showed `?? rules/` as one line covering two. The count would have
+    # been right today only by the accident that every untracked path happens to be a
+    # file — a figure that does not name what it claims to count (D-074). Found by
+    # rewt-c1 within the hour, on the block added to catch exactly this class of thing.
     dirty = subprocess.run(
-        ["git", "status", "--porcelain"], capture_output=True, text=True, cwd=paths.ROOT
+        ["git", "status", "--porcelain", "--untracked-files=all"],
+        capture_output=True, text=True, cwd=paths.ROOT,
     ).stdout.strip()
     tracked_dirty = [l for l in dirty.splitlines() if not l.startswith("??")]
     if tracked_dirty:
@@ -834,8 +841,13 @@ def release_check_cmd(tag: str = typer.Argument(..., help="the tag to be cut")) 
     # tidier. Reported separately because the two need different answers: commit it,
     # or gitignore it with the reason, and either is a decision somebody has to take.
     #
-    # git does not list ignored files here, so build outputs and data/ never appear.
-    # What appears is genuinely undeclared.
+    # git does not list IGNORED files here, so db/, published/, data/raw/ and
+    # data/interim/ never appear — but `data/` itself is not ignored, so a new data
+    # subdirectory would. That is the right behaviour by this project's own rule and
+    # wants a .gitignore entry carrying the reason, which is where the next person
+    # looks. (An earlier version of this comment said data/ never appears. It was the
+    # comment that overstated, not the code; rewt-c1 checked each path with
+    # `git check-ignore` rather than reading the .gitignore, which is the difference.)
     untracked = [l[3:] for l in dirty.splitlines() if l.startswith("??")]
     if untracked:
         problems.append(

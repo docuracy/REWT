@@ -2969,11 +2969,29 @@ session re-checking its own figure re-runs its own assumption and obtains agreem
 and rewt-c1 through shapely while I queried DuckDB. Where all three agreed the number is worth
 something; the four errors above all survived at least one re-run by their author.
 
-**Two of the five errors were the same error — a selector silently dropping NULL keys — in
-two different sessions' tooling on the same afternoon.** Neither would have found it alone.
-D-070 says confirm a selector excludes something; the sharper form is that a selector can
-exclude something *and still return a plausible total*, and the only cheap detector is
-somebody else's count.
+**Two of the five errors were the same error in two different sessions' tooling on the same
+afternoon** — rows silently dropped, mine by an inner join to a table 4 basins have no row
+in, rewt-c1's by a pandas groupby on a label that is NULL for 76 of 334. Neither would have
+found it alone.
+
+**rewt-c1 sharpened this and their form is the one to keep.** I first wrote it as "a
+selector can exclude something and still return a plausible total". That is wrong in a way
+that matters: *neither of us wrote a selector.* One wrote a join and the other a groupby,
+and the row-dropping was the **tool's default** in both cases — nobody asked for it. This
+is why D-070 does not reach it. "Confirm a selector excludes something" is phrased for a
+WHERE clause, and 87 of 334 *does* exclude something, so that check passes while the
+answer is wrong.
+
+The rule that does reach it: **after any operation that can silently drop rows — an inner
+join, a groupby on a nullable key, a merge, a `head` — the complement must be enumerable
+and its reason nameable.** Not *did it exclude something* but *name what it excluded, and
+why*. Had rewt-c1 asked which 247 basins were missing, "76 carry no label" would have come
+back immediately and needed no second session at all.
+
+A peer's count is the backstop and it worked here, but it is a weaker instrument than it
+looks: **it only fires where a peer happens to compute the same quantity, and four of the
+five figures above had nobody else computing them.** They were caught because they sat next
+to one that did.
 
 One near-collision worth writing down before it misleads someone: the sea enclosed by in-scope
 basins is 2,896.9 km and `sea_reach.sea_only_km` is 2,890.4 km. They are unrelated quantities
