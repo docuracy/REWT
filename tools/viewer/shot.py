@@ -198,37 +198,55 @@ def check_sightline(page) -> tuple[bool, str]:
             const t = setTimeout(res, 15000);
             m.once('idle', () => { clearTimeout(t); res(); });
         });
-        const rays = {}, hits = {};
-        for (const [label, pick] of [['visible', (f) => f.properties.visible],
-                                     ['negative', (f) => !f.properties.visible]]) {
-            const f = fs.find(pick);
-            const c = cen(f.geometry);
-            m.jumpTo({ center: c, zoom: 8 });
-            await settle();
-            const pt = m.project(c);
-            const found = window.rewt.split(window.rewt.hits(pt)).marks
-                .filter((x) => x.d.o && x.d.o.id === 'sightline');
-            hits[label] = found.length;
-            m.fire('click', { lngLat: { lng: c[0], lat: c[1] }, point: pt,
-                              originalEvent: new MouseEvent('click') });
-            await new Promise(r => setTimeout(r, 600));
-            rays[label] = (m.getSource('sightline-ray')._data.features || []).length;
-        }
-        return { n, rays, hits, total: fs.length };
+        /* THE RAY IS GONE, and the check follows the data rather than the other way
+           round. The layer computed from the land outwards knows the governing HEIGHT
+           of the band that reached a cell, not which summit — so there is no position
+           to draw a line to. What is checkable now is that a click lands on a cell and
+           the popup names the height that holds it, and says the reach is derived from
+           it rather than measured separately. */
+        const f = fs.find((x) => x.properties.visible);
+        const c = cen(f.geometry);
+        m.jumpTo({ center: c, zoom: 8 });
+        await settle();
+        const pt = m.project(c);
+        const found = window.rewt.split(window.rewt.hits(pt)).marks
+            .filter((x) => x.d.o && x.d.o.id === 'sightline');
+        m.fire('click', { lngLat: { lng: c[0], lat: c[1] }, point: pt,
+                          originalEvent: new MouseEvent('click') });
+        await new Promise(r => setTimeout(r, 600));
+        const pop = document.querySelector('.maplibregl-popup');
+        const text = pop ? pop.innerText : '';
+        /* CONTROL in the same run: the same probe over land, where the layer has no
+           cells at all, must find nothing. Without it "the popup named the height"
+           could be true of a page that renders one cell and nothing else. */
+        const control = window.rewt.split(window.rewt.hits(m.project([-1.9, 52.5]))).marks
+            .filter((x) => x.d.o && x.d.o.id === 'sightline').length;
+        return { n, total: fs.length, hit: found.length, control,
+                 namesHeight: text.includes(String(f.properties.gov_h_m) + ' m'),
+                 saysDerived: /not\s+a second measurement/.test(text),
+                 govHeights: new Set(fs.map((x) => x.properties.gov_h_m)).size };
     }""")
     if res.get("missing"):
         return False, "the sightline layer is not in the style"
-    n, rays, hits = res["n"], res["rays"], res["hits"]
-    # THE CLICK MUST HAVE LANDED, or "no ray" means "no cell" and the check is measuring
-    # empty water. Reported first, because it is the reading that invalidates the rest.
-    if hits["visible"] != 1 or hits["negative"] != 1:
-        return False, (f"the click missed the cell: sightline features under the point "
-                       f"were {hits} (want 1 and 1). The ray readings {rays} say nothing.")
-    ok = n["visible"] > 0 and rays["visible"] == 1 and rays["negative"] == 0
-    return ok, (f"{res['total']:,} cells: {n['visible']:,} in sight, "
-                f"{n['negative']:,} out of sight, {n['unknown']:,} not known; "
-                f"both clicks hit their cell; ray drawn for the visible one="
-                f"{rays['visible'] == 1}, absent for the other={rays['negative'] == 0}")
+    # These keys are THIS check's tally, computed in the page above — not the overlay's
+    # `states` labels, which read "in sight" / "out of sight" / "NOT KNOWN". Two tallies
+    # of one thing under two vocabularies; reading the wrong one raised a KeyError, which
+    # was luck. The same slip against a dict that happened to contain the key would have
+    # been a silent zero.
+    n = res["n"]
+    # THE CLICK MUST HAVE LANDED, or everything after it is a reading of empty water.
+    if res["hit"] != 1:
+        return False, (f"the click missed: {res['hit']} sightline cells under the point "
+                       f"(want 1). Nothing after this means anything.")
+    if res["control"] != 0:
+        return False, (f"the control found {res['control']} sightline cells over inland "
+                       f"Warwickshire, where the layer has none")
+    ok = n["visible"] == res["total"] and res["namesHeight"] and res["saysDerived"]
+    return ok, (f"{res['total']:,} cells, all in sight ({n['negative']:,} out, "
+                f"{n['unknown']:,} not known — the trim landed), "
+                f"{res['govHeights']} distinct governing heights; click named the "
+                f"height={res['namesHeight']}, said the reach is derived="
+                f"{res['saysDerived']}; control over land found nothing")
 
 
 CHECKS = {"panel": check_panel, "layers": check_layers,

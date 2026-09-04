@@ -547,24 +547,36 @@ const OVERLAYS = [
      that arrives after the extension shows a confident zone with no history, and one
      that arrives now shows a reader where the edge of knowledge was. */
   { id: 'sightline', label: 'Where land can be seen from the sea',
-    file: '../router/data/sightline_r6.geojson', kind: 'polygon', count: 15861,
-    /* ONLY AN EXPLICIT `known: false` IS PAINTED AS UNKNOWN. H3-002 §3 will trim the
-       grid to the region where the answer IS known — "the viewer will then show only
-       'in sight' or 'out of sight', not 'unknown'" — and a trimmed file may drop the
-       property altogether. Testing `['get','known']` for truth would then paint every
-       true negative as unknown, turning a correct answer into a confession. Absent
-       means answered; false means not knowable; and the tally under the layer says
-       which of the three the file actually holds, so a change of shape is visible
-       rather than inferred. */
+    file: '../router/data/sightline2_r6.geojson', kind: 'polygon',
+    /* NO `count` HERE. It was 15,861, typed from a message, and it was wrong within a
+       day — wrong file and wrong number at once. The count is a property of rewt-c7's
+       file and had no business living in mine; `ensure` now takes it from what actually
+       loaded, so it cannot be stale and cannot disagree with what is drawn. */
+    /* COLOURED BY WHAT HOLDS THE WATER IN SIGHT, because every cell in this file is in
+       sight — the unknown and out-of-sight states are gone by construction, trimmed
+       away rather than painted (H3-002 §3). One state is not a map. What varies, and
+       what a reader is actually asking, is WHICH LAND: a thin fringe held by a 100 m
+       hill is a different proposition from water held by a mountain 130 km off.
+
+       Not the hot ramp the obvious instinct reaches for: red on this map is the alarm
+       colour and means in scope and not reaching tidal water. Water held by a mountain
+       is not a defect. So the ramp stays in the water family, pale for a low hill and
+       deep for a summit, and borrows nothing that already means something else. */
     colour: ['case',
-      ['get', 'visible'], '#5ce1e6',
       ['==', ['get', 'known'], false], C.warn,
-      '#39414d'],
-    opacity: 0.28,
-    legend: [['land is theoretically in sight', '#5ce1e6'],
-             ['no land in sight, and that is the answer', '#39414d'],
-             ['NOT KNOWN — the land that would be visible lies outside the '
-              + 'bathymetry cache, so this is not a negative', C.warn]],
+      ['interpolate', ['linear'], ['coalesce', ['get', 'gov_h_m'], 0],
+        0, '#cfeffb', 100, '#9fe8ff', 300, '#37b6e8', 700, '#1f6fc4', 1200, '#123f8a']],
+    opacity: 0.34,
+    legend: [['held by a hill under 100 m — a fringe of about 38 km', '#9fe8ff'],
+             ['held by 300 m — about 66 km', '#37b6e8'],
+             ['held by 700 m — about 100 km', '#1f6fc4'],
+             ['held by 1,200 m and over — about 131 km', '#123f8a'],
+             ['the EDGE of this layer is a ROUTING decision, not a horizon and not a '
+              + 'coast: cells out of sight, and cells beyond a week under sail, are '
+              + 'absent rather than drawn', null]],
+    /* The tally counts what the file HOLDS, so a change of shape shows on the page
+       rather than being noticed later. It reported three states yesterday; today it
+       reports one, which is the trim having landed. */
     states: (fs) => {
       const n = { 'in sight': 0, 'out of sight': 0, 'NOT KNOWN': 0 };
       for (const f of fs) {
@@ -574,8 +586,7 @@ const OVERLAYS = [
       return n;
     },
     note: 'theoretical sight of land: curvature and refraction only, no occlusion by '
-      + 'intervening land and no weather. Click a cell for the hill that governs it and '
-      + 'the line to it.' },
+      + 'intervening land and no weather. Click a cell for the land that holds it.' },
 ];
 const loaded = new Set();
 /* A layer's own provenance, keyed by layer id, read from the file it came in. */
@@ -796,6 +807,15 @@ async function ensure(o) {
      never typed: the legend describes what the layer CAN show and this says what it
      DOES. */
   if (o.states) tallies.set(o.id, o.states(data.features));
+  /* THE COUNT BESIDE A LAYER IS A PROPERTY OF ITS FILE. Typing one here couples
+     this file to somebody else's build, and the one literal that was typed went
+     stale within a day. Taken from what loaded, so it describes what is drawn. */
+  if (o.count == null && Array.isArray(data.features)) {
+    o.count = data.features.length;
+    const em = document.querySelector(`#note-${o.id}`)?.previousElementSibling
+      ?.querySelector('em');
+    if (em) em.textContent = fmt(o.count);
+  }
   map.addSource(o.id, { type: 'geojson', data });
   if (o.kind === 'polygon') {
     map.addLayer({ id: o.id, type: 'fill', source: o.id,
@@ -918,13 +938,23 @@ function buildLayerPanel() {
    what assumption about the observer, over what data, and — first, because it is the
    one that changes what the picture MEANS — the warning the file itself carries. */
 const STAMP_FIELDS = [
-  ['h3_resolution', 'H3 resolution'],
+  ['method', 'method'],
   ['observer_height_m', 'observer height, metres'],
   ['horizon_formula', 'horizon'],
-  ['max_landmark_reach_km', 'furthest any landmark reaches, km'],
+  ['max_reach_km', 'furthest any land reaches, km'],
+  ['blind_sailing_buffer_km', 'blind-sailing buffer, km'],
+  ['week_km', "a week's sailing, km"],
+  ['distance_crs', 'distances computed in'],
+  ['distance_crs_worst_error_pct', 'worst projection error, %'],
+  ['validated_against', 'validated against'],
   ['source_release', 'elevation'],
   ['source_checksum', 'digest'],
 ];
+/* Printed in full under the fields rather than squeezed into them: each is a sentence
+   that changes how the picture should be read, and the first is the one I asked rewt-c7
+   to carry — a trimmed layer has an EDGE, and an edge on a map reads as a boundary of
+   something real when it is a routing decision. */
+const STAMP_PROSE = ['buffer_basis', 'week_trim', 'trimmed', 'gov_h_m_definition'];
 function showStamp(o) {
   const st = stamps.get(o.id);
   const el = document.getElementById(`note-${o.id}`);
@@ -942,7 +972,8 @@ function showStamp(o) {
   el.innerHTML = `${esc(o.note || '')}
     ${st.warning ? `<br><b style="color:var(--warn)">${esc(st.warning)}</b>` : ''}
     ${counted}<dl class="stamp">${rows}</dl>
-    ${st.use_constraint ? `<b>${esc(st.use_constraint)}</b>` : ''}`;
+    ${STAMP_PROSE.filter((k) => st[k]).map((k) => `<br>${esc(st[k])}`).join('')}
+    ${st.use_constraint ? `<br><b>${esc(st.use_constraint)}</b>` : ''}`;
 }
 
 function applyTheme() {
@@ -1303,19 +1334,31 @@ function markBlock({ d, f }) {
      hill, and how far, and judge it. */
   if (d.o && d.o.id === 'sightline') {
     const st = stamps.get('sightline') || {};
-    if (!p.known) {
+    /* `p.known === false`, NOT `!p.known` — the same distinction the fill expression
+       was hardened for in 2105a43, and I fixed one of the two places. The trimmed layer
+       carries no `known` property at all, so `!p.known` is true for every cell in it and
+       every popup announced NOT KNOWN over water whose answer is perfectly well known.
+       Absent means answered; only an explicit false means not knowable. Found by
+       tools/viewer/shot.py on the switch to sightline2, not by me reading it twice. */
+    if (p.known === false) {
       extra = `<div class="quote"><b style="color:var(--warn)">NOT KNOWN, which is not
         the same as no land in sight.</b> The land that would be visible from here lies
         outside the bathymetry cache, so this cell has no answer — it is not a
         negative.</div>`;
     } else if (p.visible) {
-      extra = `<div class="quote">Land is theoretically in sight: a
-        <b>${fmt(p.landmark_h_m)} m</b> summit <b>${fmt(p.distance_km, 1)} km</b> away,
-        with ${fmt(p.margin_km, 1)} km to spare before it drops below the horizon.
-        Curvature and refraction only — nothing here accounts for intervening land,
-        haze or an observer above sea level${st.observer_height_m === 0
-          ? ', and the observer is AT sea level, so this is a floor and not the real'
-            + ' envelope' : ''}.</div>`;
+      /* `gov_reach_km` IS `gov_h_m`, AND THE POPUP SAYS SO. It is 3.7945*sqrt(h) for
+         every one of the 14,991 cells — 67 distinct heights, 67 distinct pairs — so the
+         two fields are one variable in two units. Printed side by side they read as two
+         measurements agreeing, which is the most persuasive thing a single measurement
+         can pretend to be. */
+      extra = `<div class="quote">Land is in sight from here. The tallest land that
+        reaches this cell is <b>${fmt(p.gov_h_m)} m</b>, which is why the reach is
+        ${fmt(p.gov_reach_km, 0)} km — that figure is 3.7945·√${fmt(p.gov_h_m)} and not
+        a second measurement.
+        Curvature and refraction only: nothing here accounts for intervening land, haze,
+        or an observer above sea level${st.observer_height_m === 0
+          ? ', and the observer is AT sea level, so every range here is a floor —'
+            + ' a masthead at 10 m would add about 12 km' : ''}.</div>`;
     } else {
       extra = '<div class="quote">No land in sight, and this cell is far enough inside '
         + 'the data for that to be the answer rather than a gap.</div>';
@@ -1334,6 +1377,12 @@ function markBlock({ d, f }) {
 /* The line from the cell to the hill that governs it. Its own source, because it is a
    claim about the world and not a highlight — the halo says "you clicked this", and
    this says "and THAT is why". Cleared whenever there is nothing to say. */
+/* THE RAY NEEDS A LANDMARK POSITION AND THE NEW FILE DOES NOT CARRY ONE. The layer
+   computed from the land outwards knows the governing HEIGHT of the band that first
+   reached a cell, not which summit it was — `gov_h_m_definition` says so. So there is
+   nothing to draw a line to, and drawing one to a guessed position would be the worst
+   kind of illustration: precise, wrong, and inspectable. It stays here because the
+   property may come back, and because it draws nothing whenever it is absent. */
 function drawRay(p, geom) {
   const src = map.getSource('sightline-ray');
   if (!src) return;
