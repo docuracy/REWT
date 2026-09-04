@@ -35,6 +35,10 @@ $rewt-rule: #d8d2c4;
    scrolls away as before and only this strip stays, which is why it is a strip:
    anything taller would spend a reader's screen on furniture. */
 .site-nav {
+  /* BASELINE, not the default stretch: the items are words, and words in a row line up
+     on the line they are written on. The pill needs the second half of this to work —
+     see `.nav-app-mark` below. */
+  align-items: baseline;
   background: #fff;
   border-bottom: 1px solid $rewt-rule;
   display: flex;
@@ -69,13 +73,18 @@ $rewt-rule: #d8d2c4;
      making is one a reader has no reason to expect. The underline idiom above is
      cancelled rather than tweaked: a pill with one edge thicker reads as a mistake. */
   a.nav-app {
-    align-items: center;
     background: #fff;
     border: 1px solid $rewt-rule;
     border-radius: 999px;
     color: $rewt-present;
-    display: inline-flex;
-    gap: 0.35rem;
+    /* INLINE-BLOCK RATHER THAN INLINE-FLEX, and that is the whole fix. A flex box takes
+       its baseline from its FIRST ITEM, and the first item here is the map glyph — an
+       `svg` is replaced content with no baseline of its own, so the browser used its
+       bottom edge and set "Viewer" 2.9px below every other word in the bar. An
+       inline-block takes its baseline from its own text, which is the thing that has to
+       line up. Measured at 0.00px against the three prose links afterwards; the pill is
+       the same 22.45 x 93.89 it was, so nothing about its shape depends on this. */
+    display: inline-block;
     margin-left: auto;
     padding: 0.12rem 0.7rem 0.16rem;
 
@@ -93,7 +102,11 @@ $rewt-rule: #d8d2c4;
      `margin-left: auto` on both would share the free space between them. */
   a.nav-app ~ a.nav-app { margin-left: 0; }
 
-  .nav-app-mark { flex: none; }
+  /* `gap` and `flex: none` went with the flex box above. The glyph is inline now, so it
+     is spaced with a margin and sat on the text with `vertical-align` — the offset is
+     what centres a 15px square against 0.9rem text, and it moves the icon 0.38px, which
+     is less than the pixel it is drawn on. */
+  .nav-app-mark { margin-right: 0.35rem; vertical-align: -0.2em; }
 }
 
 .site-foot {
