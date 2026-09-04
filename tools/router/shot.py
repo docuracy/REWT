@@ -35,12 +35,19 @@ from pathlib import Path
 URL = "http://127.0.0.1:8021/router/check/"
 OUT = Path("docs/router/check/shots")
 GL = ["--enable-unsafe-swiftshader", "--use-gl=angle", "--use-angle=swiftshader"]
-STAGES = ["sightline2", "joins", "traces"]
+LAYERS = ["cells", "net", "traces", "joins"]
+# check.html turned its exclusive stages into four independent toggles, so a shot is
+# now of a SET of layers. Each named layer is still shot alone, because a layer that
+# draws nothing is invisible in a composite that another layer has filled.
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", action="append", choices=STAGES)
+    ap.add_argument("--layer", action="append", choices=LAYERS)
+    ap.add_argument("--stage", action="append", choices=LAYERS,
+                    help="deprecated alias for --layer")
+    ap.add_argument("--all-on", action="store_true",
+                    help="one shot with every layer on, as the page opens it")
     ap.add_argument("--area", default="all")
     ap.add_argument("--url", default=URL)
     ap.add_argument("--timeout", type=int, default=90_000)
@@ -55,7 +62,7 @@ def main() -> int:
         return 2
 
     OUT.mkdir(parents=True, exist_ok=True)
-    stages = a.stage or STAGES
+    stages = ["__all__"] if a.all_on else (a.layer or a.stage or LAYERS)
     # A real mapless page, not a flag the page cooperates with: the point is to exercise
     # the timeout path, and a page that politely declines to draw is not the same subject.
     url = (a.url + "join_summary.json".join(["../data/", ""])
@@ -94,7 +101,8 @@ def main() -> int:
                 # `ok` for a stage it never showed. The feature count was the evidence
                 # and I was not checking it against anything.
                 before = page.evaluate("window.__drawn")
-                page.evaluate(f"window.setStage({st!r})")
+                sel = LAYERS if st == "__all__" else [st]
+                page.evaluate(f"window.setLayers({sel!r})")
                 page.wait_for_function(f"window.__drawn > {before}", timeout=a.timeout)
                 if a.area != "all":
                     page.evaluate(f"window.zoomTo({a.area!r})")
@@ -121,10 +129,16 @@ def main() -> int:
             # control that draws nothing? An absence means nothing without one.
             # ASSERT THE SUBJECT, not just that something drew. A harness that cannot
             # tell which stage it is looking at will happily pass the wrong one.
-            shown = page.evaluate("[...document.querySelectorAll('#stages button')]"
-                                  ".find(b=>b.classList.contains('on'))?.dataset.s")
-            if shown != st:
-                print(f"FAIL  {st:<10} the page is showing {shown!r}, not {st!r}")
+            # The control is now four toggles, so the subject is a SET and the assertion
+            # has to compare sets. Comparing against a single name passed every
+            # single-layer shot and failed the composite, which is the shape of check
+            # that agrees with you until the moment it matters.
+            shown = set(page.evaluate(
+                "[...document.querySelectorAll('#stages button')]"
+                ".filter(b=>b.classList.contains('on')).map(b=>b.dataset.s)"))
+            if shown != set(sel):
+                print(f"FAIL  {st:<10} the page is showing {sorted(shown)}, "
+                      f"not {sorted(sel)}")
                 bad += 1
                 continue
             n = page.evaluate("window.map.queryRenderedFeatures()"

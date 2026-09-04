@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>REWT router — staged check</title>
+<title>REWT router — check</title>
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <style>
@@ -17,7 +17,8 @@
    padding:5px 9px;margin:0 4px 4px 0;cursor:pointer;font:inherit;font-size:12px}
  button:hover{border-color:var(--accent)} button.on{background:var(--accent);color:#08111f;
    border-color:var(--accent);font-weight:600}
- .key{display:flex;align-items:center;gap:7px;margin:3px 0;font-size:12px}
+ .grp{color:#8b949e;font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin:8px 0 3px}
+  .key{display:flex;align-items:center;gap:7px;margin:3px 0;font-size:12px}
  .sw{width:13px;height:13px;border-radius:3px;flex:none;border:1px solid rgba(255,255,255,.25)}
  table{width:100%;border-collapse:collapse;font-size:11.5px} td{padding:1px 0;color:var(--dim)}
  td.v{text-align:right;color:var(--fg);font-variant-numeric:tabular-nums}
@@ -28,10 +29,10 @@
 </style></head><body>
 <div id="map"></div>
 <div id="panel">
-  <h1>Router — staged check</h1>
+  <h1>Router — check</h1>
   <div class="sub">Local instrument, not published. Coastline is OS Boundary-Line (OGL);
     depths EMODnet DTM 2024 (CC BY 4.0). <b>Not for navigation.</b></div>
-  <h2>Stage</h2><div id="stages"></div>
+  <h2>Layers</h2><div id="stages"></div>
   <h2>Zoom to</h2><div id="areas"></div>
   <h2>Legend</h2><div id="legend"></div>
   <h2>Figures</h2><table id="figs"></table>
@@ -47,26 +48,66 @@ map.addControl(new maplibregl.NavigationControl(),'top-right');
 map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-right');
 
 const RES={3:'#f85149',4:'#f0883e',5:'#e3b341',6:'#3fb950',7:'#2ea043',8:'#58a6ff',9:'#a371f7'};
-const STAGES={
- sightline2:{label:'1 · Sightline', legend:[['governed by land &gt;800 m','#f85149'],
-   ['400–800 m','#f0883e'],['200–400 m','#e3b341'],['80–200 m','#3fb950'],
-   ['under 80 m','#58a6ff'],['sees none','#484f58']],
-   note:'Same question, computed from the land outwards in 2 km reach bands. Colour is the TALLEST land that reaches each cell — the thing the inversion makes visible. Red water is held by a mountain; blue by a low hill, and it hugs the coast.'},
- joins:{label:'2 · Joins', legend:[['rule 1 — in a cell','#3fb950'],['rule 2 — adjacent','#58a6ff'],
-   ['rule 3 — needs a path','#f85149']],
-   note:'One line per tidal terminus to the grid cell it attaches to. Red is an inference not yet traced.'},
- traces:{label:'3 · Traces', legend:[['traced path','#a371f7']],
-   note:'Least-cost paths across the drying ground for the stranded termini. The median path spends 83% of its length above the lowest tide.'}};
+// FOUR INDEPENDENT TOGGLES, not stages. Stephen asked for the cell-centre link network
+// beside the cells rather than instead of them, and once two layers can be on together
+// the exclusive control is the wrong instrument: the question "does a join land on a cell
+// the network actually reaches" cannot be asked one stage at a time. Declaration order is
+// also PAINT order — cells beneath, joins on top.
+const LAYERS={
+ cells:{label:'cells', src:['sl2', F+'sightline2_r6.geojson'],
+   legend:[['governed by land &gt;800 m','#f85149'],['400-800 m','#f0883e'],
+     ['200-400 m','#e3b341'],['80-200 m','#3fb950'],['under 80 m','#58a6ff'],
+     ['sees none','#484f58']],
+   note:'Sighted sea, computed from the land outwards in 2 km reach bands. Colour is the TALLEST land that reaches each cell. Red water is held by a mountain; blue by a low hill, and it hugs the coast.',
+   add:()=>map.addLayer({id:'x-cells',type:'fill',source:'sl2',paint:{'fill-opacity':.45,
+     'fill-color':['case',['!',['get','visible']],'#484f58',
+       ['>=',['get','gov_h_m'],800],'#f85149',['>=',['get','gov_h_m'],400],'#f0883e',
+       ['>=',['get','gov_h_m'],200],'#e3b341',['>=',['get','gov_h_m'],80],'#3fb950',
+       '#58a6ff']}})},
+ net:{label:'sea network', src:['ed', F+'edges.geojson'],
+   legend:[['cell-centre link','#c9d1d9'],['crosses a resolution band','#f0883e']],
+   note:'The travelling surface: links between the centres of adjacent sea cells. AN EDGE IS AN ADJACENCY, NOT A TRACK — no vessel sailed the straight line between two hexagon centres. Aggregated to the resolution of the cells drawn beneath it, so these are not the centres a route uses either.',
+   add:()=>{ map.addLayer({id:'x-net',type:'line',source:'ed',
+       paint:{'line-width':['case',['get','crosses_band'],2.0,0.7],
+              'line-color':['case',['get','crosses_band'],'#f0883e','#c9d1d9'],
+              'line-opacity':['case',['get','crosses_band'],1,0.8]}}); }},
+ traces:{label:'traces', src:['tr', F+'traces.geojson'],
+   legend:[['traced path','#a371f7']],
+   note:'Least-cost paths across the drying ground for the stranded termini.',
+   add:()=>map.addLayer({id:'x-traces',type:'line',source:'tr',
+     paint:{'line-width':2,'line-color':'#a371f7'}})},
+ joins:{label:'joins', src:['jn', F+'joins.geojson'],
+   legend:[['rule 1 - in a cell','#3fb950'],['rule 2 - adjacent','#58a6ff'],
+     ['rule 3 - needs a path','#f85149']],
+   note:'One line per tidal terminus to the cell it attaches to. Red is an inference not yet traced.',
+   add:()=>map.addLayer({id:'x-joins',type:'line',source:'jn',paint:{'line-width':1.6,
+     'line-color':['match',['get','rule'],1,'#3fb950',2,'#58a6ff','#f85149']}})}};
+// A bookmarked URL from when these were stages must still open somewhere sensible.
+const FROM_STAGE={sightline2:'cells', sightline:'cells', joins:'joins', traces:'traces'};
 function hashGet(k){ for(const p of location.hash.replace(/^#/,'').split('&')){
     const [a,...b]=p.split('='); if(a===k) return b.join('='); } return null; }
 function hashSet(k,v){ const parts=location.hash.replace(/^#/,'').split('&').filter(Boolean)
     .filter(p=>p.split('=')[0]!==k); parts.push(k+'='+v);
   history.replaceState(null,'','#'+parts.join('&')); }
-let stage=hashGet('stage')||'sightline2', loaded={}, summaries={}, areas={};
+let loaded={}, summaries={}, areas={};
+const KEYS=Object.keys(LAYERS);
+function initial(){ const h=hashGet('layers');
+  if(h!==null) return new Set(h.split(',').filter(k=>KEYS.includes(k)));
+  const st=hashGet('stage'); if(st&&FROM_STAGE[st]) return new Set([FROM_STAGE[st]]);
+  return new Set(['cells','net']); }
+let on=initial();
 window.map=map;                       // a top-level const is NOT on window
-window.__drawn=0;                     // increments when a stage has finished drawing
-window.setStage=async s=>{ stage=s; hashSet('stage',s);
-  [...stages.children].forEach(b=>b.classList.toggle('on',b.dataset.s===s)); await draw(); };
+window.__drawn=0;                     // increments when a draw has finished
+window.toggle=async k=>{ on.has(k)?on.delete(k):on.add(k);
+  hashSet('layers',[...on].join(','));
+  [...stages.children].forEach(b=>b.classList.toggle('on',on.has(b.dataset.s)));
+  await draw(); };
+// the driver and a bookmarked link both need to set the whole set at once
+window.setLayers=async list=>{ on=new Set(list.filter(k=>KEYS.includes(k)));
+  hashSet('layers',[...on].join(','));
+  [...stages.children].forEach(b=>b.classList.toggle('on',on.has(b.dataset.s)));
+  await draw(); };
+window.setStage=async s=>window.setLayers([FROM_STAGE[s]||s]);
 window.zoomTo=a=>{ if(a==='all'){ const e=areas._extent||[-8,49.5,2,61];
     map.fitBounds([[e[0],e[1]],[e[2],e[3]]],{padding:20}); return; }
   else map.fitBounds([[areas[a][0],areas[a][1]],[areas[a][2],areas[a][3]]],{padding:40}); };
@@ -89,27 +130,18 @@ async function draw(){
   await src('coast', C+'coastline.geojson');
   map.addLayer({id:'x-coast',type:'fill',source:'coast',
     paint:{'fill-color':'#161b22','fill-outline-color':'#30363d'}});
-  const resColour=['match',['get','res'],3,RES[3],4,RES[4],5,RES[5],6,RES[6],7,RES[7],8,RES[8],9,RES[9],'#888'];
-  if(stage==='sightline2'){
-    if(await src('sl2', F+'sightline2_r6.geojson'))
-      map.addLayer({id:'x-sl2',type:'fill',source:'sl2',paint:{'fill-opacity':.5,
-        'fill-color':['case',['!',['get','visible']],'#484f58',
-          ['>=',['get','gov_h_m'],800],'#f85149',
-          ['>=',['get','gov_h_m'],400],'#f0883e',
-          ['>=',['get','gov_h_m'],200],'#e3b341',
-          ['>=',['get','gov_h_m'],80],'#3fb950','#58a6ff']}});
-  } else if(stage==='joins'){
-    if(await src('jn', F+'joins.geojson'))
-      map.addLayer({id:'x-jn',type:'line',source:'jn',paint:{'line-width':1.6,
-        'line-color':['match',['get','rule'],1,'#3fb950',2,'#58a6ff','#f85149']}});
-  } else if(stage==='traces'){
-    if(await src('tr', F+'traces.geojson'))
-      map.addLayer({id:'x-tr',type:'line',source:'tr',
-        paint:{'line-width':2,'line-color':'#a371f7'}});
+  for(const k of KEYS){                 // declaration order IS paint order
+    if(!on.has(k)) continue;
+    const L=LAYERS[k];
+    if(await src(L.src[0], L.src[1])) L.add();
   }
-  const S=STAGES[stage];
-  legend.innerHTML=S.legend.map(([t,c])=>`<div class="key"><div class="sw" style="background:${c}"></div>${t}</div>`).join('');
-  warn.textContent=S.note;
+  const act=KEYS.filter(k=>on.has(k));
+  legend.innerHTML = act.length
+    ? act.map(k=>`<div class="grp">${LAYERS[k].label}</div>`+
+        LAYERS[k].legend.map(([t,c])=>`<div class="key"><div class="sw" style="background:${c}"></div>${t}</div>`).join('')).join('')
+    : '<div class="key">nothing switched on</div>';
+  warn.innerHTML = act.map(k=>`<p><b>${LAYERS[k].label}.</b> ${LAYERS[k].note}</p>`).join('')
+    || 'Every layer is off.';
   figures();
   // Signal completion from the page rather than have the driver guess. `load` fires
   // long before anything is drawn: my first headless shot was a blank panel and an
@@ -120,21 +152,27 @@ async function draw(){
 
 function figures(){
   const g=summaries.grid_summary||{}, j=summaries.join_summary||{},
-        t=summaries.trace_summary||{}, e=summaries.edge_summary||{};
-  const rows={grid:[['cells',g.total_cells],['finest res',g.coastal_sea_resolution],
-      ['edges',e.edges],['components',e.components],['isolated',e.isolated],
-      ['severed deep bodies',(g.severed_deep_water||[]).length]],
-    sightline:[['sea cells',15861],['see land',8113],['not knowable',6735]],
-    sightline2:[['sea cells',(summaries.sightline_summary||{}).sea_cells],
-      ['see land',(summaries.sightline_summary||{}).see_land],
-      ['reach bands',(summaries.sightline_summary||{}).bands],
-      ['max reach km',(summaries.sightline_summary||{}).max_reach_km],
-      ['tallest land m',(summaries.sightline_summary||{}).tallest_land_m]],
-    joins:[['termini',j.termini],['rule 1',(j.by_rule||{})['1']],['rule 2',(j.by_rule||{})['2']],
-      ['rule 3',(j.by_rule||{})['3']]],
-    traces:[['attempted',t.attempted],['traced',t.traced],['failed',t.failed]]}[stage]||[];
-  figs.innerHTML=rows.filter(r=>r[1]!==undefined)
-    .map(([k,v])=>`<tr><td>${k}</td><td class="v">${(v??'—').toLocaleString?.()??v}</td></tr>`).join('');
+        t=summaries.trace_summary||{}, e=summaries.edge_summary||{},
+        sl=summaries.sightline_summary||{};
+  const per={
+    cells:[['sea cells',sl.sea_cells],['see land',sl.see_land],['reach bands',sl.bands],
+           ['max reach km',sl.max_reach_km],['tallest land m',sl.tallest_land_m]],
+    // NOT e.edges: that is the res-7 graph, 415,520, and the layer draws 49,080 of them
+    // aggregated. A figure beside a picture must count what is in the picture — the same
+    // fault I warned visualisation about, committed here two hours later.
+    net:[['links drawn',(loaded[F+'edges.geojson']||{}).properties?.links],
+         ['res-7 edges behind them',
+          (loaded[F+'edges.geojson']||{}).properties?.routing_edges_behind_them],
+         ['seams drawn',(loaded[F+'edges.geojson']||{}).properties?.crossing_a_band],
+         ['components',e.components],['isolated',e.isolated],
+         ['rejected: crossed land',e.links_rejected_crossing_land]],
+    traces:[['attempted',t.attempted],['traced',t.traced],['failed',t.failed]],
+    joins:[['termini',j.termini],['rule 1',(j.by_rule||{})['1']],
+           ['rule 2',(j.by_rule||{})['2']],['rule 3',(j.by_rule||{})['3']]]};
+  const rows=[];
+  for(const k of KEYS) if(on.has(k)) for(const r of per[k]) rows.push(r);
+  figs.innerHTML=rows.filter(r=>r[1]!==undefined&&r[1]!==null)
+    .map(([k,v])=>`<tr><td>${k}</td><td class="v">${v.toLocaleString?.()??v}</td></tr>`).join('');
 }
 
 map.on('click',e=>{ const f=map.queryRenderedFeatures(e.point).filter(f=>f.layer.id.startsWith('x-')&&!f.layer.id.startsWith('x-coast'))[0];
@@ -145,11 +183,11 @@ map.on('click',e=>{ const f=map.queryRenderedFeatures(e.point).filter(f=>f.layer
 
 map.on('load',async()=>{
   summaries=await gj(C+'summaries.json')||{}; areas=await gj(C+'areas.json')||{};
-  stages.innerHTML=Object.entries(STAGES).map(([k,v])=>
-    `<button data-s="${k}"${k===stage?' class="on"':''}>${v.label}</button>`).join('');
+  stages.innerHTML=KEYS.map(k=>
+    `<button data-s="${k}"${on.has(k)?' class="on"':''}>${LAYERS[k].label}</button>`).join('');
   // a click anywhere also writes the point to the hash, so a cell can be pointed at
   map.on('click', e=>hashSet('at', e.lngLat.lat.toFixed(4)+','+e.lngLat.lng.toFixed(4)));
-  stages.onclick=ev=>{ const s=ev.target.dataset.s; if(!s)return; window.setStage(s); };
+  stages.onclick=ev=>{ const s=ev.target.dataset.s; if(!s)return; window.toggle(s); };
   areasEl.innerHTML=`<button data-a="all">all</button>`+Object.keys(areas).filter(a=>a[0]!=='_').map(a=>
     `<button data-a="${a}">${a}</button>`).join('');
   areasEl.onclick=ev=>{ const a=ev.target.dataset.a; if(!a)return;

@@ -202,6 +202,24 @@ def main(cfg: dict = CONFIG) -> None:
         },
         "features": feats,
     }
+    # THE INSTRUMENT MUST COVER WHAT IT EXISTS TO SHOW. The check areas were chosen for
+    # hard trace cases and then inherited by the edges export, where they covered 8 of 59
+    # seams. A per-area file that misses the thing the layer is for is worse than none,
+    # because it looks like coverage. This does not fail the run — the areas are a viewing
+    # aid, not a result — but it says the number out loud every time.
+    import h3 as _h3
+    _in = 0
+    for f in feats:
+        if not f["properties"]["crosses_band"]:
+            continue
+        la, lo = _h3.cell_to_latlng(f["properties"]["h3_a"])
+        if any(not n.startswith("_") and b[0] <= lo <= b[2] and b[1] <= la <= b[3]
+               for n, b in areas.items()):
+            _in += 1
+    _n = sum(1 for f in feats if f["properties"]["crosses_band"])
+    print(f"  seams inside a named check area: {_in} of {_n}"
+          + ("" if _n and _in / _n >= 0.5 else "   ** most seams are not viewable **"))
+
     Path(cfg["out"]).write_text(json.dumps(fc, separators=(",", ":")))
     mb = Path(cfg["out"]).stat().st_size / 1e6
     print(f"wrote {cfg['out']} ({mb:.1f} MB, {len(feats):,} edges)")

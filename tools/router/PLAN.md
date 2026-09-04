@@ -1167,3 +1167,35 @@ warns against two paragraphs earlier. Correct is 12.0.
 Three sentences, none of which any test could have failed, because **prose is the part of an
 artefact that nothing recomputes.** The figures were checked; the sentences about them were
 not, and they went out beside the numbers that contradicted them.
+
+## 20. Four toggles, not three stages
+
+Stephen asked for the cell-centre link network beside the cells rather than instead of them,
+and for the /check control to become individual toggles: **cells, sea network, traces,
+joins**, in that order.
+
+Once two layers can be on together the exclusive control is the wrong instrument. The
+question the edges layer exists to answer — *does a join land on a cell the network actually
+reaches* — cannot be asked one stage at a time. Declaration order is also paint order: cells
+beneath, joins on top. The active layers' legends stack, their notes stack, and the figures
+table is the union of their rows. A bookmarked `stage=` URL still opens somewhere sensible.
+
+**The check areas grew from six to nine.** The first six were chosen for hard trace cases —
+the multi-threaded Severn, Loch Etive's severance, the drying ground of the Wash. The edges
+layer poses a different question, and the six contained **8 of 59 seams**, with thames,
+loch-etive and mersey-dee containing none at all. An instrument keeps answering the question
+it was built for. Cornwall, Cardigan and the Solent are added from where the seams actually
+fall, and `export_edges.py` now prints the coverage every run and says so out loud when
+most seams are not viewable. Coverage is 45 of 59.
+
+Two faults of my own, in the hour after warning visualisation against exactly them:
+
+- **The figures panel read `links drawn 415,520`** — the res-7 graph, when the layer draws
+  49,080 aggregated. A figure beside a picture must count what is in the picture. It now
+  reads from the drawn layer's own properties, not from `edge_summary.json`.
+- **`shot.py` asserted the subject by comparing one name.** With a set of toggles that
+  passed every single-layer shot and failed only the composite — a check that agrees with
+  you until the moment it matters. It compares sets now.
+
+All 59 seams touch a res-6 cell that contains refinement, which is the invariant: a seam
+exists only where the banding actually changes resolution.

@@ -31,6 +31,12 @@ import h3
 
 OUT = Path("docs/router/check")
 
+# The first six were chosen for hard TRACE cases — the multi-threaded Severn, Loch Etive's
+# severance, the drying ground of the Wash. When the edges layer arrived it posed a
+# different question, and the answer was that these six contain 8 of 59 seams between them
+# and three of them contain none. An instrument keeps answering the question it was built
+# for. The last three are where the seams actually are, derived from their distribution
+# rather than picked: Cornwall and the Fal, Cardigan Bay to the Menai, and the Solent.
 AREAS = {
     "severn":     (-3.60, 51.20, -2.30, 51.80),
     "thames":     (-0.20, 51.35,  1.00, 51.65),
@@ -38,6 +44,9 @@ AREAS = {
     "solway":     (-3.90, 54.65, -3.00, 55.05),
     "loch-etive": (-5.60, 56.35, -4.95, 56.60),
     "mersey-dee": (-3.30, 53.20, -2.70, 53.50),
+    "cornwall":   (-5.75, 49.70, -3.50, 50.75),
+    "cardigan":   (-5.30, 50.90, -3.65, 53.20),
+    "solent":     (-2.20, 50.35, -0.80, 51.10),
 }
 
 
