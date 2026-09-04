@@ -1796,3 +1796,43 @@ has tested, which is D-082 in the form this file keeps meeting it.
 figure — each was a claim that something held, and each was worth nothing until someone
 tried to break it. The mechanisms are cheap; the discipline of firing them deliberately is
 the part that keeps being skipped.
+
+## 38. The ledger caught its author, within the hour
+
+rewt-46 found that their harness asserted the panel carried the literal string "32
+connected components" — my figure frozen into their check — and replaced it with one that
+reads the sentence out of `cells_r7_coast.geojson`. That is the right fix at their end and
+it left the rot at mine: **a sentence read faithfully out of an artefact is still wrong if
+the artefact typed it.**
+
+`export_coast.py` had eight figures typed into properties a consumer prints. They are all
+derived now — the component count, the coverage split against the release's sea entries, the
+mouths behind the absent ones, the grid total, the perimeter cells the clip removes.
+
+**Two of the eight were already wrong.**
+
+| typed | measured |
+|---|---|
+| 32 connected components | **33** |
+| clip removes 4,504 perimeter cells | **4,635** |
+
+Both were true when written and stale by the time anyone read them: the grid has grown since
+— 801 cells from the detour refinement of section 33 — and the numbers did not. rewt-46's
+harness was passing on a constant that was wrong, which is worse than failing on one.
+
+**AND THEN THE LEDGER FIRED ON ME.** Re-running the corrected export under the stamp the
+files already carried:
+
+    STAMP REUSED OVER CHANGED CONTENT
+      cells_r7_coast.geojson  generation 20260904T202145Z  was a05ef602…  now 7cbe853d…
+      edges_r7_coast.geojson  generation 20260904T202145Z  was e9768d3f…  now 936cc773…
+
+Written an hour earlier, in section 37, to stop exactly this. **The temptation was to
+observe that only descriptive prose had changed and wave it through.** That exception is how
+a check becomes decoration: the prose is what a consumer prints, and rewt-46 would have been
+displaying "32" out of a file that said "33". So the rule was obeyed rather than argued
+with, and the whole pass rebuilt under `20260904T204057Z`.
+
+`docs/router/data` now carries three stamps, each explicable: 12 files from this pass, 3
+where the sightline surface sits because nothing it depends on has moved, 1 for the disabled
+lights. The ledger holds 29 entries over 5 generations and passes.
