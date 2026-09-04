@@ -22,6 +22,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from generation import generation           # noqa: E402
+from landtest import land_crossing_test     # noqa: E402
 
 CONFIG = {
     "grid": "tools/router/cache/grid2.npz",
@@ -31,6 +32,7 @@ CONFIG = {
     "check_dir": "docs/router/check",
     "areas": "docs/router/check/areas.json",
     "cells": "docs/router/data/sightline2_r6.geojson",
+    "masks": "tools/router/cache/sightline_masks.npz",
     "publish_resolution": 6,   # see the note in main(): 415,520 res-7 edges is 80 MB
     "coord_dp": 4,             # 11 m, against a median edge of 2,290 m
 }
@@ -107,15 +109,31 @@ def main(cfg: dict = CONFIG) -> None:
     print(f"  dropped {len(spill):,} links reaching a cell the layer does not publish; "
           f"{len(par):,} remain")
 
-    feats = []
+    # DRAWN CENTRE TO CENTRE OF THE CELLS IT IS SHOWN BESIDE. This drew the shortest real
+    # res-7 edge instead, so that no endpoint sat on land — and Stephen's next look found
+    # links that visibly do not join the centres of the hexagons under them. Both
+    # complaints are right and they cannot both be answered at res 6: the routing nodes
+    # are res-7 and a res-6 picture of them is a schematic whichever way it is drawn. So
+    # this is now internally consistent — lines join the cells you can see — and the true
+    # lattice goes out per area at its own resolution, where cells and links agree and
+    # nothing is a schematic. The endpoints-on-land question belongs to res-6 CENTRES, not
+    # to the network: grid2.py now guarantees every routing node is in water.
+    # A DRAWN LINK MAY NOT CROSS LAND EITHER. The res-7 graph is trimmed by this test
+    # already; the res-6 chord between two parent centres is a different line and can run
+    # over a headland the res-7 path goes round. Stephen caught the omission the moment
+    # the geometry went back to parent centres. Same test, same 232 m mask.
+    crosses = land_crossing_test(cfg["masks"])
+    feats, over_land = [], 0
     for (pa, pb), r in sorted(par.items()):
-        k = r["rep"]
-        i, j = int(e[k, 0]), int(e[k, 1])
+        la, lo = h3.cell_to_latlng(pa)
+        lb, ob = h3.cell_to_latlng(pb)
+        if crosses((la, lo), (lb, ob)):
+            over_land += 1
+            continue
         feats.append({
             "type": "Feature",
             "geometry": {"type": "LineString", "coordinates": [
-                [round(float(lon[i]), D), round(float(lat[i]), D)],
-                [round(float(lon[j]), D), round(float(lat[j]), D)]]},
+                [round(lo, D), round(la, D)], [round(ob, D), round(lb, D)]]},
             "properties": {
                 "h3_a": pa, "h3_b": pb,
                 "routing_edges": r["n"],
@@ -144,12 +162,26 @@ def main(cfg: dict = CONFIG) -> None:
                               "crosses_band": bool(cross[k]),
                               "length_m": int(round(float(length[k])))}}
               for k in sub]
+        # the cells those edges run between, at their own resolution, so the area view
+        # can show a lattice in which the links DO join the centres
+        inb = np.nonzero((lon >= w) & (lon <= ea) & (lat >= so) & (lat <= no))[0]
+        cf = [{"type": "Feature",
+               "geometry": {"type": "Polygon", "coordinates": [
+                   [[round(x, 5), round(y, 5)] for y, x in h3.cell_to_boundary(cell[k])]]},
+               "properties": {"h3": cell[k], "res": int(g["resolution"][k]),
+                              "depth_m": round(float(g["depth_m"][k]), 1)}}
+              for k in inb]
+        Path(cfg["check_dir"], f"cells-{name}.geojson").write_text(json.dumps(
+            {"type": "FeatureCollection",
+             "properties": {"generation": stamp, "aggregated": False,
+                            "what": "the routing cells themselves, res 7-9"},
+             "features": cf}, separators=(",", ":")))
         Path(cfg["check_dir"], f"edges-{name}.geojson").write_text(json.dumps(
             {"type": "FeatureCollection",
              "properties": {"generation": stamp, "aggregated": False,
                             "what": "the routing lattice itself, res 7-9, unaggregated"},
              "features": af}, separators=(",", ":")))
-        print(f"  edges-{name}.geojson  {len(af):,} true edges")
+        print(f"  {name}: {len(cf):,} true cells, {len(af):,} true edges")
 
     s = json.loads(Path(cfg["summary"]).read_text())
     fc = {
@@ -165,6 +197,12 @@ def main(cfg: dict = CONFIG) -> None:
                 "within the lattice's resolution and no better.",
             "lattice": s.get("lattice_note"),
             "links": len(feats),
+            "links_over_land_not_drawn": over_land,
+            "land_trim":
+                "A link is not drawn where the straight line between the two CELL CENTRES "
+                "crosses land at 232 m, even though a res-7 route joins them round the "
+                "headland. The chord and the route are different lines; this layer draws "
+                "the chord, so the chord is what is tested.",
             "links_outside_published_cells": len(spill),
             "clip_note":
                 "Aggregation lifts a res-6 cell into view as soon as one of its seven "

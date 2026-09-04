@@ -1231,3 +1231,67 @@ precision than the 232 m mask has.
 and put the switch furthest from the swatch it governs. Every layer is listed whether on or
 off, so the panel says what EXISTS as well as what is showing — a control that hides its off
 state cannot be read. `shot.py` asserts the subject by reading the same thing a person does.
+
+## 22. Closing short blind hops
+
+Stephen found small pockets of sea just out of sight of land which a navigator would cross
+without difficulty, the largest mid-Channel, and proposed closing anything within about a
+three-cell hop. His justification is the whole of the case and it is sound in three parts:
+the visibility test is approximate, what can actually be seen depends on the weather in any
+case, and **a short blind hop is not the same proposition as a blind passage**.
+
+**It does not reopen blind sailing.** A uniform buffer grows the frontier outward
+everywhere, which is what he ruled out in section 14. This fills only water that is
+**enclosed**: a pocket qualifies when no point in it is more than `close_hop_cells`
+cell-widths from water that does see land, so the open ocean beyond the sighted zone can
+never qualify however large the threshold is set.
+
+**The discriminator is not a threshold I chose.** Of the enclosed absences in the layer,
+one has a sea fraction of **1.00** and every other is **0.43 or less** — because the others
+are Shetland, Orkney, the Outer Hebrides, Islay, Man, Arran and Wight. They are islands, not
+holes. There is nothing between 0.43 and 1.00, and Stephen's "I see no others" is exactly
+what the data says. The ring depth is equally insensitive: with the sea test applied the
+answer is **stable from 3 rings to 6** and collapses only at 2, so 3 is both his proposal
+and the smallest value that works.
+
+Measured, the mid-Channel pocket is **1,187 km², deepest point 10.4 km from sighted water,
+median depth 3.9 km**. At 3 cells (19.4 km, derived from the H3 edge length, not typed) the
+rule closes **330 of 702 blind pockets, 3,218 km², 22 published cells**.
+
+**The filled cells are not marked visible.** They carry `closed_hop` and render amber. They
+are blind water we accept crossing, and a rule that quietly promoted them would leave the
+map claiming land is in sight where it is not.
+
+## 23. One adjacency, after one land test was not enough
+
+Closing the holes moved the sightline, and **7 isolated cells and 14 components came back** —
+the exact defect section 16 was supposed to have fixed. The shared land test was only half
+of it: `grid2.py` and `edges.py` also **built** the neighbour set differently, two
+hand-written walks over `grid_disk`, ancestors and descendants. So "connected" still meant
+two things and the disagreement waited for the inputs to move.
+
+`adjacency.py` is now the single builder. Both import it. **0 isolated, 1 component, all
+143,095 cells.** Two copies of a predicate is two chances to disagree, and the disagreement
+is invisible while both copies are internally consistent.
+
+## 24. The network drawn where the cells are
+
+Stephen: *the cell-centre links do not join the cell centres.* True, and I had done it
+deliberately — section 21 changed the drawn geometry to the shortest real res-7 edge so that
+no endpoint sat on land. Both complaints are right and **they cannot both be answered at
+res 6**: the routing nodes are res-7, and a res-6 picture of them is a schematic whichever
+way it is drawn.
+
+So the aggregated layer draws **centre to centre of the cells it is shown beside** — the
+picture is at least internally consistent — and the **true lattice** goes out per named area
+at its own resolution, as a fifth toggle, where cells and links agree and a link does join
+two centres. The endpoints-on-land question belongs to res-6 centres, not to the network:
+`grid2.py` guarantees every routing node is in water.
+
+**And the drawn chord is land-trimmed too**, which Stephen had to point out. The res-7 graph
+was already trimmed; the res-6 chord between two parent centres is a different line and can
+run over a headland the res-7 route goes round. Same test, same mask: **1,347 links not
+drawn**.
+
+A fadable OSM basemap sits under everything, attributed, development use only, and
+cross-fades with the synthetic coastline so the two backdrops do not fight.

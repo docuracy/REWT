@@ -31,6 +31,7 @@ from scipy.sparse.csgraph import connected_components
 
 import h3
 from generation import generation
+from adjacency import build_pairs
 from landtest import land_crossing_test
 from pyproj import Transformer
 
@@ -67,56 +68,9 @@ def main(cfg: dict = CONFIG) -> None:
     # is what surfaced it.
     crosses_land = land_crossing_test(cfg["masks"], cfg["land_samples"])
 
-    rejected = 0
-    pairs: set[tuple[int, int]] = set()
-    crossings = Counter()
-    for c in cells:
-        r = res[c]
-        for n in h3.grid_disk(c, 1):
-            if n == c:
-                continue
-            if n in idx:                                    # same resolution
-                if crosses_land(h3.cell_to_latlng(c), h3.cell_to_latlng(n)):
-                    rejected += 1
-                    continue
-                a, b = idx[c], idx[n]
-                pairs.add((a, b) if a < b else (b, a))
-                crossings[(r, r)] += 1
-                continue
-            up = None                                       # inside a coarser cell?
-            for rr in range(r - 1, R0 - 1, -1):
-                p = h3.cell_to_parent(n, rr)
-                if p in idx:
-                    up = p
-                    break
-            if up is not None:
-                if crosses_land(h3.cell_to_latlng(c), h3.cell_to_latlng(up)):
-                    rejected += 1
-                    continue
-                a, b = idx[c], idx[up]
-                pairs.add((a, b) if a < b else (b, a))
-                crossings[tuple(sorted((r, res[up])))] += 1
-                continue
-            frontier = [n]                                  # or it was subdivided
-            for rr in range(r + 1, R + 1):
-                nxt = []
-                for x in frontier:
-                    for ch in h3.cell_to_children(x, rr):
-                        if not touches(ch, c, r):
-                            continue
-                        if ch in idx:
-                            if crosses_land(h3.cell_to_latlng(c), h3.cell_to_latlng(ch)):
-                                rejected += 1
-                                continue
-                            a, b = idx[c], idx[ch]
-                            pairs.add((a, b) if a < b else (b, a))
-                            crossings[tuple(sorted((r, rr)))] += 1
-                        else:
-                            nxt.append(ch)
-                frontier = nxt
-                if not frontier:
-                    break
-
+    pair_ids, crossings, rejected = build_pairs(res, crosses_land, R0, R)
+    pairs = {(idx[a_], idx[b_]) if idx[a_] < idx[b_] else (idx[b_], idx[a_])
+             for a_, b_ in pair_ids}
     e = np.array(sorted(pairs), dtype=np.int32)
     print(f"edges: {len(e):,} undirected; {rejected:,} rejected for crossing land "
           f"({100*rejected/max(rejected+len(e),1):.2f}%)")

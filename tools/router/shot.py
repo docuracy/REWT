@@ -35,7 +35,7 @@ from pathlib import Path
 URL = "http://127.0.0.1:8021/router/check/"
 OUT = Path("docs/router/check/shots")
 GL = ["--enable-unsafe-swiftshader", "--use-gl=angle", "--use-angle=swiftshader"]
-LAYERS = ["cells", "net", "traces", "joins"]
+LAYERS = ["cells", "net", "detail", "traces", "joins"]
 # check.html turned its exclusive stages into four independent toggles, so a shot is
 # now of a SET of layers. Each named layer is still shot alone, because a layer that
 # draws nothing is invisible in a composite that another layer has filled.
@@ -104,6 +104,14 @@ def main() -> int:
                 sel = LAYERS if st == "__all__" else [st]
                 page.evaluate(f"window.setLayers({sel!r})")
                 page.wait_for_function(f"window.__drawn > {before}", timeout=a.timeout)
+                # `detail` only exists inside a named area — it is the true res-7
+                # lattice for whichever area holds the centre of the view. Shooting it at
+                # the whole extent reports NOTHING DREW, which is correct and useless.
+                if st == "detail" and a.area == "all":
+                    page.evaluate("window.zoomTo('severn')")
+                    page.wait_for_timeout(1500)
+                    page.evaluate("window.setLayers(['detail'])")
+                    page.wait_for_timeout(2500)
                 if a.area != "all":
                     page.evaluate(f"window.zoomTo({a.area!r})")
                     page.wait_for_timeout(1200)
@@ -167,7 +175,10 @@ def main() -> int:
 
     for e in dict.fromkeys(errs):
         print(f"      {e}")
-    print(f"\n{'FAILED' if bad else 'all stages drew'}: {len(stages)-bad}/{len(stages)}")
+    # SAY WHICH NUMBER IS WHICH. This printed "FAILED: 4/5" where 4 was the number that
+    # PASSED, so the label and the figure disagreed about what was being counted.
+    print(f"\n{len(stages)-bad} of {len(stages)} drew"
+          + (f"; {bad} FAILED" if bad else ""))
     return 1 if bad else 0
 
 

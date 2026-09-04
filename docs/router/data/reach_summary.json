@@ -1,5 +1,5 @@
 {
- "generation": "20260904T092019Z",
+ "generation": "20260904T111903Z",
  "criterion": "within a week's sailing of England and Wales, under typical conditions, measured as route distance THROUGH the water",
  "calibration": {
   "London -> Skagen (N Denmark)": 1169,
@@ -13,6 +13,6 @@
  "measured_on": "the navigable surface (sight plus the blind-sailing buffer), not open water \u2014 a route may not use water the router cannot",
  "not_a_radius": "measured along the water, so Norway is as far as the route round the Skagerrak makes it, not as near as a straight line suggests",
  "time_not_computed": "sailing time needs wind, current and a hull, and weights are deferred. This calibrates a DISTANCE against an attested duration; it does not claim to compute duration.",
- "water_px_within": 9376530,
- "water_px_total": 11188924
+ "water_px_within": 9398482,
+ "water_px_total": 11248227
 }

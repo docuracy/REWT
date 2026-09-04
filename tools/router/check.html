@@ -28,7 +28,11 @@
  .sw{width:13px;height:13px;border-radius:3px;flex:none;border:1px solid rgba(255,255,255,.25)}
  table{width:100%;border-collapse:collapse;font-size:11.5px} td{padding:1px 0;color:var(--dim)}
  td.v{text-align:right;color:var(--fg);font-variant-numeric:tabular-nums}
- .warn{color:#f0883e;font-size:11.5px;margin-top:8px;line-height:1.45}
+ .fade{display:flex;align-items:center;gap:8px}
+  .fade input{flex:1}
+  #osmv{font-size:11px;color:#8b949e;width:30px;text-align:right}
+  .cred{font-size:10px;color:#6e7681;margin-top:4px;line-height:1.4}
+  .warn{color:#f0883e;font-size:11.5px;margin-top:8px;line-height:1.45}
  .maplibregl-popup-content{background:#161b22;color:var(--fg);font:12px system-ui;
    border:1px solid var(--line);border-radius:6px}
  .maplibregl-popup-tip{border-top-color:#161b22!important;border-bottom-color:#161b22!important}
@@ -38,6 +42,11 @@
   <h1>Router — check</h1>
   <div class="sub">Local instrument, not published. Coastline is OS Boundary-Line (OGL);
     depths EMODnet DTM 2024 (CC BY 4.0). <b>Not for navigation.</b></div>
+  <h2>Basemap</h2>
+  <div class="fade"><input id="osm" type="range" min="0" max="100" step="5">
+    <span id="osmv"></span></div>
+  <div class="cred">&copy; OpenStreetMap contributors (ODbL). Tiles from
+    openstreetmap.org, development use only.</div>
   <h2>Zoom to</h2><div id="areas"></div>
   <h2>Layers</h2><div id="legend"></div>
   <h2>Figures</h2><table id="figs"></table>
@@ -49,6 +58,14 @@ const F='../data/', C='./';
 // sent to somebody. The stage rides in the same hash under its own key.
 const map=new maplibregl.Map({container:'map',center:[-3.5,54.5],zoom:4.6,hash:'map',
   style:{version:8,sources:{},layers:[{id:'bg',type:'background',paint:{'background-color':'#0d1117'}}]}});
+// OSM RASTER UNDER EVERYTHING. Added once at construction, so every x- layer draw()
+// adds lands on top of it; clear() only removes x- ids, so it survives a redraw.
+// Development use only, and attributed in the panel: this page is gitignored and local.
+map.on('load',()=>{ map.addSource('osm',{type:'raster',tiles:
+    ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,
+    attribution:'&copy; OpenStreetMap contributors'});
+  map.addLayer({id:'osm',type:'raster',source:'osm',paint:{'raster-opacity':0}});
+  applyFade(); });
 map.addControl(new maplibregl.NavigationControl(),'top-right');
 map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-right');
 
@@ -62,10 +79,11 @@ const LAYERS={
  cells:{label:'cells', src:['sl2', F+'sightline2_r6.geojson'],
    legend:[['governed by land &gt;800 m','#f85149'],['400-800 m','#f0883e'],
      ['200-400 m','#e3b341'],['80-200 m','#3fb950'],['under 80 m','#58a6ff'],
-     ['sees none','#484f58']],
-   note:'Sighted sea, computed from the land outwards in 2 km reach bands. Colour is the TALLEST land that reaches each cell. Red water is held by a mountain; blue by a low hill, and it hugs the coast.',
+     ['closed short hop — blind','#d29922'],['sees none','#484f58']],
+   note:'Sighted sea, computed from the land outwards in 2 km reach bands. Colour is the TALLEST land that reaches each cell. Amber cells see nothing at all: they are enclosed pockets of blind water within a 3-cell hop of sighted sea, kept because a short blind hop is not a blind passage. Red water is held by a mountain; blue by a low hill, and it hugs the coast.',
    add:()=>map.addLayer({id:'x-cells',type:'fill',source:'sl2',paint:{'fill-opacity':.45,
-     'fill-color':['case',['!',['get','visible']],'#484f58',
+     'fill-color':['case',['get','closed_hop'],'#d29922',
+       ['!',['get','visible']],'#484f58',
        ['>=',['get','gov_h_m'],800],'#f85149',['>=',['get','gov_h_m'],400],'#f0883e',
        ['>=',['get','gov_h_m'],200],'#e3b341',['>=',['get','gov_h_m'],80],'#3fb950',
        '#58a6ff']}})},
@@ -81,6 +99,20 @@ const LAYERS={
    note:'Least-cost paths across the drying ground for the stranded termini.',
    add:()=>map.addLayer({id:'x-traces',type:'line',source:'tr',
      paint:{'line-width':2,'line-color':'#a371f7'}})},
+ detail:{label:'routing detail (res 7)', src:null,
+   legend:[['routing cell','#1f6feb'],['routing edge','#c9d1d9'],
+     ['crosses a resolution band','#f0883e']],
+   note:'THE LATTICE ITSELF, at the resolution it exists at, for whichever named area holds the centre of the view — zoom to one of the buttons above. Here cells and links are the same resolution, so a link DOES join two cell centres and nothing is a schematic. The layer above it is not: at res 6 the routing nodes are not the hexagon centres, whichever way the lines are drawn.',
+   add:async()=>{ const a=areaAtCentre(); if(!a){ detailNote='no named area holds the centre of this view'; return; }
+     detailNote='showing '+a;
+     if(await src('dc', C+'cells-'+a+'.geojson'))
+       map.addLayer({id:'x-detail-c',type:'fill',source:'dc',
+         paint:{'fill-color':'#1f6feb','fill-opacity':.22,'fill-outline-color':'#388bfd'}});
+     if(await src('de', C+'edges-'+a+'.geojson'))
+       map.addLayer({id:'x-detail-e',type:'line',source:'de',
+         paint:{'line-width':['case',['get','crosses_band'],2.2,0.9],
+                'line-color':['case',['get','crosses_band'],'#f0883e','#c9d1d9'],
+                'line-opacity':.9}}); }},
  joins:{label:'joins', src:['jn', F+'joins.geojson'],
    legend:[['rule 1 - in a cell','#3fb950'],['rule 2 - adjacent','#58a6ff'],
      ['rule 3 - needs a path','#f85149']],
@@ -115,6 +147,21 @@ window.zoomTo=a=>{ if(a==='all'){ const e=areas._extent||[-8,49.5,2,61];
     map.fitBounds([[e[0],e[1]],[e[2],e[3]]],{padding:20}); return; }
   else map.fitBounds([[areas[a][0],areas[a][1]],[areas[a][2],areas[a][3]]],{padding:40}); };
 
+let detailNote='';
+let osmO=parseFloat(hashGet('osm')??'0');
+// THE TWO BACKDROPS CROSS-FADE. The dark coastline fills are a stand-in for a basemap;
+// with a real one under them they would simply hide it, so they fade out as it comes up.
+function applyFade(){
+  if(map.getLayer('osm')) map.setPaintProperty('osm','raster-opacity',osmO);
+  for(const id of ['x-coast-land','x-coast'])
+    if(map.getLayer(id)) map.setPaintProperty(id,'fill-opacity',1-osmO);
+  const el=document.getElementById('osmv'); if(el) el.textContent=Math.round(osmO*100)+'%';
+}
+function areaAtCentre(){ const c=map.getCenter();
+  for(const [k,b] of Object.entries(areas)){ if(k[0]==='_') continue;
+    if(c.lng>=b[0]&&c.lng<=b[2]&&c.lat>=b[1]&&c.lat<=b[3]) return k; }
+  return null; }
+
 async function gj(u){ if(loaded[u])return loaded[u];
   const r=await fetch(u); if(!r.ok) return null; loaded[u]=await r.json(); return loaded[u]; }
 
@@ -136,7 +183,8 @@ async function draw(){
   for(const k of KEYS){                 // declaration order IS paint order
     if(!on.has(k)) continue;
     const L=LAYERS[k];
-    if(await src(L.src[0], L.src[1])) L.add();
+    if(L.src===null){ await L.add(); continue; }
+    if(await src(L.src[0], L.src[1])) await L.add();
   }
   const act=KEYS.filter(k=>on.has(k));
   // THE LEGEND IS THE CONTROL. A separate row of buttons said the same thing twice and
@@ -151,8 +199,10 @@ async function draw(){
       + L.legend.map(([t,c])=>`<div class="key"><div class="sw" style="background:${c}"></div>${t}</div>`).join('')
       + `</div>`;
   }).join('');
-  warn.innerHTML = act.map(k=>`<p><b>${LAYERS[k].label}.</b> ${LAYERS[k].note}</p>`).join('')
+  warn.innerHTML = act.map(k=>`<p><b>${LAYERS[k].label}.</b> ${LAYERS[k].note}`
+      +(k==='detail'&&detailNote?` <i>(${detailNote})</i>`:'')+`</p>`).join('')
     || 'Every layer is off.';
+  applyFade();
   figures();
   // Signal completion from the page rather than have the driver guess. `load` fires
   // long before anything is drawn: my first headless shot was a blank panel and an
@@ -181,7 +231,8 @@ function figures(){
     joins:[['termini',j.termini],['rule 1',(j.by_rule||{})['1']],
            ['rule 2',(j.by_rule||{})['2']],['rule 3',(j.by_rule||{})['3']]]};
   const rows=[];
-  for(const k of KEYS) if(on.has(k)) for(const r of per[k]) rows.push(r);
+  // a layer with no figures of its own must not throw: `detail` has none
+  for(const k of KEYS) if(on.has(k)) for(const r of (per[k]||[])) rows.push(r);
   figs.innerHTML=rows.filter(r=>r[1]!==undefined&&r[1]!==null)
     .map(([k,v])=>`<tr><td>${k}</td><td class="v">${v.toLocaleString?.()??v}</td></tr>`).join('');
 }
@@ -205,7 +256,11 @@ map.on('load',async()=>{
     if(a==='all') window.zoomTo('all');
     else map.fitBounds([[areas[a][0],areas[a][1]],[areas[a][2],areas[a][3]]],{padding:40}); };
   // only frame the whole extent when the URL does not already say where to look
+  const sl=document.getElementById('osm');
+  sl.value=Math.round(osmO*100);
+  sl.oninput=()=>{ osmO=sl.value/100; hashSet('osm',osmO.toFixed(2)); applyFade(); };
   if(!hashGet('map')) window.zoomTo('all');
+  map.on('moveend',()=>{ if(on.has('detail')) draw(); });
   draw();
 });
 const legend=document.getElementById('legend'), figs=document.getElementById('figs'),

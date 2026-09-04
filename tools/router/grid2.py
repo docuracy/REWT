@@ -39,6 +39,7 @@ from scipy import ndimage
 import h3
 from generation import generation
 
+from adjacency import build_pairs
 from landtest import land_crossing_test
 
 CONFIG = {
@@ -253,43 +254,11 @@ def main(cfg: dict = CONFIG) -> None:
     # imported, so the two cannot drift again.
     print("building adjacency to find what is detached (links may not cross land)...")
     crosses_land = land_crossing_test(cfg["masks"])
-    latlng = {c: h3.cell_to_latlng(c) for c in grid}
-    blocked = 0
     ids = list(grid)
     pos = {c: i for i, c in enumerate(ids)}
     R0 = min(grid.values())
-    pairs = set()
-    for c in ids:
-        rr = grid[c]
-        for nb in h3.grid_disk(c, 1):
-            if nb == c:
-                continue
-            tgt = None
-            if nb in pos:
-                tgt = nb
-            else:
-                for up in range(rr - 1, R0 - 1, -1):
-                    p_ = h3.cell_to_parent(nb, up)
-                    if p_ in pos:
-                        tgt = p_
-                        break
-                if tgt is None:
-                    for dn in range(rr + 1, max(grid.values()) + 1):
-                        kids = [k for k in h3.cell_to_children(nb, dn) if k in pos]
-                        if kids:
-                            for k in kids:
-                                if crosses_land(latlng[c], latlng[k]):
-                                    blocked += 1
-                                    continue
-                                a_, b_ = pos[c], pos[k]
-                                pairs.add((a_, b_) if a_ < b_ else (b_, a_))
-                            break
-            if tgt is not None:
-                if crosses_land(latlng[c], latlng[tgt]):
-                    blocked += 1
-                    continue
-                a_, b_ = pos[c], pos[tgt]
-                pairs.add((a_, b_) if a_ < b_ else (b_, a_))
+    pair_ids, _cr, blocked = build_pairs(grid, crosses_land, R0, max(grid.values()))
+    pairs = {(pos[a_], pos[b_]) for a_, b_ in pair_ids}
     e = np.array(sorted(pairs), dtype=np.int32) if pairs else np.zeros((0, 2), np.int32)
     print(f"  {blocked:,} directed links refused for crossing land "
           f"({100*blocked/max(blocked+2*len(e),1):.2f}%)")

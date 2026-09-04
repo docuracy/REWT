@@ -130,6 +130,7 @@ CONFIG = {
     # blind zones touching, which is not a route. The test is whether a landmass's buffer
     # reaches water that is IN SIGHT of the existing area. Shetland-Faroe is 290 km with
     # 113 and 80 km of sight, leaving 97 km blind against a 60 km buffer. It fails.
+    "close_hop_cells": 3,   # see CLOSE SHORT BLIND HOPS in main()
     "aoi": EXTENT,                   # tools/router/extent.py — one declaration
     "crs": "EPSG:32630",
     "metres_per_pixel": 930.0,
@@ -397,10 +398,44 @@ def main(cfg: dict = CONFIG) -> None:
               f"{float(d[vlab == i].min()):.0f} km from anything in sight")
     visible &= np.isin(vlab, list(admitted))
 
+    # --- CLOSE SHORT BLIND HOPS ---------------------------------------------------
+    # Stephen found small pockets of sea just out of sight of land which a navigator
+    # would cross without difficulty, the largest of them mid-Channel. The justification
+    # is his and it is sound in three parts: the visibility test is approximate, what can
+    # actually be seen depends on the weather in any case, and a short blind hop is not
+    # the same proposition as a blind passage. It does NOT reopen blind sailing — a
+    # uniform buffer grows the frontier outward everywhere, which is what he ruled out.
+    # This fills only water that is ENCLOSED: a pocket qualifies when no point in it is
+    # more than `close_hop_cells` cell-widths from water that does see land, so the open
+    # ocean beyond the sighted zone can never qualify, however large the threshold.
+    #
+    # THE FILLED CELLS ARE NOT MARKED VISIBLE. They are blind water we accept crossing,
+    # and the layer says so with `closed_hop`, because a rule that quietly promoted them
+    # would leave the map claiming land is in sight where it is not.
+    _c2c = h3.average_hexagon_edge_length(6, unit="km") * math.sqrt(3)
+    hop_km = cfg["close_hop_cells"] * _c2c
+    dvis = ndimage.distance_transform_edt(
+        ~visible, sampling=(cfg["metres_per_pixel"],) * 2) / 1000.0
+    _blind = sea & ~visible
+    _lab, _n = ndimage.label(_blind, structure=ndimage.generate_binary_structure(2, 2))
+    _deep = ndimage.maximum(dvis, _lab, range(1, _n + 1))
+    _fill = [i + 1 for i in range(_n) if _deep[i] <= hop_km]
+    closed = np.isin(_lab, _fill) if _fill else np.zeros_like(visible)
+    print(f"  closing blind pockets within {cfg['close_hop_cells']} cells "
+          f"({hop_km:.1f} km) of sighted water:")
+    print(f"    {len(_fill):,} of {_n:,} pockets, {int(closed.sum()):,} px "
+          f"({closed.sum() * (cfg['metres_per_pixel'] / 1000) ** 2:,.0f} km2)")
+    _sz = ndimage.sum(np.ones_like(_lab), _lab, range(1, _n + 1))
+    for i in sorted(_fill, key=lambda i: -_sz[i - 1])[:4]:
+        _ys, _xs = np.nonzero(_lab == i)
+        _lo, _la = back.transform(*rasterio.transform.xy(dst_tr, _ys.mean(), _xs.mean()))
+        print(f"      {int(_sz[i-1]):>6,} px  deepest {_deep[i-1]:>5.1f} km  "
+              f"{_la:.2f} N {_lo:.2f} E")
+
     # --- TRIM (H3-002 item 3) -----------------------------------------------------
     dblind = ndimage.distance_transform_edt(
         ~visible, sampling=(cfg["metres_per_pixel"],) * 2) / 1000.0
-    keep_px = sea & (visible | (dblind <= cfg["buffer_km"]))
+    keep_px = sea & (visible | closed | (dblind <= cfg["buffer_km"]))
     print(f"  buffer {cfg['buffer_km']:.0f} km -> keep {int(keep_px.sum()):,} of "
           f"{int(sea.sum()):,} sea px ({100*keep_px.sum()/sea.sum():.1f}%)")
 
@@ -492,8 +527,17 @@ def main(cfg: dict = CONFIG) -> None:
         print(f"    ...and {sum(1 for comp in comps[1:] if len(comp) == 1)} single cells")
     keep_cell = np.array([c in main for c in uniq])
 
+    # a cell is a closed hop where it holds filled water and sees nothing itself.
+    # Folded here rather than beside `any_vis`, because the fill is decided after the
+    # admission walk and `closed` does not exist yet at that point.
+    any_closed = np.maximum.reduceat(
+        closed[sea][order].astype(np.int8), starts).astype(bool) & ~any_vis
+    print(f"  {int(any_closed.sum()):,} cells are closed short hops "
+          f"(blind water we accept crossing, not marked visible)")
+
     feats = []
-    for c, v, gh, kp_, kn_ in zip(uniq, any_vis, gov_cell, keep_cell, known_cell):
+    for c, v, gh, kp_, kn_, cl_ in zip(uniq, any_vis, gov_cell, keep_cell,
+                                      known_cell, any_closed):
         if not kp_:
             continue                      # trimmed: outside sight plus the buffer
         bnd = h3.cell_to_boundary(c)
@@ -502,6 +546,7 @@ def main(cfg: dict = CONFIG) -> None:
         feats.append({"type": "Feature",
                       "geometry": {"type": "Polygon", "coordinates": [ring]},
                       "properties": {"h3": c, "visible": bool(v),
+                                     **({"closed_hop": True} if cl_ else {}),
                                      **({} if kn_ else {"known": False}),
                                      "gov_h_m": None if not v else int(round(float(gh))),
                                      "gov_reach_km": None if not v
