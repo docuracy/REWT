@@ -1386,3 +1386,42 @@ are actually showing.
 
 A `channel` check area is added over the closed mid-Channel hop, where coarse cells sit
 inside a fine grid; seam coverage goes from 25 of 187 to **132 of 187**.
+
+## 28. Two coastlines, because one of them is better where it exists
+
+Stephen's third land-crossing report, at Knapdale. The test was working exactly as written —
+**0 of 10 links there cross land according to the mask** — and the mask was wrong. EMODnet at
+232 m does not resolve the Taynish peninsula, so a link over it is, to that surface, open
+water. The tool was fixed; the evidence was not.
+
+**OS Boundary-Line `high_water` is an OGL vector coastline at about 1:10,000, already
+registered, already drawn on /check.** Measured against it, **158 of the 28,977 drawn links
+inside GB cross land the mask calls sea** — 0.55%. GB is now tested against both, and a link
+is refused if either says land.
+
+**The asymmetry has to be stated rather than hidden.** A link in Argyll is judged against a
+1:10,000 coastline, one in Brittany against a 232 m raster, so the network is slightly more
+permissive outside GB than inside it. That is a real bias in any route comparison across the
+two. It is accepted for Stage 1 because the alternative — throwing away the better source
+where we have it — makes the answer worse everywhere instead of evenly wrong, and no
+equivalent open vector coastline is registered for Ireland or the continent.
+
+**The node rule needed nothing: 0 of 143,077 routing nodes fall on OS land.** The two
+sources already agree about where the cell centres are; they disagree only about what lies
+between them.
+
+Cost and effect: dedupe on `Global_Link_ID` first — 32,850 rows hold 13,002 distinct
+geometries, the same 2.53× duplication recorded elsewhere in this project — then subdivide
+to 10 km, giving 14,610 pieces and **2.9 µs per link**. The grid loses 94 cells
+(143,077 → 142,983), traces 99 → 98, and `grid2` now refuses 2,734 directed links rather
+than 1,780.
+
+**Crossings on the published geometry, against BOTH coastlines: 0.** Drawn links 47,206;
+res 5, 6,497; res 4, 859; the routing graph itself, 416,102; nodes on land, 0 of 142,983.
+
+One process note. My first OS comparison returned "0 of 10 cross land" and I nearly reported
+it. It had read **0 rows**: I passed a lat/lon bbox to a layer in EPSG:27700. A check that
+examines nothing agrees with whatever you already believe, which is the fault this file has
+now recorded in four different costumes — a vacuous selector, a summary over an unexamined
+population, a stale artefact, and now a bounding box in the wrong units. **The row count is
+what caught it, which is why the count gets printed.**
