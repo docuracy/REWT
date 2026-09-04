@@ -37,7 +37,16 @@ $rewt-rule: #d8d2c4;
 .site-nav {
   /* BASELINE, not the default stretch: the items are words, and words in a row line up
      on the line they are written on. The pill needs the second half of this to work —
-     see `.nav-app-mark` below. */
+     see `.nav-app-mark` below.
+     IT COSTS 0.45px OF SYMMETRY AND THAT IS ACCEPTED. A baseline-aligned line is sized
+     from the baseline plus the deepest descent below it, and the pill descends further
+     than a bare word, so the bar grew from 42.05 to 42.50 and the pill's gap to the rule
+     below it went from 8.80 to 9.25 while its gap above stayed at 8.80. Measured, not
+     estimated. It is not worth correcting: the only fix is to shave the pill's bottom
+     padding by a fraction that cancels the font's descent metrics, which is a magic
+     number that breaks the day the font stack changes, to repair something under one
+     device pixel at 1x. If you are here because the pill looks half a pixel low, it is
+     meant to, and the cure is worse. */
   align-items: baseline;
   background: #fff;
   border-bottom: 1px solid $rewt-rule;
