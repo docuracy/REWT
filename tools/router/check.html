@@ -216,7 +216,15 @@ async function draw(){
       + L.legend.map(([t,c])=>`<div class="key"><div class="sw" style="background:${c}"></div>${t}</div>`).join('')
       + `</div>`;
   }).join('');
-  warn.innerHTML = act.map(k=>`<p><b>${LAYERS[k].label}.</b> ${LAYERS[k].note}`
+  // JOINS AND TRACES DO NOT MOVE WITH THE SELECTOR, and at res 5 a join drawn across a
+  // res-5 hexagon looks as though it attaches to that hexagon's centre. It does not:
+  // no join targets a res-5 cell — they are res 7 (341), res 8 (43) and res 6 (5). Say so
+  // rather than let the picture imply it.
+  const mism = maxRes!==6 && (on.has('joins')||on.has('traces'));
+  warn.innerHTML = (mism?'<p><b>Note.</b> The resolution selector changes the CELLS and '
+    +'the SEA NETWORK only. Joins and traces are drawn at their own resolution and do not '
+    +'move with it, so a join crossing a coarse cell does not attach to that cell.</p>':'')
+    + act.map(k=>`<p><b>${LAYERS[k].label}.</b> ${LAYERS[k].note}`
       +(k==='detail'&&detailNote?` <i>(${detailNote})</i>`:'')+`</p>`).join('')
     || 'Every layer is off.';
   applyFade();

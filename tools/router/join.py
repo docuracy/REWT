@@ -31,9 +31,11 @@ from scipy.spatial import cKDTree
 
 import h3
 from generation import generation
+from landtest import land_crossing_test
 
 CONFIG = {
     "grid": "tools/router/cache/grid2.npz",
+    "masks": "tools/router/cache/sightline_masks.npz",
     "network": "published/rewt_stage1_network.gpkg",
     "scope_max_m_from_ew": 1000.0,   # see the scope note in main()
     "out": "docs/router/data/joins.geojson",
@@ -122,12 +124,30 @@ def main(cfg: dict = CONFIG) -> None:
     res_of = np.zeros(len(t), int)
     dist_of = np.full(len(t), np.nan)
 
+    # A JOIN MAY NOT CROSS LAND EITHER. The links were land-tested and the joins never
+    # were: 125 of 267 drawn join lines ran over land, which is what Stephen was seeing
+    # on the north Kent coast. Rules 1 and 2 ASSERT a direct connection — "it is in this
+    # cell", "it is next door" — and a straight line over a headland is neither. So a
+    # candidate whose line crosses land is not eligible for them, and the terminus falls
+    # through to rule 3, which is the rule that says a path has to be worked out. That is
+    # the honest destination: the claim weakens from observation to inference rather than
+    # the join quietly staying wrong.
+    crosses_land = land_crossing_test(cfg["masks"])
+
+    def clear(la, lo, c):
+        """Is the straight line from the terminus to this cell's centre over water?"""
+        return not crosses_land((float(la), float(lo)), h3.cell_to_latlng(c))
+
+    blocked_1 = blocked_2 = 0
     for i, (la, lo) in enumerate(zip(t.lat.values, t.lon.values)):
         hit = None
         for r in range(cfg["coastal_sea_resolution"], cfg["start_resolution"] - 1, -1):
             c = h3.latlng_to_cell(float(la), float(lo), r)
             if c in cellset:
                 hit = (c, r); break
+        if hit and not clear(la, lo, hit[0]):
+            blocked_1 += 1
+            hit = None                              # the cell is there; the water is not
         if hit:                                     # rule 1: already inside a cell
             rule[i] = 1; cell_of[i], res_of[i] = hit
             dist_of[i] = float(nd[i]) if cells[ni[i]] == hit[0] else 0.0
@@ -145,7 +165,10 @@ def main(cfg: dict = CONFIG) -> None:
         nb, own_res = [], None
         for rr in grid_res:
             own = h3.latlng_to_cell(float(la), float(lo), rr)
-            found = [c for c in h3.grid_disk(own, 1) if c in cellset]
+            found = [c for c in h3.grid_disk(own, 1)
+                     if c in cellset and clear(la, lo, c)]
+            if not found and any(c in cellset for c in h3.grid_disk(own, 1)):
+                blocked_2 += 1
             if found:
                 nb, own_res = found, rr
                 break
@@ -162,6 +185,8 @@ def main(cfg: dict = CONFIG) -> None:
         else:                                       # rule 3: needs a traced path
             rule[i] = 3; cell_of[i], res_of[i] = cells[j], r; dist_of[i] = float(nd[i])
 
+    print(f"  refused for crossing land: {blocked_1:,} rule-1 attachments, "
+          f"{blocked_2:,} rule-2 neighbourhoods — these fall through to rule 3")
     t["rule"], t["cell"], t["cell_res"], t["dist_m"] = rule, cell_of, res_of, dist_of
     dep = gdep[ni]
     t["attach_depth_m"] = np.where(rule < 3, dep, np.nan)
@@ -206,6 +231,25 @@ def main(cfg: dict = CONFIG) -> None:
     # terminus has no attachment yet: drawing a straight line to the nearest cell
     # asserted a connection across 50 km of London, and it looked like a route. Those
     # are points now, and the actual path is stage 4's business.
+    # TEST WHAT IS WRITTEN, not only what was decided. The rule-1 and rule-2 checks above
+    # run on the values in the loop; this runs on the LINE THE FILE WILL CONTAIN, after
+    # rounding and after the dataframe has been reassembled. One join survived the first
+    # check and failed the second, and rather than reason about which of the two was
+    # right I made the published artefact the thing that has to pass. A demotion here is
+    # not a second opinion — it is the same rule applied to the actual output.
+    demoted = 0
+    for k, (_, r) in enumerate(t.iterrows()):
+        if int(r.rule) == 3:
+            continue
+        p_ = h3.cell_to_latlng(str(r.cell))
+        if crosses_land((round(float(r.lat), 6), round(float(r.lon), 6)),
+                        (round(p_[0], 6), round(p_[1], 6))):
+            t.iat[k, t.columns.get_loc("rule")] = 3
+            demoted += 1
+    if demoted:
+        print(f"  demoted {demoted} join(s) to rule 3: the LINE crosses land even though "
+              f"the decision did not — the published geometry is what must pass")
+
     def geom(r, k):
         p = h3.cell_to_latlng(str(r.cell))
         here = [round(r.lon, 6), round(r.lat, 6)]

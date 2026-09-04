@@ -35,6 +35,38 @@ CONFIG = {
 }
 
 
+
+def largest_component(feats, a="h3_a", b="h3_b"):
+    """Drop links outside the biggest connected set. Stephen: 'deleting a link has left
+    part of the sea network isolated'.
+
+    The ROUTING graph is guaranteed one component — grid2 drops what its own adjacency
+    cannot reach. The DRAWN layer is a different graph: its chords are land-trimmed
+    separately, and trimming one can strand a pocket that the res-7 routing graph still
+    reaches round the headland. So the drawn graph needs its own connectivity pass, and
+    it must run AFTER the land trim, not before. Yes, this is Stephen's suggested drop of
+    everything but the biggest connected set; there is no need for anything cleverer,
+    because the routing graph beneath has already answered the hard version.
+    """
+    import numpy as np
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+    if not feats:
+        return feats, 0, 0
+    ids = {}
+    e = []
+    for f in feats:
+        p = f["properties"]
+        u = ids.setdefault(p[a], len(ids))
+        v = ids.setdefault(p[b], len(ids))
+        e.append((u, v))
+    e = np.array(e)
+    m = coo_matrix((np.ones(len(e)), (e[:, 0], e[:, 1])), shape=(len(ids),) * 2)
+    n, lab = connected_components(m, directed=False)
+    main = int(np.argmax(np.bincount(lab)))
+    keep = [f for f, (u, _) in zip(feats, e) if lab[u] == main]
+    return keep, len(feats) - len(keep), n - 1
+
 def main(cfg: dict = CONFIG) -> None:
     g = np.load(cfg["grid"], allow_pickle=True)
     cell, gres = g["cell"].tolist(), g["resolution"]
@@ -105,17 +137,19 @@ def main(cfg: dict = CONFIG) -> None:
                        "properties": {"h3_a": pa, "h3_b": pb, "routing_edges": r["n"],
                                       "crosses_band": bool(r["cross"]),
                                       "mean_edge_m": int(round(r["len"] / r["n"]))}})
+        ef, dropped, frags = largest_component(ef)
         Path(cfg["out"], f"edges-r{R}.geojson").write_text(json.dumps(
             {"type": "FeatureCollection",
              "properties": {"generation": stamp, "resolution": R, "links": len(ef),
                             "links_over_land_not_drawn": over,
+                            "links_dropped_isolated": dropped,
                             "crossing_a_band": sum(1 for f in ef
                                                    if f["properties"]["crosses_band"])},
              "features": ef}, separators=(",", ":")))
         mb = (Path(cfg["out"], f"cells-r{R}.geojson").stat().st_size
               + Path(cfg["out"], f"edges-r{R}.geojson").stat().st_size) / 1e6
         print(f"  res {R}: {len(cf):>6,} cells, {len(ef):>6,} links "
-              f"({over:,} over land not drawn)   {mb:.1f} MB")
+              f"({over:,} over land, {dropped:,} isolated)   {mb:.1f} MB")
 
 
 if __name__ == "__main__":

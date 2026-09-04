@@ -1425,3 +1425,60 @@ examines nothing agrees with whatever you already believe, which is the fault th
 now recorded in four different costumes — a vacuous selector, a summary over an unexamined
 population, a stale artefact, and now a bounding box in the wrong units. **The row count is
 what caught it, which is why the count gets printed.**
+
+## 29. The joins were never land-tested, and the drawn graph was never connected
+
+Three faults from one look at north Kent, plus one that is not mine.
+
+**Joins crossed land: 125 of 267 drawn lines, 47%.** The links were land-tested from the
+start and the joins never were. Rules 1 and 2 ASSERT a direct connection — *it is in this
+cell*, *it is next door* — and a straight line over a headland is neither. A candidate whose
+line crosses land is no longer eligible for them and the terminus falls through to **rule 3**,
+which is the rule that says a path has to be worked out. The claim weakens from observation
+to inference rather than the join quietly staying wrong. **32 rule-1 attachments and 110
+rule-2 neighbourhoods refused; rule 3 goes 122 → 224 and traces 98 → 195.**
+
+One join survived that check and still crossed land in the file. Rather than reason about
+which of the two evaluations was right, `join.py` now re-tests **the line the file will
+contain**, after rounding and after the frame is reassembled, and demotes what fails. It
+caught exactly 1. The published artefact is the thing that has to pass — the same rule as
+the exporters testing rounded geometry.
+
+**The drawn network was disconnected: 9 components, 22 cells outside the largest.** The
+ROUTING graph is guaranteed one component, because `grid2` drops what its own adjacency
+cannot reach. The DRAWN layer is a different graph — its chords are land-trimmed separately,
+and trimming one can strand a pocket the res-7 routing graph still reaches round the
+headland. So it needs its own connectivity pass, after the land trim. Stephen asked whether
+the simplest thing is to drop everything but the biggest connected set; it is, and nothing
+cleverer is needed, because the routing graph beneath has already answered the hard version.
+**18 links in 8 fragments dropped at res 6, 1 at res 5, 0 at res 4. Every layer is now one
+component and 0 lines cross land.**
+
+**No join targets a res-5 cell.** They are res 7 (341), res 8 (43), res 6 (5) — the res-6
+ones being the closed blind hops. What Stephen saw was the resolution selector moving the
+CELLS while the joins stayed put, so a join crossing a coarse hexagon read as attaching to
+it. The panel now says so whenever the selector is off res 6.
+
+## 30. The high water trim is what the traces exist to undo — for the implementer
+
+**Not mine to change, and the evidence is worth handing over.** `rewt/stages/high_water.py`
+truncates watercourses at the OS High Water Mark. Measuring the 389 in-scope termini against
+both tidal lines — `high_water`, and the seaward boundary of `country_region`, which that
+stage's own docstring establishes runs to the low-water limit:
+
+| | to HIGH water (where cut) | to LOW water |
+|---|---:|---:|
+| rule 1 — already in a cell | 109 m | **3 m** |
+| rule 2 — adjacent | 90 m | **12 m** |
+| rule 3 — needs a traced path | 110 m | **1,300 m** (90th: 14.4 km) |
+
+Every terminus sits near high water, as it must. **The split is entirely in how far that is
+from the water.** Where the intertidal zone is narrow, cutting at high water costs nothing
+and the join is an observation. Where it is wide — the Wash, Morecambe Bay, the Thames and
+Kent flats, the Solway — the terminus is left a median 1.3 km up the sands, and that is
+precisely the population that needs a traced path.
+
+So **`trace.py` exists to rebuild the channel the trim deleted**: its paths spend a median
+83% of their length above the lowest tide. Trimming at low water instead would make most of
+that stage unnecessary rather than making it work better. That is R-01's territory and the
+implementer's call.

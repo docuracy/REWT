@@ -38,6 +38,38 @@ CONFIG = {
 }
 
 
+
+def largest_component(feats, a="h3_a", b="h3_b"):
+    """Drop links outside the biggest connected set. Stephen: 'deleting a link has left
+    part of the sea network isolated'.
+
+    The ROUTING graph is guaranteed one component — grid2 drops what its own adjacency
+    cannot reach. The DRAWN layer is a different graph: its chords are land-trimmed
+    separately, and trimming one can strand a pocket that the res-7 routing graph still
+    reaches round the headland. So the drawn graph needs its own connectivity pass, and
+    it must run AFTER the land trim, not before. Yes, this is Stephen's suggested drop of
+    everything but the biggest connected set; there is no need for anything cleverer,
+    because the routing graph beneath has already answered the hard version.
+    """
+    import numpy as np
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+    if not feats:
+        return feats, 0, 0
+    ids = {}
+    e = []
+    for f in feats:
+        p = f["properties"]
+        u = ids.setdefault(p[a], len(ids))
+        v = ids.setdefault(p[b], len(ids))
+        e.append((u, v))
+    e = np.array(e)
+    m = coo_matrix((np.ones(len(e)), (e[:, 0], e[:, 1])), shape=(len(ids),) * 2)
+    n, lab = connected_components(m, directed=False)
+    main = int(np.argmax(np.bincount(lab)))
+    keep = [f for f, (u, _) in zip(feats, e) if lab[u] == main]
+    return keep, len(feats) - len(keep), n - 1
+
 def main(cfg: dict = CONFIG) -> None:
     """Two layers, because the true graph will not fit down a browser.
 
@@ -186,6 +218,9 @@ def main(cfg: dict = CONFIG) -> None:
              "features": af}, separators=(",", ":")))
         print(f"  {name}: {len(cf):,} true cells, {len(af):,} true edges")
 
+    feats, dropped, frags = largest_component(feats)
+    print(f"  dropped {dropped:,} links in {frags} fragments left isolated by the land trim")
+
     s = json.loads(Path(cfg["summary"]).read_text())
     fc = {
         "type": "FeatureCollection",
@@ -200,6 +235,12 @@ def main(cfg: dict = CONFIG) -> None:
                 "within the lattice's resolution and no better.",
             "lattice": s.get("lattice_note"),
             "links": len(feats),
+            "links_dropped_isolated": dropped,
+            "isolated_note":
+                "Links left in a fragment disconnected from the main drawn network once "
+                "the land-crossing chords were removed. The routing graph behind them is "
+                "still one component; it reaches these cells round a headland by a path "
+                "no single res-6 chord can represent.",
             "links_over_land_not_drawn": over_land,
             "land_trim":
                 "A link is not drawn where the straight line between the two CELL CENTRES "
