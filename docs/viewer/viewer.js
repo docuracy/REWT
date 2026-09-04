@@ -596,10 +596,19 @@ const OVERLAYS = [
       ['interpolate', ['linear'], ['coalesce', ['get', 'gov_h_m'], 0],
         0, '#cfeffb', 100, '#9fe8ff', 300, '#37b6e8', 700, '#1f6fc4', 1200, '#123f8a']],
     opacity: 0.34,
-    legend: [['held by a hill under 100 m — a fringe of about 38 km', '#9fe8ff'],
-             ['held by 300 m — about 66 km', '#37b6e8'],
-             ['held by 700 m — about 100 km', '#1f6fc4'],
-             ['held by 1,200 m and over — about 131 km', '#123f8a'],
+    /* HEIGHTS ONLY, NO RANGES. These read "about 38 km", "about 66", "about 100",
+       "about 131" until now — correct, because I computed them from rewt-c7's 3.7945,
+       and typed, so they would have gone silently wrong the moment the refraction
+       constant moved. It has already moved once in the prose that describes it (3.86
+       against 3.7945, which is where the 12.2 km masthead figure came from). A legend
+       that restates a derived number is a second rendering of one fact, which is the
+       thing this file has been losing to all day. The height is what the colour means;
+       the range follows from it by the formula printed under the layer, and the popup
+       computes it per cell from the file's own constant. */
+    legend: [['held by a hill under 100 m', '#9fe8ff'],
+             ['held by 300 m', '#37b6e8'],
+             ['held by 700 m', '#1f6fc4'],
+             ['held by 1,200 m and over', '#123f8a'],
              ['no land in sight, and that IS the answer', '#39414d'],
              ['NOT KNOWN — the land that would be visible lies outside the data, so '
               + 'this is not a negative', C.warn],
@@ -1453,12 +1462,15 @@ function markBlock({ d, f }) {
          can pretend to be. */
       extra = `<div class="quote">Land is in sight from here. The tallest land that
         reaches this cell is <b>${fmt(p.gov_h_m)} m</b>, which is why the reach is
-        ${fmt(p.gov_reach_km, 0)} km — that figure is 3.7945·√${fmt(p.gov_h_m)} and not
-        a second measurement.
+        ${fmt(p.gov_reach_km, 0)} km — that figure is
+        ${esc(st.horizon_km_per_sqrt_metre ?? '?')}·√${fmt(p.gov_h_m)} and not a second
+        measurement.
         Curvature and refraction only: nothing here accounts for intervening land, haze,
         or an observer above sea level${st.observer_height_m === 0
           ? ', and the observer is AT sea level, so every range here is a floor —'
-            + ' a masthead at 10 m would add about 12 km' : ''}.</div>`;
+            + ` a masthead at 10 m would add about ${fmt(
+                (st.horizon_km_per_sqrt_metre || 0) * Math.sqrt(10), 0)} km`
+          : ''}.</div>`;
     } else {
       extra = '<div class="quote">No land in sight, and this cell is far enough inside '
         + 'the data for that to be the answer rather than a gap.</div>';
