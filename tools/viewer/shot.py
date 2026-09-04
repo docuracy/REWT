@@ -204,7 +204,11 @@ def check_sightline(page) -> tuple[bool, str]:
            to draw a line to. What is checkable now is that a click lands on a cell and
            the popup names the height that holds it, and says the reach is derived from
            it rather than measured separately. */
-        const f = fs.find((x) => x.properties.visible);
+        /* A cell that is visible AND not flagged unknowable. Picking merely `visible`
+           found one of the 57 cells that are both, whose popup correctly leads with NOT
+           KNOWN and never names a height — so the check failed on the viewer doing the
+           right thing. */
+        const f = fs.find((x) => x.properties.visible && x.properties.known !== false);
         const c = cen(f.geometry);
         m.jumpTo({ center: c, zoom: 8 });
         await settle();
@@ -222,7 +226,12 @@ def check_sightline(page) -> tuple[bool, str]:
         const control = window.rewt.split(window.rewt.hits(m.project([-1.9, 52.5]))).marks
             .filter((x) => x.d.o && x.d.o.id === 'sightline').length;
         return { n, total: fs.length, hit: found.length, control,
-                 namesHeight: text.includes(String(f.properties.gov_h_m) + ' m'),
+                 /* The popup prints the height through `fmt`, which groups thousands:
+                    "1,563 m", not "1563 m". Comparing a raw number against formatted
+                    text failed on the first cell whose governing land is a kilometre
+                    high, and passed for a day on cells under 1,000 m — a check that
+                    works on most of the data and not on the interesting end of it. */
+                 namesHeight: text.includes(f.properties.gov_h_m.toLocaleString('en-GB') + ' m'),
                  saysDerived: /not\s+a second measurement/.test(text),
                  govHeights: new Set(fs.map((x) => x.properties.gov_h_m)).size };
     }""")
@@ -241,16 +250,71 @@ def check_sightline(page) -> tuple[bool, str]:
     if res["control"] != 0:
         return False, (f"the control found {res['control']} sightline cells over inland "
                        f"Warwickshire, where the layer has none")
-    ok = n["visible"] == res["total"] and res["namesHeight"] and res["saysDerived"]
-    return ok, (f"{res['total']:,} cells, all in sight ({n['negative']:,} out, "
-                f"{n['unknown']:,} not known — the trim landed), "
+    # NOT "all cells are in sight". That was true of the 14,991-cell file for about an
+    # hour and false of the 27,130-cell one, and a check that asserts today's shape fails
+    # when the shape legitimately changes — the same fault as the hardcoded count it was
+    # written beside. What must hold whatever the shape: the layer loaded, the click
+    # landed on a cell, the popup named the height that holds it, and it said the reach
+    # is derived rather than measured. The composition is REPORTED, not asserted.
+    ok = res["total"] > 0 and n["visible"] > 0 and res["namesHeight"] and res["saysDerived"]
+    return ok, (f"{res['total']:,} cells: {n['visible']:,} in sight, {n['negative']:,} out, "
+                f"{n['unknown']:,} not known, "
                 f"{res['govHeights']} distinct governing heights; click named the "
                 f"height={res['namesHeight']}, said the reach is derived="
                 f"{res['saysDerived']}; control over land found nothing")
 
 
+def check_missing_layer(page) -> tuple[bool, str]:
+    """A layer whose file has gone must SAY so, not sit ticked over empty water.
+
+    The sightline layer changed file once today and its predecessor is being deleted, so
+    a rename is a live path. Simulated at the fetch, which is the code's own decision
+    point, rather than by moving a file somebody else owns.
+    """
+    res = page.evaluate("""async () => {
+        const real = window.fetch;
+        window.fetch = (u, o) => (String(u).includes('sightline')
+            ? Promise.resolve(new Response('gone', { status: 404 })) : real(u, o));
+        const row = [...document.querySelectorAll('#layers .switch')]
+            .find((r) => /seen from the sea/.test(r.textContent));
+        const box = row.querySelector('input');
+        /* RESET FIRST, because `ensure` returns early on a layer it has already loaded —
+           so in a full run, where `layers` has switched everything on, the failure path
+           never executes and this check passes on nothing having happened. It passed
+           when run alone and failed in the suite, which is the order-dependency I fixed
+           for the sightline check and then wrote again here an hour later. `window.rewt`
+           exposes `loaded` for exactly this. */
+        window.rewt.loaded.delete('sightline');
+        for (const id of ['sightline', 'sightline-edge']) {
+            if (window.map.getLayer(id)) window.map.removeLayer(id);
+        }
+        if (window.map.getSource('sightline')) window.map.removeSource('sightline');
+        box.checked = false;
+        // CONTROL, first: with the layer OFF and unbroken, the switch must be usable.
+        const before = { checked: box.checked, disabled: box.disabled };
+        box.checked = true; box.dispatchEvent(new Event('change'));
+        await new Promise((r) => setTimeout(r, 6000));
+        window.fetch = real;
+        const warn = document.querySelector('#warn');
+        return { before,
+                 after: { checked: box.checked, disabled: box.disabled },
+                 saysWhy: /could not be loaded/.test(row.parentElement.innerText),
+                 banner: warn && !warn.hidden && /sightline/.test(warn.innerText),
+                 onMap: !!window.map.getLayer('sightline') };
+    }""")
+    if res["before"]["disabled"]:
+        return False, "the switch was already disabled before the failure was injected"
+    ok = (not res["after"]["checked"] and res["after"]["disabled"]
+          and res["saysWhy"] and res["banner"] and not res["onMap"])
+    return ok, (f"switch went back to off={not res['after']['checked']}, "
+                f"disabled={res['after']['disabled']}, said why={res['saysWhy']}, "
+                f"named in the banner={res['banner']}, nothing on the map="
+                f"{not res['onMap']}")
+
+
 CHECKS = {"panel": check_panel, "layers": check_layers,
-          "popup": check_popup, "sightline": check_sightline}
+          "popup": check_popup, "sightline": check_sightline,
+          "missing": check_missing_layer}
 
 
 def main() -> int:

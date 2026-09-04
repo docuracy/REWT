@@ -60,6 +60,23 @@ const C = {
 const DATA = 'data/';
 const problems = [];
 
+/* THE BANNER IS RE-RENDERED, NOT WRITTEN ONCE. It used to be built at the end of boot
+   and never again, so anything that failed AFTER boot — a layer toggled on later, whose
+   file had been renamed — pushed to `problems` and appeared nowhere. The layer row said
+   "it is named in the warning at the top of this panel" and that sentence was false for
+   exactly the case it was written for. Found by tools/viewer/shot.py's `missing` check,
+   which asserted the banner named the layer and it did not. */
+function showProblems() {
+  const el = document.querySelector('#warn');
+  if (!el || (!problems.length && !missing.length)) return;
+  el.hidden = false;
+  el.innerHTML = '<b>Not everything on this page is loaded.</b><br>'
+    + problems.join('<br>')
+    + (missing.length
+      ? `<br>Figures absent from summary.json: <code>${missing.map(esc).join('</code>, <code>')}</code>`
+      : '');
+}
+
 /* `name` is normally a file in `data/`, which pages.yml fills from the release. A name
    beginning `../` escapes it deliberately, for a layer that is NOT part of the release
    and must not borrow its provenance — see the sightline overlay, which comes from
@@ -562,8 +579,20 @@ const OVERLAYS = [
        colour and means in scope and not reaching tidal water. Water held by a mountain
        is not a defect. So the ramp stays in the water family, pale for a low hill and
        deep for a summit, and borrows nothing that already means something else. */
+    /* THREE CASES, AND THE ORDER IS THE ARGUMENT. Not knowable first, because it is
+       not an answer; then out of sight, which is; then the ramp, which only means
+       anything for a cell that can see something.
+
+       This was a two-case expression for about an hour, written when the file held
+       14,991 cells that were all in sight. rewt-c7 rebuilt it to 27,130 with the
+       out-of-sight and not-knowable states back, and `coalesce(gov_h_m, 0)` then
+       painted every out-of-sight cell the palest end of the ramp — reading as water
+       held by a very low hill, which is the opposite of what it is. A ramp over a
+       property that is null for 11,322 of 27,130 cells needs a case above it, not a
+       default inside it. Caught by tools/viewer/shot.py within the hour. */
     colour: ['case',
       ['==', ['get', 'known'], false], C.warn,
+      ['!', ['get', 'visible']], '#39414d',
       ['interpolate', ['linear'], ['coalesce', ['get', 'gov_h_m'], 0],
         0, '#cfeffb', 100, '#9fe8ff', 300, '#37b6e8', 700, '#1f6fc4', 1200, '#123f8a']],
     opacity: 0.34,
@@ -571,6 +600,9 @@ const OVERLAYS = [
              ['held by 300 m — about 66 km', '#37b6e8'],
              ['held by 700 m — about 100 km', '#1f6fc4'],
              ['held by 1,200 m and over — about 131 km', '#123f8a'],
+             ['no land in sight, and that IS the answer', '#39414d'],
+             ['NOT KNOWN — the land that would be visible lies outside the data, so '
+              + 'this is not a negative', C.warn],
              ['the EDGE of this layer is a ROUTING decision, not a horizon and not a '
               + 'coast: cells out of sight, and cells beyond a week under sail, are '
               + 'absent rather than drawn', null]],
@@ -788,7 +820,34 @@ async function ensure(o) {
      page and a place in the list and a mark on the map cannot disagree. */
   const data = o.findings ? findingsAsPoints(o.findings)
     : await grab(o.file, o.label.toLowerCase());
-  if (!data) return;
+  /* A TICKED BOX THAT DRAWS NOTHING IS A LIE, and this map is one rename away from it.
+     `grab` names the failure in the banner at the top of the panel, which is right and
+     is not enough: the toggle stayed ticked, so the control said the layer was ON while
+     the map showed no such layer, and a reader looking at empty water would read it as
+     empty water. The sightline layer changed file once today and its predecessor is
+     about to be deleted, so this is a live path and not a hypothetical.
+
+     The switch goes back, is disabled, and says why beside itself. `loaded` keeps the
+     id, so a failed layer is not silently retried on every toggle — one clear statement
+     rather than a control that flickers. */
+  if (!data) {
+    const row = document.querySelector(`#note-${o.id}`)?.previousElementSibling
+      || [...document.querySelectorAll('#layers .switch')]
+        .find((r) => r.querySelector('input') && r.textContent.includes(o.label));
+    const box = row?.querySelector('input');
+    if (box) { box.checked = false; box.disabled = true; }
+    if (row) {
+      row.style.opacity = '0.55';
+      const why = document.createElement('span');
+      why.className = 'hint';
+      why.style.cssText = 'display:block;margin-left:22px;color:var(--warn)';
+      why.textContent = `could not be loaded from ${o.file} — it is named in the `
+        + 'warning at the top of this panel. Nothing of this layer is on the map.';
+      row.after(why);
+    }
+    showProblems();
+    return;
+  }
   if (o.findings && !data.features.length) { loaded.delete(o.id); return; }
   /* A LAYER'S OWN STAMP, PRINTED FROM THE FILE AND NOT TYPED HERE. A FeatureCollection
      may carry top-level `properties`, and the sightline layer uses them to say what
@@ -1763,12 +1822,7 @@ map.on('load', async () => {
      length left and cannot be drawn at all. The claim that survives is narrower and
      true: below z9 the four classes are MARKED, not drawn. */
 
-  if (problems.length || missing.length) {
-    $('#warn').hidden = false;
-    $('#warn').innerHTML = '<b>Not everything on this page is loaded.</b><br>'
-      + problems.join('<br>')
-      + (missing.length ? `<br>Figures absent from summary.json: <code>${missing.map(esc).join('</code>, <code>')}</code>` : '');
-  }
+  showProblems();
   if (HASH.zoom !== undefined) map.jumpTo({ center: [HASH.lon, HASH.lat], zoom: HASH.zoom });
   hashReady = true;
   writeHash();
@@ -1795,6 +1849,6 @@ map.on('load', async () => {
      for cannot be leant on by anything shipped. `ready` last, so a harness can wait on
      one flag instead of racing boot. */
   if (new URLSearchParams(location.search).has('debug')) {
-    window.rewt = { map, hits, split, describe, highlight, CLICKABLE, ready: true };
+    window.rewt = { map, hits, split, describe, highlight, CLICKABLE, loaded, ready: true };
   }
 });

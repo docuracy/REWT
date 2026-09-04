@@ -150,7 +150,13 @@ Three things it took three attempts to get right, recorded so the next person sk
   absent for a cell without a landmark" then passes for the wrong reason. The first
   version of the sightline check did exactly that.
 
-It found a real defect on its first honest run: the sightline ray was drawn during
+It has found five defects in six runs, none of which a day of hand-testing had
+surfaced — the ray cleared by the popup that replaced it, a check that passed for the
+wrong reason, two tallies of one thing under two vocabularies, a popup announcing NOT
+KNOWN over every cell of a layer that has no unknowns, and a warning banner written once
+at boot that could not name anything that failed after it.
+
+The first of them: the sightline ray was drawn during
 `describe()`, before the popup was shown, and showing the popup fires `close` on the
 reused instance — which clears the ray. So it worked on the first sightline click of a
 session and silently not afterwards. Hand-testing never caught it because a hand test
