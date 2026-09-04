@@ -35,6 +35,7 @@ from generation import generation
 CONFIG = {
     "grid": "tools/router/cache/grid2.npz",
     "network": "published/rewt_stage1_network.gpkg",
+    "scope_max_m_from_ew": 1000.0,   # see the scope note in main()
     "out": "docs/router/data/joins.geojson",
     "summary": "docs/router/data/join_summary.json",
     "earth_radius_m": 6371000.0,
@@ -68,10 +69,42 @@ def main(cfg: dict = CONFIG) -> None:
     # (D-024, and Stephen 4 Sep 2026 — traces were being computed into northern Scotland).
     # `in_scope` is the audit's own derivation; `basin_in_scope` is only half the rule and
     # gives a different answer, so the implementer's instruction is to use `in_scope`.
+
+    # SCOPE, AND WHY IT IS NOT JUST `in_scope` (Stephen, 4 September 2026)
+    #
+    # D-024 puts a basin in scope ENTIRE if any part of it lies in England or Wales, and
+    # that rule is right: a river system should not be cut at a border. But two basins
+    # are not catchments. `River Earn` runs from Northumberland to Montrose and `River
+    # Nith` holds the Duddon Channel and the Isle of Bute — rewt-46's D-080 — and 4.0%
+    # and 8.2% of them respectively lie in England, which puts the whole of both in
+    # scope. Traces were being computed into northern Scotland.
+    #
+    # THE TEST IS GEOMETRIC AND IT IS NOT POINT-IN-POLYGON. A tidal terminus sits
+    # SEAWARD of the high water line by definition, and the country polygon is bounded by
+    # that line, so a plain containment test rejects the very features it should keep:
+    # 194 of 474 fall outside England and Wales, and most are in basins 99-100% English.
+    #
+    # DISTANCE, and the threshold barely matters. Measured over the 474: median 0 m,
+    # 75th percentile 10 m, then a JUMP to 95.75 km at the 90th. Nothing lies between
+    # 10 m and 96 km. Everything beyond 20 km is the Nith (61) or the Earn (19) and
+    # nothing else. Any cut from 1 km to 90 km gives the same answer, which is what a
+    # real boundary looks like as against a tuned one. 1 km is a hundred times the
+    # observed offset of a legitimate terminus.
+    #
+    # THIS DOES NOT FIX THE BASINS, and must not be mistaken for it. The delineation is
+    # the implementer's and D-080 is still open; this is a geometric guard so the router
+    # does not publish traces up the Tay while that stands.
     before = len(t)
     t = t[t.in_scope.astype(bool)].copy()
-    print(f"  scope: {len(t):,} of {before:,} tidal termini are in basins intersecting "
-          f"England or Wales")
+    _bl = "data/raw/os_boundary_line/extracted/Data/bdline_gb.gpkg"
+    _cr = gpd.read_file(_bl, layer="country_region")
+    from shapely.ops import unary_union as _uu
+    from shapely.geometry import Point as _P
+    _ew = _uu(_cr[_cr.Name.isin(["England", "Wales"])].geometry.values)
+    _d = np.array([_P(x, y).distance(_ew) for x, y in zip(t.easting, t.northing)])
+    t = t[_d <= cfg["scope_max_m_from_ew"]].copy()
+    print(f"  scope: {len(t):,} of {before:,} tidal termini — in an England/Wales basin "
+          f"AND within {cfg['scope_max_m_from_ew']/1000:.0f} km of England or Wales")
     tr = Transformer.from_crs(27700, 4326, always_xy=True)
     t["lon"], t["lat"] = tr.transform(t.easting.values, t.northing.values)
     print(f"termini: {len(t):,} tidal sinks, {int(t.in_scope.astype(bool).sum()):,} in scope")

@@ -1006,3 +1006,41 @@ land in view across 112 km of open water; off Zeeland he loses it at 22 km and m
 either hug the shore or accept a blind passage. It is a plain reason why the two sides of
 the North Sea were sailed differently, and it falls out of elevation and the curvature of
 the earth alone — no history is assumed to reach it.
+
+## 15. In scope means near England or Wales, not inside it
+
+The joins and traces were reaching up the Tay. The basin attribution said those termini
+were in an English or Welsh basin, and the basin attribution was wrong — D-080's estuary
+amalgams put the Nith and the Earn on the English/Welsh side of a line they do not belong
+on. That delineation is the implementer's and it is still open. What follows is a guard,
+not a fix, and the comment in `join.py` and `grid2.py` says so.
+
+**The obvious test is wrong.** 194 of the 474 in-scope termini fall outside England and
+Wales, and most of those sit in basins that are 99–100% English — the Gannel, the Welland,
+the Dart. A tidal terminus lies *seaward of the high water line* by definition, and the
+country polygon is bounded by that same line. A point-in-polygon test would reject
+precisely the features it exists to keep.
+
+**Distance works, and the data chose the threshold.** Measured to the union of the England
+and Wales `country_region` geometries:
+
+| percentile | distance |
+|---|---:|
+| 50th | 0.00 km (inside) |
+| 75th | 0.01 km |
+| 90th | 95.75 km |
+| max | 167.91 km |
+
+Nothing lies between 10 m and 96 km. Any cut from 1 km to 90 km gives the same partition,
+which is the difference between measuring a boundary and tuning one. The configured
+`scope_max_m_from_ew` is 1,000 m: a hundred times the observed offset of a legitimate
+terminus, and two orders below the nearest thing it excludes.
+
+**What moved.** 474 termini to 389. All 85 removals are Nith or Earn; nothing else changed
+hands. The rule proportions are unchanged — 22.1% / 45.8% / 32.1% before and after — which
+is what a contaminant looks like when it leaves, and not what a population looks like when
+it is cut. Traces now stop at 54.98 N on the Solway. The northernmost join is at 55.76 N,
+which is Berwick-upon-Tweed, in England.
+
+If the basins are ever corrected the guard becomes a no-op rather than a second hidden
+rule, because it excludes nothing that a correct delineation would have kept.

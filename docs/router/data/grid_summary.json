@@ -1,5 +1,5 @@
 {
- "generation": "20260904T092019Z",
+ "generation": "20260904T095803Z",
  "scheme": "banded by state, not by distance",
  "states": {
   "blind buffer": 6,
@@ -10,14 +10,14 @@
   ]
  },
  "refinement_rule": "a cell is subdivided only where it is adjacent to land AND required by a join or a trace \u2014 not within N km of anything",
- "total_cells": 143271,
+ "total_cells": 143196,
  "by_resolution": {
-  "7": 142925,
-  "8": 338,
-  "9": 8
+  "7": 142964,
+  "8": 226,
+  "9": 6
  },
- "termini_attached": 328,
- "termini": 474,
+ "termini_attached": 264,
+ "termini": 389,
  "detached_cells_dropped": 0,
  "components_before_drop": 1,
  "superseded": "the distance-banded grid gave 695,855 cells over this extent, 87% of them in the single finest band",
