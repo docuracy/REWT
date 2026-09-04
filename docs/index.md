@@ -76,4 +76,4 @@ more usefully, [what goes wrong](background).
 
 ---
 
-*Stephen Gadd — [Cambridge Group for the History of Population and Social Structure (CAMPOP)](https://www.campop.geog.cam.ac.uk/); [Faculty of History, University of Cambridge](https://www.hist.cam.ac.uk/people/dr-stephen-gadd); Technical Director, [World Historical Gazetteer (WHG)](https://whgazetteer.org/); [Docuracy Ltd](https://docuracy.co.uk).*
+*Stephen Gadd — [Cambridge Group for the History of Population and Social Structure (CAMPOP)](https://www.campop.geog.cam.ac.uk/); [Faculty of History, University of Cambridge](https://www.hist.cam.ac.uk/people/dr-stephen-gadd); Technical Director, [World Historical Gazetteer (WHG)](https://whgazetteer.org/); [Institute of Historical Research, University of London](https://www.history.ac.uk/people/stephen-gadd); [Docuracy Ltd](https://docuracy.co.uk).*
