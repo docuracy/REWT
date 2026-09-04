@@ -687,6 +687,11 @@ def main(cfg: dict = CONFIG) -> None:
                          "which is the Loch Etive limit in another place.",
         "blind_sailing_buffer_km": cfg["buffer_km"],
         "still_unknown": int((keep_cell & ~known_cell).sum()),
+        "reach_bound_evidence_note":
+            "KILOMETRES, not metres. Each value is how far that summit can be seen from, "
+            "not how high it is — Brittany at 73.9 is a 380 m headland seen from 74 km. "
+            "The note beside this one is about heights in metres, which is precisely why "
+            "the unit is stated here as well as in the key.",
         "reach_bound_evidence_km": {
             "Ben Nevis GB": 139.2, "Kerry IRL": 120.9, "Brittany FRA": 73.9,
             "W Norway (does NOT reach, 430 km away)": 146.2,

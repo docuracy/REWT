@@ -168,6 +168,8 @@ def main(cfg: dict = CONFIG) -> None:
     Path(cfg["summary"]).write_text(json.dumps({
         "generation": generation(), "criterion": "within a week's sailing of England and Wales, under typical "
                      "conditions, measured as route distance THROUGH the water",
+        "calibration_note": "KILOMETRES of routing distance over the water, between the "
+                            "two named places — not a duration and not a straight line.",
         "calibration_km": {n: (round(v) if np.isfinite(v) else None)
                         for (n, _, _), v in zip(cfg["calibration"], cal)},
         "calibration_outside_data": missing,

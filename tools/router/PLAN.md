@@ -1898,3 +1898,21 @@ sightline figures are the ones to be careful quoting: they are kilometres, not m
 
 The general rule, which is cheaper than any of this: **put the kind in the key.** `_km`,
 `_m`, `_pct`, `_ratio` cost four characters and remove the whole class.
+
+**AND THE EXPOSURE IS NOT WHERE I WARNED IT WAS.** rewt-46 checked rather than reassured:
+their viewer fetches seven files from this directory and none of the three is among them, so
+those keys cannot reach a reader through the panel at all. "Ben Nevis" and "Skagen" *are* on
+their page — inside two of my prose strings on the sightline layer — and **both carry their
+unit in the sentence**: "1,345 m", "1169 km". So the prose form protected the reader exactly
+where the bare key would not have.
+
+That inverts the lesson I drew from the `[object Object]` incident, and both halves are true:
+**a structured value is the safer form for a consumer that must compute with it, and prose
+is the safer form for a reader who must not misread it.** Publishing both is not redundancy.
+
+**The remaining exposure is to whoever opens the file** — me, a later session, anyone joining
+the repository. There it is real, and for `reach_bound_evidence` it is worse than neutral:
+the nearest prose sibling is `tallest_land_m_note`, which is about heights in **metres**, so
+a kilometre figure against a peak name sits next to a sentence discussing metres. The renames
+are joined in source by `*_note` strings that state the unit outright, so when they land
+neither form depends on the other.

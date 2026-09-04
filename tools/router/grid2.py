@@ -409,6 +409,9 @@ def main(cfg: dict = CONFIG) -> None:
         # RESOLUTIONS — so "blind buffer: 6" read as a count of six of something,
         # and a plausible wrong number gets repeated where gibberish gets
         # reported (rewt-46, after their formatter printed my ratios as integers).
+        "h3_resolution_by_state_note":
+            "The values are H3 RESOLUTIONS, not counts and not distances. res 6 is 6.45 km "
+            "between cell centres, res 7 is 2.44 km, res 8 is 0.92 km.",
         "h3_resolution_by_state": {"blind buffer": cfg["res_blind"],
                                    "in sight": cfg["res_sight"],
                    "refined": cfg["res_refine"]},
