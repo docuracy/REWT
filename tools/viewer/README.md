@@ -136,7 +136,7 @@ same run, because an absence is only evidence when the same call found a presenc
 no map and requires each to fail. A green run can otherwise mean the subject never
 rendered at all.
 
-Three things it took three attempts to get right, recorded so the next person skips them:
+Four things it took several attempts to get right, recorded so the next person skips them:
 
 - **Software GL is not optional.** Headless chromium has no GPU, so a WebGL map never
   resolves its sources, `map.loaded()` stays false and `idle` never fires — every run
@@ -149,12 +149,30 @@ Three things it took three attempts to get right, recorded so the next person sk
   point for the old view, the click hits open water, and a check of the form "the ray is
   absent for a cell without a landmark" then passes for the wrong reason. The first
   version of the sightline check did exactly that.
+- **A count is not a name, and a hidden layer still answers `getLayer`.** `layers`
+  reports how many of the style's layers drew, never which, so it went green on a build
+  where neither coastal layer had been shown to draw at all. Measuring them by name then
+  found nothing either, for a second reason: switching the coastal edges on switches the
+  coastal cells off — they are siblings in the exclusive group — and `setVisible` hides
+  rather than removes, so the layer was present, invisible, and drawing zero features
+  because of the measurement's own order. Ask for one layer at a time and assert what the
+  siblings are doing. `coast` does both.
 
-It has found five defects in six runs, none of which a day of hand-testing had
-surfaced — the ray cleared by the popup that replaced it, a check that passed for the
-wrong reason, two tallies of one thing under two vocabularies, a popup announcing NOT
-KNOWN over every cell of a layer that has no unknowns, and a warning banner written once
-at boot that could not name anything that failed after it.
+It has found six defects, none of which a day of hand-testing had surfaced — the ray
+cleared by the popup that replaced it, a check that passed for the wrong reason, two
+tallies of one thing under two vocabularies, a popup announcing NOT KNOWN over every
+cell of a layer that has no unknowns, a warning banner written once at boot that could
+not name anything that failed after it, and a switch that could not turn a layer off
+while it was still loading.
+
+The last is the one worth knowing about, because it defeated the control it broke.
+Switching a layer on and another on top of it before the first has landed leaves BOTH
+drawn: the exclusive group unchecks the first, but `setVisible(false)` cannot hide a
+layer that does not exist yet, and when the fetch resolves the pending handler shows it
+anyway. The panel then reads off for a layer that is on the map — which is the exact
+state the group exists to prevent, and it is reachable by hand on any slow connection.
+The handler now re-reads its own switch after `await ensure(o)` rather than obeying the
+state at dispatch, and `layers` asserts every switch agrees with the map.
 
 The first of them: the sightline ray was drawn during
 `describe()`, before the popup was shown, and showing the popup fires `close` on the

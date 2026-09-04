@@ -600,7 +600,7 @@ const OVERLAYS = [
      density a line is a hair, so the seams get marks of their own and their own
      toggle. */
   { id: 'edges', label: 'The routing graph — links between cell centres',
-    file: '../router/data/edges.geojson', kind: 'line', exclusive: 'router',
+    file: '../router/data/edges.geojson', kind: 'line', exclusive: 'router', family: 'lines',
     width: ['interpolate', ['linear'], ['zoom'], 5, 0.4, 9, 0.8, 14, 1.6],
     colour: '#7ad6ff', on: false,
     legend: [['a link between two adjacent cell centres — an adjacency, not a track',
@@ -638,6 +638,40 @@ const OVERLAYS = [
      This is the file that would have been drawn as a line layer and quietly lost its
      230 points: rewt-c7's own check page did exactly that and Stephen read the absence
      as missing joins on the Crouch. `mixed: true` draws both. */
+  /* ── THE COAST AT THE GRID'S OWN RESOLUTION ─────────────────────────────────
+     The res-6 layers above are an AGGREGATION: rewt-c7's routing graph is res 7, and
+     the drawn centres there are ones no route uses. These two are the lattice itself,
+     unaggregated, for every routing cell within 5 km of land — so here a link really
+     does join two cell centres and nothing is a schematic.
+
+     ITS EXTENT DELIBERATELY DOES NOT MATCH THE SIGHTLINE CELLS, and that is the point.
+     I asked rewt-c7 this morning for two layers covering the same ground, because a
+     toggle whose halves differ is a bug the eye finds in a second. They clipped 4,504
+     perimeter cells away to give me it — and that clip is what cost 1,752 sea entries
+     when I measured coverage against the published layer. Measured against the real
+     res-7 grid the shortfall is much smaller: 83% of entries are within two rings, not
+     58% in a cell. So the requirement was mine and it was wrong. A visible mismatch
+     that is explained beats a tidy picture that has quietly lost the estuaries, and
+     `extent_deliberately_differs` in the file says so on the page.
+
+     AND IT HAS 32 COMPONENTS, WHICH IS NOT A DEFECT — do not "fix" it. A 5 km strip
+     around separate landmasses IS separate; the water between them is further from land
+     than the band is wide. Connectivity is a property of the graph, which is one
+     component of 143,879, not of this window onto it. rewt-c7 put that sentence in the
+     properties so it prints without my restating it, which is the whole discipline. */
+  { id: 'coast-cells', label: 'Routing cells near the coast — the grid unaggregated',
+    file: '../router/data/cells_r7_coast.geojson', kind: 'polygon', exclusive: 'router', family: 'cells',
+    colour: '#2a6f8f', opacity: 0.3,
+    legend: [['a routing cell within 5 km of land, at the resolution routes use',
+              '#2a6f8f']],
+    note: 'the band is 5 km because that is where the curve flattens — see below.' },
+  { id: 'coast-edges', label: 'The routing lattice near the coast — real links',
+    file: '../router/data/edges_r7_coast.geojson', kind: 'line', exclusive: 'router', family: 'lines',
+    colour: '#9fe8ff', width: ['interpolate', ['linear'], ['zoom'], 5, 0.3, 9, 0.7, 14, 1.5],
+    legend: [['a link between two adjacent routing cells — unaggregated, so this one '
+              + 'is a link a route can actually use', '#9fe8ff']],
+    note: 'turn the aggregated graph on beside it — both are lines, so they draw '
+        + 'together — and the difference is what the aggregation costs.' },
   { id: 'joins', label: 'River mouths joined to the sea grid',
     file: '../router/data/joins.geojson', kind: 'point', mixed: true,
     colour: ['case', ['==', ['get', 'rule'], 3], C.warn, C.add],
@@ -657,7 +691,30 @@ const OVERLAYS = [
     legend: [['a traced path from a stranded terminus to the grid — inferred, not '
               + 'surveyed and not sailed', C.rev]],
     note: 'these move when R-01 lands. Click one for what it crossed.' },
+  /* THE TERMINI WITH NO WAY TO THE SEA. Stephen expects the sea grid, the joins, the
+     traces and the inland network to be ONE D8 network. rewt-c7 built all four into one
+     graph and counted rather than answering from the design: 81.72% of in-scope river
+     nodes reach the sea, 4,103 components, and thirty river mouths attached to nothing.
+     The answer to "is it one network" is "not yet", and this layer is the part of the
+     shortfall that can be pointed at.
+
+     THE THIRTY IDS ARE NOT WRITTEN HERE. They are read from `network_summary.json` at
+     load time and turned into a filter, because a list of another session's node ids
+     copied into my file is frozen the moment they re-run — which is exactly how the
+     horizon constant came to be wrong in three places. The stranded population moves
+     when R-01 lands; rewt-c7 says so in `provisional` and the page prints it.
+
+     It draws from the JOINS source, not a file of its own: every stranded terminus is
+     already a join, so a second copy of the same geometry could disagree with the
+     first. `sourceOf` exists for exactly that reason. */
+  { id: 'stranded', label: 'River mouths with no way to the sea', sourceOf: 'joins',
+    kind: 'stranded-mark', summary: '../router/data/network_summary.json',
+    colour: C.warn,
+    legend: [['a terminus the combined network cannot reach the sea from — its rule-3 '
+              + 'trace failed', C.warn]],
+    note: 'the count and the definition behind it are the file\u2019s own, below.' },
   { id: 'sightline', label: 'Where land can be seen from the sea', exclusive: 'router',
+    family: 'cells',
     file: '../router/data/sightline2_r6.geojson', kind: 'polygon',
     /* NO `count` HERE. It was 15,861, typed from a message, and it was wrong within a
        day — wrong file and wrong number at once. The count is a property of rewt-c7's
@@ -975,6 +1032,36 @@ async function ensureOnce(o) {
   /* Some layers are the audit's own findings rather than a file of their own. Built
      here from the array the panel already lists, so there is one copy of them on the
      page and a place in the list and a mark on the map cannot disagree. */
+  /* A MARK ON SOME OF ANOTHER LAYER'S FEATURES, chosen by a list in a third file.
+     Declared as its own kind rather than sniffed from the data — the same rule that the
+     corrections layer was fixed under, after a first-feature sniff turned 1,560 mixed
+     features into a symbol layer that drew none of them. */
+  if (o.kind === 'stranded-mark') {
+    const owner = OVERLAYS.find((x) => x.id === o.sourceOf);
+    if (owner) await ensure(owner);
+    if (!map.getSource(o.sourceOf)) { loaded.delete(o.id); return; }
+    const net = await grab(o.summary, 'the one-network summary');
+    if (!net) { loaded.delete(o.id); return; }
+    /* Straight from the file. If rewt-c7 re-runs and the population changes, this
+       changes with it; if the key is ever renamed the layer draws nothing and the
+       count below says 0, which is visible rather than silent. */
+    const ids = (net.stranded || []).map((x) => x.node_id).filter(Boolean);
+    map.addLayer({ id: o.id, type: 'circle', source: o.sourceOf,
+      filter: ['all', ['==', ['geometry-type'], 'Point'],
+        ['in', ['get', 'node_id'], ['literal', ids]]],
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 4, 12, 9],
+        'circle-color': 'rgba(0,0,0,0)',
+        'circle-stroke-color': o.colour,
+        'circle-stroke-width': 2 } });
+    /* NO TALLY. The tally renderer counts things in `cells`, and these are river
+       mouths; the file already carries `termini_stranded`, which prints under its own
+       key from rewt-c7's own words. One number, from the file that measured it. */
+    stamps.set(o.id, net);
+    checkGenerations();
+    wireClicks(o);
+    return;
+  }
   /* A layer that draws from another's source: make sure that one is loaded, then use
      it. Its stamp and tally belong to the layer that fetched it. */
   if (o.sourceOf) {
@@ -1153,6 +1240,13 @@ function findingsAsPoints(kind) {
   })) };
 }
 
+/* Whether two members of an exclusive group may be on the map at the same time.
+   Different families (a hexagon layer and a line layer) never may; two cell layers
+   never may; two line layers always may. See the group comment in buildLayerPanel. */
+function conflicts(a, b) {
+  return a.family !== b.family || a.family === 'cells';
+}
+
 function setVisible(o, on) {
   for (const id of [o.id, o.id + '-casing', o.id + '-arrows', ...(o.also || [])]) {
     if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
@@ -1200,21 +1294,45 @@ function buildLayerPanel() {
          title="${esc(uniq.join(' · '))}"></i>
       <span>${esc(o.label)}</span><em>${o.count != null ? fmt(o.count) : ''}</em>`;
     row.querySelector('input').onchange = async (e) => {
-      /* EXCLUSIVE GROUPS. Stephen asked for a control that SWITCHES the sea cells to
-         the routing edges, not one that adds them: a hexagon and the line between two
-         hexagon centres drawn together answer neither question. Turning one member on
-         turns its siblings off, through their own switches so the panel, the URL and
-         what is remembered all stay in step — setting `checked` alone would leave the
-         hash claiming a layer that is not drawn. */
+      /* EXCLUSIVE GROUPS, and the rule is about CELLS AGAINST LINES, not about any
+         two layers. Stephen asked for a control that SWITCHES the sea cells to the
+         routing edges, not one that adds them: a hexagon and the line between two
+         hexagon centres drawn together answer neither question. So a cell layer and a
+         line layer never draw together, in either direction.
+
+         Two LINE layers may. rewt-c7 pointed out that the reason above is about
+         hexagons against lines, and that the res-6 aggregated graph beside the res-7
+         lattice is exactly the view that shows what the aggregation costs — which I had
+         written a note inviting and the control forbidding. Their argument is right and
+         it is their data; the group is now the narrower thing Stephen actually said.
+
+         Two CELL layers still may not, and that part is mine rather than anyone's
+         instruction: the sightline cells and the coastal band are hexagons at different
+         resolutions, and stacked translucent hexagons at two resolutions are the muddle
+         the rule is against, whichever way round they are.
+
+         Siblings go off through their own switches, so the panel, the URL and what is
+         remembered stay in step — setting `checked` alone would leave the hash claiming
+         a layer that is not drawn. */
       if (e.target.checked && o.exclusive) {
         for (const other of OVERLAYS) {
           if (other === o || other.exclusive !== o.exclusive) continue;
+          if (!conflicts(o, other)) continue;
           const box = [...document.querySelectorAll('#layers .switch input')]
             .find((b) => b.dataset.layer === other.id);
           if (box && box.checked) { box.checked = false; box.dispatchEvent(new Event('change')); }
         }
       }
-      if (e.target.checked) { await ensure(o); setVisible(o, true); } else setVisible(o, false);
+      /* RE-READ THE SWITCH AFTER `ensure`, do not obey the state at dispatch time.
+         `ensure` can take seconds on an 11 MB file, and the exclusive group above may
+         turn this layer off while its fetch is still in flight. `setVisible(false)`
+         was a no-op when that happened, because the layer did not exist yet — so
+         showing it unconditionally here draws a layer whose switch reads off, and
+         puts two members of an exclusive group on the map at once, which is the one
+         thing the group exists to prevent. Found by the harness: turning every switch
+         on in one pass left four layers visible with their boxes unchecked. */
+      if (e.target.checked) await ensure(o);
+      setVisible(o, e.target.checked);
       applyTheme(); writeHash();
       showStamp(o);
     };
@@ -1365,7 +1483,13 @@ function showStamp(o) {
     ...STAMP_FIELDS.filter(([k]) => st[k] != null).map(([k, label]) => [label, st[k]]),
     ...Object.entries(st)
       .filter(([k, v]) => typeof v !== 'string' && !shown.has(k) && v != null)
-      .map(([k, v]) => [k, Array.isArray(v) ? v.map((n) => fmt(n, 2)).join(', ') : v]),
+      /* AN ARRAY OF NUMBERS IS A BOUNDING BOX; AN ARRAY OF RECORDS IS DATA. `fmt` on
+         an object returns NaN, so `network_summary.json`'s 30 stranded termini would
+         have printed as "NaN, NaN, NaN…" — a field that looks like a measurement and
+         is not one. Records are counted here and drawn on the map instead. */
+      .map(([k, v]) => [k, !Array.isArray(v) ? v
+        : v.every((n) => typeof n === 'number') ? v.map((n) => fmt(n, 2)).join(', ')
+        : `${fmt(v.length)} listed — see the map`]),
   ].map(([label, v]) => `<dt>${esc(label)}</dt><dd>${esc(label === 'digest'
     ? String(v).slice(0, 12) + '…' : v)}</dd>`).join('');
   el.innerHTML = `${esc(o.note || '')}

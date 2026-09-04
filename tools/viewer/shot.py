@@ -218,25 +218,50 @@ def check_panel(page) -> tuple[bool, str]:
 
 
 def check_layers(page) -> tuple[bool, str]:
-    """Turn every offered overlay on, and require each to draw something somewhere."""
+    """Turn every offered overlay on at once, and require the panel to still be telling
+    the truth about what is drawn.
+
+    It does NOT require each overlay to draw: the exclusive groups make that impossible
+    on purpose, since turning one member on turns its siblings off. The docstring used
+    to claim it did, which was a check described as stricter than it was.
+
+    What it does assert is that no layer is VISIBLE while its own switch reads off.
+    Turning everything on in one pass is the harshest case for that, because the group
+    unchecks siblings whose fetch is still in flight — and `setVisible(false)` cannot
+    hide a layer that does not exist yet. This found three layers drawn with their
+    switches off, which is the failure the exclusive group exists to prevent, reachable
+    by hand: switch on a slow layer, change to another before it lands.
+    """
     res = page.evaluate("""async () => {
         const rows = [...document.querySelectorAll('#layers .switch input')];
         for (const b of rows) { if (!b.checked) { b.checked = true; b.dispatchEvent(new Event('change')); } }
-        await new Promise(r => setTimeout(r, 12000));
+        await new Promise(r => setTimeout(r, 20000));
         const m = window.map;
         const drawn = {}, ids = [];
         for (const l of m.getStyle().layers) ids.push(l.id);
         for (const id of ids) {
             try { drawn[id] = m.queryRenderedFeatures({ layers: [id] }).length; } catch (e) {}
         }
-        return { drawn, layerCount: ids.length };
+        /* The panel against the map, switch by switch. `also` layers follow their
+           parent, so ask only about the id the switch itself names. */
+        const desync = [];
+        for (const b of rows) {
+            const id = b.dataset.layer;
+            if (!m.getLayer(id)) continue;
+            const vis = m.getLayoutProperty(id, 'visibility') !== 'none';
+            if (vis !== b.checked) desync.push(`${id} box=${b.checked} visible=${vis}`);
+        }
+        return { drawn, layerCount: ids.length, desync };
     }""")
     drawn = res["drawn"]
     live = {k: v for k, v in drawn.items() if v > 0}
     # CONTROL: if NOTHING drew, the harness is measuring a blank page rather than a map.
     if not live:
         return False, f"no layer drew anything at all, of {res['layerCount']} in the style"
-    return True, f"{len(live)} of {res['layerCount']} style layers drew; network={drawn.get('network', 0)}"
+    if res["desync"]:
+        return False, ("the panel and the map disagree: " + "; ".join(res["desync"]))
+    return True, (f"{len(live)} of {res['layerCount']} style layers drew; "
+                  f"network={drawn.get('network', 0)}; every switch agrees with the map")
 
 
 def check_popup(page) -> tuple[bool, str]:
@@ -455,6 +480,116 @@ def check_edges(page) -> tuple[bool, str]:
                   f"came on; the panel carries the file's own sentence")
 
 
+def check_coast(page) -> tuple[bool, str]:
+    """The two unaggregated coastal layers draw, AND they exclude each other.
+
+    `layers` counts how many of the style's layers drew; it does not say WHICH, so it
+    went green on a build where I had not yet established either of these draws at all.
+    Measuring them by name found what a count cannot: my first attempt turned the cells
+    on, then the edges, then asked how many cells drew, and got 0 — because the two are
+    siblings in the exclusive group and `setVisible` hides rather than removes, so
+    `getLayer` still said the layer was there. The layer was present and invisible, and
+    the count was my own doing. Hence: one layer on at a time, and the sibling state
+    asserted rather than assumed.
+    """
+    res = page.evaluate("""async () => {
+        const solo = async (want) => {
+            /* Establish the state this measurement needs — every switch off, then the
+               one we are asking about. `missing` may have left a switch disabled with
+               its layer removed, so restore both, and only drop from `loaded` when the
+               layer is genuinely gone (addLayer throws on a duplicate id). */
+            const rows = [...document.querySelectorAll('#layers .switch input')];
+            for (const b of rows) {
+                if (b.checked) { b.checked = false; b.dispatchEvent(new Event('change')); }
+            }
+            const box = rows.find((b) => b.dataset.layer === want);
+            if (!box) return { error: 'no switch for ' + want };
+            box.disabled = false;
+            if (!window.map.getLayer(want)) window.rewt.loaded.delete(want);
+            box.checked = true; box.dispatchEvent(new Event('change'));
+            const vis = () => window.map.getLayer(want)
+                && window.map.getLayoutProperty(want, 'visibility') !== 'none';
+            for (let i = 0; i < 80 && !vis(); i++) {
+                await new Promise((r) => setTimeout(r, 500));
+            }
+            if (!vis()) return { error: want + ' never became visible' };
+            /* The Crouch: inside the 5 km band, and far enough from the Thames that a
+               view full of features would not prove the coastal file drew them. */
+            window.map.jumpTo({ center: [0.75, 51.62], zoom: 9 });
+            await new Promise((r) => { const t = setTimeout(r, 25000);
+                window.map.once('idle', () => { clearTimeout(t); r(); }); });
+            const others = ['sightline', 'edges', 'coast-cells', 'coast-edges']
+                .filter((id) => id !== want && window.map.getLayer(id)
+                    && window.map.getLayoutProperty(id, 'visibility') !== 'none');
+            const src = window.map.getSource(want);
+            return {
+                drawn: window.map.queryRenderedFeatures({ layers: [want] }).length,
+                inFile: (src && src._data && src._data.features || []).length,
+                siblingsVisible: others,
+            };
+        };
+        const cells = await solo('coast-cells');
+        const edges = await solo('coast-edges');
+        /* THE FAMILY RULE, both directions. Two LINE layers may draw together — that is
+           the comparison that shows what the aggregation costs, and rewt-c7 argued for
+           it — while a CELL layer clears them, which is the switch Stephen asked for in
+           those words. Asserting only the first half would pass on a viewer with no
+           rule at all. */
+        const on = async (id) => {
+            const b = [...document.querySelectorAll('#layers .switch input')]
+                .find((x) => x.dataset.layer === id);
+            b.disabled = false;
+            if (!window.map.getLayer(id)) window.rewt.loaded.delete(id);
+            if (!b.checked) { b.checked = true; b.dispatchEvent(new Event('change')); }
+            const vis = () => window.map.getLayer(id)
+                && window.map.getLayoutProperty(id, 'visibility') !== 'none';
+            for (let i = 0; i < 80 && !vis(); i++) await new Promise((r) => setTimeout(r, 500));
+            return vis();
+        };
+        const vis = (id) => !!window.map.getLayer(id)
+            && window.map.getLayoutProperty(id, 'visibility') !== 'none';
+        await on('coast-edges');
+        await on('edges');
+        const linesTogether = vis('edges') && vis('coast-edges');
+        await on('sightline');
+        const cellClearedLines = !vis('edges') && !vis('coast-edges');
+        const note = document.querySelector('#note-coast-cells');
+        const txt = note ? note.innerText : '';
+        const panel = document.querySelector('#layers').innerText;
+        return { cells, edges, linesTogether, cellClearedLines,
+            /* The file's own sentences, not my restatement of them: the band is a
+               window on the graph, so its 32 components are not a defect to fix, and
+               its extent is deliberately not the sightline layer's. */
+            saysComponents: /32 connected components/.test(panel),
+            saysExtentDiffers: /extent/i.test(panel) };
+    }""")
+    bad = []
+    for name in ("cells", "edges"):
+        r = res[name]
+        if r.get("error"):
+            bad.append(f"{name}: {r['error']}")
+            continue
+        if r["drawn"] == 0:
+            bad.append(f"{name} drew nothing, of {r['inFile']:,} in the file")
+        if r["siblingsVisible"]:
+            bad.append(f"{name} left {', '.join(r['siblingsVisible'])} visible beside it, "
+                       "so the group does not switch")
+    if not res["linesTogether"]:
+        bad.append("the aggregated graph and the coastal lattice will not draw together, "
+                   "so the comparison the note invites is impossible")
+    if not res["cellClearedLines"]:
+        bad.append("turning a cell layer on left the line layers drawn, so a hexagon and "
+                   "the lines between hexagon centres are on the map at once")
+    if not res["saysComponents"]:
+        bad.append("the panel does not carry the file's '32 connected components' sentence")
+    if bad:
+        return False, "; ".join(bad)
+    c, e = res["cells"], res["edges"]
+    return True, (f"{c['drawn']:,} cells of {c['inFile']:,} and {e['drawn']:,} links of "
+                  f"{e['inFile']:,} drew on the Crouch; two line layers draw together, a "
+                  f"cell layer clears them; the panel carries the 'not a defect' sentence")
+
+
 def check_joins(page) -> tuple[bool, str]:
     """The joins layer draws BOTH its geometries, and the counts agree two ways.
 
@@ -506,6 +641,75 @@ def check_joins(page) -> tuple[bool, str]:
                        f"{res['lineLayer']} lines. This is the fault that lost 230 joins.")
     return True, (f"{res['total']} joins, by rule {r} and by geometry {g} — the two views "
                   f"agree; {res['pointLayer']} points and {res['lineLayer']} lines drawn")
+
+
+def check_stranded(page) -> tuple[bool, str]:
+    """The thirty river mouths with no way to the sea, and the answer they belong to.
+
+    Stephen's expectation is that the sea grid, the joins, the traces and the inland
+    network form ONE D8 network. rewt-c7 measured it instead of asserting it, and the
+    answer is "not yet" — 81.72% of in-scope river nodes reach the sea. This asserts the
+    map draws exactly the population the file names, and that the page carries the
+    answer rather than my summary of it.
+
+    The count is read from the file in the SAME RUN, not written here: thirty is today's
+    number and rewt-c7 says in `provisional` that it moves when R-01 lands. A check that
+    froze it would fail on a correct rebuild.
+    """
+    res = page.evaluate("""async () => {
+        const b = [...document.querySelectorAll('#layers .switch input')]
+            .find((x) => x.dataset.layer === 'stranded');
+        if (!b) return { error: 'no switch for the stranded layer' };
+        b.disabled = false;
+        if (!window.map.getLayer('stranded')) window.rewt.loaded.delete('stranded');
+        if (!b.checked) { b.checked = true; b.dispatchEvent(new Event('change')); }
+        for (let i = 0; i < 80 && !window.map.getLayer('stranded'); i++) {
+            await new Promise((r) => setTimeout(r, 500));
+        }
+        if (!window.map.getLayer('stranded')) return { error: 'the layer never appeared' };
+        /* The whole of Great Britain, so every stranded terminus is in view at once and
+           a count of what is drawn can be compared with the file's own list. */
+        window.map.jumpTo({ center: [-3.0, 54.5], zoom: 4.4 });
+        await new Promise((r) => { const t = setTimeout(r, 25000);
+            window.map.once('idle', () => { clearTimeout(t); r(); }); });
+        const net = await (await fetch('../router/data/network_summary.json')).json();
+        const drawn = window.map.queryRenderedFeatures({ layers: ['stranded'] });
+        const ids = new Set(drawn.map((f) => f.properties.node_id));
+        const listed = new Set((net.stranded || []).map((x) => x.node_id));
+        const panel = document.querySelector('#layers').innerText;
+        return {
+            listed: listed.size,
+            drawnDistinct: ids.size,
+            notListed: [...ids].filter((i) => !listed.has(i)).length,
+            /* The file's own answer, not mine. */
+            saysAnswer: panel.includes(net.answer),
+            saysPct: panel.includes(String(net.in_scope_pct_reaching_the_sea)),
+            saysProvisional: /R-01 unbuilt/.test(panel),
+            /* The 30-record list must not print as a row of NaNs. */
+            noNaN: !/NaN/.test(panel),
+        };
+    }""")
+    if res.get("error"):
+        return False, res["error"]
+    bad = []
+    if res["drawnDistinct"] != res["listed"]:
+        bad.append(f"{res['drawnDistinct']} stranded termini drew, of {res['listed']} "
+                   "the file lists")
+    if res["notListed"]:
+        bad.append(f"{res['notListed']} drawn termini are not in the file's list")
+    if not res["saysAnswer"]:
+        bad.append("the panel does not carry the file's own answer to the one-network question")
+    if not res["saysPct"]:
+        bad.append("the panel does not carry the percentage reaching the sea")
+    if not res["saysProvisional"]:
+        bad.append("the panel does not say the population is provisional on R-01")
+    if not res["noNaN"]:
+        bad.append("a stamp field printed NaN")
+    if bad:
+        return False, "; ".join(bad)
+    return True, (f"{res['drawnDistinct']} of {res['listed']} stranded termini drawn and "
+                  f"none unlisted; the panel carries the file's answer, its "
+                  f"percentage and its R-01 caveat")
 
 
 def check_mobile(page) -> tuple[bool, str]:
@@ -739,7 +943,8 @@ def check_missing_layer(page) -> tuple[bool, str]:
 CHECKS = {"panel": check_panel, "layers": check_layers,
           "popup": check_popup, "sightline": check_sightline,
           "stamp": check_stamp, "missing": check_missing_layer,
-          "edges": check_edges, "mobile": check_mobile,
+          "edges": check_edges, "coast": check_coast,
+          "stranded": check_stranded, "mobile": check_mobile,
           "geometry": check_geometry_coverage, "joins": check_joins}
 
 

@@ -4271,3 +4271,59 @@ declining to assert it themselves, and arrive at the fourth as settled — becau
 function yes"* from someone who has not compared reads exactly like agreement. **What broke
 it was one session refusing to act on a relayed conclusion and measuring instead**, and the
 measurement took less time than the conversation that preceded it.
+
+## D-100 — A control cannot switch off a layer that has not finished loading
+
+**The viewer's exclusive group did not do the one thing it was built to do**, and the
+gap was in the seam between two correct pieces of code.
+
+Stephen asked for a control that *switches* the sea cells to the routing edges rather
+than adding them: a hexagon and the line between two hexagon centres drawn together
+answer neither question. The group did exactly that — turning a member on unchecks its
+siblings, through their own switches, so the panel and the URL stay in step.
+
+**But `setVisible(false)` cannot hide a layer that does not exist yet.** A heavy overlay
+is fetched by `ensure()` before its layer is added, and the switch handler was written
+as `if (checked) { await ensure(o); setVisible(o, true); }` — obeying the state at the
+moment the event was dispatched. Switch a slow layer on, switch another on before the
+first lands, and the group unchecks the first (a no-op, no layer yet), the fetch then
+resolves, `addLayer` creates it *visible*, and the pending handler shows it again. Both
+draw. **The panel reads off for a layer that is on the map.**
+
+Found by the harness, in the check that turns every switch on in one pass: three layers
+visible with their boxes unchecked. It is reachable by hand on any slow connection, and
+a day of hand-testing on a fast local server never produced it.
+
+**The rule is not about maps.** *An asynchronous handler must re-read the state it acts
+on, not close over the state that triggered it.* Anything that can be revoked while the
+await is outstanding — a toggle, a selection, a cancelled request, a route change — has
+this shape. `if (checked) await ensure(o); setVisible(o, checked)` is the whole fix.
+
+**And the second-order lesson is about the check.** `layers` counted how many of the
+style's layers drew and never said which, so it went green throughout. A count cannot
+see a disagreement between two things it is summing. It now asserts that every switch
+agrees with the map, which is a statement about a relationship rather than a total.
+
+## D-101 — The rule was about hexagons and lines, and I generalised it into a group
+
+**Four router layers were made mutually exclusive on the strength of a rule that covered
+two of them.** Stephen's words were that a hexagon and the line between two hexagon
+centres drawn together answer neither question. I turned that into a group: sightline
+cells, the aggregated graph, the coastal cells and the coastal lattice, one at a time.
+
+rewt-c7 pointed out that the reason names *cells against lines*, and that the res-6
+aggregated graph beside the res-7 lattice is precisely the view that shows what the
+aggregation costs. I had written a layer note inviting that comparison and a control
+forbidding it — the two disagreed, and I had noticed only enough to reword the note.
+
+**The correction is not simply to take their version**, which would also have stopped
+the graph clearing the sightline cells — the switch Stephen asked for in those words.
+The rule now implemented is the narrower thing actually said, in both directions: a cell
+layer and a line layer never draw together; two line layers always may. Two cell layers
+still exclude each other, and that part is mine and is marked as mine in the code.
+
+**The general form: a rule stated about a relationship between two kinds of thing does
+not authorise a group containing every instance of both kinds.** Generalising it is
+cheap, looks tidier, and quietly forbids things nobody objected to. The tell here was
+available before anyone complained — a note and a control in the same file that could
+not both be true.
