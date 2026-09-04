@@ -50,7 +50,14 @@
         {%- for item in site.nav -%}
           {%- if item.right -%}
             {%- assign target = item.url -%}
-            <a class="nav-app" href="{{ target | relative_url }}"{% if here == target %} aria-current="page"{% endif %}>
+            <!-- NEW TAB, and the only link on the site's furniture that takes one. The
+                 reader is leaving prose for an application they will pan, zoom and come
+                 back from, and a map that has replaced the page they were reading costs
+                 them their place in it. `rel` because a new tab given `window.opener`
+                 can navigate the page that spawned it. The label says so out loud rather
+                 than leaving a screen-reader user to discover it. -->
+            <a class="nav-app" href="{{ target | relative_url }}" target="_blank" rel="noopener"
+               aria-label="{{ item.title }} (opens in a new tab)"{% if here == target %} aria-current="page"{% endif %}>
               {%- if item.icon == 'map' -%}
               <svg class="nav-app-mark" width="15" height="15" viewBox="0 0 24 24" fill="none"
                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
