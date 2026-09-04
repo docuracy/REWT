@@ -89,6 +89,36 @@ def main() -> None:
     (OUT / "coastline.geojson").write_text(cr[["Name", "geometry"]].to_json())
     print(f"  coastline.geojson  {len(cr):,} polygons (OS Boundary-Line, OGL)")
 
+    # Boundary-Line is GREAT BRITAIN ONLY. Ireland, Faroe and the continent would be
+    # hexagons around nothing, which reads as sea. Land outside GB comes from EMODnet's
+    # own sign change — coarse, but it is context, and it is the same surface the grid
+    # is cut from so it cannot disagree with it.
+    import rasterio                      # np is already imported at module level;
+    from rasterio.features import shapes  # re-importing it here made it function-local
+    from rasterio.windows import Window
+    from shapely.geometry import shape as shp
+    import sys as _sys
+    _sys.path.insert(0, "tools/router")
+    from sightline import build_vrt, nodata_to_nan
+    src = rasterio.open(build_vrt({"windows": "data/raw/emodnet_bathymetry/*.tif",
+                                   "vrt": "tools/router/cache/emodnet.vrt"}))
+    d = 16
+    hh, ww = src.height // d, src.width // d
+    a = np.empty((hh, ww), "float32")
+    for r0 in range(0, hh, 256):
+        r1 = min(r0 + 256, hh)
+        c = nodata_to_nan(src.read(1, window=Window(0, r0*d, ww*d, (r1-r0)*d)))
+        with np.errstate(invalid="ignore"):
+            a[r0:r1] = np.nanmax(c.reshape(r1 - r0, d, ww, d), axis=(1, 3))
+    mask = (np.isfinite(a) & (a >= 0)).astype("uint8")
+    tr = rasterio.transform.from_bounds(*src.bounds, ww, hh)
+    polys = [shp(g).simplify(0.01) for g, v in shapes(mask, mask=mask.astype(bool),
+                                                     transform=tr) if v == 1]
+    polys = [p_ for p_ in polys if p_.area > 2e-4]
+    gdf = gpd.GeoDataFrame(geometry=polys, crs=4326)
+    (OUT / "land.geojson").write_text(gdf.to_json())
+    print(f"  land.geojson       {len(gdf):,} polygons (EMODnet sign change, context only)")
+
     # The page is SOURCE and lives in tools/; check/ is gitignored, so an index.html
     # written straight into it would vanish on a clean checkout.
     (OUT / "index.html").write_text(Path("tools/router/check.html").read_text())
@@ -101,7 +131,11 @@ def main() -> None:
         if p.exists():
             summary[s] = json.loads(p.read_text())
     (OUT / "summaries.json").write_text(json.dumps(summary))
-    (OUT / "areas.json").write_text(json.dumps(AREAS))
+    # "_extent" so the page's "all" button follows the data instead of a box that goes
+    # stale the moment the cache grows — which it just did, from 120 windows to 288.
+    (OUT / "areas.json").write_text(json.dumps(
+        {**AREAS, "_extent": [src.bounds.left, src.bounds.bottom,
+                              src.bounds.right, src.bounds.top]}))
     print(f"  summaries.json, areas.json")
     print(f"\nnow: python3 tools/viewer/serve.py   ->   "
           f"http://127.0.0.1:8021/router/check/")

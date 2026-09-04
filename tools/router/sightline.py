@@ -61,14 +61,44 @@ def build_vrt(cfg: dict) -> str:
     """Mosaic the cached EMODnet windows. Built here rather than by hand: a step that
     only runs when someone remembers it is not part of the build (AGENTS.md)."""
     vrt = Path(cfg["vrt"])
-    tifs = sorted(glob.glob(cfg["windows"]))
+    # data/raw first (checksummed, the implementer's), then the working cache for the
+    # windows the extent needs and the manifest does not yet hold.
+    # PREFER COVERAGE, NOT PROVENANCE. data/raw is authoritative, but ten of its windows
+    # are HALF HEIGHT (its area of interest stopped at 61.0 N), and a VRT fills whatever
+    # no window covers with ZERO — which reads as land at the datum, silently. So a raw
+    # window is used unless the working cache holds a fuller one for the same tile.
+    import rasterio
+    def span(t):
+        with rasterio.open(t) as r:
+            return r.bounds.top - r.bounds.bottom
+    raw = {Path(t).name: t for t in sorted(glob.glob(cfg["windows"]))}
+    for t in sorted(glob.glob("tools/router/cache/windows/*.tif")):
+        n = Path(t).name
+        if n not in raw or span(t) > span(raw[n]) + 1e-6:
+            raw[n] = t
+    tifs = [raw[k] for k in sorted(raw)]
     if not tifs:
         raise SystemExit(f"no EMODnet windows under {cfg['windows']} — nothing to mosaic")
     vrt.parent.mkdir(parents=True, exist_ok=True)
     if not vrt.exists() or vrt.stat().st_mtime < max(Path(t).stat().st_mtime for t in tifs):
         print(f"building {vrt} from {len(tifs)} windows")
-        subprocess.run(["gdalbuildvrt", "-q", str(vrt), *tifs], check=True)
+        # -vrtnodata so a gap in the MOSAIC is loud. Without it gdalbuildvrt fills
+        # uncovered ground with 0.0, which is a plausible measurement at this datum and
+        # indistinguishable from the real datum-boundary zeros. -9999 is not: nothing in
+        # the coverage lies below -6000 m, so it cannot be mistaken for a depth.
+        subprocess.run(["gdalbuildvrt", "-q", "-vrtnodata", "-9999",
+                        str(vrt), *tifs], check=True)
     return str(vrt)
+
+
+def nodata_to_nan(a):
+    """The VRT declares -9999 so a gap in the MOSAIC is loud rather than a plausible
+    zero. Every reader must honour it: `np.isfinite` alone will not, and -9999 would
+    sail through as the deepest water in the world."""
+    import numpy as _np
+    a = a.astype("float32", copy=False)
+    a[a <= -9000] = _np.nan
+    return a
 
 
 def horizon_m(height_m: np.ndarray, cfg: dict) -> np.ndarray:
@@ -96,7 +126,7 @@ def main(cfg: dict = CONFIG) -> None:
     BLOCK = 256
     for r0 in range(0, h, BLOCK):
         r1 = min(r0 + BLOCK, h)
-        chunk = src.read(1, window=Window(0, r0 * dec, w * dec, (r1 - r0) * dec)).astype("float64")
+        chunk = nodata_to_nan(src.read(1, window=Window(0, r0*dec, w*dec, (r1-r0)*dec))).astype("float64")
         chunk = chunk.reshape(r1 - r0, dec, w, dec)
         with np.errstate(invalid="ignore"):
             a[r0:r1] = np.nanmax(chunk, axis=(1, 3))

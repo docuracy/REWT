@@ -30,7 +30,7 @@ from rasterio.windows import from_bounds
 from scipy.spatial import cKDTree
 
 import h3
-from sightline import build_vrt
+from sightline import build_vrt, nodata_to_nan
 
 ATTRIBUTION = ("Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): "
                "EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0.")
@@ -49,6 +49,14 @@ CONFIG = {
     # lowest tide costs 1 + its height in metres, so a trace crosses a drying bank only
     # when there is no wet route, and prefers the lowest saddle when it must.
     "impassable_above_m": 5.0,   # above this it is land, not a drying bank
+    # A CEILING ON DRYING GROUND, because 5 m of permitted height silently licenses a
+    # river valley. The Thames terminus in central London traced 43 km, of which 35.6 km
+    # was "drying" — which in a valley means low land, not tidal flat. Section 6 measured
+    # the population these traces exist to cross: the gap from a terminus to water that
+    # exists at the lowest tide is a median 143 m, a 95th of 624 m and a MAXIMUM of
+    # 9,605 m anywhere in the country. A path crossing more drying ground than the widest
+    # intertidal zone that exists is not crossing an intertidal zone.
+    "max_drying_m": 9605.0,
     "margin_px": 40,             # window padding around the straight line
     "earth_radius_m": 6371000.0,
 }
@@ -127,7 +135,7 @@ def main(cfg: dict = CONFIG) -> None:
         pad = cfg["margin_px"] * max(abs(src.transform.a), abs(src.transform.e))
         w = from_bounds(min(lo, tlo) - pad, min(la, tla) - pad,
                         max(lo, tlo) + pad, max(la, tla) + pad, src.transform)
-        a = src.read(1, window=w, boundless=True, fill_value=np.nan).astype("float64")
+        a = nodata_to_nan(src.read(1, window=w, boundless=True, fill_value=np.nan)).astype("float64")
         tw = rasterio.windows.transform(w, src.transform)
 
         cost = np.where(a < 0, 1.0, 1.0 + np.maximum(a, 0.0))
@@ -161,13 +169,22 @@ def main(cfg: dict = CONFIG) -> None:
         seg = np.array([np.hypot((pts[i+1][0]-pts[i][0]) * 111320 * np.cos(np.radians(la)),
                                  (pts[i+1][1]-pts[i][1]) * 111320) for i in range(len(pts)-1)])
         dry = int((elev >= 0).sum())
+        drying_m = float(seg.sum()) * dry / len(path)
+        if drying_m > cfg["max_drying_m"]:
+            rows.append({**t, "traced": False,
+                         "reason": f"crosses {drying_m:.0f} m of drying ground, more than "
+                                   f"the widest intertidal zone measured "
+                                   f"({cfg['max_drying_m']:.0f} m) — a river valley, "
+                                   f"not a tidal flat",
+                         "drying_m": round(drying_m), "path_m": round(float(seg.sum()))})
+            continue
         rows.append({**t, "traced": True,
                      "path_m": round(float(seg.sum())),
                      "straight_m": t["dist_m"],
                      "detour": round(float(seg.sum()) / max(t["dist_m"], 1), 2),
                      "max_elev_crossed_m": round(float(np.nanmax(elev)), 1),
                      "min_depth_m": round(float(np.nanmin(elev)), 1),
-                     "drying_px": dry,
+                     "drying_px": dry, "drying_m": round(drying_m),
                      "drying_frac": round(dry / len(path), 3)})
         feats.append({"type": "Feature",
                       "geometry": {"type": "LineString",

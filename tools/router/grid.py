@@ -36,7 +36,7 @@ from scipy import ndimage
 
 import h3
 
-from sightline import build_vrt
+from sightline import build_vrt, nodata_to_nan
 
 CONFIG = {
     "coastal_sea_resolution": 9,   # PLAN.md 5.2: the floor, set by the bathymetry
@@ -79,7 +79,7 @@ def load_masks(cfg: dict):
     depth = np.full((h, w), np.nan, "float32")
     for r0 in range(0, h, 256):
         r1 = min(r0 + 256, h)
-        c = src.read(1, window=Window(0, r0 * dec, w * dec, (r1 - r0) * dec)).astype("float32")
+        c = nodata_to_nan(src.read(1, window=Window(0, r0*dec, w*dec, (r1-r0)*dec)))
         c = c.reshape(r1 - r0, dec, w, dec)
         fin = np.isfinite(c)
         has_land[r0:r1] = np.any(fin & (c >= 0), axis=(1, 3))

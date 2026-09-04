@@ -66,7 +66,8 @@ window.map=map;                       // a top-level const is NOT on window
 window.__drawn=0;                     // increments when a stage has finished drawing
 window.setStage=async s=>{ stage=s;
   [...stages.children].forEach(b=>b.classList.toggle('on',b.dataset.s===s)); await draw(); };
-window.zoomTo=a=>{ if(a==='all') map.fitBounds([[-8,49.5],[2,61]],{padding:20});
+window.zoomTo=a=>{ if(a==='all'){ const e=areas._extent||[-8,49.5,2,61];
+    map.fitBounds([[e[0],e[1]],[e[2],e[3]]],{padding:20}); return; }
   else map.fitBounds([[areas[a][0],areas[a][1]],[areas[a][2],areas[a][3]]],{padding:40}); };
 
 async function gj(u){ if(loaded[u])return loaded[u];
@@ -80,6 +81,10 @@ function clear(){ for(const l of map.getStyle().layers) if(l.id.startsWith('x-')
 
 async function draw(){
   clear();
+  // land outside GB, from EMODnet, drawn first and dimmer: it is context, not a coastline
+  if(await src('land', C+'land.geojson'))
+    map.addLayer({id:'x-coast-land',type:'fill',source:'land',
+      paint:{'fill-color':'#11161d','fill-outline-color':'#262c36'}});
   await src('coast', C+'coastline.geojson');
   map.addLayer({id:'x-coast',type:'fill',source:'coast',
     paint:{'fill-color':'#161b22','fill-outline-color':'#30363d'}});
@@ -142,7 +147,7 @@ function figures(){
     .map(([k,v])=>`<tr><td>${k}</td><td class="v">${(v??'—').toLocaleString?.()??v}</td></tr>`).join('');
 }
 
-map.on('click',e=>{ const f=map.queryRenderedFeatures(e.point).filter(f=>f.layer.id.startsWith('x-')&&f.layer.id!=='x-coast')[0];
+map.on('click',e=>{ const f=map.queryRenderedFeatures(e.point).filter(f=>f.layer.id.startsWith('x-')&&!f.layer.id.startsWith('x-coast'))[0];
   if(!f)return; const p=f.properties;
   new maplibregl.Popup().setLngLat(e.lngLat).setHTML(
     Object.entries(p).filter(([k])=>!k.startsWith('landmark_l'))
@@ -154,11 +159,12 @@ map.on('load',async()=>{
     `<button data-s="${k}"${k===stage?' class="on"':''}>${v.label}</button>`).join('');
   stages.onclick=ev=>{ const s=ev.target.dataset.s; if(!s)return; stage=s;
     [...stages.children].forEach(b=>b.classList.toggle('on',b.dataset.s===s)); draw(); };
-  areasEl.innerHTML=`<button data-a="all">all</button>`+Object.keys(areas).map(a=>
+  areasEl.innerHTML=`<button data-a="all">all</button>`+Object.keys(areas).filter(a=>a[0]!=='_').map(a=>
     `<button data-a="${a}">${a}</button>`).join('');
   areasEl.onclick=ev=>{ const a=ev.target.dataset.a; if(!a)return;
-    if(a==='all') map.fitBounds([[-8,49.5],[2,61]],{padding:20});
+    if(a==='all') window.zoomTo('all');
     else map.fitBounds([[areas[a][0],areas[a][1]],[areas[a][2],areas[a][3]]],{padding:40}); };
+  window.zoomTo('all');
   draw();
 });
 const legend=document.getElementById('legend'), figs=document.getElementById('figs'),

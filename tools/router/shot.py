@@ -129,12 +129,12 @@ def main() -> int:
                 continue
             n = page.evaluate("window.map.queryRenderedFeatures()"
                               ".filter(f=>f.layer.id.startsWith('x-')"
-                              " && f.layer.id!=='x-coast').length")
+                              " && !f.layer.id.startsWith('x-coast')).length")
             ctrl = page.evaluate(
                 "window.map.queryRenderedFeatures("
                 "  window.map.project([-1.55,52.60]))"          # inland Warwickshire
                 ".filter(f=>f.layer.id.startsWith('x-')"
-                " && f.layer.id!=='x-coast').length")
+                " && !f.layer.id.startsWith('x-coast')).length")
             p = OUT / f"{st}-{a.area}.png"
             page.screenshot(path=str(p))
             flag = "" if n else "   ** NOTHING DREW **"

@@ -98,6 +98,12 @@ def main(cfg: dict = CONFIG) -> None:
         nb = [c for c in h3.grid_disk(own, 1) if c in cellset]
         j = int(ni[i]); r = int(cres[j])
         if nb:                                      # rule 2: a grid cell is adjacent
+            # the NEAREST adjacent cell, not whichever grid_disk happened to list first.
+            # The arbitrary pick also made the drawn line disagree with the recorded
+            # attachment on 115 joins — the map said one thing and the data another.
+            nb.sort(key=lambda c: (lambda p: (p[0] - la) ** 2
+                                   + ((p[1] - lo) * np.cos(np.radians(la))) ** 2)
+                    (h3.cell_to_latlng(c)))
             rule[i] = 2; cell_of[i] = nb[0]
             res_of[i] = cfg["coastal_sea_resolution"]; dist_of[i] = float(nd[i])
         else:                                       # rule 3: needs a traced path
@@ -143,10 +149,20 @@ def main(cfg: dict = CONFIG) -> None:
     }, indent=1))
     print(f"\nwrote {cfg['summary']}")
 
+    # DRAW THE ATTACHMENT THAT WAS RECORDED, and only where one exists. A rule-3
+    # terminus has no attachment yet: drawing a straight line to the nearest cell
+    # asserted a connection across 50 km of London, and it looked like a route. Those
+    # are points now, and the actual path is stage 4's business.
+    def geom(r, k):
+        p = h3.cell_to_latlng(str(r.cell))
+        here = [round(r.lon, 6), round(r.lat, 6)]
+        if r.rule == 3:
+            return {"type": "Point", "coordinates": here}
+        return {"type": "LineString",
+                "coordinates": [here, [round(p[1], 6), round(p[0], 6)]]}
+
     feats = [{"type": "Feature",
-              "geometry": {"type": "LineString", "coordinates": [
-                  [round(r.lon, 6), round(r.lat, 6)],
-                  [round(float(glon[ni[k]]), 6), round(float(glat[ni[k]]), 6)]]},
+              "geometry": geom(r, k),
               "properties": {"node_id": r.node_id, "rule": int(r.rule),
                              "cell": str(r.cell), "cell_res": int(r.cell_res),
                              "dist_m": round(float(r.dist_m)),
