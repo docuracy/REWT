@@ -1044,3 +1044,52 @@ which is Berwick-upon-Tweed, in England.
 
 If the basins are ever corrected the guard becomes a no-op rather than a second hidden
 rule, because it excludes nothing that a correct delineation would have kept.
+
+## 16. One land test, and the 220 cells that fell between two passes
+
+Building the edges layer found a defect of a shape this repository has seen before.
+
+`grid2.py` decided which cells were connected to the sea network using bare `grid_disk`.
+`edges.py` then built the routing graph with `grid_disk` **and** a test that refuses a link
+whose straight line crosses land. Each pass was internally correct and the two disagreed,
+so **220 cells whose every neighbour lay across a spit survived the first and were isolated
+by the second** — and one join had attached a terminus to a cell with no route out of it.
+They are in fjords and estuary mouths narrower than a res-7 cell: the Sognefjord, the
+Limfjord, Swansea Bay, Bridgwater Bay, Start Bay.
+
+The test is now one function in `landtest.py`, imported by both. The Fens again: a rule
+applied in one place and not the other, invisible while both places are self-consistent.
+
+After the fix `edges.py` reports **0 isolated cells** and **one component** holding all
+142,976. Land rejections in `edges.py` fell from 3,000 to 1,684, because most of them were
+the doomed cells' links. Traces went from 101 to 102: the terminus that had been attached
+to a dead cell now reaches the network.
+
+## 17. The edges layer, and why the published one is aggregated
+
+Stephen asked to see the travelling surface rather than the cells carrying it. I built
+exactly that first — 415,520 res-7 edges — and then measured it: **80 MB**, roughly a
+gigabyte once a browser has parsed it. So `docs/router/data/edges.geojson` is that graph
+**aggregated to the res 6 of the published sea cells**: two cells are linked where any
+res-7 edge joins a child of one to a child of the other, and `routing_edges` counts how
+many. 49,080 links, 11.1 MB. Nothing is invented; every link is backed by real edges. But
+**the drawn centres are res-6 centres, which no route uses**, and the layer says so.
+
+The true lattice goes out unaggregated per named check area — severn 569 edges, thames 128,
+wash 283, solway 388, loch-etive 43, mersey-dee 53 — which is where to look at it.
+
+Two things a reader must not be allowed to miss, so both ride in the layer's own
+properties rather than in a legend that can drift away from the geometry:
+
+- `an_edge_is_not_a_route` — a drawn edge is an **adjacency**, not a track.
+- `aggregation` — the drawn centres are not the centres a route uses.
+
+Read together they say the picture is a schematic of a graph, not anything anybody sailed.
+
+Aggregation lifts a res-6 cell into view as soon as **one** of its seven res-7 children is
+in the grid, so it spilled a ring of 4,504 cells past the published layer — all perimeter.
+Those 12,054 links are clipped out so the two halves of the toggle cover the same ground,
+and the count is a property rather than a silent loss.
+
+`crossing_a_band` counts features **in this layer**: 59. The res-7 graph behind it has 321,
+because several edges collapse into one drawn link. Both are published, named apart.

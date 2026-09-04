@@ -31,6 +31,7 @@ from scipy.sparse.csgraph import connected_components
 
 import h3
 from generation import generation
+from landtest import land_crossing_test
 from pyproj import Transformer
 
 CONFIG = {
@@ -64,21 +65,7 @@ def main(cfg: dict = CONFIG) -> None:
     # links, 0.43%. The predecessor tests this (`intersects_land` in its sea_graph.py)
     # and this did not — Stephen asking whether centre-to-centre was the right surface
     # is what surfaced it.
-    mk = np.load(cfg["masks"], allow_pickle=True)
-    fine, ftr = mk["fine_sea"], mk["fine_transform"]
-    fwd = Transformer.from_crs(4326, str(mk["crs"][0]), always_xy=True)
-    fh, fw = fine.shape
-    NS = cfg["land_samples"]
-    fr = np.arange(1, NS) / NS
-
-    def crosses_land(a, b):
-        la = a[0] + (b[0] - a[0]) * fr
-        lo = a[1] + (b[1] - a[1]) * fr
-        x, y = fwd.transform(lo, la)
-        c = ((np.asarray(x) - ftr[2]) / ftr[0]).astype(int)
-        r = ((np.asarray(y) - ftr[5]) / ftr[4]).astype(int)
-        ok = (r >= 0) & (r < fh) & (c >= 0) & (c < fw)
-        return bool((~fine[np.clip(r, 0, fh - 1), np.clip(c, 0, fw - 1)] | ~ok).any())
+    crosses_land = land_crossing_test(cfg["masks"], cfg["land_samples"])
 
     rejected = 0
     pairs: set[tuple[int, int]] = set()

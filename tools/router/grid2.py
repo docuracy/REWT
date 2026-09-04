@@ -39,6 +39,8 @@ from scipy import ndimage
 import h3
 from generation import generation
 
+from landtest import land_crossing_test
+
 CONFIG = {
     "masks": "tools/router/cache/sightline_masks.npz",
     "network": "published/rewt_stage1_network.gpkg",
@@ -223,7 +225,14 @@ def main(cfg: dict = CONFIG) -> None:
     # Stephen saw a scattering of detached cells in the Netherlands. A cell that no route
     # can reach is not part of a routing surface, whatever the mask says — the same
     # question the river network asks of itself, asked of the grid.
-    print("building adjacency to find what is detached...")
+    # A LINK THAT CROSSES LAND IS NOT A LINK. This used to ask bare grid_disk, while
+    # edges.py asked grid_disk AND the land test — so 220 cells whose every neighbour
+    # lay across a spit survived this pass and were isolated by the next. One test,
+    # imported, so the two cannot drift again.
+    print("building adjacency to find what is detached (links may not cross land)...")
+    crosses_land = land_crossing_test(cfg["masks"])
+    latlng = {c: h3.cell_to_latlng(c) for c in grid}
+    blocked = 0
     ids = list(grid)
     pos = {c: i for i, c in enumerate(ids)}
     R0 = min(grid.values())
@@ -247,13 +256,21 @@ def main(cfg: dict = CONFIG) -> None:
                         kids = [k for k in h3.cell_to_children(nb, dn) if k in pos]
                         if kids:
                             for k in kids:
+                                if crosses_land(latlng[c], latlng[k]):
+                                    blocked += 1
+                                    continue
                                 a_, b_ = pos[c], pos[k]
                                 pairs.add((a_, b_) if a_ < b_ else (b_, a_))
                             break
             if tgt is not None:
+                if crosses_land(latlng[c], latlng[tgt]):
+                    blocked += 1
+                    continue
                 a_, b_ = pos[c], pos[tgt]
                 pairs.add((a_, b_) if a_ < b_ else (b_, a_))
     e = np.array(sorted(pairs), dtype=np.int32) if pairs else np.zeros((0, 2), np.int32)
+    print(f"  {blocked:,} directed links refused for crossing land "
+          f"({100*blocked/max(blocked+2*len(e),1):.2f}%)")
     from scipy.sparse import coo_matrix
     from scipy.sparse.csgraph import connected_components
     mat = coo_matrix((np.ones(len(e)), (e[:, 0], e[:, 1])), shape=(len(ids),) * 2)

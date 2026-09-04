@@ -583,7 +583,13 @@ def main(cfg: dict = CONFIG) -> None:
                 "corrupted one. Ranges here are therefore NOT floors at sea level: they "
                 "assume a masthead lookout, and a deck observer at 2 m would see "
                 "5.4 km less."),
-            "gov_h_m_definition": "the tallest land that reaches this cell — the band "
+            "gov_h_m_provenance":
+            "gov_h_m is a height off EMODnet's land side, which is ASTER, SRTM3 and "
+            "EU-DEM blended with no per-pixel provenance (D-098). It is NOT a "
+            "surveyed summit and should not be quoted as one. It is fit for deciding "
+            "whether a coast is in sight, where a 3% height error moves the range by "
+            "1.49%.",
+        "gov_h_m_definition": "the tallest land that reaches this cell — the band "
                                   "that first marked it. Absent where nothing reaches.",
             "gov_reach_km_definition": ("DERIVED FROM gov_h_m, not measured alongside "
                                        f"it: {K:.4f} * sqrt(gov_h_m), exactly. One "

@@ -1,5 +1,5 @@
 {
- "generation": "20260904T095803Z",
+ "generation": "20260904T100911Z",
  "what": "median height of the land that governs each cell in sight, by coast, and the range it implies",
  "safe_to_publish": [
   "median_governing_land_m",

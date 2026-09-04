@@ -1,5 +1,5 @@
 {
- "generation": "20260904T095803Z",
+ "generation": "20260904T100911Z",
  "termini": 389,
  "in_scope": 389,
  "by_rule": {
@@ -252,6 +252,13 @@
    "in_scope": true
   },
   {
+   "node_id": "os:node/E1F9CEE6-8083-4E50-B365-E7BA363FF7B9",
+   "lat": 53.23527,
+   "lon": -3.80649,
+   "dist_m": 10093,
+   "in_scope": true
+  },
+  {
    "node_id": "os:node/F2B8C702-F41D-470E-B159-B19009B92F36",
    "lat": 51.50576,
    "lon": -2.7191,
@@ -270,13 +277,6 @@
    "lat": 53.73546,
    "lon": -2.87512,
    "dist_m": 9646,
-   "in_scope": true
-  },
-  {
-   "node_id": "os:node/E1F9CEE6-8083-4E50-B365-E7BA363FF7B9",
-   "lat": 53.23527,
-   "lon": -3.80649,
-   "dist_m": 9577,
    "in_scope": true
   },
   {
