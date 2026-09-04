@@ -1758,3 +1758,41 @@ did that deliberately to correct a miscount, reasoning that the data had not cha
 for the summary that was true, while for `rule3`, which is an *input to another stage*, it
 was not. A stamp is a claim that the artefacts came from one consistent pass, and it is only
 worth anything if re-running a stage means re-running what depends on it.
+
+## 37. A stamp that is never reused over different bytes
+
+Section 36 recorded the fault: `traces.geojson` held 199 features and then 200 under the
+same generation, because I re-ran one stage under a fixed stamp and reasoned the data had
+not changed. rewt-46 put the consequence plainly — their viewer warns when two loaded layers
+disagree about their generation, and that check is worth exactly as much as the stamp's
+discipline. For one file that day it was worth nothing.
+
+They said they were not asking for a retrospective re-stamp. **That is more generous than it
+should be, and the fix is two things rather than one.**
+
+**A CLEAN PASS.** Everything downstream of the masks rebuilt under one new generation,
+`20260904T202145Z` — grid, joins, traces, coasts, edges, both coastal layers, the detour
+measurement and the connectivity answer. `docs/router/data` now carries three generations
+and each is explicable: 12 files from that pass, 3 from `111903Z` where the sightline surface
+sits because nothing it depends on has moved, and 1 from `092613Z` for the disabled lights.
+No file shares a stamp with different content any more, on disk or in a consumer's cache.
+
+**AND A LEDGER, so it cannot happen quietly again.** `tools/router/stamps.py` records
+`generation -> {file: sha256}` and fails when a stamp reappears over bytes that have moved.
+It does not prevent a partial re-run — sometimes that is the right thing — it prevents a
+partial re-run being **silent**, which is the part that cost a consumer something.
+
+**The check is proven rather than asserted.** I edited one field of `trace_summary.json`,
+leaving its stamp alone, and it reported:
+
+    STAMP REUSED OVER CHANGED CONTENT — the stamp is asserting a consistency that
+    does not hold:
+      trace_summary.json  generation 20260904T202145Z  was 0c3d7634…  now 40304363…
+
+then passed again when the file was restored. A check that has never fired is a check nobody
+has tested, which is D-082 in the form this file keeps meeting it.
+
+**The general shape, since it is the third time today.** A stamp, a scope column, a coverage
+figure — each was a claim that something held, and each was worth nothing until someone
+tried to break it. The mechanisms are cheap; the discipline of firing them deliberately is
+the part that keeps being skipped.
