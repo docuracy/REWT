@@ -17,7 +17,13 @@
    padding:5px 9px;margin:0 4px 4px 0;cursor:pointer;font:inherit;font-size:12px}
  button:hover{border-color:var(--accent)} button.on{background:var(--accent);color:#08111f;
    border-color:var(--accent);font-weight:600}
- .grp{color:#8b949e;font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin:8px 0 3px}
+ .grp{color:#8b949e;font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin:9px 0 3px;cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px}
+  .grp:hover{color:#c9d1d9}
+  .grp.on{color:#58a6ff}
+  .tick{display:inline-block;width:11px;height:11px;line-height:11px;text-align:center;border:1px solid #30363d;border-radius:3px;font-size:9px;flex:none}
+  .grp.on .tick{border-color:#58a6ff}
+  .keys{margin-left:17px}
+  .keys.off{opacity:.32}
   .key{display:flex;align-items:center;gap:7px;margin:3px 0;font-size:12px}
  .sw{width:13px;height:13px;border-radius:3px;flex:none;border:1px solid rgba(255,255,255,.25)}
  table{width:100%;border-collapse:collapse;font-size:11.5px} td{padding:1px 0;color:var(--dim)}
@@ -32,9 +38,8 @@
   <h1>Router — check</h1>
   <div class="sub">Local instrument, not published. Coastline is OS Boundary-Line (OGL);
     depths EMODnet DTM 2024 (CC BY 4.0). <b>Not for navigation.</b></div>
-  <h2>Layers</h2><div id="stages"></div>
   <h2>Zoom to</h2><div id="areas"></div>
-  <h2>Legend</h2><div id="legend"></div>
+  <h2>Layers</h2><div id="legend"></div>
   <h2>Figures</h2><table id="figs"></table>
   <div class="warn" id="warn"></div>
 </div>
@@ -100,12 +105,10 @@ window.map=map;                       // a top-level const is NOT on window
 window.__drawn=0;                     // increments when a draw has finished
 window.toggle=async k=>{ on.has(k)?on.delete(k):on.add(k);
   hashSet('layers',[...on].join(','));
-  [...stages.children].forEach(b=>b.classList.toggle('on',on.has(b.dataset.s)));
   await draw(); };
 // the driver and a bookmarked link both need to set the whole set at once
 window.setLayers=async list=>{ on=new Set(list.filter(k=>KEYS.includes(k)));
   hashSet('layers',[...on].join(','));
-  [...stages.children].forEach(b=>b.classList.toggle('on',on.has(b.dataset.s)));
   await draw(); };
 window.setStage=async s=>window.setLayers([FROM_STAGE[s]||s]);
 window.zoomTo=a=>{ if(a==='all'){ const e=areas._extent||[-8,49.5,2,61];
@@ -136,10 +139,18 @@ async function draw(){
     if(await src(L.src[0], L.src[1])) L.add();
   }
   const act=KEYS.filter(k=>on.has(k));
-  legend.innerHTML = act.length
-    ? act.map(k=>`<div class="grp">${LAYERS[k].label}</div>`+
-        LAYERS[k].legend.map(([t,c])=>`<div class="key"><div class="sw" style="background:${c}"></div>${t}</div>`).join('')).join('')
-    : '<div class="key">nothing switched on</div>';
+  // THE LEGEND IS THE CONTROL. A separate row of buttons said the same thing twice and
+  // put the switch furthest from the swatch it governs. Every layer is listed whether on
+  // or off, so the panel says what EXISTS as well as what is showing — a control that
+  // hides its off state cannot be read.
+  legend.innerHTML = KEYS.map(k=>{
+    const L=LAYERS[k], is=on.has(k);
+    return `<div class="grp${is?' on':''}" data-s="${k}">`
+      + `<span class="tick">${is?'&#10003;':''}</span>${L.label}</div>`
+      + `<div class="keys${is?'':' off'}">`
+      + L.legend.map(([t,c])=>`<div class="key"><div class="sw" style="background:${c}"></div>${t}</div>`).join('')
+      + `</div>`;
+  }).join('');
   warn.innerHTML = act.map(k=>`<p><b>${LAYERS[k].label}.</b> ${LAYERS[k].note}</p>`).join('')
     || 'Every layer is off.';
   figures();
@@ -183,11 +194,11 @@ map.on('click',e=>{ const f=map.queryRenderedFeatures(e.point).filter(f=>f.layer
 
 map.on('load',async()=>{
   summaries=await gj(C+'summaries.json')||{}; areas=await gj(C+'areas.json')||{};
-  stages.innerHTML=KEYS.map(k=>
-    `<button data-s="${k}"${on.has(k)?' class="on"':''}>${LAYERS[k].label}</button>`).join('');
+
   // a click anywhere also writes the point to the hash, so a cell can be pointed at
   map.on('click', e=>hashSet('at', e.lngLat.lat.toFixed(4)+','+e.lngLat.lng.toFixed(4)));
-  stages.onclick=ev=>{ const s=ev.target.dataset.s; if(!s)return; window.toggle(s); };
+  legend.onclick=ev=>{ const g=ev.target.closest('.grp'); if(!g)return;
+    window.toggle(g.dataset.s); };
   areasEl.innerHTML=`<button data-a="all">all</button>`+Object.keys(areas).filter(a=>a[0]!=='_').map(a=>
     `<button data-a="${a}">${a}</button>`).join('');
   areasEl.onclick=ev=>{ const a=ev.target.dataset.a; if(!a)return;
@@ -198,6 +209,5 @@ map.on('load',async()=>{
   draw();
 });
 const legend=document.getElementById('legend'), figs=document.getElementById('figs'),
-      warn=document.getElementById('warn'), stages=document.getElementById('stages'),
-      areasEl=document.getElementById('areas');
+      warn=document.getElementById('warn'), areasEl=document.getElementById('areas');
 </script></body></html>

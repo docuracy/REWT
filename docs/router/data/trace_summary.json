@@ -1,5 +1,5 @@
 {
- "generation": "20260904T100911Z",
+ "generation": "20260904T104059Z",
  "attempted": 125,
  "traced": 102,
  "failed": 23,
@@ -617,22 +617,6 @@
    "drying_frac": 0.0
   },
   {
-   "node_id": "os:node/F2930270-559B-4577-B9CB-41E31C136E0E",
-   "lat": 50.09394,
-   "lon": -5.1514,
-   "dist_m": 5382,
-   "in_scope": true,
-   "traced": true,
-   "path_m": 1664,
-   "straight_m": 5382,
-   "detour": 0.31,
-   "max_elev_crossed_m": 7.8,
-   "min_depth_m": -3.9,
-   "drying_px": 8,
-   "drying_m": 832,
-   "drying_frac": 0.5
-  },
-  {
    "node_id": "os:node/E228D7C2-A6CF-4C1D-8AB8-63A11116BF49",
    "lat": 51.77067,
    "lon": 0.90994,
@@ -663,6 +647,22 @@
    "drying_px": 4,
    "drying_m": 427,
    "drying_frac": 0.211
+  },
+  {
+   "node_id": "os:node/F2930270-559B-4577-B9CB-41E31C136E0E",
+   "lat": 50.09394,
+   "lon": -5.1514,
+   "dist_m": 5591,
+   "in_scope": true,
+   "traced": true,
+   "path_m": 1739,
+   "straight_m": 5591,
+   "detour": 0.31,
+   "max_elev_crossed_m": 7.8,
+   "min_depth_m": -4.1,
+   "drying_px": 8,
+   "drying_m": 818,
+   "drying_frac": 0.471
   },
   {
    "node_id": "os:node/3F4B2131-CC44-4B48-9506-C40DD5FCC89C",
@@ -857,15 +857,6 @@
    "drying_frac": 1.0
   },
   {
-   "node_id": "os:node/559FBCC0-0BE0-4123-88EB-C8394B44A876",
-   "lat": 50.09192,
-   "lon": -5.16896,
-   "dist_m": 6608,
-   "in_scope": true,
-   "traced": false,
-   "reason": "no passable route"
-  },
-  {
    "node_id": "os:node/D8F1C2F4-DF3B-4023-93E2-0644BEBCB5BE",
    "lat": 54.87885,
    "lon": -3.27924,
@@ -960,6 +951,15 @@
    "drying_px": 17,
    "drying_m": 1164,
    "drying_frac": 1.0
+  },
+  {
+   "node_id": "os:node/559FBCC0-0BE0-4123-88EB-C8394B44A876",
+   "lat": 50.09192,
+   "lon": -5.16896,
+   "dist_m": 6863,
+   "in_scope": true,
+   "traced": false,
+   "reason": "no passable route"
   },
   {
    "node_id": "os:node/FFD89B96-0E68-4586-9D3F-5EC79031D6A4",
@@ -1498,24 +1498,6 @@
    "drying_frac": 0.882
   },
   {
-   "node_id": "os:node/02BC7D25-A8E2-417A-BACD-FAA58F374929",
-   "lat": 51.63683,
-   "lon": 0.68139,
-   "dist_m": 12885,
-   "in_scope": true,
-   "traced": false,
-   "reason": "no passable route"
-  },
-  {
-   "node_id": "os:node/0460AB7B-065F-44B1-AA63-8555BAD5E3E2",
-   "lat": 51.63653,
-   "lon": 0.7104,
-   "dist_m": 13069,
-   "in_scope": true,
-   "traced": false,
-   "reason": "no passable route"
-  },
-  {
    "node_id": "os:node/54EEBEB0-4181-4501-854E-3AE9DB9E9A69",
    "lat": 51.12534,
    "lon": -2.99846,
@@ -1566,6 +1548,15 @@
    "drying_frac": 0.265
   },
   {
+   "node_id": "os:node/0460AB7B-065F-44B1-AA63-8555BAD5E3E2",
+   "lat": 51.63653,
+   "lon": 0.7104,
+   "dist_m": 14160,
+   "in_scope": true,
+   "traced": false,
+   "reason": "no passable route"
+  },
+  {
    "node_id": "os:node/2C54A79C-8957-44C1-A450-19267E19B803",
    "lat": 51.58008,
    "lon": -2.73751,
@@ -1580,6 +1571,15 @@
    "drying_px": 24,
    "drying_m": 2495,
    "drying_frac": 0.393
+  },
+  {
+   "node_id": "os:node/02BC7D25-A8E2-417A-BACD-FAA58F374929",
+   "lat": 51.63683,
+   "lon": 0.68139,
+   "dist_m": 14307,
+   "in_scope": true,
+   "traced": false,
+   "reason": "no passable route"
   },
   {
    "node_id": "os:node/B2AC3BD7-1C05-4FEA-8091-EB389CDE7160",

@@ -95,12 +95,34 @@ def main(cfg: dict = CONFIG) -> None:
     kr, kc = np.nonzero(keep)
     klon, klat = lonlat(kr, kc)
     kvis = visible[kr, kc]
+    # one sea lookup, from the SAME fine mask the link test reads and at the same
+    # resolution the estuaries actually exist at
+    _fwd = Transformer.from_crs(4326, crs, always_xy=True)
+    _fh, _fw = fine_sea.shape
+
+    def sea_at(la, lo) -> bool:
+        x, y = _fwd.transform(lo, la)
+        c = int((x - tr[2]) / tr[0]); r = int((y - tr[5]) / tr[4])
+        return bool(0 <= r < _fh and 0 <= c < _fw and fine_sea[r, c])
+
     print("binning kept sea to base cells...")
     base = {}
     for res, sel in ((cfg["res_sight"], kvis), (cfg["res_blind"], ~kvis)):
         cs = cells_for(klat[sel], klon[sel], res)
         for c in np.unique(cs):
             base[c] = res
+    # A NODE WHOSE CENTRE IS ON LAND IS NOT A NODE. A cell is created because it CONTAINS
+    # kept sea, which is right for a cell and wrong for the point that represents it: the
+    # routing node is the centre, joins attach to the centre, and eRutter's travelling
+    # surface is centre to centre. Stephen found res-7 cells off Portland whose centres sit
+    # inland, and the joins reaching them were reaching across a beach. 284 of 142,976.
+    # The land test already existed for LINKS; this is the same rule applied to the node
+    # the links run between.
+    centre_on_land = [c for c in base if not sea_at(*h3.cell_to_latlng(c))]
+    for c in centre_on_land:
+        del base[c]
+    print(f"  dropped {len(centre_on_land):,} base cells whose CENTRE is on land "
+          f"(the cell held sea; the node did not)")
     print(f"  base: {len(base):,} cells "
           f"({sum(1 for v in base.values() if v == cfg['res_sight']):,} in sight at res "
           f"{cfg['res_sight']}, {sum(1 for v in base.values() if v == cfg['res_blind']):,} "

@@ -133,8 +133,11 @@ def main() -> int:
             # has to compare sets. Comparing against a single name passed every
             # single-layer shot and failed the composite, which is the shape of check
             # that agrees with you until the moment it matters.
+            # the legend IS the control now, so the assertion reads the same thing a
+            # person does — the switched-on groups in the panel, not a separate row of
+            # buttons that no longer exists
             shown = set(page.evaluate(
-                "[...document.querySelectorAll('#stages button')]"
+                "[...document.querySelectorAll('#legend .grp')]"
                 ".filter(b=>b.classList.contains('on')).map(b=>b.dataset.s)"))
             if shown != set(sel):
                 print(f"FAIL  {st:<10} the page is showing {sorted(shown)}, "

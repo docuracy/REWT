@@ -1,9 +1,9 @@
 {
- "generation": "20260904T100911Z",
- "cells": 142976,
- "edges": 415520,
+ "generation": "20260904T104059Z",
+ "cells": 142674,
+ "edges": 414928,
  "components": 1,
- "largest_component": 142976,
+ "largest_component": 142674,
  "isolated": 0,
  "degree": {
   "min": 1,
@@ -11,15 +11,14 @@
   "max": 8
  },
  "edges_by_resolution_pair": {
-  "7-7": 829878,
-  "7-8": 786,
-  "7-9": 12,
-  "8-8": 512,
+  "7-7": 828768,
+  "7-8": 720,
+  "8-8": 502,
   "8-9": 10,
-  "9-9": 8
+  "9-9": 4
  },
- "cross_resolution_directed": 808,
- "links_rejected_crossing_land": 1684,
+ "cross_resolution_directed": 730,
+ "links_rejected_crossing_land": 1010,
  "lattice_note": "centre-to-centre links on a hexagonal lattice, as eRutter uses. Six directions, so a bearing between two of them is walked as a zig-zag: about 5-6% longer than the geodesic on average and 15.5% at worst. That is systematic and ONE-DIRECTIONAL \u2014 every route is longer, never shorter. A square grid would be 41.4% (4-connected) or 8.2% (8-connected), which is why hexagons.",
  "note": "Edge length is geometry, not a weight. Weights are deferred (PLAN.md 1).",
  "attribution": "Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0.",

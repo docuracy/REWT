@@ -1199,3 +1199,35 @@ Two faults of my own, in the hour after warning visualisation against exactly th
 
 All 59 seams touch a res-6 cell that contains refinement, which is the invariant: a seam
 exists only where the banding actually changes resolution.
+
+## 21. A node whose centre is on land is not a node
+
+Stephen found res-7 cells off Portland whose centres sit inland, with joins reaching them
+across a beach. He was right that they were supposed to be excluded, and they were not.
+
+A cell was created because it **contains** kept sea. That is the right rule for a cell and
+the wrong one for the point that represents it: the routing node is the centre, joins attach
+to the centre, and the travelling surface runs centre to centre. So a cell could hold water
+in one corner and put its node on a hill. The land test already existed for **links**;
+`grid2.py` now applies the same test to the **node the links run between**, reading the same
+232 m mask. **510 base cells dropped. The routing grid now has 0 cells whose centre is not in
+water, from 284.** The graph stays one component, 0 isolated; joins move 86/178/125 to
+84/180/125 and traces are unchanged at 102.
+
+**The published edges layer had the same fault in a worse form.** It drew a line between two
+res-6 **parent** centres — endpoints that are not nodes at all, and a res-6 cell is kept for
+containing sighted sea, so its centre lands on a beach far more often: 511 of 17,599, 2.90%.
+The aggregation is now a **thinning rather than a construction**: for each pair of published
+cells the **shortest real res-7 edge** between their children is drawn, and `routing_edges`
+says how many it stands for. Every line is an actual routing edge and both endpoints are
+routing nodes.
+
+Endpoints on land across all 49,054 drawn links: **1**, and it is a publishing artefact —
+the node is in water, and rounding the coordinate to 4 decimal places moved it **1.4 m**
+across a pixel boundary near Brest. Left as it is: chasing it would mean publishing more
+precision than the 232 m mask has.
+
+**And the legend became the control.** A separate row of buttons said the same thing twice
+and put the switch furthest from the swatch it governs. Every layer is listed whether on or
+off, so the panel says what EXISTS as well as what is showing — a control that hides its off
+state cannot be read. `shot.py` asserts the subject by reading the same thing a person does.

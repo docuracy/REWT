@@ -78,10 +78,19 @@ def main(cfg: dict = CONFIG) -> None:
         if pa == pb:
             continue                       # inside one published cell; nothing to draw
         key = (pa, pb) if pa < pb else (pb, pa)
-        r = par.setdefault(key, {"n": 0, "cross": 0, "len": 0.0})
+        r = par.setdefault(key, {"n": 0, "cross": 0, "len": 0.0, "rep": k, "best": 1e18})
         r["n"] += 1
         r["cross"] += int(cross[k])
         r["len"] += float(length[k])
+        # DRAW A REAL EDGE, NOT A LINE BETWEEN TWO PARENT CENTRES. Connecting res-6
+        # centres invented endpoints, and Stephen found some of them inland: a res-6
+        # cell is kept because it CONTAINS sighted sea, so its centre can sit on a
+        # beach. Every line drawn is now one actual res-7 routing edge from the group —
+        # the shortest, for determinism — so both endpoints are routing nodes and are in
+        # water by construction. The aggregation thins the graph; it no longer
+        # fabricates geometry.
+        if float(length[k]) < r["best"]:
+            r["best"], r["rep"] = float(length[k]), k
     print(f"  aggregated to res {P}: {len(par):,} links (from {len(e):,} routing edges)")
 
     # CLIP TO THE CELLS THAT ARE ACTUALLY PUBLISHED. A res-6 parent appears as soon as
@@ -100,17 +109,19 @@ def main(cfg: dict = CONFIG) -> None:
 
     feats = []
     for (pa, pb), r in sorted(par.items()):
-        la, lo = h3.cell_to_latlng(pa)
-        lb, ob = h3.cell_to_latlng(pb)
+        k = r["rep"]
+        i, j = int(e[k, 0]), int(e[k, 1])
         feats.append({
             "type": "Feature",
             "geometry": {"type": "LineString", "coordinates": [
-                [round(lo, D), round(la, D)], [round(ob, D), round(lb, D)]]},
+                [round(float(lon[i]), D), round(float(lat[i]), D)],
+                [round(float(lon[j]), D), round(float(lat[j]), D)]]},
             "properties": {
                 "h3_a": pa, "h3_b": pb,
                 "routing_edges": r["n"],
                 "crosses_band": bool(r["cross"]),
                 "mean_edge_m": int(round(r["len"] / r["n"])),
+                "drawn_edge_m": int(round(r["best"])),
             },
         })
 
@@ -163,11 +174,14 @@ def main(cfg: dict = CONFIG) -> None:
             "routing_edges_behind_them": int(len(e)),
             "aggregated_to_resolution": P,
             "aggregation":
-                "The routing graph is res 7. These links are it aggregated to the res 6 "
-                "of the published sea cells: two cells are linked where any res-7 edge "
-                "joins a child of one to a child of the other. `routing_edges` counts "
-                "how many. Nothing is invented, but the drawn centres are not the "
-                "centres a route uses — for the lattice itself see the check export.",
+                "The routing graph is res 7. These links thin it to one per pair of "
+                "published res-6 cells: where any res-7 edge joins a child of one to a "
+                "child of the other, THE SHORTEST SUCH EDGE IS DRAWN and `routing_edges` "
+                "says how many it stands for. Every line is a real routing edge and both "
+                "its endpoints are routing nodes. An earlier version drew parent-centre "
+                "to parent-centre, which invented endpoints and put some of them on land, "
+                "because a res-6 cell is kept for CONTAINING sighted sea and its centre "
+                "may sit on a beach. For the whole lattice see the check export.",
             "cells": int(s.get("cells", len(res))),
             "crossing_a_band": sum(1 for f in feats if f["properties"]["crosses_band"]),
             "crossing_a_band_before_aggregation": int(cross.sum()),

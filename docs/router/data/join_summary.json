@@ -1,15 +1,15 @@
 {
- "generation": "20260904T100911Z",
+ "generation": "20260904T104059Z",
  "termini": 389,
  "in_scope": 389,
  "by_rule": {
-  "1": 86,
-  "2": 178,
+  "1": 84,
+  "2": 180,
   "3": 125
  },
  "by_rule_in_scope": {
-  "1": 86,
-  "2": 178,
+  "1": 84,
+  "2": 180,
   "3": 125
  },
  "rule3": [
@@ -161,10 +161,24 @@
    "in_scope": true
   },
   {
+   "node_id": "os:node/02BC7D25-A8E2-417A-BACD-FAA58F374929",
+   "lat": 51.63683,
+   "lon": 0.68139,
+   "dist_m": 14307,
+   "in_scope": true
+  },
+  {
    "node_id": "os:node/2C54A79C-8957-44C1-A450-19267E19B803",
    "lat": 51.58008,
    "lon": -2.73751,
    "dist_m": 14202,
+   "in_scope": true
+  },
+  {
+   "node_id": "os:node/0460AB7B-065F-44B1-AA63-8555BAD5E3E2",
+   "lat": 51.63653,
+   "lon": 0.7104,
+   "dist_m": 14160,
    "in_scope": true
   },
   {
@@ -193,20 +207,6 @@
    "lat": 51.12534,
    "lon": -2.99846,
    "dist_m": 13190,
-   "in_scope": true
-  },
-  {
-   "node_id": "os:node/0460AB7B-065F-44B1-AA63-8555BAD5E3E2",
-   "lat": 51.63653,
-   "lon": 0.7104,
-   "dist_m": 13069,
-   "in_scope": true
-  },
-  {
-   "node_id": "os:node/02BC7D25-A8E2-417A-BACD-FAA58F374929",
-   "lat": 51.63683,
-   "lon": 0.68139,
-   "dist_m": 12885,
    "in_scope": true
   },
   {
@@ -462,6 +462,13 @@
    "in_scope": true
   },
   {
+   "node_id": "os:node/559FBCC0-0BE0-4123-88EB-C8394B44A876",
+   "lat": 50.09192,
+   "lon": -5.16896,
+   "dist_m": 6863,
+   "in_scope": true
+  },
+  {
    "node_id": "os:node/AC0FE524-C6E2-4619-AC56-B39C4F6A35C3",
    "lat": 53.73102,
    "lon": -2.91851,
@@ -501,13 +508,6 @@
    "lat": 54.87885,
    "lon": -3.27924,
    "dist_m": 6643,
-   "in_scope": true
-  },
-  {
-   "node_id": "os:node/559FBCC0-0BE0-4123-88EB-C8394B44A876",
-   "lat": 50.09192,
-   "lon": -5.16896,
-   "dist_m": 6608,
    "in_scope": true
   },
   {
@@ -595,6 +595,13 @@
    "in_scope": true
   },
   {
+   "node_id": "os:node/F2930270-559B-4577-B9CB-41E31C136E0E",
+   "lat": 50.09394,
+   "lon": -5.1514,
+   "dist_m": 5591,
+   "in_scope": true
+  },
+  {
    "node_id": "os:node/C8EAB648-D6A7-4C38-96C4-9AE3ABF5F691",
    "lat": 50.19234,
    "lon": -5.06009,
@@ -606,13 +613,6 @@
    "lat": 51.77067,
    "lon": 0.90994,
    "dist_m": 5420,
-   "in_scope": true
-  },
-  {
-   "node_id": "os:node/F2930270-559B-4577-B9CB-41E31C136E0E",
-   "lat": 50.09394,
-   "lon": -5.1514,
-   "dist_m": 5382,
    "in_scope": true
   },
   {
