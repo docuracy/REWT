@@ -1,5 +1,5 @@
 {
- "generation": "20260904T130142Z",
+ "generation": "20260904T193156Z",
  "scheme": "banded by state, not by distance",
  "states": {
   "blind buffer": 6,
@@ -10,17 +10,17 @@
   ]
  },
  "refinement_rule": "a cell is subdivided only where it is adjacent to land AND required by a join or a trace \u2014 not within N km of anything",
- "total_cells": 142983,
+ "total_cells": 143879,
  "by_resolution": {
   "6": 315,
-  "7": 142369,
-  "8": 296,
+  "7": 142115,
+  "8": 1446,
   "9": 3
  },
  "termini_attached": 267,
  "termini": 389,
- "detached_cells_dropped": 279,
- "components_before_drop": 185,
+ "detached_cells_dropped": 248,
+ "components_before_drop": 155,
  "superseded": "the distance-banded grid gave 695,855 cells over this extent, 87% of them in the single finest band",
  "attribution": "Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0.",
  "use_constraint": "DO NOT USE FOR NAVIGATION"

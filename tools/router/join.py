@@ -270,7 +270,8 @@ def main(cfg: dict = CONFIG) -> None:
     Path(cfg["out"]).write_text(json.dumps({
         "type": "FeatureCollection",
         "properties": {"generation": generation(),
-                       "what": "river terminus -> sea grid joins, one line each",
+                       "what": "river terminus -> sea grid attachments. Rules 1 and 2 are a LINE from the terminus to the cell centre, because a direct attachment is being asserted. Rule 3 is a POINT: no line is drawn because no straight connection is claimed — the path is worked out by the trace stage. Most of this layer is points.",
+                       "geometry_by_rule": "1 and 2: LineString. 3: Point.",
                        "attribution": [
                            "Contains EMODnet Bathymetry data. EMODnet Bathymetry "
                            "Consortium (2024): EMODnet Digital Bathymetry (DTM 2024), "

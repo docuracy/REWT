@@ -1614,3 +1614,39 @@ It is measured and not built: 786 pairs are 0.19% of 416,102 edges, the graph is
 component without them, and the payoff concentrates in 113 pairs near the region of
 interest. That is a decision about priority, and the numbers to take it with are now here
 rather than in anyone's judgement.
+
+## 33. Refining where it was measured to be worth it
+
+Stephen's call, on section 32's numbers: refine the pairs near England and Wales, leave the
+rest. `grid2.py` now does it, and the result is a count rather than a ratio.
+
+**Refused adjacent res-7 pairs within 25 km of England or Wales: 113 → 8.** Both figures
+measured the same way, on the same threshold, before and after. The grid grew by 801 cells,
+0.56%, from 287 corridor cells subdivided to res 8. Nothing else moved: **0 isolated,
+1 component, 0 lines crossing land on every published layer.**
+
+**THE CORRIDOR, NOT THE ENDS.** The channel between two refused cells may run through a
+third, so subdividing only the pair leaves the gap in the middle. The refinement walks the
+water path from `waterpath.py` — the same function `detour.py` measures with, so the
+refinement is aimed at exactly the pairs the measurement selected — and subdivides every
+res-7 cell that path crosses.
+
+**THE SURVIVORS LOOK WORSE AND THAT IS SELECTION, NOT FAILURE.** The 8 remaining near
+England and Wales have a median detour of 2.81x against 1.89x for the unrefined rest. Read
+carelessly that says refinement made things worse. It says the opposite: the easy cases —
+small obstruction, water essentially straight past — are the ones refinement removes, so
+what is left is enriched for hard geometry. **The comparison to make is 113 against 8, not
+2.81x against 1.89x.** The refined-versus-unrefined split is in `detour_summary.json` with
+that caveat attached to it, because the number is misleading without it.
+
+**WHAT IT COST.** Rule 1 attachments fell 50 → 45 and rule 3 rose 224 → 229: subdividing a
+cell near a terminus can move an attachment from *inside this cell* to *needs a path*. That
+is a small loss of observation for a real gain in the surface, and it is recorded rather
+than netted off.
+
+**AND ONE PERFORMANCE NOTE THAT IS REALLY A THINKING NOTE.** The first version tested all
+143,078 cells for exact distance to England and Wales *before* looking at their links. There
+are only about 800 refused pairs in the entire grid. It ran for twenty minutes and was still
+going. The expensive test belongs after the cheap one — and the reason I wrote it the wrong
+way round is that I described the rule as "pairs near England and Wales whose link is
+refused" and then implemented the clauses in the order I had said them.

@@ -41,6 +41,7 @@ from generation import generation
 
 from adjacency import build_pairs
 from landtest import land_crossing_test
+from waterpath import great_circle_m, water_path_test
 
 CONFIG = {
     "masks": "tools/router/cache/sightline_masks.npz",
@@ -50,6 +51,12 @@ CONFIG = {
     "summary": "docs/router/data/grid_summary.json",
     "res_blind": 6,
     "res_sight": 7,
+    # PLAN.md 32: refine where a refused link forces a detour the water does not
+    "refine_detour": True,
+    "refine_detour_within_km_of_ew": 25.0,   # 113 of 786 refused pairs; the rest are
+                                             # a median 324 km away and out of scope
+    "refine_detour_max_water_over_chord": 1.15,   # the obstruction is small enough to
+                                                  # thread; above this it is a real barrier
     "res_refine": [8, 9],      # in order; the loop stops early if nothing is bought
 }
 ATTRIBUTION = ("Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): "
@@ -101,7 +108,7 @@ def main(cfg: dict = CONFIG) -> None:
     _fwd = Transformer.from_crs(4326, crs, always_xy=True)
     _fh, _fw = fine_sea.shape
 
-    def sea_at(la, lo) -> bool:
+    def centre_in_water(la, lo) -> bool:
         x, y = _fwd.transform(lo, la)
         c = int((x - tr[2]) / tr[0]); r = int((y - tr[5]) / tr[4])
         return bool(0 <= r < _fh and 0 <= c < _fw and fine_sea[r, c])
@@ -119,7 +126,7 @@ def main(cfg: dict = CONFIG) -> None:
     # inland, and the joins reaching them were reaching across a beach. 284 of 142,976.
     # The land test already existed for LINKS; this is the same rule applied to the node
     # the links run between.
-    centre_on_land = [c for c in base if not sea_at(*h3.cell_to_latlng(c))]
+    centre_on_land = [c for c in base if not centre_in_water(*h3.cell_to_latlng(c))]
     for c in centre_on_land:
         del base[c]
     print(f"  dropped {len(centre_on_land):,} base cells whose CENTRE is on land "
@@ -243,6 +250,98 @@ def main(cfg: dict = CONFIG) -> None:
         print(f"  res {r}: refined {len(want):,} cells -> {sum(1 for v in grid.values() if v == r):,} "
               f"kept children; attaches {int(att.sum()):,} of {len(t):,} "
               f"({100*att.mean():.1f}%)")
+
+    # --- REFINE WHERE A REFUSED LINK COSTS A DETOUR (PLAN.md 32) --------------------
+    # A link whose chord crosses land is refused, and the route then goes round. Measured,
+    # that detour is a median 1.90x what the water requires, and in 78.6% of cases the
+    # thing in the way is small — d_water/chord a median 1.08x against a control of 1.05x
+    # for links that were NOT refused. Those are the ones a finer grid threads.
+    #
+    # SCOPED ON PURPOSE. The median refused pair is 324 km from England or Wales, so most
+    # of that detour is in water this project is not about. Only pairs within
+    # `refine_detour_within_km_of_ew` are refined — 113 of 786 — because refinement is
+    # justified by a measured cost and there is no measured cost out there worth paying
+    # grid size for.
+    #
+    # THE WHOLE CORRIDOR IS REFINED, not just the two end cells: the channel may run
+    # through a third, and subdividing the ends alone would leave the gap in the middle.
+    if cfg["refine_detour"]:
+        crosses_link = land_crossing_test(cfg["masks"])
+        wpath = water_path_test(fine_sea, tr, crs)
+        ll_all = {c: h3.cell_to_latlng(c) for c in grid}
+        _bl2 = "data/raw/os_boundary_line/extracted/Data/bdline_gb.gpkg"
+        _cr2 = gpd.read_file(_bl2, layer="country_region")
+        from shapely.ops import unary_union as _uu2
+        from shapely.geometry import Point as _P2
+        _ew2 = _uu2(_cr2[_cr2.Name.isin(["England", "Wales"])].geometry.values)
+        _to = Transformer.from_crs(4326, 27700, always_xy=True)
+        lim = cfg["refine_detour_within_km_of_ew"] * 1000.0
+
+        # FIND THE REFUSED PAIRS FIRST, THEN ASK WHERE THEY ARE. The first version tested
+        # every one of 143,078 cells for exact distance to England and Wales before looking
+        # at its links. That is 143,078 distances to a very complex polygon; it ran for
+        # twenty minutes and was still going. There are only about 800 refused pairs, so
+        # the expensive test belongs after the cheap one rather than before it.
+        raw, seen_p = [], set()
+        for c in list(grid):
+            for n in h3.grid_disk(c, 1):
+                if n == c or n not in grid:
+                    continue
+                key = (c, n) if c < n else (n, c)
+                if key in seen_p:
+                    continue
+                seen_p.add(key)
+                if crosses_link(ll_all[key[0]], ll_all[key[1]]):
+                    raw.append(key)
+        print(f"  detour refinement: {len(raw):,} refused pairs in the whole grid")
+        pairs = [k for k in raw
+                 if _P2(*_to.transform(ll_all[k[0]][1], ll_all[k[0]][0])).distance(_ew2) <= lim]
+        print(f"    {len(pairs):,} of them within "
+              f"{cfg['refine_detour_within_km_of_ew']:.0f} km of England or Wales")
+
+        corridor, small = set(), 0
+        for a, b in pairs:
+            ch = great_circle_m(ll_all[a], ll_all[b])
+            dw, px_path = wpath(ll_all[a], ll_all[b])
+            if not np.isfinite(dw) or not ch:
+                continue
+            if dw / ch > cfg["refine_detour_max_water_over_chord"]:
+                continue                      # a real barrier; no resolution helps
+            small += 1
+            for (pr, pc) in px_path[::4]:     # every 4th pixel is ~1 km, ample at res 7
+                plo, pla = lonlat(np.array([pr]), np.array([pc]))
+                own = h3.latlng_to_cell(float(pla[0]), float(plo[0]), cfg["res_sight"])
+                if own in grid:
+                    corridor.add(own)
+        print(f"    {small:,} have a small obstruction; corridor is {len(corridor):,} cells")
+
+        for r in cfg["res_refine"]:
+            if not corridor:
+                break
+            if r not in sea_at:
+                sea_at[r] = set(np.unique(cells_for(klat, klon, r)).tolist())
+            added = 0
+            for c in list(corridor):
+                if grid.get(c) is None:
+                    continue
+                del grid[c]
+                for chd in h3.cell_to_children(c, r):
+                    if chd in sea_at[r] and centre_in_water(*h3.cell_to_latlng(chd)):
+                        grid[chd] = r
+                        added += 1
+            print(f"    res {r}: {len(corridor):,} cells -> {added:,} children in water")
+            # did it work? re-test the pairs at the finer resolution
+            still = 0
+            for a, b in pairs:
+                fa = [x for x in h3.cell_to_children(a, r) if x in grid]
+                fb = [x for x in h3.cell_to_children(b, r) if x in grid]
+                if fa and fb and not any(
+                        not crosses_link(h3.cell_to_latlng(u), h3.cell_to_latlng(v))
+                        for u in fa for v in fb
+                        if h3.grid_distance(u, v) == 1):
+                    still += 1
+            print(f"    {still:,} of {len(pairs):,} pairs still have no clear link")
+            corridor = set()                  # one pass; res 9 only if a later run asks
 
     # --- DROP WHAT IS NOT CONNECTED TO THE SEA NETWORK ----------------------------
     # Stephen saw a scattering of detached cells in the Netherlands. A cell that no route

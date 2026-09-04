@@ -207,6 +207,27 @@ def main(cfg: dict = CONFIG) -> None:
     print(f"  CONTROL, {len(ctrl)} pairs whose link was NOT refused: median "
           f"{np.median(ctrl):.2f}x, 90th {np.percentile(ctrl, 90):.2f}x")
 
+    # REFINED REGION AGAINST UNREFINED, IN ONE RUN. grid2 refines only within 25 km of
+    # England and Wales (PLAN.md 33), so the rest of the grid is an untouched control
+    # measured by the same method at the same moment. A before/after across two grids
+    # would not be comparable — refinement changes which pairs exist at all.
+    import geopandas as _gpd
+    from shapely.ops import unary_union as _uu
+    from shapely.geometry import Point as _P
+    _cr = _gpd.read_file("data/raw/os_boundary_line/extracted/Data/bdline_gb.gpkg",
+                         layer="country_region")
+    _ew = _uu(_cr[_cr.Name.isin(["England", "Wales"])].geometry.values)
+    _to = Transformer.from_crs(4326, 27700, always_xy=True)
+    near = np.array([_P(*_to.transform(r["lon"], r["lat"])).distance(_ew) <= 25_000.0
+                     for r in fin])
+    rr = np.array([r["ratio"] for r in fin])
+    print("\nREFINED (within 25 km of England and Wales) vs UNREFINED control:")
+    for lab, m in (("refined  ", near), ("unrefined", ~near)):
+        if m.sum():
+            print(f"  {lab}  n={int(m.sum()):>4}  median {np.median(rr[m]):.2f}x  "
+                  f"90th {np.percentile(rr[m], 90):.2f}x  "
+                  f">2x {100*(rr[m] > 2).mean():.1f}%")
+
     fin.sort(key=lambda r: -r["ratio"])
     print(f"\nworst {cfg['report_worst']}:")
     for r in fin[:cfg["report_worst"]]:
@@ -221,6 +242,15 @@ def main(cfg: dict = CONFIG) -> None:
         "detour_ratio": {f"p{p}": round(float(np.percentile(rat, p)), 3)
                          for p in (50, 75, 90, 95, 99)},
         "worst_ratio": round(float(rat.max()), 2),
+        "refined_vs_control": {
+            "refined_median": round(float(np.median(rr[near])), 3) if near.sum() else None,
+            "refined_n": int(near.sum()),
+            "unrefined_median": round(float(np.median(rr[~near])), 3) if (~near).sum() else None,
+            "unrefined_n": int((~near).sum()),
+            "note": "grid2 refines only within 25 km of England and Wales, so the rest of "
+                    "the grid is an untouched control measured the same way in the same "
+                    "run. A before/after across two grids is not comparable, because "
+                    "refinement changes which pairs exist at all."},
         "water_over_chord": {f"p{p_}": round(float(np.percentile(woc, p_)), 3)
                              for p_ in (50, 75, 90, 99)},
         "threadable_small_obstruction": int((woc < 1.15).sum()),

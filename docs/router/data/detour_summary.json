@@ -1,33 +1,40 @@
 {
- "generation": "20260904T130142Z",
- "refused_pairs": 786,
- "with_water_path": 786,
+ "generation": "20260904T193156Z",
+ "refused_pairs": 681,
+ "with_water_path": 681,
  "separated_no_resolution_helps": 0,
  "detour_ratio": {
-  "p50": 1.899,
-  "p75": 2.041,
-  "p90": 2.657,
-  "p95": 2.997,
-  "p99": 5.475
+  "p50": 1.895,
+  "p75": 2.058,
+  "p90": 2.649,
+  "p95": 3.169,
+  "p99": 5.893
  },
  "worst_ratio": 9.23,
- "water_over_chord": {
-  "p50": 1.077,
-  "p75": 1.134,
-  "p90": 1.259,
-  "p99": 2.694
+ "refined_vs_control": {
+  "refined_median": 2.809,
+  "refined_n": 8,
+  "unrefined_median": 1.895,
+  "unrefined_n": 673,
+  "note": "grid2 refines only within 25 km of England and Wales, so the rest of the grid is an untouched control measured the same way in the same run. A before/after across two grids is not comparable, because refinement changes which pairs exist at all."
  },
- "threadable_small_obstruction": 618,
+ "water_over_chord": {
+  "p50": 1.081,
+  "p75": 1.141,
+  "p90": 1.258,
+  "p99": 2.844
+ },
+ "threadable_small_obstruction": 526,
  "control_water_over_chord": {
   "n": 300,
-  "median": 1.046,
-  "p90": 1.119
+  "median": 1.045,
+  "p90": 1.122
  },
  "over": {
-  "1.5x": 754,
-  "2.0x": 232,
+  "1.5x": 651,
+  "2.0x": 205,
   "3.0x": 40,
-  "5.0x": 10
+  "5.0x": 12
  },
  "worst": [
   {
@@ -62,6 +69,17 @@
    "chord_m": 5850.1522,
    "water_over_chord": 1.102,
    "ratio": 8.4437
+  },
+  {
+   "a": "881874aca1fffff",
+   "b": "881874aca3fffff",
+   "lat": 50.34,
+   "lon": -4.1448,
+   "d_graph_m": 5804.4081,
+   "d_water_m": 793.8047,
+   "chord_m": 931.2426,
+   "water_over_chord": 0.8524,
+   "ratio": 7.3121
   },
   {
    "a": "87190a164ffffff",
@@ -130,6 +148,17 @@
    "ratio": 5.4742
   },
   {
+   "a": "881874aca3fffff",
+   "b": "881874aca7fffff",
+   "lat": 50.3323,
+   "lon": -4.14,
+   "d_graph_m": 5198.2863,
+   "d_water_m": 1026.3047,
+   "chord_m": 903.9254,
+   "water_over_chord": 1.1354,
+   "ratio": 5.0651
+  },
+  {
    "a": "87190a164ffffff",
    "b": "87190a165ffffff",
    "lat": 56.8278,
@@ -139,28 +168,6 @@
    "chord_m": 2407.8925,
    "water_over_chord": 1.5118,
    "ratio": 5.0288
-  },
-  {
-   "a": "8709a0994ffffff",
-   "b": "8709a0996ffffff",
-   "lat": 60.4283,
-   "lon": -0.7912,
-   "d_graph_m": 10378.0648,
-   "d_water_m": 2205.3279,
-   "chord_m": 2295.1931,
-   "water_over_chord": 0.9608,
-   "ratio": 4.7059
-  },
-  {
-   "a": "871865525ffffff",
-   "b": "871865c8bffffff",
-   "lat": 49.4074,
-   "lon": 0.0893,
-   "d_graph_m": 11718.616,
-   "d_water_m": 2517.6093,
-   "chord_m": 2314.5698,
-   "water_over_chord": 1.0877,
-   "ratio": 4.6547
   }
  ],
  "what": "d_graph is the res-7 routing distance between two adjacent cells whose direct link was refused for crossing land; d_water is the shortest path between the same points through the 232 m sea mask, which bounds what any refinement could recover. A ratio near 1 means refining buys nothing.",
