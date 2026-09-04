@@ -22,10 +22,24 @@ repository this week. This is a development instrument outside the build.
 
 THREE THINGS THAT ARE LOAD-BEARING, and I got each of them wrong first:
 
-**Software GL, or nothing works and nothing says so.** Headless chromium has no GPU, so
-a WebGL map never resolves its sources, `map.loaded()` stays false and `idle` never
-fires. Every run then times out on a working page and a broken one alike, which is a
-harness that discriminates nothing.
+**Software GL — and on THIS machine it turns out not to be needed, which I only found
+out by testing a claim I had been repeating.** The received wisdom, from whg3-9a by way
+of rewt-e8, is that headless chromium has no GPU, so a WebGL map never resolves its
+sources, `map.loaded()` stays false and `idle` never fires — every run then timing out
+on a working page and a broken one alike, which is a harness that discriminates nothing.
+That is a real failure and worth knowing.
+
+It does not happen here. Measured: with `GL = []` the whole suite still passes — 22 of
+33 style layers drew, 17,590 sightline cells rendered, the synthetic click landed. The
+bundled chromium is 147.0.7727.15 and already reports
+`ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)), SwiftShader driver)` with
+no flags at all, so the trio below is asking for what it is already doing.
+
+They stay, because they cost nothing, because a different chromium build or a machine
+with a real GPU and no display may behave differently, and because a harness that works
+by accident of a default is one upgrade from not working. But the comment now says
+which of those it is. I had been passing "the flags are load-bearing" to another
+session as fact when it was something I had inherited and never run.
 
 **Wait on the page's own flag, never the library's.** `map.on('load')` fires when the
 STYLE is loaded — long before the sources, the tiles, or the page's own fetches.
