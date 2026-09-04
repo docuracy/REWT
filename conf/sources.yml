@@ -87,6 +87,34 @@ sources:
       D-082's remedy. And the summit figures reproduce rewt-c7's at Carrauntoohil and
       Snowdon to the decimal, by a different sampling rule.)
 
+      A COVERAGE GAP RETURNS EXACT 0.0, NOT NODATA. The dataset declares no nodata value
+      (`src.nodata is None`) and the WCS rangeType nil value is NaN — but NaN is not what
+      a gap returns. A window in the Greenland interior, INSIDE the declared envelope and
+      outside anything the product holds, comes back HTTP 200 as a valid GeoTIFF of 100%
+      exact 0.0, against controls run in the same pass at 0.0%: the North Sea, Snowdonia,
+      the Sahara interior. So a sign test alone cannot separate sea from absence, and
+      `>= 0` classes a whole missing region as land.
+
+      This is `ea_lidar_composite_dtm_1m`'s trap in a second registered source, and the
+      two fail differently — one at a national border, one at the edge of coverage — so
+      neither guard transfers. Predicted from that precedent by rewt-16 rather than
+      stumbled on, and reproduced independently on both sides.
+
+      THE SEPARATION IS WIDE ENOUGH TO GUARD CHEAPLY. Across the 120 windows held here
+      the exact-zero share is 0.0920% overall, worst window 0.711%, largest contiguous
+      zero blob 4,047 px — against 100% for a real gap. Three orders of magnitude. So:
+      refuse a window above a few per cent, and treat a large contiguous zero region as
+      NO DATA rather than as land. A whole-surface threshold alone will not catch one bad
+      window among many, which is what the contiguous-blob rule is for.
+
+      A NEGATIVE RESULT, RECORDED SO NOBODY RE-RUNS IT. SRTM's coverage stops at 60 N and
+      the land side is partly SRTM, so British ground above that latitude was tested for
+      the same failure. It does not have it: Ronas Hill 60.53 N reads 440.5 m against a
+      true 450 (-2.1%, 3.2% exact zeros, which is coastline in a coastal window and not a
+      hole); Faroe 62.30 N 732.2 m; Orkney 58.88 N 476.7 m; northern Scotland 58.41 N
+      921.3 m at 0.0%. Nothing in or near the British Isles is affected, and the
+      Greenland gap is a genuine absence of coverage rather than a latitude cutoff.
+
       THE WMS ABSTRACT FOR THIS LAYER IS WRONG. It says "Ocean overlay without land
       cover"; the WCS plainly returns land. Trust the probe.
 
