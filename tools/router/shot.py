@@ -35,7 +35,7 @@ from pathlib import Path
 URL = "http://127.0.0.1:8021/router/check/"
 OUT = Path("docs/router/check/shots")
 GL = ["--enable-unsafe-swiftshader", "--use-gl=angle", "--use-angle=swiftshader"]
-LAYERS = ["cells", "net", "detail", "traces", "joins"]
+LAYERS = ["cells", "net", "coast", "detail", "traces", "joins"]
 # check.html turned its exclusive stages into four independent toggles, so a shot is
 # now of a SET of layers. Each named layer is still shot alone, because a layer that
 # draws nothing is invisible in a composite that another layer has filled.
@@ -154,12 +154,12 @@ def main() -> int:
                 continue
             n = page.evaluate("window.map.queryRenderedFeatures()"
                               ".filter(f=>f.layer.id.startsWith('x-')"
-                              " && !f.layer.id.startsWith('x-coast')).length")
+                              " && !f.layer.id.startsWith('x-bg')).length")
             ctrl = page.evaluate(
                 "window.map.queryRenderedFeatures("
                 "  window.map.project([-1.55,52.60]))"          # inland Warwickshire
                 ".filter(f=>f.layer.id.startsWith('x-')"
-                " && !f.layer.id.startsWith('x-coast')).length")
+                " && !f.layer.id.startsWith('x-bg')).length")
             p = OUT / f"{st}-{a.area}.png"
             page.screenshot(path=str(p))
             flag = "" if n else "   ** NOTHING DREW **"

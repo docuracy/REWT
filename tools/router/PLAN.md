@@ -1692,3 +1692,31 @@ class as the fjords whose cells were dropped as unroutable.
 **So `sea_route` does not retire on the mesh's account** and that has been said to
 visualisation as my position. A surface that is provably clean over 83% of the entries and
 absent from a fifth of the mouths is not a replacement for one that covers all of them.
+
+## 35. The coastal surface, published at its own extent
+
+rewt-46's ruling and it is the better rule: **a visible mismatch that is explained beats a
+tidy picture that has silently lost the estuaries.** So `cells_r7_coast.geojson` and
+`edges_r7_coast.geojson` publish the routing cells THEMSELVES over the coastal band, at res
+7, at an extent that deliberately does not match the sightline layer.
+
+**The band is chosen by what it covers, not by generosity.** Every routing cell within 5 km
+of land: 21,974 of 143,879, 15.3%, 6.2 MB of cells and 8.7 MB of the 48,413 links between
+them. That band captures **exactly as many sea entries as publishing all 143,879 cells
+would** — 1,366 in a cell, 3,023 within one ring. Three kilometres loses ten of them; eight
+adds none.
+
+**IT IS A BAND, NOT A SURFACE, AND ITS 32 COMPONENTS ARE NOT A DEFECT.** A 5 km strip around
+separate landmasses *is* separate — the water between them is simply further from land than
+the band is wide. The temptation is to drop the small pieces, which is what I did to the
+drawn network in section 29 and would be exactly wrong here: **the routing graph these cells
+belong to is one component of 143,879, and this layer is a window onto it.** Connectivity is
+a property of the graph, not of the window. The layer says so in its own properties.
+
+**One more name collision found by the harness.** The new layers were `x-coast-c` and
+`x-coast-e`; `shot.py` counts drawn features by excluding ids beginning `x-coast`, which is
+the dark background coastline. So the whole layer was invisible to the check and reported
+NOTHING DREW while drawing 64,221 features. The fix is not to rename mine — it is that a
+harness which excludes by name prefix can silently swallow a layer. The background context
+is now `x-bg-land` and `x-bg-coast`, and the filter excludes `x-bg`, which cannot collide
+with a subject layer by accident.

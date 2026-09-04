@@ -101,6 +101,14 @@ const LAYERS={
               'line-color':['case',['get','crosses_band'],'#f0883e',
                             ['==',['get','drawn_as'],'res-7 path'],'#3fb950','#c9d1d9'],
               'line-opacity':['case',['get','crosses_band'],1,0.85]}}); }},
+ coast:{label:'coastal surface (res 7)', src:['cst', F+'cells_r7_coast.geojson'],
+   legend:[['routing cell within 5 km of land','#1f6feb'],['its lattice','#8b949e']],
+   note:'The routing cells THEMSELVES over the coastal band, at res 7, published at their own extent — which deliberately does NOT match the cells layer. The main network is clipped to the sightline cells so this toggle lines up, and that clip hides coastal surface the graph actually has. Measured against the release: 32.6% of sea entries fall in a routing cell, 39.6% one ring away, and 17.0% are absent altogether — creek heads the lattice cannot represent. This band has 32 components because a band around separate landmasses IS separate; the graph behind it is one.',
+   add:async()=>{ map.addLayer({id:'x-coast-c',type:'fill',source:'cst',
+       paint:{'fill-color':'#1f6feb','fill-opacity':.18,'fill-outline-color':'#388bfd'}});
+     if(await src('cste', F+'edges_r7_coast.geojson'))
+       map.addLayer({id:'x-coast-e',type:'line',source:'cste',
+         paint:{'line-width':0.6,'line-color':'#8b949e','line-opacity':.7}}); }},
  traces:{label:'traces', src:['tr', F+'traces.geojson'],
    legend:[['traced path','#a371f7']],
    note:'Least-cost paths across the drying ground for the stranded termini.',
@@ -179,7 +187,7 @@ let osmO=parseFloat(hashGet('osm')??'0');
 // with a real one under them they would simply hide it, so they fade out as it comes up.
 function applyFade(){
   if(map.getLayer('osm')) map.setPaintProperty('osm','raster-opacity',osmO);
-  for(const id of ['x-coast-land','x-coast'])
+  for(const id of ['x-bg-land','x-bg-coast'])
     if(map.getLayer(id)) map.setPaintProperty(id,'fill-opacity',1-osmO);
   const el=document.getElementById('osmv'); if(el) el.textContent=Math.round(osmO*100)+'%';
 }
@@ -203,10 +211,10 @@ async function draw(){
   clear();
   // land outside GB, from EMODnet, drawn first and dimmer: it is context, not a coastline
   if(await src('land', C+'land.geojson'))
-    map.addLayer({id:'x-coast-land',type:'fill',source:'land',
+    map.addLayer({id:'x-bg-land',type:'fill',source:'land',
       paint:{'fill-color':'#11161d','fill-outline-color':'#262c36'}});
   await src('coast', C+'coastline.geojson');
-  map.addLayer({id:'x-coast',type:'fill',source:'coast',
+  map.addLayer({id:'x-bg-coast',type:'fill',source:'coast',
     paint:{'fill-color':'#161b22','fill-outline-color':'#30363d'}});
   for(const k of KEYS){                 // declaration order IS paint order
     if(!on.has(k)) continue;
@@ -276,7 +284,7 @@ function figures(){
     .map(([k,v])=>`<tr><td>${k}</td><td class="v">${v.toLocaleString?.()??v}</td></tr>`).join('');
 }
 
-map.on('click',e=>{ const f=map.queryRenderedFeatures(e.point).filter(f=>f.layer.id.startsWith('x-')&&!f.layer.id.startsWith('x-coast'))[0];
+map.on('click',e=>{ const f=map.queryRenderedFeatures(e.point).filter(f=>f.layer.id.startsWith('x-')&&!f.layer.id.startsWith('x-bg'))[0];
   if(!f)return; const p=f.properties;
   new maplibregl.Popup().setLngLat(e.lngLat).setHTML(
     Object.entries(p).filter(([k])=>!k.startsWith('landmark_l'))
