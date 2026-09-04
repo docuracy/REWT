@@ -1720,3 +1720,41 @@ NOTHING DREW while drawing 64,221 features. The fix is not to rename mine — it
 harness which excludes by name prefix can silently swallow a layer. The background context
 is now `x-bg-land` and `x-bg-coast`, and the filter excludes `x-bg`, which cannot collide
 with a subject layer by accident.
+
+## 36. Is it one network yet? No, and here is the number
+
+rewt-46 asked, before drawing anything that implies Stephen's single-D8-network expectation,
+whether that network exists today — and asked for a file and a property to **test** rather
+than a claim to repeat. `tools/router/connectivity.py` builds the whole thing and counts:
+river links, sea edges, and every join that actually attaches.
+
+**A rule-3 join attaches only if its trace succeeded.** The rule says a path has to be
+worked out; an untraced rule-3 terminus has no way to the sea, and counting it as attached
+would assume the thing being measured.
+
+    combined graph          342,288 nodes, 614,307 edges
+    components              4,103;  largest holds 72.6%
+    termini attached        359 of 389;  30 stranded
+    in-scope river nodes
+      reaching the sea      104,736 of 128,170  = 81.7%
+
+**So: not yet, and 81.7% is the honest figure.** Two reasons in order of size. Most in-scope
+river nodes that do not reach the sea sit in river components that never reach an attached
+terminus at all — that is the inland network's own connectivity, R-01's territory and the
+implementer's, not the grid's. The rest is the 30 stranded termini: rule-3 joins whose trace
+across the drying ground failed. `network_summary.json` names all 30.
+
+**AND A STAMP THAT WAS ASSERTING A CONSISTENCY THAT DID NOT EXIST.** `trace_summary` said it
+attempted **229** rule-3 termini while `joins.geojson` held **230**, both carrying generation
+20260904T193156Z. `trace.py` reads the `rule3` list out of `join_summary.json`, and that list
+was written *before* the land-crossing demotion — so the demoted terminus was never offered
+to the trace stage, in this run or any earlier one. Fixing the demotion's position (section
+34) fixed the list; re-running trace against it gives **attempted 230, traced 200, failed
+30**.
+
+The lesson is about the stamp rather than the count. **Re-running one stage under a fixed
+generation preserves the stamp and can break the invariant the stamp exists to assert.** I
+did that deliberately to correct a miscount, reasoning that the data had not changed — and
+for the summary that was true, while for `rule3`, which is an *input to another stage*, it
+was not. A stamp is a claim that the artefacts came from one consistent pass, and it is only
+worth anything if re-running a stage means re-running what depends on it.

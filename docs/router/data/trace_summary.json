@@ -1,7 +1,7 @@
 {
  "generation": "20260904T193156Z",
- "attempted": 229,
- "traced": 199,
+ "attempted": 230,
+ "traced": 200,
  "failed": 30,
  "impassable_above_m": 5.0,
  "provisional": "R-01 is unbuilt. The implementer will land it in TWO passes \u2014 retirement of wholly-seaward links, then truncation of crossers at the high water line. This population moves under both. Re-derive after the second, not the first.",
@@ -245,6 +245,22 @@
    "drying_px": 3,
    "drying_m": 252,
    "drying_frac": 0.75
+  },
+  {
+   "node_id": "os:node/64D3781B-9C43-44CD-9083-B4F8444A1641",
+   "lat": 52.76516,
+   "lon": -4.10116,
+   "dist_m": 981,
+   "in_scope": true,
+   "traced": true,
+   "path_m": 136,
+   "straight_m": 981,
+   "detour": 0.14,
+   "max_elev_crossed_m": 5.6,
+   "min_depth_m": -0.5,
+   "drying_px": 1,
+   "drying_m": 68,
+   "drying_frac": 0.5
   },
   {
    "node_id": "os:node/1BDEE90D-DA82-439D-A12F-5DD10E8154A8",

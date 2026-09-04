@@ -1,0 +1,172 @@
+{
+ "generation": "20260904T193156Z",
+ "question": "Do the sea grid, the joins, the traces and the Open Rivers inland network form ONE network today?",
+ "answer": "Not yet.",
+ "nodes": 342288,
+ "edges": 614307,
+ "components": 4103,
+ "largest_component": 248631,
+ "largest_component_pct": 72.64,
+ "termini_attached_to_the_sea": 359,
+ "termini_stranded": 30,
+ "river_nodes_reaching_the_sea": 104752,
+ "river_nodes_total": 198409,
+ "in_scope_river_nodes_reaching_the_sea": 104736,
+ "in_scope_river_nodes_total": 128170,
+ "in_scope_pct_reaching_the_sea": 81.72,
+ "what_counts_as_a_connection": "A river link joins its two nodes; a sea edge joins its two cells; a join of rule 1 or 2 attaches a terminus to a cell. A rule-3 join attaches ONLY if its trace succeeded \u2014 the rule says a path must be worked out, so an untraced rule-3 terminus has no way to the sea, and counting it would assume the thing being measured.",
+ "why_not_yet": "Two reasons, in order of size. Most in-scope river nodes that do not reach the sea are in river components that never reach an attached terminus at all \u2014 that is the inland network's own connectivity and R-01's territory, not the grid's. The rest is the stranded termini below: rule-3 joins whose trace across the drying ground failed.",
+ "provisional": "R-01 unbuilt. The terminus population moves twice before this number is final, so treat it as a floor on the work remaining rather than a measurement of a finished thing.",
+ "stranded": [
+  {
+   "node_id": "os:node/02BC7D25-A8E2-417A-BACD-FAA58F374929",
+   "rule": 3,
+   "dist_m": 14307
+  },
+  {
+   "node_id": "os:node/0460AB7B-065F-44B1-AA63-8555BAD5E3E2",
+   "rule": 3,
+   "dist_m": 14160
+  },
+  {
+   "node_id": "os:node/09D9A8E3-A557-46A5-A193-BDD33DD438C6",
+   "rule": 3,
+   "dist_m": 3589
+  },
+  {
+   "node_id": "os:node/128A361C-431A-41A8-8AF4-3F003BF35551",
+   "rule": 3,
+   "dist_m": 9650
+  },
+  {
+   "node_id": "os:node/14C67628-B44D-420D-A8A3-18FED40950D8",
+   "rule": 3,
+   "dist_m": 1433
+  },
+  {
+   "node_id": "os:node/19070834-08F2-468E-987E-93AEA565C6E2",
+   "rule": 3,
+   "dist_m": 1232
+  },
+  {
+   "node_id": "os:node/1BEA641F-1988-4FD4-86F4-71F0266A7A00",
+   "rule": 3,
+   "dist_m": 44520
+  },
+  {
+   "node_id": "os:node/2810E885-207B-445B-86C8-B79B5F8F1062",
+   "rule": 3,
+   "dist_m": 8849
+  },
+  {
+   "node_id": "os:node/3BD43F12-D056-44C6-8F47-FD4ADE36A900",
+   "rule": 3,
+   "dist_m": 45145
+  },
+  {
+   "node_id": "os:node/3C567E5E-D234-42A7-992E-C26CA30D7C4C",
+   "rule": 3,
+   "dist_m": 1962
+  },
+  {
+   "node_id": "os:node/4889A77D-8AA9-4C7C-818A-58D45AE4A51A",
+   "rule": 3,
+   "dist_m": 21804
+  },
+  {
+   "node_id": "os:node/54EEBEB0-4181-4501-854E-3AE9DB9E9A69",
+   "rule": 3,
+   "dist_m": 13190
+  },
+  {
+   "node_id": "os:node/559FBCC0-0BE0-4123-88EB-C8394B44A876",
+   "rule": 3,
+   "dist_m": 6863
+  },
+  {
+   "node_id": "os:node/6A7E9C7D-2EFF-41DB-A6B5-09D3A55DEE99",
+   "rule": 3,
+   "dist_m": 11786
+  },
+  {
+   "node_id": "os:node/763501A3-53BF-4C4A-978E-D9C88CE3C2AE",
+   "rule": 3,
+   "dist_m": 31582
+  },
+  {
+   "node_id": "os:node/769A3B81-56F8-4EA4-8D02-4331CFF7F6E2",
+   "rule": 3,
+   "dist_m": 44819
+  },
+  {
+   "node_id": "os:node/7C5F3315-2C63-4A80-83F1-36FFAC520259",
+   "rule": 3,
+   "dist_m": 3076
+  },
+  {
+   "node_id": "os:node/82D8A8CE-5C7C-423B-AF12-685F5CCDFE00",
+   "rule": 3,
+   "dist_m": 7761
+  },
+  {
+   "node_id": "os:node/8362F195-2D4F-4E1F-85C2-D66831127CE7",
+   "rule": 3,
+   "dist_m": 3513
+  },
+  {
+   "node_id": "os:node/9DD06246-876A-4565-837C-975DF879BC07",
+   "rule": 3,
+   "dist_m": 9083
+  },
+  {
+   "node_id": "os:node/9ED1ECA6-7838-447C-93DC-BC908FC23A6D",
+   "rule": 3,
+   "dist_m": 66660
+  },
+  {
+   "node_id": "os:node/9FEB3912-A6C8-4857-AE7F-256E24E2C3CE",
+   "rule": 3,
+   "dist_m": 11807
+  },
+  {
+   "node_id": "os:node/AA9ADD8A-BDE2-47DB-B323-827F0FC3E3F2",
+   "rule": 3,
+   "dist_m": 27086
+  },
+  {
+   "node_id": "os:node/B2AC3BD7-1C05-4FEA-8091-EB389CDE7160",
+   "rule": 3,
+   "dist_m": 14657
+  },
+  {
+   "node_id": "os:node/B808C5AC-BD47-45E5-8603-ABEB5EB88B05",
+   "rule": 3,
+   "dist_m": 30117
+  },
+  {
+   "node_id": "os:node/DB19CA2F-D75C-4AAD-B50A-63B042B347DE",
+   "rule": 3,
+   "dist_m": 25557
+  },
+  {
+   "node_id": "os:node/DFE60851-BBB0-4DD7-8513-9C412D90982E",
+   "rule": 3,
+   "dist_m": 15839
+  },
+  {
+   "node_id": "os:node/E2CDD94A-E7C3-40FE-8F05-C4E70B1CABB0",
+   "rule": 3,
+   "dist_m": 2114
+  },
+  {
+   "node_id": "os:node/EAE621EF-4D66-49D1-AA8A-0FF48D9265C8",
+   "rule": 3,
+   "dist_m": 13694
+  },
+  {
+   "node_id": "os:node/FFA51EBA-4667-459B-998B-A7CBE54381EC",
+   "rule": 3,
+   "dist_m": 2173
+  }
+ ]
+}
