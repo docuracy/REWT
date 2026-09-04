@@ -21,11 +21,13 @@ layer:
   gov_h_m_definition: the tallest land that reaches this cell — the band that first marked
     it. Absent where nothing reaches.
   blind_sailing_buffer_km: 0.0
-  buffer_basis: 'the deepest a crossing wholly within the British Isles goes out of sight:
-    Land''s End to Cork, 56.4 km. It is a ROUTING decision, not a horizon and not a coast
-    -- the trimmed edge means nothing else.'
-  trimmed: 'cells beyond sight plus the buffer are absent, not coloured (H3-002 item 3). `known:
-    false` appears only where the answer still depends on land outside the cached data; absent
+  buffer_basis: 'NO BLIND SAILING (Stephen, 4 Sep 2026): the buffer is zero. A cell is in
+    the surface only if land is in sight from it, and a landmass joins only when its sighted
+    water TOUCHES sighted water already admitted — two blind zones meeting is not a route.
+    The trimmed edge is therefore the limit of sight itself, not a routing decision and not
+    a coast. Land''s End to Cork, 56.4 km blind, is NOT in this surface.'
+  trimmed: 'cells out of sight of land are absent, not coloured (H3-002 item 3). There is
+    no unknown state left to render: `known` is absent from every feature, and an absent `known`
     means answered.'
   distance_crs: EPSG:32630
   distance_crs_worst_error_pct: 0.33
@@ -34,9 +36,12 @@ layer:
   week_km: 1271
   week_trim: 'cells beyond a week''s sailing of England and Wales are absent. The bound is
     route distance ON THE NAVIGABLE SURFACE, calibrated by two attested week-long voyages:
-    London-Skagen 1271 km and Falmouth-Bordeaux 1195 km. Under the no-blind-sailing rule those
-    two agree to 6%; on a buffered surface they differed by 48%, because the route was free
-    to cut across open water that was never sailed.'
+    London-Skagen 1271 km and Falmouth-Bordeaux 1195 km. Both anchors are APPROXIMATE — eRutter
+    says so, and is better for comparing routes than for definitive times — so this is an
+    order of magnitude, not a threshold. That the two converge under the no-blind-sailing
+    rule (6%, against 48% on a buffered surface) is consistent with the constraint being right;
+    it is not independent evidence for it, because two soft durations agreeing on soft distances
+    tests little.'
   attribution: 'Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet
     Digital Bathymetry (DTM 2024), licensed CC BY 4.0.'
   use_constraint: DO NOT USE FOR NAVIGATION

@@ -47,25 +47,36 @@ So the surface is not a buffer round a coastline. A high headland projects sight
 than the flat shore beside it, and the reach of a stretch of water is set by the highest thing
 that can see it.
 
-## The evidence for the rule is that two voyages agree under it
+## What two voyages do and do not show
 
-**A constraint that only makes routes longer is not evidence for itself.** The reason to
-believe this one is that it makes two independent measurements converge.
+Two passages carry the calibration — **London to Skagen**, at the northern tip of Denmark,
+and **Falmouth to Bordeaux** — each described as about a week's sailing in July, from
+[eRutter](https://docuracy.github.io/Historical_Sea_Routing/){:target="_blank"}.
 
-Two attested passages, each about a week's sailing in July —
-{% for c in site.data.routing.reach.calibration %}**{{ c[0] }}** at {{ c[1] }} km{% unless forloop.last %} and {% endunless %}{% endfor %} — are
-the calibration. Measured on a surface that permitted a stretch of blind sailing, they came
-out **48% apart**. Measured on a surface where land must stay in sight, they agree to **6%**.
-Two figures that should describe the same thing, and only one rule makes them do it.
+**Measured on a surface that permitted a stretch of blind sailing, the two came out 48%
+apart. Measured on a surface where land must stay in sight, they agree to 6%.** The same two
+routes, the same two durations, and a difference that is entirely a change in the geometry
+they were measured over.
 
-**The two still disagree, and the disagreement is kept rather than averaged away.**
-{{ site.data.routing.reach.anchors_disagree }}
+**That is consistent with the rule and is not evidence for it**, and the distinction is worth
+keeping sharp because the stronger claim is the tempting one. eRutter says of itself that it
+is approximate — better for comparing routes than for settling times — so these are not two
+independent measurements converging. They are two soft figures, each "about a week", implying
+similar distances. Two approximate durations agreeing tests very little. What has actually
+been shown is that a constraint changes the geometry in the direction coastwise sailing would
+predict, which is a reason to keep the constraint rather than a reason to believe it.
 
-**Distance is not time**, and the page should say so where the week appears.
+**And the week is an order of magnitude, not a threshold.** The surface is trimmed at roughly
+a week's sailing of England and Wales — *roughly*, in the same breath as the trim, because a
+rounded estimate of a voyage becomes a boundary condition the moment it is written without
+that word. Nothing here computes duration:
 {{ site.data.routing.reach.time_not_computed }}
 
-**And a week is measured along the water.**
+**A week is also measured along the water.**
 {{ site.data.routing.reach.not_a_radius }}
+
+**And the two anchors still disagree, which is kept rather than averaged away.**
+{{ site.data.routing.reach.anchors_disagree }}
 
 ## What is not published here, and why
 
@@ -96,9 +107,16 @@ it cannot move a cell from one band to another.
 there; a thing drawn in a colour meaning *unknown* looks like an answer. That is the same rule
 the [audit](methodology) works to — an unknown must fail towards the visible fault.
 
-**So the edge of the surface is not a coastline, a horizon, or anything else in the world.**
-The layer says so about itself, and the sentence is worth reading twice because a boundary
-drawn on a map asserts that something changes there: *{{ site.data.routing.layer.buffer_basis }}*
+**So what is the edge of the surface?** A boundary drawn on a map asserts that something
+changes there, and it is worth being exact about what changes at this one. The layer says so
+about itself: *{{ site.data.routing.layer.buffer_basis }}*
+
+**No blind sailing at all, then** — the edge is the limit of sight and nothing else, and a
+landmass enters the network only where its sighted water touches sighted water already in it,
+because two blind zones meeting is not a route. The consequence is concrete and worth stating
+because it is the kind a reader would otherwise assume away: **Land's End to Cork is not in
+this surface.** A crossing that goes 56 km out of sight of land is not a passage this network
+can make, whoever in fact made it.
 
 ## Looking at it
 
