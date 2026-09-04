@@ -1868,3 +1868,33 @@ instead of it.** `coverage` on the coastal layers is an object AND the sentence 
 generated from the same numbers, so a consumer that renders neither well still sees the
 figure in prose, and one that renders objects well need not parse my English. That is why the
 object was worth adding even though it broke a renderer.
+
+## 40. A plausible wrong number gets repeated
+
+rewt-46's formatter printed my detour percentiles as `p50 2; p75 2; p90 3` — the values are
+1.895, 2.058, 2.649. Their bug and their fix, but the sentence they drew from it is the
+sharpest thing anyone has said today: **gibberish gets reported by the first reader who sees
+it; a plausible wrong number gets repeated.** The `[object Object]` that prompted the audit
+was the safer failure.
+
+So I audited every numeric field this directory publishes for whether its NAME says what it
+is — because a number a reader cannot identify is a number a reader will guess at. Most of
+the 67 flagged are counts that context makes obvious. **Three were genuinely ambiguous, and
+one was exactly the failure described:**
+
+| was | is | why |
+|---|---|---|
+| `grid_summary.states` = `{"blind buffer": 6, "in sight": 7}` | `h3_resolution_by_state` | the values are **H3 resolutions**; "blind buffer: 6" reads as a count of six |
+| `reach_summary.calibration` = `{"London -> Skagen": 1169}` | `calibration_km` | a route against a bare number |
+| `sightline_summary.reach_bound_evidence` = `{"Ben Nevis GB": 139.2, "Brittany FRA": 73.9}` | `reach_bound_evidence_km` | **a peak against 73.9 reads as a height** |
+
+**The rename is in the source and NOT yet in the artefacts, deliberately.** Renaming a key
+changes the bytes, which under section 37's rule requires a new generation, and
+`reach_summary` and `sightline_summary` come from the two most expensive stages — an hour of
+banding to relabel three keys, on a day when nothing else needs rebuilding. They will land
+on the next pass that has a reason of its own. **Until then the published keys are the old
+ones**, which is recorded here rather than left for someone to trip over, and the two
+sightline figures are the ones to be careful quoting: they are kilometres, not metres.
+
+The general rule, which is cheaper than any of this: **put the kind in the key.** `_km`,
+`_m`, `_pct`, `_ratio` cost four characters and remove the whole class.

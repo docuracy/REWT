@@ -405,7 +405,12 @@ def main(cfg: dict = CONFIG) -> None:
                         lat=ll[:, 0], lon=ll[:, 1], depth_m=depth)
     Path(cfg["summary"]).write_text(json.dumps({
         "generation": generation(), "scheme": "banded by state, not by distance",
-        "states": {"blind buffer": cfg["res_blind"], "in sight": cfg["res_sight"],
+        # NAME THE KIND IN THE KEY. This was "states", whose values are H3
+        # RESOLUTIONS — so "blind buffer: 6" read as a count of six of something,
+        # and a plausible wrong number gets repeated where gibberish gets
+        # reported (rewt-46, after their formatter printed my ratios as integers).
+        "h3_resolution_by_state": {"blind buffer": cfg["res_blind"],
+                                   "in sight": cfg["res_sight"],
                    "refined": cfg["res_refine"]},
         "refinement_rule": "a cell is subdivided only where it is adjacent to land AND "
                            "required by a join or a trace — not within N km of anything",

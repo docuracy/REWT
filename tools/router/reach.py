@@ -168,7 +168,7 @@ def main(cfg: dict = CONFIG) -> None:
     Path(cfg["summary"]).write_text(json.dumps({
         "generation": generation(), "criterion": "within a week's sailing of England and Wales, under typical "
                      "conditions, measured as route distance THROUGH the water",
-        "calibration": {n: (round(v) if np.isfinite(v) else None)
+        "calibration_km": {n: (round(v) if np.isfinite(v) else None)
                         for (n, _, _), v in zip(cfg["calibration"], cal)},
         "calibration_outside_data": missing,
         "calibration_source": "eRutter, docuracy.github.io/Historical_Sea_Routing: London "

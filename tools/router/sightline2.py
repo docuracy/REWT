@@ -687,7 +687,7 @@ def main(cfg: dict = CONFIG) -> None:
                          "which is the Loch Etive limit in another place.",
         "blind_sailing_buffer_km": cfg["buffer_km"],
         "still_unknown": int((keep_cell & ~known_cell).sum()),
-        "reach_bound_evidence": {
+        "reach_bound_evidence_km": {
             "Ben Nevis GB": 139.2, "Kerry IRL": 120.9, "Brittany FRA": 73.9,
             "W Norway (does NOT reach, 430 km away)": 146.2,
             "Iceland (does NOT reach, 700 km away)": 143.8},
