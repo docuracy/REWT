@@ -46,7 +46,10 @@ ATTRIBUTION = (
 CONFIG = {
     "resolution": 6,              # H3 resolution for both land and sea cells
     "decimate": 8,                # max-reduce NxN raster blocks (~920 m) for land maxima
-    "observer_height_m": 0.0,     # eye at sea level: the one value that assumes nothing.
+    "observer_height_m": 0.0,     # SUPERSEDED. sightline2.py uses 10 m, a masthead
+                                  # lookout. This module survives only for build_vrt and
+                                  # nodata_to_nan, which grid.py, trace.py and
+                                  # export_check.py import; its CONFIG is not run.
                                   # a vessel's masthead is a vessel parameter, deferred.
     "refraction_k": 1.13,         # standard terrestrial refraction; 1.0 = pure geometry
     "min_land_height_m": 1.0,     # below this a "peak" is noise in a 115 m grid

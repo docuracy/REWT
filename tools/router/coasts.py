@@ -36,6 +36,22 @@ import numpy as np
 import h3
 from generation import generation
 
+# THE NOTE THAT OUTLIVED ITS NUMBER. This read "every range is a FLOOR: an eye at sea
+# level, which is the one value that assumes nothing" — true when observer height was 0 m,
+# and left standing when Stephen set it to 10 m. It then sat in the published summary
+# immediately beside `observer_height_m: 10.0`, contradicting the field above it. The
+# primary note is now TAKEN FROM THE LAYER rather than restated here, so it cannot drift
+# from the run again; this second one says what changed, because a reader who saw the old
+# sentence deserves to know it was withdrawn rather than quietly edited.
+OBSERVER_NOTE = (
+    "NOT a floor at sea level. The observer is at 10 m, a masthead lookout, so every range "
+    "here already contains 12.0 km of observer horizon. A deck observer at 2 m has an "
+    "observer term of 5.4 km, which is 6.6 km LESS — 5.4 is that observer's own horizon, "
+    "not the difference. This note previously read 'every range is a FLOOR: an eye at sea level'; "
+    "that was written when the height was 0 m and it survived the change to 10 m, sitting "
+    "next to the field that contradicted it."
+)
+
 LAYER = Path("docs/router/data/sightline2_r6.geojson")
 OUT = Path("docs/router/data/coast_summary.json")
 
@@ -118,8 +134,8 @@ def main() -> None:
                           "counts are not.",
         "horizon_formula": props.get("horizon_formula"),
         "observer_height_m": props.get("observer_height_m"),
-        "observer_note": "every range is a FLOOR: an eye at sea level, which is the one "
-                         "value that assumes nothing.",
+        "observer_note": props.get("observer_height_basis"),
+        "observer_note_2": OBSERVER_NOTE,
         "attribution": props.get("attribution"),
         "use_constraint": props.get("use_constraint"),
         "coasts": out,

@@ -696,9 +696,13 @@ high, and a gazetteer is outside this data entirely.
   so Ireland's Atlantic coast computes as "no land visible" when the truth is "not known".
   There is no longer an unknown state to bound — see section 14. **Unknown must fail towards the visible
   fault** (D-077), and a blank sea is the invisible one.
-- **Observer height is 0 m** — an eye at sea level, the one value that assumes nothing. A
-  deck at 3 m adds 6.7 km to every range, a masthead at 10 m adds 12.2 km. Observer height
-  is a vessel parameter and those are deferred, so the envelope drawn is a floor.
+- **Observer height is 10 m** — a masthead lookout, after Alvarez-Palau and Dunn (2019)
+  as reported by Litvine et al. (2024). It was 0 m; Stephen overruled that, because a
+  height of zero is not the assumption-free choice it looks like — nobody observes
+  from the waterline. Ranges here are therefore NOT floors: a deck observer at 2 m
+  would see 6.6 km LESS than what is drawn. The observer term is
+  12.0 km — NOT 12.2, which is the 3.86 coefficient again, and which this
+  document stated while the paragraph beside it warned against 3.86.
 - **It is curvature only.** No occlusion by intervening land, no weather, no refractive
   variation. That is what "theoretically be seen" means and it will look more authoritative
   than it is.
@@ -1124,3 +1128,42 @@ describing "the rectangle within which the answer is known" — a concept that s
 existing when the unknown state went (section 14). `shot.py` used it as a deliberately
 mapless page and now points at a summary instead. **A stale artefact nothing regenerates is
 worse than an unstamped one: it reads as current and has no run behind it.**
+
+## 19. A check that reports agreement over an unexamined population
+
+Visualisation's cross-layer generation check compared the layers that HAD a generation. Two
+of mine had none, so it would have reported "no disagreement" across a set of four where
+two were never in the comparison at all. They named it correctly: **D-082 with the polarity
+reversed** — the familiar fault is a negative result with no positive control, an absence
+that means nothing; this is a positive result with an unexamined population, an agreement
+that means nothing because the disagreeing members were not in the set.
+
+That generalises past their check, so I audited my own published strings for claims of
+agreement or absence that do not name their denominator. It found three, all in text rather
+than in figures, and all of the same kind: **a sentence that outlived the number it
+described.**
+
+**`coast_summary.json` said "every range is a FLOOR: an eye at sea level, which is the one
+value that assumes nothing"** — sitting immediately beside `observer_height_m: 10.0`. True
+when the height was 0 m, and left standing when Stephen overruled that. It is the exact
+sentence he objected to on the published site, still being written by `coasts.py` after the
+change. The primary note is now taken FROM THE LAYER rather than restated, so it cannot
+drift again, and a second note records that the old one was withdrawn rather than quietly
+edited.
+
+**`gov_reach_km` excludes the observer term and did not say so.** Admission used
+`K·√h_land + 12.0 km`; the published per-cell reach and the per-coast medians use only
+`K·√h_land`. So the sighted zone reaches 12.0 km further than the number a reader sees.
+Britain's 112.0 km against the Low Countries' 28.0 km remains a like-for-like comparison of
+the land, which is the claim it supports — but neither figure is the distance at which a
+cell was admitted, and now both definitions say so.
+
+**"a deck observer at 2 m would see 5.4 km less" was wrong, in the layer and in PLAN.md.**
+5.4 km is that observer's OWN horizon; the difference from a 10 m masthead is 6.6 km. I then
+copied the error into the note I had just written to fix the first one. And the same
+paragraph said a masthead "adds 12.2 km" — that is 3.86·√10, the coefficient this document
+warns against two paragraphs earlier. Correct is 12.0.
+
+Three sentences, none of which any test could have failed, because **prose is the part of an
+artefact that nothing recomputes.** The figures were checked; the sentences about them were
+not, and they went out beside the numbers that contradicted them.

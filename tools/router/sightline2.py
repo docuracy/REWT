@@ -582,7 +582,8 @@ def main(cfg: dict = CONFIG) -> None:
                 "one metre up a mast is nonsense, and the version of record is the "
                 "corrupted one. Ranges here are therefore NOT floors at sea level: they "
                 "assume a masthead lookout, and a deck observer at 2 m would see "
-                "5.4 km less."),
+                "an observer term of 5.4 km, which is 6.6 km LESS than the 12.0 km "
+                "used here — 5.4 is that observer's own horizon, NOT the difference."),
             "gov_h_m_provenance":
             "gov_h_m is a height off EMODnet's land side, which is ASTER, SRTM3 and "
             "EU-DEM blended with no per-pixel provenance (D-098). It is NOT a "
@@ -599,7 +600,15 @@ def main(cfg: dict = CONFIG) -> None:
                                        "persuasive thing a single measurement can "
                                        "pretend to be — rewt-46 found 67 distinct heights "
                                        "and 67 distinct pairs across all cells. Do not "
-                                       "cite them as corroborating each other."),
+                                       "cite them as corroborating each other. "
+                                       "EXCLUDES THE OBSERVER TERM: admission added "
+                                       f"{obs:.1f} km on top of this, so the sighted "
+                                       "zone reaches that much further than "
+                                       "gov_reach_km says. The per-coast medians "
+                                       "exclude it too, which keeps Britain and the "
+                                       "Low Countries a like-for-like comparison of "
+                                       "the LAND — but neither figure is the distance "
+                                       "at which a cell was admitted."),
             "distance_crs": cfg["crs"], "distance_crs_worst_error_pct": 0.33,
             "validated_against": "exact WGS84 geodesics on 250 sample points: 246 agree, "
                                  "and all 4 disagreements are conservative (the raster "
