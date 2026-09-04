@@ -1,0 +1,34 @@
+{
+ "cells": 194758,
+ "edges": 522179,
+ "components": 469,
+ "largest_component": 192303,
+ "isolated": 238,
+ "degree": {
+  "min": 0,
+  "median": 5,
+  "max": 13
+ },
+ "edges_by_resolution_pair": {
+  "3-3": 12,
+  "3-4": 80,
+  "4-4": 300,
+  "4-5": 555,
+  "5-5": 2490,
+  "5-6": 3578,
+  "5-7": 5,
+  "6-6": 10316,
+  "6-7": 12466,
+  "6-8": 60,
+  "7-7": 34432,
+  "7-8": 41573,
+  "7-9": 5,
+  "8-8": 143830,
+  "8-9": 147171,
+  "9-9": 688590
+ },
+ "cross_resolution_directed": 205493,
+ "note": "Edge length is geometry, not a weight. Weights are deferred (PLAN.md 1).",
+ "attribution": "Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0.",
+ "use_constraint": "DO NOT USE FOR NAVIGATION"
+}

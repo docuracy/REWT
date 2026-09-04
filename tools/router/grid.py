@@ -121,6 +121,70 @@ def load_masks(cfg: dict):
     # non-zero is non-zero, so scattered datum zeros shrink while a solid gap survives.
     land = has_land & ~gap
     sea = has_sea & ~gap
+
+    # --- THE SEA IS WATER THAT REACHES THE SEA ------------------------------------
+    # `elevation < 0` is not the same test. The Fens lie below the datum and are dry
+    # land: EMODnet reads -2.3 m at Downham Market. Admitting them made 3,028 inland
+    # water bodies, 3,904 graph components and 2,303 cells with no edge at all — a
+    # routing surface with pockets of unreachable "sea" in Cambridgeshire.
+    #
+    # This is PLAN.md's own question turned seaward. The river network asks whether
+    # water can get to the sea; the grid must ask the same of itself, or it asserts
+    # navigable water where a ship could never be.
+    # 8-connectivity: a channel that steps diagonally is still a channel. It drops
+    # 57,880 blocks where the 4-connected default drops 71,192.
+    lab, _ = ndimage.label(sea, structure=ndimage.generate_binary_structure(2, 2))
+    border = set(lab[0, :]) | set(lab[-1, :]) | set(lab[:, 0]) | set(lab[:, -1])
+    border.discard(0)
+    ocean = np.isin(lab, list(border))
+    orphan = sea & ~ocean
+    if orphan.any():
+        sizes = np.bincount(lab.ravel())
+        sizes[0] = 0
+        orphan_ids = [i for i in np.unique(lab[orphan]) if i]
+        print(f"  dropped {orphan.sum():,} sea blocks ({100*orphan.sum()/sea.sum():.2f}%) "
+              f"in {len(orphan_ids):,} bodies that do not reach the sea")
+        # NAME THEM, AND SORT THE TWO POPULATIONS APART. Most are genuine: ground below
+        # the datum that is dry land — the Fens read -2.3 m at Downham Market. But a real
+        # sea loch whose entrance EMODnet cannot resolve is dropped identically, and
+        # Loch Etive is one: the Connel narrows read +6.8 m and the Falls of Lora +0.4 m,
+        # so a 200 m channel has been averaged into land by a 115 m grid. DEPTH separates
+        # them without judgement — drained fen is shallow, a sea loch is not.
+        b = src.bounds
+        # One labelled pass, not one boolean mask per body: 11,564 masks over a 26 M
+        # array is quadratic and does not finish.
+        filled = np.where(np.isfinite(depth), depth, 0.0)
+        dmins = np.array(ndimage.minimum(filled, labels=lab, index=orphan_ids))
+        boxes = ndimage.find_objects(lab)
+
+        def ll(r, c):
+            return (b.top - (r + 0.5) * (b.top - b.bottom) / sea.shape[0],
+                    b.left + (c + 0.5) * (b.right - b.left) / sea.shape[1])
+
+        deep = [(int(sizes[i]), float(d), i)
+                for i, d in zip(orphan_ids, dmins) if d < -10.0]
+        print(f"    of {len(orphan_ids):,} bodies, {len(deep):,} reach deeper than 10 m "
+              f"and are the suspicious ones — shallow ground below the datum is not a loch")
+        for n, dmin, i in sorted(deep, key=lambda t: -t[0])[:6]:
+            sl = boxes[i - 1]
+            la0, lo0 = ll(sl[0].stop - 1, sl[1].start)
+            la1, lo1 = ll(sl[0].start, sl[1].stop - 1)
+            print(f"    {n:>7,} blocks, to {dmin:7.1f} m, within "
+                  f"{la0:.3f}-{la1:.3f} N  {lo0:.3f}-{lo1:.3f} E")
+        # PUBLISHED, not merely printed. AGENTS.md: never delete a geometry to correct
+        # it — retire it with a reason and keep it. These are water this bathymetry
+        # severs from the sea, and a reader must be able to see what was lost.
+        cfg["_severed"] = [
+            {"blocks": n, "min_depth_m": round(d, 1),
+             "lat": [round(ll(boxes[i-1][0].stop - 1, boxes[i-1][1].start)[0], 4),
+                     round(ll(boxes[i-1][0].start, boxes[i-1][1].stop - 1)[0], 4)],
+             "lon": [round(ll(boxes[i-1][0].stop - 1, boxes[i-1][1].start)[1], 4),
+                     round(ll(boxes[i-1][0].start, boxes[i-1][1].stop - 1)[1], 4)]}
+            for n, d, i in sorted(deep, key=lambda t: -t[0])]
+        orphan_deep = sum(n for n, _, _ in deep)
+        print(f"    blocks in deep orphans: {orphan_deep:,} of {orphan.sum():,} "
+              f"({100*orphan_deep/orphan.sum():.1f}%) — the rest is ground below the datum")
+    sea = ocean
     both = land & sea
     print(f"  {land.sum():,} blocks hold land, {sea.sum():,} hold sea, "
           f"{both.sum():,} hold both (the coastline itself)")
@@ -249,6 +313,15 @@ def main(cfg: dict = CONFIG) -> None:
         "by_resolution": {str(k): v for k, v in sorted(by_res.items())},
         "bands": bands, "extent": list(src.bounds),
         "coast": "EMODnet sign change = Lowest Astronomical Tide (PLAN.md 4)",
+        "sea_must_reach_the_sea": "A cell is admitted only if its water connects to the "
+                                  "open sea. `elevation < 0` alone admits the Fens, which "
+                                  "lie below the datum and are dry land.",
+        "severed_deep_water": cfg.get("_severed", []),
+        "severed_note": "Water deeper than 10 m that this bathymetry cuts off from the "
+                        "sea. NOT reconnected — that would assert a channel the data "
+                        "does not contain. These are real losses: Loch Etive is here "
+                        "because EMODnet reads +6.8 m at the Connel narrows, averaging a "
+                        "200 m channel into land on a 115 m grid.",
         "attribution": "Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium "
                        "(2024): EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0.",
         "use_constraint": "DO NOT USE FOR NAVIGATION",
