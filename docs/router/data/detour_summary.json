@@ -1,0 +1,169 @@
+{
+ "generation": "20260904T130142Z",
+ "refused_pairs": 786,
+ "with_water_path": 786,
+ "separated_no_resolution_helps": 0,
+ "detour_ratio": {
+  "p50": 1.899,
+  "p75": 2.041,
+  "p90": 2.657,
+  "p95": 2.997,
+  "p99": 5.475
+ },
+ "worst_ratio": 9.23,
+ "water_over_chord": {
+  "p50": 1.077,
+  "p75": 1.134,
+  "p90": 1.259,
+  "p99": 2.694
+ },
+ "threadable_small_obstruction": 618,
+ "control_water_over_chord": {
+  "n": 300,
+  "median": 1.046,
+  "p90": 1.119
+ },
+ "over": {
+  "1.5x": 754,
+  "2.0x": 232,
+  "3.0x": 40,
+  "5.0x": 10
+ },
+ "worst": [
+  {
+   "a": "87190c600ffffff",
+   "b": "87190c601ffffff",
+   "lat": 57.5169,
+   "lon": -6.0121,
+   "d_graph_m": 24660.4702,
+   "d_water_m": 2670.3279,
+   "chord_m": 2385.9262,
+   "water_over_chord": 1.1192,
+   "ratio": 9.235
+  },
+  {
+   "a": "87190c601ffffff",
+   "b": "87190c603ffffff",
+   "lat": 57.5007,
+   "lon": -5.9859,
+   "d_graph_m": 26827.9702,
+   "d_water_m": 3039.0233,
+   "chord_m": 2256.981,
+   "water_over_chord": 1.3465,
+   "ratio": 8.8278
+  },
+  {
+   "a": "860982ae7ffffff",
+   "b": "860982af7ffffff",
+   "lat": 59.1223,
+   "lon": 5.838,
+   "d_graph_m": 54434.4218,
+   "d_water_m": 6446.7419,
+   "chord_m": 5850.1522,
+   "water_over_chord": 1.102,
+   "ratio": 8.4437
+  },
+  {
+   "a": "87190a164ffffff",
+   "b": "87190a8cbffffff",
+   "lat": 56.8278,
+   "lon": -7.6349,
+   "d_graph_m": 18584.7747,
+   "d_water_m": 2613.914,
+   "chord_m": 2290.8374,
+   "water_over_chord": 1.141,
+   "ratio": 7.1099
+  },
+  {
+   "a": "871f04293ffffff",
+   "b": "871f0466cffffff",
+   "lat": 54.9621,
+   "lon": 11.4813,
+   "d_graph_m": 15346.062,
+   "d_water_m": 2285.1093,
+   "chord_m": 2237.953,
+   "water_over_chord": 1.0211,
+   "ratio": 6.7157
+  },
+  {
+   "a": "87190c88affffff",
+   "b": "87190c899ffffff",
+   "lat": 57.9948,
+   "lon": -5.4246,
+   "d_graph_m": 15578.0215,
+   "d_water_m": 2421.3047,
+   "chord_m": 2240.5675,
+   "water_over_chord": 1.0807,
+   "ratio": 6.4337
+  },
+  {
+   "a": "871823514ffffff",
+   "b": "871823515ffffff",
+   "lat": 54.1044,
+   "lon": -10.1365,
+   "d_graph_m": 14036.5291,
+   "d_water_m": 2437.8279,
+   "chord_m": 2469.281,
+   "water_over_chord": 0.9873,
+   "ratio": 5.7578
+  },
+  {
+   "a": "87190a8caffffff",
+   "b": "87190a8cbffffff",
+   "lat": 56.8467,
+   "lon": -7.6242,
+   "d_graph_m": 13886.1812,
+   "d_water_m": 2534.1326,
+   "chord_m": 2407.477,
+   "water_over_chord": 1.0526,
+   "ratio": 5.4797
+  },
+  {
+   "a": "860982b47ffffff",
+   "b": "860982b67ffffff",
+   "lat": 59.2329,
+   "lon": 5.5346,
+   "d_graph_m": 34236.1903,
+   "d_water_m": 6254.1326,
+   "chord_m": 5710.7708,
+   "water_over_chord": 1.0951,
+   "ratio": 5.4742
+  },
+  {
+   "a": "87190a164ffffff",
+   "b": "87190a165ffffff",
+   "lat": 56.8278,
+   "lon": -7.6349,
+   "d_graph_m": 18306.0378,
+   "d_water_m": 3640.2186,
+   "chord_m": 2407.8925,
+   "water_over_chord": 1.5118,
+   "ratio": 5.0288
+  },
+  {
+   "a": "8709a0994ffffff",
+   "b": "8709a0996ffffff",
+   "lat": 60.4283,
+   "lon": -0.7912,
+   "d_graph_m": 10378.0648,
+   "d_water_m": 2205.3279,
+   "chord_m": 2295.1931,
+   "water_over_chord": 0.9608,
+   "ratio": 4.7059
+  },
+  {
+   "a": "871865525ffffff",
+   "b": "871865c8bffffff",
+   "lat": 49.4074,
+   "lon": 0.0893,
+   "d_graph_m": 11718.616,
+   "d_water_m": 2517.6093,
+   "chord_m": 2314.5698,
+   "water_over_chord": 1.0877,
+   "ratio": 4.6547
+  }
+ ],
+ "what": "d_graph is the res-7 routing distance between two adjacent cells whose direct link was refused for crossing land; d_water is the shortest path between the same points through the 232 m sea mask, which bounds what any refinement could recover. A ratio near 1 means refining buys nothing.",
+ "window_km": 20.9,
+ "caveat": "Truncated by the window: a pair whose real way round is longer than the window reports no water path and is counted as separated, so the separated count is an UPPER bound on genuine separation."
+}

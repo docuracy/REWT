@@ -1560,3 +1560,57 @@ question of detour, not of connectivity**, and the detours measured here are 1.0
 Extending the estuary refinement rule to subdivide wherever a link is refused for crossing
 land is the natural next step and is NOT done: it should be justified by measured detours,
 not by the fact that it is possible.
+
+## 32. What a refused link actually costs
+
+Section 31 left refinement as a possibility and said it should be justified by measured
+detours. `tools/router/detour.py` measures them.
+
+**The object measured is the res-7 routing pair, not the res-6 drawn link.** Section 31's
+1,844 routed drawings are a rendering count; the thing that costs a route anything is the
+**786 adjacent res-7 pairs whose link is refused for crossing land**. For each, two
+distances: `d_graph`, the shortest path through the routing graph, and `d_water`, the
+shortest path between the same two points through the 232 m sea mask — the finest evidence
+available, and therefore the bound on what any refinement could recover.
+
+**The grid goes nearly twice as far as the water requires.**
+
+| percentile | d_graph / d_water |
+|---|---:|
+| 50th | **1.90x** |
+| 90th | 2.66x |
+| 95th | 3.00x |
+| worst | 9.2x |
+
+29.5% detour more than 2x, 5.1% more than 3x, 1.3% more than 5x.
+
+**And the thing in the way is usually small, which is what decides whether refining helps.**
+`d_graph/d_water` says the grid overshoots; it does not say a finer grid could do better —
+two cells either side of a real peninsula are correctly refused at any resolution. The
+discriminator is `d_water/chord`: if the water runs nearly straight between the two centres
+the obstruction is an islet or a spit tip, and a finer grid threads past it.
+
+| | d_water / chord |
+|---|---:|
+| refused pairs, median | **1.08x** |
+| refused pairs, 90th | 1.26x |
+| **control — 300 pairs NOT refused** | **1.05x** median, 1.12x 90th |
+
+**618 of 786 (78.6%) are within 15% of straight.** The control matters: without it, 1.08x
+could have been an artefact of measuring water paths on a raster, and it is not — accepted
+pairs measure 1.05x by the same method. So the refused pairs are almost exactly as straight
+through water as the unrefused ones. The grid detours a median 1.9x to get round something
+that costs the water 8%.
+
+**So refinement is justified in principle — and mostly out of scope in practice.** The
+median refused pair is **324 km from England or Wales**. Only 113 of 786 (14.4%) lie within
+25 km of it, 143 within 100 km. The worst offenders are Skye, Barra, north-west Scotland,
+Rogaland, Lolland, Mayo, Shetland and the Seine. **82% of the detour is in water this
+project is not about.**
+
+The mechanism is the existing estuary refinement, extended from *a cell holds land and a
+join uses it* to *a link is refused and `d_water/chord` says the obstruction is small*.
+It is measured and not built: 786 pairs are 0.19% of 416,102 edges, the graph is one
+component without them, and the payoff concentrates in 113 pairs near the region of
+interest. That is a decision about priority, and the numbers to take it with are now here
+rather than in anyone's judgement.
