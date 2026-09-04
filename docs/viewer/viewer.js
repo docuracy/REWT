@@ -485,7 +485,7 @@ const OVERLAYS = [
     note: 'sized by the length STRANDED above them, not the length draining through — '
       + 'ranking on upstream length puts a cul-de-sac off a working drain first' },
   { id: 'corrections', label: 'Every curated judgement', file: 'corrections.geojson',
-    kind: 'point', count: c.corrections,
+    kind: 'point', mixed: true, count: c.corrections,
     colour: ['match', ['get', 'kind'], 'connector', C.add, 'reversal', C.rev,
       'junction', C.warn, '#ffffff'],
     note: 'click one and ask whether a person would have drawn it there' },
@@ -617,7 +617,7 @@ const OVERLAYS = [
        49,080 links — and, worse, two chances for the seams and the graph to be
        describing different data if the file changed between the fetches. `sourceOf`
        says: draw from that layer's source, and load it first if it is not there. */
-    sourceOf: 'edges', kind: 'point',
+    sourceOf: 'edges', kind: 'centre-mark',
     filter: ['get', 'crosses_band'], colour: C.add, on: false,
     radius: ['interpolate', ['linear'], ['zoom'], 5, 2.6, 12, 6],
     legend: [['a seam: the two cells sit at different resolutions', C.add]],
@@ -1053,10 +1053,16 @@ async function ensureOnce(o) {
         layout: { 'symbol-placement': 'line', 'icon-image': 'arrow-reversed',
           'icon-size': 0.9, 'icon-allow-overlap': true, 'icon-rotation-alignment': 'map' } });
     }
-  } else if (o.kind === 'point' && data.features[0]?.geometry?.type === 'LineString') {
-    /* A CIRCLE LAYER OVER LINESTRINGS DRAWS AT EVERY VERTEX — two marks per link, one
-       at each end, in the wrong places. A symbol placed at `line-center` puts exactly
-       one where the link is, which is what "a mark is a place" meant. */
+  } else if (o.kind === 'centre-mark') {
+    /* ONE MARK AT THE MIDDLE OF EACH LINE. A circle layer over LineStrings draws at
+       every vertex — two marks per link, at the ends, which is where a seam is not.
+
+       DECLARED, NOT SNIFFED. This branch used to select itself on
+       `data.features[0].geometry.type === 'LineString'` — one feature standing for a
+       whole file. `corrections.geojson` is 1,205 LineStrings and 355 Points and happens
+       to begin with a LineString, so "Every curated judgement" silently became a
+       seam-icon layer and drew NOTHING, under a panel label reading 1,560. A first
+       feature is a sample, and a sample was deciding the layer type for the file. */
     map.addLayer({ id: o.id, type: 'symbol', source: o.id,
       ...(o.filter ? { filter: o.filter } : {}),
       layout: { 'symbol-placement': 'line-center', 'icon-image': 'seam',
@@ -1067,6 +1073,23 @@ async function ensureOnce(o) {
       layout: { 'icon-image': o.icon, 'icon-allow-overlap': true,
         'icon-ignore-placement': true,
         'icon-size': ['interpolate', ['linear'], ['zoom'], 6, 0.55, 12, 0.9, 16, 1.2] } });
+  } else if (o.mixed) {
+    /* A SOURCE HOLDING TWO GEOMETRY TYPES NEEDS TWO LAYERS. MapLibre draws nothing for
+       a geometry its layer type cannot render, and reports no error — rewt-c7 lost 225
+       of 389 joins to this today and read the gap as missing data on the Crouch and the
+       Blackwater. `corrections` is 1,205 LineStrings and 355 Points and has been
+       drawing only the points since long before today. Both are drawn now, and both are
+       clickable, so a curated judgement on a channel is as findable as one at a place. */
+    map.addLayer({ id: o.id + '-line', type: 'line', source: o.id,
+      filter: ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': o.colour, 'line-width': o.width || 2.4 } });
+    map.addLayer({ id: o.id, type: 'circle', source: o.id,
+      filter: ['match', ['geometry-type'], ['Point', 'MultiPoint'], true, false],
+      paint: { 'circle-color': o.colour,
+        'circle-radius': o.radius ?? ['interpolate', ['linear'], ['zoom'], 5, 2.6, 14, 6],
+        'circle-stroke-color': '#0d1117', 'circle-stroke-width': 1,
+        'circle-opacity': 0.9 } });
   } else {
     map.addLayer({ id: o.id, type: 'circle', source: o.id,
       paint: { 'circle-color': o.colour,
@@ -1587,6 +1610,18 @@ function wireHighlight() {
     paint: { 'line-color': C.add, 'line-blur': 2,
       'line-opacity': ['case', ['boolean', ['get', 'hover'], false], 0.35, 0.6],
       'line-width': ['interpolate', ['linear'], ['zoom'], 5, 6, 12, 12, 17, 18] },
+  }, under);
+  /* AND A FILL, because the halo source takes whatever was clicked and the sightline
+     cells are Polygons. Without this, clicking a sea cell highlighted NOTHING — the
+     line and circle layers cannot draw a polygon, MapLibre says nothing, and the
+     feature I built for R-11 simply did not work on the layer added a day later. Found
+     by the geometry-coverage check on its first run, in the third place today: after
+     rewt-c7's 225 joins and this viewer's 1,205 curated judgements. */
+  map.addLayer({
+    id: HALO + '-fill', type: 'fill', source: HALO,
+    filter: ['match', ['geometry-type'], ['Polygon', 'MultiPolygon'], true, false],
+    paint: { 'fill-color': C.add,
+      'fill-opacity': ['case', ['boolean', ['get', 'hover'], false], 0.22, 0.4] },
   }, under);
   map.addLayer({
     id: HALO + '-pt', type: 'circle', source: HALO,

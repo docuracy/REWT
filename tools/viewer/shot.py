@@ -514,6 +514,68 @@ def check_mobile(page) -> tuple[bool, str]:
                                             f"({wide['share']}% map)")
 
 
+def check_geometry_coverage(page) -> tuple[bool, str]:
+    """Every geometry type in a source must have a layer that can draw it.
+
+    MapLibre draws NOTHING for a geometry its layer type cannot render and reports no
+    error. rewt-c7 lost 225 of 389 joins to this today — a Point layer's features on a
+    line layer — and read the gap as missing data on the Crouch and the Blackwater. The
+    same fault was in this viewer on `corrections`: 1,205 LineStrings and 355 Points in
+    one file, drawn by a single circle layer, so two thirds of the curated judgements
+    had never appeared, under a panel label reading 1,560.
+
+    `layers` could not catch it: it asks whether a layer drew ANYTHING, and a partly
+    drawn layer draws something. This asks whether every type present in the source is
+    claimed by some layer reading that source.
+    """
+    res = page.evaluate("""async () => {
+        const rows = [...document.querySelectorAll('#layers .switch input')];
+        for (const b of rows) { if (!b.checked && !b.disabled) {
+            b.checked = true; b.dispatchEvent(new Event('change')); } }
+        await new Promise((r) => setTimeout(r, 14000));
+        const m = window.map, out = [];
+        const style = m.getStyle();
+        for (const id of Object.keys(style.sources)) {
+            const src = m.getSource(id);
+            const data = src && src._data;
+            if (!data || !data.features) continue;              // tiled, not GeoJSON
+            const present = new Set(data.features.map((f) => f.geometry && f.geometry.type));
+            const layers = style.layers.filter((l) => l.source === id);
+            const drawable = new Set();
+            for (const l of layers) {
+                if (l.type === 'line') { drawable.add('LineString'); drawable.add('MultiLineString'); }
+                if (l.type === 'fill') { drawable.add('Polygon'); drawable.add('MultiPolygon'); }
+                if (l.type === 'circle') { drawable.add('Point'); drawable.add('MultiPoint'); }
+                // A symbol layer can place on any geometry, so it claims whatever is there.
+                if (l.type === 'symbol') for (const t of present) drawable.add(t);
+            }
+            const orphan = [...present].filter((t) => t && !drawable.has(t));
+            if (orphan.length) {
+                out.push({ source: id, orphan,
+                           lost: data.features.filter((f) => f.geometry
+                                 && orphan.includes(f.geometry.type)).length,
+                           of: data.features.length,
+                           layerTypes: layers.map((l) => l.type) });
+            }
+        }
+        // CONTROL: the sweep must have looked at something, or an empty answer is
+        // "no GeoJSON sources loaded" rather than "nothing is orphaned".
+        const examined = Object.keys(style.sources)
+            .filter((id) => m.getSource(id) && m.getSource(id)._data
+                            && m.getSource(id)._data.features).length;
+        return { orphans: out, examined };
+    }""")
+    if res["examined"] == 0:
+        return False, "no GeoJSON source was examined, so this check measured nothing"
+    if res["orphans"]:
+        worst = "; ".join(f"{o['source']}: {o['lost']:,} of {o['of']:,} features are "
+                          f"{'/'.join(o['orphan'])} with only {'/'.join(o['layerTypes'])} "
+                          f"layers on it" for o in res["orphans"])
+        return False, worst
+    return True, (f"{res['examined']} GeoJSON sources examined; every geometry type "
+                  f"present in each has a layer that can draw it")
+
+
 def check_stamp(page) -> tuple[bool, str]:
     """Every sentence the layer's file carries must reach the page.
 
@@ -624,7 +686,8 @@ def check_missing_layer(page) -> tuple[bool, str]:
 CHECKS = {"panel": check_panel, "layers": check_layers,
           "popup": check_popup, "sightline": check_sightline,
           "stamp": check_stamp, "missing": check_missing_layer,
-          "edges": check_edges, "mobile": check_mobile}
+          "edges": check_edges, "mobile": check_mobile,
+          "geometry": check_geometry_coverage}
 
 
 def main() -> int:
