@@ -404,3 +404,59 @@ def _retrying(fn, *args, **kwargs):
             # window and convert a transient refusal into a permanent one.
             _time.sleep(base * (2 ** i))
     raise last if last else RuntimeError("retry loop ended with no error")
+
+
+# -- Scotland -------------------------------------------------------------------
+
+def fetch_scotland(easting: float, northing: float, session) -> tuple[Optional[float], str, str]:
+    """One WMS point query per node, one layer at a time, first real value wins.
+
+    **A THIRD FETCH UNIT, and it belongs to the service** (D-086, D-089). There is no
+    WCS here — the endpoint answers a WCS GetCapabilities with an exception — so this is
+    neither England's per-node window nor Wales's per-tile GeoTIFF.
+
+    **One layer at a time, not `query_layers` with all seven.** A multi-layer query
+    returns fewer features than layers (only those whose extent covers the point: four
+    of seven at the test point) and every feature comes back with `id=''` and no layer
+    name, so the values cannot be mapped back to the phases that produced them. That
+    would not matter if an elevation were all that was wanted. It matters because
+    **resolution and attribution both vary by phase** — Phases 1 and 2 are 1.0 m, the
+    rest 0.5 m, and each phase carries its own required credit — so a reading whose
+    layer is unknown is a reading whose resolution and credit are unknown.
+
+    **EASTING FIRST, AND GETTING IT WRONG IS SILENT.** WMS 1.3.0 makes axis order a
+    property of the CRS and EPSG:27700 is easting-northing. A northing-first bbox
+    returns HTTP 200 with an empty feature list — byte-identical to the honest answer
+    for a point outside every layer's extent. Four real Nith nodes returned nothing
+    before this was corrected, and every one looked like legitimate absence of coverage.
+
+    **`GetFeatureInfo` samples the RENDERED image**, so a wide bounding box is handed
+    back resampled with no warning. A 0.1 m box at one pixel lands inside a native cell.
+    """
+    src = config.source("scottish_gov_lidar_dtm")
+    base = src.require("wms", "base")
+    half = float(src.require("wms", "probe_box_m")) / 2.0
+    px = int(src.require("wms", "probe_pixels"))
+    sentinels = set(src.require("wms", "nodata_values"))
+
+    for layer in src.require("wms", "layer_order_by_node_coverage"):
+        params = {
+            "service": "WMS", "version": src.require("wms", "version"),
+            "request": "GetFeatureInfo", "layers": layer, "query_layers": layer,
+            "crs": "EPSG:27700",
+            # easting first — see the docstring; this is the line that fails silently.
+            "bbox": f"{easting - half},{northing - half},{easting + half},{northing + half}",
+            "width": px, "height": px, "i": 0, "j": 0,
+            "info_format": "application/json",
+        }
+        reply = session.get(base, params=params,
+                            timeout=int(config.param("terrain.sweep.timeout_s")))
+        reply.raise_for_status()
+        feats = reply.json().get("features") or []
+        if not feats:
+            continue                     # outside this layer's extent — the first shape
+        value = feats[0].get("properties", {}).get(src.require("wms", "value_field"))
+        if value is None or value in sentinels or float(value) <= -1000.0:
+            continue                     # inside the extent, no data — the second shape
+        return float(value), layer, ""
+    return None, "", "no Scottish layer holds a reading at this point"

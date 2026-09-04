@@ -13,6 +13,7 @@ from . import (  # noqa: F401  (imported to register)
     high_water,
     terrain,
     basins,
+    elevation,
     structures,
     water,
     curated_stage,

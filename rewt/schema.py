@@ -55,6 +55,15 @@ reason each, and each is a direct answer to something that went wrong before:
   the classes can be counted apart without a second join — an `inlandRiver` wholly below
   high water is a different finding from a `tidalRiver` one, even when both are retired.
 
+* **A screen that is mute on the levels is mute where the network is most broken**
+  (`node_elevation`). PLAN.md §5 measures Terrain 50 as saying nothing at all about
+  24.3% of links, 82.3% of canals and 91.8% of lakes — it screens the uplands, where
+  the network is least broken, and is silent on the levels, where it is most. D-085
+  commits to a 1 m reading at every node from the three registered LiDAR services, as a
+  sharper discriminator against OS's stated direction. It is a table and not a column on
+  `node` because no stage adds a column to another stage's table, and it carries the
+  layer as well as the value because resolution and required credit both vary by layer.
+
 Geometry is EPSG:27700 throughout; EPSG:4326 only at export (AGENTS.md).
 """
 
@@ -285,7 +294,26 @@ CREATE TABLE high_water_side (
 )
 """
 
+# D-085. One 1 m elevation per node, and the source and layer that gave it. The node is
+# the unit rather than the link because a node value discriminates every link incident on
+# it — 197,734 samples against 391,136 — and because resolution and required credit vary
+# by layer, so a reading whose layer is unknown is a reading whose accuracy and
+# attribution are unknown. `elevation_m` is NULL where the service refused, never 0.0:
+# unknown must fail towards the visible fault, and a node with no reading is visibly
+# missing where a node at sea level is not (D-077).
+NODE_ELEVATION_DDL = """
+CREATE TABLE node_elevation (
+    node_id     VARCHAR PRIMARY KEY,
+    elevation_m DOUBLE,
+    source_id   VARCHAR,
+    layer       VARCHAR,
+    country     VARCHAR,
+    why_not     VARCHAR
+)
+"""
+
 TABLES = {
+    "node_elevation": NODE_ELEVATION_DDL,
     "high_water_side": HIGH_WATER_SIDE_DDL,
     "link": LINK_DDL,
     "node": NODE_DDL,
