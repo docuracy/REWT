@@ -96,6 +96,21 @@ it cannot move a cell from one band to another.
 there; a thing drawn in a colour meaning *unknown* looks like an answer. That is the same rule
 the [audit](methodology) works to — an unknown must fail towards the visible fault.
 
+**So the edge of the surface is not a coastline, a horizon, or anything else in the world.**
+The layer says so about itself, and the sentence is worth reading twice because a boundary
+drawn on a map asserts that something changes there: *{{ site.data.routing.layer.buffer_basis }}*
+
+## Looking at it
+
+**[The sightline surface on the map]({{ '/viewer/#5.5/54.5/-4&l=sightline' | relative_url }}){:target="_blank" rel="noopener"}** — that
+link opens the viewer on this layer alone, with the river network and every other overlay
+switched off, because the default view does not illustrate anything on this page.
+
+The map draws the same file this page is generated from, so a figure quoted here and a cell
+clicked there cannot disagree. What the map adds is the thing prose is worst at: the *shape*
+of the surface — where sight reaches far out and where it clings to the shore — which is one
+picture and several paragraphs.
+
 ---
 
 *{{ site.data.routing.layer.attribution }}*
