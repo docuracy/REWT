@@ -58,6 +58,17 @@ CONFIG = {
     # 61 N. Measured against the geodesic over the proposed extent, that approximation
     # is 14.07% wrong at worst; UTM 30N is 0.33%, which is 453 m on a 139 km reach and
     # well inside the band quantisation. LAEA Europe gives 0.61%, LCC Europe 3.43%.
+    # THE BLIND-SAILING BUFFER, and it is a routing decision rather than a horizon.
+    # Measured against real crossings inside the cache: Holyhead-Dublin, Orkney-Shetland,
+    # Mull of Kintyre-Antrim and Fair Isle-Shetland never leave sight of land at all
+    # (0.0 km blind), Scilly-Brittany goes 12.1 km blind, and the deepest that lies
+    # wholly within the British Isles is Land's End to Cork at 56.4 km. 60 km covers
+    # that with a little margin and is chosen for that reason, not rounded to it.
+    # WHAT IT EXCLUDES, deliberately and worth a ruling: the open North Sea. A crossing
+    # to Norway or the Low Countries runs 175 km+ out of sight and is trimmed away. That
+    # matches rules/H3.md's scope -- the coastal waters of the British Isles -- but it
+    # is a scope decision showing up as a rendering one.
+    "buffer_km": 60.0,
     "crs": "EPSG:32630",
     "metres_per_pixel": 930.0,
     "min_land_height_m": 1.0,
@@ -81,19 +92,47 @@ def main(cfg: dict = CONFIG) -> None:
     h, w = src.height // dec, src.width // dec
     print(f"working grid {w} x {h} at 1/{dec}")
 
+    # Two reductions from one read. MAX for land, because peaks must survive it; and a
+    # separate "does this block hold any water" at FOUR TIMES the resolution, because
+    # the sea mask needs connectivity and a coarse block closes narrow channels.
+    fine = 2
+    fh, fw = src.height // fine, src.width // fine
     elev = np.full((h, w), np.nan, "float32")
+    wet = np.zeros((fh, fw), bool)
     for r0 in range(0, h, 256):
         r1 = min(r0 + 256, h)
-        c = src.read(1, window=Window(0, r0 * dec, w * dec, (r1 - r0) * dec)).astype("float32")
-        c = c.reshape(r1 - r0, dec, w, dec)
+        raw = src.read(1, window=Window(0, r0 * dec, w * dec, (r1 - r0) * dec)).astype("float32")
+        c = raw.reshape(r1 - r0, dec, w, dec)
         with np.errstate(invalid="ignore"):
             elev[r0:r1] = np.nanmax(c, axis=(1, 3))     # peaks must survive the reduction
+        k = dec // fine
+        f = raw.reshape((r1 - r0) * k, fine, fw, fine)
+        wet[r0 * k:r1 * k] = np.any(np.isfinite(f) & (f < 0), axis=(1, 3))
+
+    # THE SEA IS WATER THAT REACHES THE SEA — the same test as grid.py, which this
+    # script did not have. `elevation < 0` admits the Fens, which lie below the datum
+    # and are dry land, and Stephen saw them still drawn in the sightline layer after
+    # the grid had been fixed. A defect fixed in one place is not fixed.
+    lab, _ = ndimage.label(wet, structure=ndimage.generate_binary_structure(2, 2))
+    border = set(lab[0, :]) | set(lab[-1, :]) | set(lab[:, 0]) | set(lab[:, -1])
+    border.discard(0)
+    ocean = np.isin(lab, list(border))
+    dropped = int((wet & ~ocean).sum())
+    print(f"  sea connectivity at 1/{fine}: dropped {dropped:,} inland below-datum "
+          f"blocks ({100*dropped/max(wet.sum(),1):.2f}%)")
+    k = dec // fine
+    reaches = np.any(ocean.reshape(h, k, w, k), axis=(1, 3))   # back to the working grid
 
     b = src.bounds
     # into a projected CRS with SQUARE pixels, so one `sampling` is true everywhere
     dst_tr, dw, dh = calculate_default_transform(
         src.crs, cfg["crs"], w, h, *b, resolution=cfg["metres_per_pixel"])
     proj = np.full((dh, dw), np.nan, "float32")
+    rea = np.zeros((dh, dw), "float32")
+    reproject(source=reaches.astype("float32"), destination=rea,
+              src_transform=rasterio.transform.from_bounds(*b, w, h), src_crs=src.crs,
+              dst_transform=dst_tr, dst_crs=cfg["crs"], resampling=Resampling.max,
+              src_nodata=None, dst_nodata=0.0)
     reproject(source=elev, destination=proj,
               src_transform=rasterio.transform.from_bounds(*b, w, h), src_crs=src.crs,
               dst_transform=dst_tr, dst_crs=cfg["crs"],
@@ -102,7 +141,7 @@ def main(cfg: dict = CONFIG) -> None:
     px = py = cfg["metres_per_pixel"]
     print(f"  reprojected to {cfg['crs']}: {dw} x {dh} at {px:.0f} m square")
     land = np.isfinite(elev) & (elev >= cfg["min_land_height_m"])
-    sea = np.isfinite(elev) & (elev < 0)
+    sea = np.isfinite(elev) & (elev < 0) & (rea > 0.5)
     hmax = float(np.nanmax(elev))
     obs = K * math.sqrt(cfg["observer_height_m"]) if cfg["observer_height_m"] else 0.0
     rmax = K * math.sqrt(hmax) + obs
@@ -169,21 +208,42 @@ def main(cfg: dict = CONFIG) -> None:
               "with a corner in sight now counts. The\n  reverse would be a defect.")
         return
 
+    # --- TRIM (H3-002 item 3) -----------------------------------------------------
+    dblind = ndimage.distance_transform_edt(
+        ~visible, sampling=(cfg["metres_per_pixel"],) * 2) / 1000.0
+    keep_px = sea & (visible | (dblind <= cfg["buffer_km"]))
+    print(f"  buffer {cfg['buffer_km']:.0f} km -> keep {int(keep_px.sum()):,} of "
+          f"{int(sea.sum()):,} sea px ({100*keep_px.sum()/sea.sum():.1f}%)")
+
+    # WHETHER THE ANSWER IS KNOWABLE, which the trim does NOT by itself settle. A cell
+    # near the edge of the cached data may be governed by land that lies outside it.
+    # Once the cache covers everything that can reach in, every kept cell is answered
+    # and this flag becomes universally true and can be dropped -- rewt-46's layer
+    # already reads an absent `known` as answered.
+    edge = ndimage.distance_transform_edt(
+        np.pad(np.ones(np.array(elev.shape) - 2, bool), 1),
+        sampling=(cfg["metres_per_pixel"],) * 2) / 1000.0
+    known_px = visible | (edge >= rmax)
+
     # per-cell governing height: the tallest land that reaches this cell. This is the
     # thing the inversion makes visible and the per-sea-cell method never had — it says
     # WHICH land does the work, so a reader can see that Snowdon carries water a Norfolk
     # hill cannot.
-    gv = gov[sea]
-    gvs = gv[order]
+    gv = gov[sea]; gvs = gv[order]
     gov_cell = np.maximum.reduceat(gvs, starts)
+    kp = keep_px[sea][order]; keep_cell = np.maximum.reduceat(kp.astype(np.int8), starts).astype(bool)
+    kn = known_px[sea][order]; known_cell = np.minimum.reduceat(kn.astype(np.int8), starts).astype(bool)
     feats = []
-    for c, v, gh in zip(uniq, any_vis, gov_cell):
+    for c, v, gh, kp_, kn_ in zip(uniq, any_vis, gov_cell, keep_cell, known_cell):
+        if not kp_:
+            continue                      # trimmed: outside sight plus the buffer
         bnd = h3.cell_to_boundary(c)
         ring = [[round(x, 5), round(y, 5)] for y, x in bnd]
         ring.append(ring[0])
         feats.append({"type": "Feature",
                       "geometry": {"type": "Polygon", "coordinates": [ring]},
                       "properties": {"h3": c, "visible": bool(v),
+                                     **({} if kn_ else {"known": False}),
                                      "gov_h_m": None if not v else int(round(float(gh))),
                                      "gov_reach_km": None if not v
                                      else round(K * math.sqrt(max(float(gh), 0)), 1)}})
@@ -195,6 +255,15 @@ def main(cfg: dict = CONFIG) -> None:
             "method": "banded distance transform in " + cfg["crs"],
             "bands": int(len(bands)), "band_km": cfg["band_km"],
             "max_reach_km": round(rmax, 1),
+            "blind_sailing_buffer_km": cfg["buffer_km"],
+            "buffer_basis": "the deepest a crossing wholly within the British Isles goes "
+                            "out of sight: Land's End to Cork, 56.4 km. It is a ROUTING "
+                            "decision, not a horizon and not a coast -- the trimmed edge "
+                            "means nothing else.",
+            "trimmed": "cells beyond sight plus the buffer are absent, not coloured "
+                       "(H3-002 item 3). `known: false` appears only where the answer "
+                       "still depends on land outside the cached data; absent means "
+                       "answered.",
             "horizon_formula": f"range_km = {K:.4f} * sqrt(height_m), refraction_k = "
                                f"{cfg['refraction_k']}. NOT 3.86, which is k = 1.17.",
             "gov_h_m_definition": "the tallest land that reaches this cell — the band "
@@ -217,6 +286,9 @@ def main(cfg: dict = CONFIG) -> None:
         "distance_crs_worst_error_pct": 0.33,
         "observer_height_m": cfg["observer_height_m"],
         "sea_cells": int(len(uniq)), "see_land": int(any_vis.sum()),
+        "kept_after_trim": int(keep_cell.sum()),
+        "blind_sailing_buffer_km": cfg["buffer_km"],
+        "still_unknown": int((keep_cell & ~known_cell).sum()),
         "reach_bound_evidence": {
             "Ben Nevis GB": 139.2, "Kerry IRL": 120.9, "Brittany FRA": 73.9,
             "W Norway (does NOT reach, 430 km away)": 146.2,
