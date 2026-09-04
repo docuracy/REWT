@@ -914,3 +914,83 @@ rather than merely inherit it: the 41 untraceable termini are walled in by a med
 narrows** — a 200 m channel averaged into land. Finer H3 cells over a 115 m surface
 would subdivide an instrument that already cannot see the channel. **Res 10 needs finer
 bathymetry, not finer cells.**
+
+---
+
+## 14. No blind sailing, and what it revealed
+
+Stephen, 4 September 2026: keep the no-blind-sailing rule. The blind-sailing buffer is
+zero. A cell is in the surface only if land is in sight from it, and a landmass joins
+only when its sighted water TOUCHES sighted water already admitted.
+
+**698 of 699 sight-components are rejected**, leaving one: Britain and everything whose
+sighted water meets Britain's. Sea kept falls from 50.1% to 24.1%.
+
+| rejected | sighted pixels | gap to anything in sight |
+|---|---:|---:|
+| Norway | 73,904 | **21 km** |
+| Faroe | 31,033 | 136 km |
+| Heligoland Bight | 2,536 | 7 km |
+| IJsselmeer | 1,603 | 25 km |
+
+Norway had been admitted because 60 km of buffer bridged a 21 km blind gap in the
+Skagerrak — a gap nothing in the counts would have shown.
+
+**It also disposes of a question rather than answering it.** Stephen found a dead zone in
+the German Bight where "entering it gives no additional access to land". Under this rule
+it is simply not there: blind water, kept only by the buffer. Its uselessness and its
+blindness were the same fact.
+
+### 14.1 The rule makes two independent attested voyages agree
+
+This is the strongest evidence for it and it was not looked for.
+
+| | buffered surface | no blind sailing |
+|---|---:|---:|
+| London – Skagen | 940 km | **1,271 km** |
+| Falmouth – Bordeaux | 633 km | **1,195 km** |
+| disagreement | **48%** | **6%** |
+
+Both are attested at about a week in July (eRutter). On a buffered surface the router was
+free to cut across open water that was never sailed, and the two voyages implied wildly
+different distances per day. Forced to keep land in sight, they converge. **Two
+independent measurements agreeing only under the constraint is the anchor outside the set
+that D-067 asks for.**
+
+### 14.2 A week's sailing, applied
+
+The bound is 1,271 km of route distance, taken as the larger anchor so both voyages fall
+inside, and measured ON THE NAVIGABLE SURFACE — an earlier version measured through open
+water and put Bergen nearer than the Denmark anchor, contradicting the model it was meant
+to bound.
+
+| | route | |
+|---|---:|---|
+| Esbjerg, west Denmark | 907 km | in |
+| Skagen, the anchor | 1,268 km | in |
+| **Aarhus, east Denmark** | **1,499 km** | out |
+| Copenhagen | unreachable | out |
+
+**And it was computed for some time without being applied.** `reach.py` wrote the bound
+and nothing consumed it, so the east coast of Denmark sat in a layer a week's sailing does
+not reach. A measurement nothing acts on is not a trim. 15,888 cells to 14,991.
+
+### 14.3 Britain's sightlines are far broader than the continent's
+
+Stephen's observation, quantified from the layer:
+
+| coast | cells in sight | median governing land | median reach |
+|---|---:|---:|---:|
+| **British Isles** | 10,881 | **871 m** | **112 km** |
+| north France and Brittany | 923 | 188 m | 52 km |
+| Low Countries, Germany, Denmark | 747 | **34 m** | **22 km** |
+
+Britain's sighted water reaches **five times further** than the Low Countries', and
+Britain accounts for **73% of the whole in-sight surface**. The tallest land each coast
+can offer differs by a factor of six: 1,323 m against 218 m.
+
+**This is a navigational fact, not a cartographic one.** A master coasting Britain keeps
+land in view across 112 km of open water; off Zeeland he loses it at 22 km and must
+either hug the shore or accept a blind passage. It is a plain reason why the two sides of
+the North Sea were sailed differently, and it falls out of elevation and the curvature of
+the earth alone — no history is assumed to reach it.

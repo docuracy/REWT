@@ -23,7 +23,11 @@ blind-sailing buffer (PLAN.md 8, tools/router/sightline2.py):
                its buffer reaches another buffer, not water in sight, and two blind
                zones touching is not a route.
     S   44.50  DECLARED, not derived. The Gironde.
-    E    9.50  DECLARED, not derived. The Elbe.
+    E   11.50  DECLARED. Far enough east to hold Skagen, the northern tip of Denmark,
+               which Stephen names as about a week's sailing from London and which is
+               therefore a CALIBRATION POINT: the bound cannot be measured against a
+               voyage whose destination is outside the data. The week's-sailing rule
+               then trims back to what it admits, so the box is generous on purpose.
 
 THE SOUTHERN AND EASTERN EDGES CANNOT BE DERIVED, and pretending otherwise is the
 mistake Faroe was. The continental shore is continuous, so a sight-plus-buffer surface
@@ -43,7 +47,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-EXTENT = (-13.24, 44.5, 9.5, 62.12)
+from extent import EXTENT          # one declaration, asked rather than repeated
 RAW = Path("data/raw/emodnet_bathymetry")
 OUT = Path("tools/router/cache/windows")
 BASE = "https://ows.emodnet-bathymetry.eu/wcs?"

@@ -42,6 +42,7 @@ from scipy import ndimage
 
 import h3
 from pyproj import Transformer
+from extent import EXTENT
 from sightline import build_vrt, nodata_to_nan
 
 CONFIG = {
@@ -78,7 +79,7 @@ CONFIG = {
     # blind zones touching, which is not a route. The test is whether a landmass's buffer
     # reaches water that is IN SIGHT of the existing area. Shetland-Faroe is 290 km with
     # 113 and 80 km of sight, leaving 97 km blind against a 60 km buffer. It fails.
-    "aoi": (-13.24, 44.5, 9.5, 62.12),
+    "aoi": EXTENT,                   # tools/router/extent.py — one declaration
     "crs": "EPSG:32630",
     "metres_per_pixel": 930.0,
     "min_land_height_m": 1.0,
@@ -185,10 +186,27 @@ def main(cfg: dict = CONFIG) -> None:
         print(f"  dropped {dropped_spikes} land specks standing in water deeper than "
               f"{-cfg['islet_min_seabed_m']:.0f} m with no shoaling — spikes, not islands")
     sea = np.isfinite(elev) & (elev < 0) & (rea > 0.5)
-    hmax = float(np.nanmax(elev))
     obs = K * math.sqrt(cfg["observer_height_m"]) if cfg["observer_height_m"] else 0.0
+
+    # THE BOUND COMES FROM LAND THAT CAN ACTUALLY SEE SEA, not from the tallest thing in
+    # the box. Extending east put the Alps inside it: 4,792 m reaches 263 km and nearly
+    # doubled the band count, for land some 600 km from any water in scope. Solve for it
+    # instead — the tallest land within its own reach of the sea — which converges in a
+    # couple of rounds because each round can only lower the bound.
+    d_sea = ndimage.distance_transform_edt(
+        ~sea, sampling=(py, px)) / 1000.0
+    hmax = float(np.nanmax(elev))
+    for _ in range(6):
+        r = K * math.sqrt(hmax) + obs
+        near_sea = land & (d_sea <= r)
+        h2 = float(np.nanmax(elev[near_sea])) if near_sea.any() else hmax
+        if h2 >= hmax - 1e-6:
+            break
+        hmax = h2
     rmax = K * math.sqrt(hmax) + obs
-    print(f"  land {land.sum():,} px, sea {sea.sum():,} px, tallest {hmax:.0f} m")
+    print(f"  tallest land that can reach the sea: {hmax:.0f} m "
+          f"(the box also holds {float(np.nanmax(elev)):.0f} m, too far inland to matter)")
+    print(f"  land {land.sum():,} px, sea {sea.sum():,} px")
     print(f"  maximum reach {rmax:.1f} km  (square pixel {px:.0f} m)")
 
     bands = np.arange(cfg["band_km"], rmax + cfg["band_km"], cfg["band_km"])[::-1]
@@ -311,6 +329,39 @@ def main(cfg: dict = CONFIG) -> None:
         sampling=(cfg["metres_per_pixel"],) * 2) / 1000.0
     known_px = visible | (edge >= rmax)
 
+    # The grid is built FROM these masks, so they are saved rather than recomputed:
+    # two scripts deriving the same sea from the same source is two renderings of one
+    # fact, and they would drift the first time one of them changed.
+    # THE SIGHTLINE AND THE JOINS ARE DIFFERENT SIZES OF PROBLEM. The envelope is a
+    # 100 km object and 930 m serves it; a river mouth is a 100 m object and 930 m
+    # erases it. Built on the coarse mask the grid put every unattached terminus 3-67 km
+    # from the nearest sea pixel, median 5.95 km, when section 6 measured the median
+    # terminus at 143 m from water at the lowest tide. Both figures are right; they are
+    # measurements of different rasters.
+    #
+    # So the SEA is saved at the fine resolution it is derived at, and VISIBLE at the
+    # coarse one it is computed at. Still one derivation of each — deriving the sea twice
+    # is the fault D-094 records, and this avoids it rather than trading it for another.
+    fpx = cfg["metres_per_pixel"] * fine / dec
+    ftr, fw2, fh2 = calculate_default_transform(
+        src.crs, cfg["crs"], fw, fh, *b, resolution=fpx)
+    # only the SEA: grid2 takes land as its complement, and deriving land separately
+    # here would be a second rendering of the same fact
+    fine_sea = np.zeros((fh2, fw2), "float32")
+    reproject(source=ocean.astype("float32"), destination=fine_sea,
+              src_transform=rasterio.transform.from_bounds(*b, fw, fh), src_crs=src.crs,
+              dst_transform=ftr, dst_crs=cfg["crs"],
+              resampling=Resampling.max, src_nodata=None, dst_nodata=0.0)
+    np.savez_compressed("tools/router/cache/sightline_masks.npz",
+                        visible=visible, keep=keep_px, sea=sea, land=land,
+                        elev=elev.astype("float32"),
+                        transform=np.array(dst_tr).reshape(-1)[:6],
+                        crs=np.array([cfg["crs"]]), px=np.array([cfg["metres_per_pixel"]]),
+                        fine_sea=(fine_sea > 0.5), fine_px=np.array([fpx]),
+                        fine_transform=np.array(ftr).reshape(-1)[:6])
+    print(f"  wrote sightline_masks.npz: visible {visible.shape} at "
+          f"{cfg['metres_per_pixel']:.0f} m, sea {fine_sea.shape} at {fpx:.0f} m")
+
     # per-cell governing height: the tallest land that reaches this cell. This is the
     # thing the inversion makes visible and the per-sea-cell method never had — it says
     # WHICH land does the work, so a reader can see that Snowdon carries water a Norfolk
@@ -319,6 +370,36 @@ def main(cfg: dict = CONFIG) -> None:
     gov_cell = np.maximum.reduceat(gvs, starts)
     kp = keep_px[sea][order]; keep_cell = np.maximum.reduceat(kp.astype(np.int8), starts).astype(bool)
     kn = known_px[sea][order]; known_cell = np.minimum.reduceat(kn.astype(np.int8), starts).astype(bool)
+    # --- DROP CELLS DETACHED FROM THE SEA NETWORK (Stephen) -----------------------
+    # The pixel mask already requires water to reach the sea. That is not the same test
+    # at CELL level: a pocket of water big enough for one res-6 cell, joined to the rest
+    # only through a channel narrower than a cell, becomes an island of cells no route
+    # can reach. A surface with unreachable pieces is not a routing surface.
+    keptset = {c for c, k in zip(uniq, keep_cell) if k}
+    seen, comps = set(), []
+    for c in keptset:
+        if c in seen:
+            continue
+        stack, comp = [c], []
+        while stack:
+            x = stack.pop()
+            if x in seen:
+                continue
+            seen.add(x); comp.append(x)
+            stack += [n for n in h3.grid_disk(x, 1) if n in keptset and n not in seen]
+        comps.append(comp)
+    comps.sort(key=len, reverse=True)
+    main = set(comps[0])
+    lost = [c for comp in comps[1:] for c in comp]
+    if lost:
+        print(f"  {len(comps)} cell components; dropping {len(lost):,} cells in "
+              f"{len(comps)-1} pieces detached from the network. The largest:")
+        for comp in comps[1:6]:
+            la_, lo_ = h3.cell_to_latlng(comp[0])
+            print(f"    {len(comp):>4} cells around {la_:.2f} N {lo_:.2f} E")
+        print(f"    ...and {sum(1 for comp in comps[1:] if len(comp) == 1)} single cells")
+    keep_cell = np.array([c in main for c in uniq])
+
     feats = []
     for c, v, gh, kp_, kn_ in zip(uniq, any_vis, gov_cell, keep_cell, known_cell):
         if not kp_:
@@ -373,6 +454,12 @@ def main(cfg: dict = CONFIG) -> None:
         "observer_height_m": cfg["observer_height_m"],
         "sea_cells": int(len(uniq)), "see_land": int(any_vis.sum()),
         "kept_after_trim": int(keep_cell.sum()),
+        "detached_cells_dropped": int(len(lost)) if lost else 0,
+        "detached_note": "a pocket of water joined to the rest only through a channel "
+                         "narrower than a cell becomes an island of cells no route can "
+                         "reach. Dropped, and named in the run output — most are German "
+                         "and Norwegian inlets and Irish loughs severed by the 232 m mask, "
+                         "which is the Loch Etive limit in another place.",
         "blind_sailing_buffer_km": cfg["buffer_km"],
         "still_unknown": int((keep_cell & ~known_cell).sum()),
         "reach_bound_evidence": {

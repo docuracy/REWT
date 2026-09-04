@@ -39,7 +39,9 @@
 </div>
 <script>
 const F='../data/', C='./';
-const map=new maplibregl.Map({container:'map',center:[-3.5,54.5],zoom:4.6,
+// `hash:'map'` puts zoom/lat/lon in the URL and restores from it, so a view can be
+// sent to somebody. The stage rides in the same hash under its own key.
+const map=new maplibregl.Map({container:'map',center:[-3.5,54.5],zoom:4.6,hash:'map',
   style:{version:8,sources:{},layers:[{id:'bg',type:'background',paint:{'background-color':'#0d1117'}}]}});
 map.addControl(new maplibregl.NavigationControl(),'top-right');
 map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-right');
@@ -55,10 +57,15 @@ const STAGES={
    note:'One line per tidal terminus to the grid cell it attaches to. Red is an inference not yet traced.'},
  traces:{label:'3 · Traces', legend:[['traced path','#a371f7']],
    note:'Least-cost paths across the drying ground for the stranded termini. The median path spends 83% of its length above the lowest tide.'}};
-let stage='sightline2', loaded={}, summaries={}, areas={};
+function hashGet(k){ for(const p of location.hash.replace(/^#/,'').split('&')){
+    const [a,...b]=p.split('='); if(a===k) return b.join('='); } return null; }
+function hashSet(k,v){ const parts=location.hash.replace(/^#/,'').split('&').filter(Boolean)
+    .filter(p=>p.split('=')[0]!==k); parts.push(k+'='+v);
+  history.replaceState(null,'','#'+parts.join('&')); }
+let stage=hashGet('stage')||'sightline2', loaded={}, summaries={}, areas={};
 window.map=map;                       // a top-level const is NOT on window
 window.__drawn=0;                     // increments when a stage has finished drawing
-window.setStage=async s=>{ stage=s;
+window.setStage=async s=>{ stage=s; hashSet('stage',s);
   [...stages.children].forEach(b=>b.classList.toggle('on',b.dataset.s===s)); await draw(); };
 window.zoomTo=a=>{ if(a==='all'){ const e=areas._extent||[-8,49.5,2,61];
     map.fitBounds([[e[0],e[1]],[e[2],e[3]]],{padding:20}); return; }
@@ -140,14 +147,16 @@ map.on('load',async()=>{
   summaries=await gj(C+'summaries.json')||{}; areas=await gj(C+'areas.json')||{};
   stages.innerHTML=Object.entries(STAGES).map(([k,v])=>
     `<button data-s="${k}"${k===stage?' class="on"':''}>${v.label}</button>`).join('');
-  stages.onclick=ev=>{ const s=ev.target.dataset.s; if(!s)return; stage=s;
-    [...stages.children].forEach(b=>b.classList.toggle('on',b.dataset.s===s)); draw(); };
+  // a click anywhere also writes the point to the hash, so a cell can be pointed at
+  map.on('click', e=>hashSet('at', e.lngLat.lat.toFixed(4)+','+e.lngLat.lng.toFixed(4)));
+  stages.onclick=ev=>{ const s=ev.target.dataset.s; if(!s)return; window.setStage(s); };
   areasEl.innerHTML=`<button data-a="all">all</button>`+Object.keys(areas).filter(a=>a[0]!=='_').map(a=>
     `<button data-a="${a}">${a}</button>`).join('');
   areasEl.onclick=ev=>{ const a=ev.target.dataset.a; if(!a)return;
     if(a==='all') window.zoomTo('all');
     else map.fitBounds([[areas[a][0],areas[a][1]],[areas[a][2],areas[a][3]]],{padding:40}); };
-  window.zoomTo('all');
+  // only frame the whole extent when the URL does not already say where to look
+  if(!hashGet('map')) window.zoomTo('all');
   draw();
 });
 const legend=document.getElementById('legend'), figs=document.getElementById('figs'),

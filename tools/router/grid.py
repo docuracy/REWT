@@ -31,16 +31,17 @@ from pathlib import Path
 
 import numpy as np
 import rasterio
-from rasterio.windows import Window
+from rasterio.windows import Window, from_bounds as _fb
 from scipy import ndimage
 
 import h3
 
+from extent import EXTENT
 from sightline import build_vrt, nodata_to_nan
 
 CONFIG = {
     "coastal_sea_resolution": 9,   # PLAN.md 5.2: the floor, set by the bathymetry
-    "aoi": (-13.24, 44.5, 9.5, 62.12),
+    "aoi": EXTENT,
     "start_resolution": 3,
     "decimate": 2,                 # ~230 m working grid for the distance transforms
     "windows": "data/raw/emodnet_bathymetry/*.tif",
@@ -66,7 +67,14 @@ def load_masks(cfg: dict):
     """Land/sea masks and the two distance transforms, in metres."""
     src = rasterio.open(build_vrt(cfg))
     dec = cfg["decimate"]
-    h, w = src.height // dec, src.width // dec
+    # clip to the DECLARED extent, not the mosaic's bounds — two of its four edges are
+    # declared rather than derived, and the mosaic may hold more than the extent claims
+    aw = _fb(*cfg["aoi"], src.transform)
+    off_r, off_c = int(aw.row_off), int(aw.col_off)
+    h, w = int(aw.height) // dec, int(aw.width) // dec
+    b = rasterio.coords.BoundingBox(*rasterio.windows.bounds(
+        Window(off_c, off_r, w * dec, h * dec), src.transform))
+    print(f"  extent (declared) {[round(v, 2) for v in b]}")
     print(f"reading and max-reducing 1/{dec} -> {w} x {h}")
     # THREE REDUCTIONS, NOT ONE. A single max-reduce was the first version and it is
     # wrong here: max over a block containing any land is land, so land DILATES and the
@@ -80,7 +88,8 @@ def load_masks(cfg: dict):
     depth = np.full((h, w), np.nan, "float32")
     for r0 in range(0, h, 256):
         r1 = min(r0 + 256, h)
-        c = nodata_to_nan(src.read(1, window=Window(0, r0*dec, w*dec, (r1-r0)*dec)))
+        c = nodata_to_nan(src.read(1, window=Window(
+            off_c, off_r + r0 * dec, w * dec, (r1 - r0) * dec)))
         c = c.reshape(r1 - r0, dec, w, dec)
         fin = np.isfinite(c)
         has_land[r0:r1] = np.any(fin & (c >= 0), axis=(1, 3))
@@ -151,7 +160,6 @@ def load_masks(cfg: dict):
         # Loch Etive is one: the Connel narrows read +6.8 m and the Falls of Lora +0.4 m,
         # so a 200 m channel has been averaged into land by a 115 m grid. DEPTH separates
         # them without judgement — drained fen is shallow, a sea loch is not.
-        b = src.bounds
         # One labelled pass, not one boolean mask per body: 11,564 masks over a 26 M
         # array is quadratic and does not finish.
         filled = np.where(np.isfinite(depth), depth, 0.0)
@@ -193,22 +201,27 @@ def load_masks(cfg: dict):
     # metres per pixel: north-south is constant, east-west shrinks with latitude. Use the
     # north-south pitch for both and correct the east-west axis by cos(lat) via sampling,
     # which is what `sampling=` is for.
-    lat0, lat1 = src.bounds.bottom, src.bounds.top
+    lat0, lat1 = b.bottom, b.top
     midlat = (lat0 + lat1) / 2
     m_per_deg = 111_320.0
     py = (lat1 - lat0) / h * m_per_deg
-    px = (src.bounds.right - src.bounds.left) / w * m_per_deg * np.cos(np.radians(midlat))
+    px = (b.right - b.left) / w * m_per_deg * np.cos(np.radians(midlat))
     print(f"  pixel {px:.0f} m east-west at {midlat:.1f}N, {py:.0f} m north-south")
 
     print("  distance transforms...")
     d_land = ndimage.distance_transform_edt(~land, sampling=(py, px)).astype("float32")
     d_sea = ndimage.distance_transform_edt(~sea, sampling=(py, px)).astype("float32")
-    return src, a, d_land, d_sea
+    return src, b, a, d_land, d_sea
 
 
-def sampler(src, arr, dec):
-    """Sample a decimated array at lon/lat, returning nan off-grid."""
-    b = src.bounds
+def sampler(bounds, arr):
+    """Sample a clipped, decimated array at lon/lat, returning nan off-grid.
+
+    It takes BOUNDS rather than the dataset: the arrays are clipped to the declared
+    extent, so mapping through the mosaic's bounds would place every sample wrongly —
+    and silently, because the result is still a number.
+    """
+    b = bounds
     h, w = arr.shape
 
     def f(lat, lon):
@@ -224,12 +237,11 @@ def sampler(src, arr, dec):
 
 def main(cfg: dict = CONFIG) -> None:
     R = cfg["coastal_sea_resolution"]
-    src, depth, d_land, d_sea = load_masks(cfg)
-    s_land = sampler(src, d_land, cfg["decimate"])
-    s_sea = sampler(src, d_sea, cfg["decimate"])
-    s_depth = sampler(src, depth, cfg["decimate"])
+    src, b, depth, d_land, d_sea = load_masks(cfg)
+    s_land = sampler(b, d_land)
+    s_sea = sampler(b, d_sea)
+    s_depth = sampler(b, depth)
 
-    b = src.bounds
     aoi = {"type": "Polygon", "coordinates": [[
         [b.left, b.bottom], [b.right, b.bottom], [b.right, b.top],
         [b.left, b.top], [b.left, b.bottom]]]}
@@ -264,7 +276,11 @@ def main(cfg: dict = CONFIG) -> None:
             # this was caught: the SUM stopped balancing the moment the masks were
             # allowed to overlap.
             keep = measured_sea
-            drop = ok & ~keep
+            # ...and NOT the unmeasured ones, which have their own category. Making
+            # `drop` the complement of `keep` for exclusivity put every nodata cell in
+            # BOTH buckets, and the ledger came out 171 over — exactly the res-9 nodata
+            # count. Two fixes to the same line in one day, each caught by the sum.
+            drop = ok & ~keep & ~nodata
             split = np.zeros(len(cells), bool)
         else:
             keep = measured_sea & (dl > thresh)        # far enough offshore: stop here
@@ -312,7 +328,7 @@ def main(cfg: dict = CONFIG) -> None:
     Path(cfg["summary"]).write_text(json.dumps({
         "coastal_sea_resolution": R, "total_cells": len(kept),
         "by_resolution": {str(k): v for k, v in sorted(by_res.items())},
-        "bands": bands, "extent": list(src.bounds),
+        "bands": bands, "extent": list(b),
         "coast": "EMODnet sign change = Lowest Astronomical Tide (PLAN.md 4)",
         "sea_must_reach_the_sea": "A cell is admitted only if its water connects to the "
                                   "open sea. `elevation < 0` alone admits the Fens, which "
