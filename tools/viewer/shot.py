@@ -93,7 +93,24 @@ def wait_ready(page, timeout_ms: int, errors=None) -> dict:
     with an error in the console, is dead. "A timeout is a result" is only worth
     anything if the result can distinguish those two.
     """
-    deadline = time.time() + timeout_ms / 1000
+    # THE BOUND IS ONLY CHECKED BETWEEN ITERATIONS, so one blocking evaluate makes the
+    # deadline a suggestion. london-customs-accounts-dd's loop overshot its own by 280
+    # seconds and reported a timeout the page had not earned. Mine has the same
+    # structure, so the elapsed time and any overshoot are recorded and reported: a
+    # wait that ran long is then visible as a fact about the harness rather than
+    # attributed to the page.
+    #
+    # Their other question — whether the poll itself is expensive — I measured rather
+    # than assumed, because theirs was awaiting two IndexedDB counts against a database
+    # the boot was bulk-writing. Mine calls `isStyleLoaded()` and `loaded()` four times
+    # a second, which walk the style's source caches. Median 4.5 ms against a 250 ms
+    # sleep, and a cheap `ready`-only probe measures 3.8 ms: no difference worth having.
+    # The first run of either shows a ~300 ms maximum, which is browser warm-up and
+    # swaps to whichever probe runs first — I had that backwards until I reversed the
+    # order. So the poll is NOT split here. Copying their fix would have been the same
+    # fault as copying the GL flags: a true finding about another page.
+    started = time.time()
+    deadline = started + timeout_ms / 1000
     first_progress = page.evaluate(
         "() => (document.querySelector('#loading-what') || {}).textContent || null")
     while time.time() < deadline:
@@ -105,9 +122,25 @@ def wait_ready(page, timeout_ms: int, errors=None) -> dict:
             hidden: document.hidden,
         })""")
         if state["ready"]:
+            state["waited_s"] = round(time.time() - started, 1)
             return state
         time.sleep(0.25)
     state["timedOut"] = True
+    state["waited_s"] = round(time.time() - started, 1)
+    # THE BUDGET BESIDE THE ELAPSED, and the overshoot only when it is material.
+    # Recording a 0.1 s overrun on a 0.4 s budget is noise that trains a reader to skip
+    # the field; london-customs-accounts-dd's version flags at a second and says what to
+    # suspect. Theirs would have turned an 880 s "timeout" into "ran 280 s past its own
+    # 600 s deadline", and they would have looked at their loop instead of concluding
+    # the site would not load.
+    state["budget_s"] = round(timeout_ms / 1000, 1)
+    over = time.time() - deadline
+    if over > 1.0:
+        state["overshot_s"] = round(over, 1)
+        state["harness_note"] = (f"this wait ran {round(over, 1)} s past its own "
+                                 f"{state['budget_s']} s budget, which means a single "
+                                 f"probe blocked for that long. Suspect the harness "
+                                 f"before the page.")
     state["progressAtStart"] = first_progress
     state["progressNow"] = page.evaluate(
         "() => (document.querySelector('#loading-what') || {}).textContent || null")
