@@ -3956,7 +3956,53 @@ different when it becomes false.
 
 ---
 
-## D-096 — The lights are undated, and dating them is a deferred work package
+## D-096 — REVERSED WITHIN THE HOUR: the lights are not an input, and the dating package is withdrawn
+
+**Reversal recorded 4 September 2026. Stephen reversed his own ruling about an hour after
+making it, and the entry below is kept entire rather than deleted, because a rejected option
+with its reasons is worth more than a clean file — which is also how the router has kept the
+code.**
+
+**The substantive argument is Stephen's and stands on its own: a light serves NIGHT
+navigation, and by day what a mariner sees is the land.** Nothing measured was needed to
+reach it.
+
+**The measurement then agreed from a direction nobody was looking in.** Of the 4,184 lights
+inside the extent, only **1,383 stand above the local terrain** and so add any reach at all,
+and 56% of those are under 20 m. The ones adding *most* turned out to be **aviation
+obstruction lights on broadcast masts** — Wenvoe +257 m, St Hilary +215 m, Ben-a-chielt
++195 m — which are twentieth-century television transmitters. **The largest single effect of
+a navigational dataset on a Stage 1 surface came from TV masts.** A source admitted for one
+reason was doing most of its work for another, and the check that found it was asking which
+records mattered rather than whether the source was sound.
+
+**So `nga_list_of_lights` is NOT registered and the dating work package below is withdrawn.**
+Dating the lights was only ever needed to make them honest as an input; they are not an
+input. The vetting request to `sources` is cancelled.
+
+**What survives, and may earn a registration later on different grounds.** Each light carries
+a **nominal range** in nautical miles, published by a hydrographic authority and computed by
+a different method for a different purpose. That is 4,184 independent statements of how far a
+mark of a given height should be visible — an external check on the router's horizon geometry
+at 4,184 points. **It tests the formula rather than feeding it, so the daylight argument does
+not reach it**, and it remains the only check on that work that would not come from inside
+it. Not run, not registered, and flagged rather than dropped.
+
+**And the router corrected their own reasoning, in the direction that should worry us.** They
+had argued separately that a small mark cannot be resolved at its own horizon, with an
+angular-size calculation to prove it. The calculation was wrong: it assumed the whole height
+visible at the horizon, when the horizon is by definition where the *top* becomes tangent and
+only a sliver shows. **The error ran towards the conclusion they were already reaching** —
+which is the same direction as D-079's calibration defect, where the wrongness improved the
+agreement it was being checked against. Stephen's argument needed no help from it.
+
+**The Litvine citation warning at the foot of this entry is unaffected and still stands.**
+
+---
+
+*The entry as originally recorded follows, unaltered.*
+
+## D-096 (as first recorded) — The lights are undated, and dating them is a deferred work package
 
 **4 September 2026, Stephen's ruling, proposed by rewt-c7 (router), recorded by rewt-e8
 (implementer).**
