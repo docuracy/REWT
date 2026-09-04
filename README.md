@@ -212,4 +212,4 @@ it requires; [Evidence](https://docuracy.github.io/REWT/evidence) sets out the r
 
 ## Contact
 
-Stephen Gadd, [Docuracy Ltd](https://docuracy.co.uk).
+Stephen Gadd — [Cambridge Group for the History of Population and Social Structure (CAMPOP)](https://www.campop.geog.cam.ac.uk/); [Faculty of History, University of Cambridge](https://www.hist.cam.ac.uk/people/dr-stephen-gadd); Technical Director, [World Historical Gazetteer (WHG)](https://whgazetteer.org/); [Docuracy Ltd](https://docuracy.co.uk).
