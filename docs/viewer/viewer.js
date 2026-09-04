@@ -1075,9 +1075,23 @@ function showStamp(o) {
         .filter(([, v]) => v > 0)
         .map(([k, v]) => `<dt>${esc(k)}</dt><dd>${fmt(v)} cells</dd>`).join('') + '</dl>'
     : '';
-  const rows = STAMP_FIELDS.filter(([k]) => st[k] != null)
-    .map(([k, label]) => `<dt>${esc(label)}</dt><dd>${esc(k === 'source_checksum'
-      ? String(st[k]).slice(0, 12) + '…' : st[k])}</dd>`).join('');
+  /* THE CURATED FIELDS, THEN EVERYTHING ELSE THE FILE CARRIES. Fixing the prose to
+     print whatever is there left the same hole open for values that are not strings:
+     `bands` and `band_km` were in the file and shown nowhere, and rewt-c7's forthcoming
+     `generation` — the stamp that says whether two of their artefacts were read
+     mid-rebuild — would have been just as invisible. STAMP_FIELDS is now an ORDER and a
+     set of nicer labels, not the list of what gets shown. Anything left over appears
+     under its own key, arrays of numbers included, because a bounding box a reader can
+     see is the difference between the computation domain and the cells that survived
+     the trim — which are different things and were quoted at me as one. */
+  const shown = new Set(STAMP_SHOWN);
+  const rows = [
+    ...STAMP_FIELDS.filter(([k]) => st[k] != null).map(([k, label]) => [label, st[k]]),
+    ...Object.entries(st)
+      .filter(([k, v]) => typeof v !== 'string' && !shown.has(k) && v != null)
+      .map(([k, v]) => [k, Array.isArray(v) ? v.map((n) => fmt(n, 2)).join(', ') : v]),
+  ].map(([label, v]) => `<dt>${esc(label)}</dt><dd>${esc(label === 'digest'
+    ? String(v).slice(0, 12) + '…' : v)}</dd>`).join('');
   el.innerHTML = `${esc(o.note || '')}
     ${st.warning ? `<br><b style="color:var(--warn)">${esc(st.warning)}</b>` : ''}
     ${counted}<dl class="stamp">${rows}</dl>
@@ -1903,6 +1917,6 @@ map.on('load', async () => {
      one flag instead of racing boot. */
   if (new URLSearchParams(location.search).has('debug')) {
     window.rewt = { map, hits, split, describe, highlight, CLICKABLE, loaded, stamps,
-      tallies, ready: true };
+      tallies, STAMP_FIELDS, ready: true };
   }
 });

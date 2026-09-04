@@ -286,7 +286,23 @@ def check_stamp(page) -> tuple[bool, str]:
             .filter(([k, v]) => typeof v === 'string' && k !== 'use_constraint')
             .map(([k, v]) => [k, v]);
         const absent = prose.filter(([, v]) => !shown.includes(v.slice(0, 40))).map(([k]) => k);
+        /* AND EVERY NON-STRING MEMBER, by key. The prose rule was fixed once and left
+           this half open — numbers and arrays were carried by the file and shown
+           nowhere, which is the same hole in the other type. Checked by KEY appearing,
+           since a value like 0 or 2 would match half the page by accident. */
+        /* A CURATED FIELD RENDERS ITS LABEL, NOT ITS KEY — "furthest any land reaches,
+           km" rather than `max_reach_km` — so looking for the key reported five members
+           as missing that were on the page all along. The label map comes from the
+           viewer itself rather than being restated here, or this check would need
+           updating every time a label is reworded, which is the coupling it exists to
+           catch. A member is accounted for by its key OR by its label. */
+        const labels = new Map(window.rewt.STAMP_FIELDS);
+        const scalars = Object.entries(st).filter(([, v]) => typeof v !== 'string');
+        const scalarsAbsent = scalars
+            .filter(([k]) => !shown.includes(k) && !shown.includes(labels.get(k) || '\u0000'))
+            .map(([k]) => k);
         return { prose: prose.length, absent,
+                 scalars: scalars.length, scalarsAbsent,
                  constraint: !st.use_constraint || shown.includes(st.use_constraint),
                  // CONTROL: a sentence the file does NOT carry must not be found, or
                  // "everything is shown" would be true of a page showing anything.
@@ -298,8 +314,11 @@ def check_stamp(page) -> tuple[bool, str]:
         return False, "the control string was found; the match is not discriminating"
     if not res["constraint"]:
         return False, "the file's use_constraint is not on the page"
+    if res["scalarsAbsent"]:
+        return False, ("members carried by the file and shown nowhere on the page: "
+                       + ", ".join(res["scalarsAbsent"]))
     ok = not res["absent"]
-    return ok, (f"{res['prose']} prose members in the file, "
+    return ok, (f"{res['prose']} prose and {res['scalars']} other members in the file, "
                 + (f"all printed on the page" if ok
                    else f"NOT printed: {', '.join(res['absent'])}"))
 
