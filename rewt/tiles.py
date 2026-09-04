@@ -453,8 +453,22 @@ def _summary() -> None:
                  "basin_id": f.get("basin_id"), "lon": f["lon"], "lat": f["lat"]}
                 for f in findings]
 
+    # WHAT EACH LAYER IS, COMPUTED RATHER THAN WRITTEN. The viewer's legend used to
+    # restate this in its own words, and D-095 is about what that costs: a paraphrase
+    # that reverses is indistinguishable from one that is still true, so the panel
+    # asserted the opposite of a corrected sentence two inches above the corrected one.
+    # The remedy is that the viewer prints these rather than saying them.
+    #
+    # And the sea_route sentence is MEASURED at build time, not asserted. The legend
+    # claimed "a tree not a loop, every line the only way between the coasts it joins"
+    # from the day it was written and nobody tested it until visualisation did — it was
+    # true, but it was true by luck as far as the file was concerned. Now a cycle would
+    # CHANGE the sentence rather than silently falsify it.
+    layers = {"sea_route": _sea_route_shape()}
+
     summary = {
         "counts": counts,
+        "layers": layers,
         "citation": _citation(),
         "findings": findings,
         "reachability": reach,
@@ -470,6 +484,53 @@ def _summary() -> None:
     log.detail(f"summary.json — {len(table):,} in-scope basins, each with a point to "
                f"fly to, {len(counts)} counts, and {len(findings):,} audit findings "
                f"across {kinds} kinds")
+
+
+def _sea_route_shape() -> dict:
+    """Describe the sea network from the sea network, at the moment it is published.
+
+    A spanning tree over the mouths, or not — and if not, the sentence says so. The
+    claim is about topology, so it is computed from topology: `edges - (nodes -
+    components)` is the number of independent cycles, and zero of them means every line
+    really is the only way between the coasts it joins.
+    """
+    import geopandas as gpd
+    import networkx as nx
+
+    routes = gpd.read_file(NETWORK, layer="sea_route", read_geometry=False,
+                           columns=["from_entry", "to_entry"])
+    g = nx.Graph()
+    g.add_edges_from(zip(routes["from_entry"], routes["to_entry"]))
+    nodes, edges = g.number_of_nodes(), g.number_of_edges()
+    comps = nx.number_connected_components(g) if nodes else 0
+    excess = edges - (nodes - comps) if nodes else 0
+
+    if comps == 1 and excess == 0:
+        shape = (f"A spanning tree over {nodes:,} sea entries: one component, "
+                 f"{edges:,} routes, and no cycle anywhere — so every line is the only "
+                 "way between the coasts it joins.")
+    elif excess == 0:
+        shape = (f"A forest over {nodes:,} sea entries in {comps:,} components, "
+                 f"{edges:,} routes, no cycle within any of them.")
+    else:
+        shape = (f"{nodes:,} sea entries, {edges:,} routes, {comps:,} component(s) and "
+                 f"{excess:,} independent cycle(s) — it is NO LONGER A TREE, and any "
+                 "claim that a line is the only way between two coasts is false.")
+
+    return {
+        "entries": nodes, "routes": edges, "components": comps, "cycles": excess,
+        "shape": shape,
+        # THE DISTINGUISHING SENTENCE, requested by visualisation once the comparison
+        # existed (D-099). Both authors of the two sea networks agree the mesh does not
+        # replace this one today, and the figure is theirs rather than mine.
+        "against_the_mesh": (
+            "Not superseded by the H3 routing mesh. Measured on 4 September 2026, the "
+            "published mesh reaches 2,432 of these 4,184 entries — 58.1% — leaving "
+            "5,557 of 11,958 river mouths in no published cell. That is a lower bound: "
+            "the comparison used the aggregated res-6 layer, clipped to the sightline "
+            "cells, and the routing grid is finer."
+        ),
+    }
 
 
 def _citation() -> dict:

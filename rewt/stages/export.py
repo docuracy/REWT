@@ -165,9 +165,19 @@ def run() -> dict:
                -- in scope by country. Found by rewt-46 building the local viewer, who had
                -- to ship a warning naming the gap because the data could not answer.
                --
-               -- This is the audit's own derivation (rewt/stages/audit.py:111), not a
-               -- second rendering of it: a node is in scope if any link ARRIVING at it is
-               -- in scope. Verified to give 474 where basin_in_scope alone gives 393.
+               -- ANY INCIDENT LINK, not any ARRIVING link. The first version copied
+               -- audit.py:111, which asks about links ARRIVING at a node because its
+               -- subject is SINKS — and a sink has no outgoing link, so the two readings
+               -- coincide there and it reproduced the audit's 474 exactly. As a general
+               -- column it was wrong in a way that verification could not see: a
+               -- HEADWATER has no arriving link at all, so `in_scope` came out FALSE for
+               -- every source in the network — 82,049 nodes against basin_in_scope's
+               -- 115,913. A column named `in_scope` that quietly means "in scope and not
+               -- a source" is worse than the half-rule it was added to fix.
+               --
+               -- Found because visualisation reported a THIRD session hitting the
+               -- half-rule, and the fix I had already shipped for it would have handed
+               -- them a different wrong answer.
                coalesce(sc.in_scope, false) AS in_scope,
                sd.node_id IS NOT NULL AS is_seed,
                ST_AsWKB(n.geom) AS wkb
@@ -175,9 +185,13 @@ def run() -> dict:
         LEFT JOIN node_basin nb ON nb.node_id = n.node_id
         LEFT JOIN seed sd ON sd.node_id = n.node_id
         LEFT JOIN (
-            SELECT e.to_node AS node_id, bool_or(s.in_scope) AS in_scope
-            FROM edge e JOIN link_scope s ON s.link_id = e.link_id
-            GROUP BY 1
+            SELECT node_id, bool_or(in_scope) AS in_scope FROM (
+                SELECT e.to_node AS node_id, s.in_scope
+                FROM edge e JOIN link_scope s ON s.link_id = e.link_id
+                UNION ALL
+                SELECT e.from_node AS node_id, s.in_scope
+                FROM edge e JOIN link_scope s ON s.link_id = e.link_id
+            ) GROUP BY 1
         ) sc ON sc.node_id = n.node_id
         ORDER BY n.node_id
         """
