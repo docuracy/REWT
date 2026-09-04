@@ -548,15 +548,31 @@ const OVERLAYS = [
      that arrives now shows a reader where the edge of knowledge was. */
   { id: 'sightline', label: 'Where land can be seen from the sea',
     file: '../router/data/sightline_r6.geojson', kind: 'polygon', count: 15861,
+    /* ONLY AN EXPLICIT `known: false` IS PAINTED AS UNKNOWN. H3-002 §3 will trim the
+       grid to the region where the answer IS known — "the viewer will then show only
+       'in sight' or 'out of sight', not 'unknown'" — and a trimmed file may drop the
+       property altogether. Testing `['get','known']` for truth would then paint every
+       true negative as unknown, turning a correct answer into a confession. Absent
+       means answered; false means not knowable; and the tally under the layer says
+       which of the three the file actually holds, so a change of shape is visible
+       rather than inferred. */
     colour: ['case',
       ['get', 'visible'], '#5ce1e6',
-      ['get', 'known'], '#39414d',
-      C.warn],
+      ['==', ['get', 'known'], false], C.warn,
+      '#39414d'],
     opacity: 0.28,
     legend: [['land is theoretically in sight', '#5ce1e6'],
              ['no land in sight, and that is the answer', '#39414d'],
              ['NOT KNOWN — the land that would be visible lies outside the '
               + 'bathymetry cache, so this is not a negative', C.warn]],
+    states: (fs) => {
+      const n = { 'in sight': 0, 'out of sight': 0, 'NOT KNOWN': 0 };
+      for (const f of fs) {
+        n[f.properties.visible ? 'in sight'
+          : f.properties.known === false ? 'NOT KNOWN' : 'out of sight'] += 1;
+      }
+      return n;
+    },
     note: 'theoretical sight of land: curvature and refraction only, no occlusion by '
       + 'intervening land and no weather. Click a cell for the hill that governs it and '
       + 'the line to it.' },
@@ -564,6 +580,8 @@ const OVERLAYS = [
 const loaded = new Set();
 /* A layer's own provenance, keyed by layer id, read from the file it came in. */
 const stamps = new Map();
+/* What a layer's file actually holds, counted at load. See `o.states`. */
+const tallies = new Map();
 
 /* ── The network, from vector tiles ────────────────────────────────────────
  * TWO SOURCE LAYERS, and the second is the whole point. `link` may drop features at
@@ -770,6 +788,14 @@ async function ensure(o) {
      was actually loaded — a stamp retyped into this file would be a second rendering of
      one fact, which is how the last four went wrong. */
   if (data.properties) stamps.set(o.id, data.properties);
+  /* THE COMPOSITION OF THE FILE, COUNTED FROM THE FILE. A three-state layer whose
+     third state has gone should say so on the page, not leave a reader to notice that
+     a colour has stopped appearing. H3-002 §3 trims the grid to where the answer is
+     known, so this tally is how the trim becomes visible when it lands — and if a
+     state reappears that nobody expected, the same line reports that too. Derived,
+     never typed: the legend describes what the layer CAN show and this says what it
+     DOES. */
+  if (o.states) tallies.set(o.id, o.states(data.features));
   map.addSource(o.id, { type: 'geojson', data });
   if (o.kind === 'polygon') {
     map.addLayer({ id: o.id, type: 'fill', source: o.id,
@@ -904,12 +930,18 @@ function showStamp(o) {
   const el = document.getElementById(`note-${o.id}`);
   if (!st || !el || el.dataset.stamped) return;
   el.dataset.stamped = '1';
+  const tally = tallies.get(o.id);
+  const counted = tally
+    ? '<dl class="stamp">' + Object.entries(tally)
+        .filter(([, v]) => v > 0)
+        .map(([k, v]) => `<dt>${esc(k)}</dt><dd>${fmt(v)} cells</dd>`).join('') + '</dl>'
+    : '';
   const rows = STAMP_FIELDS.filter(([k]) => st[k] != null)
     .map(([k, label]) => `<dt>${esc(label)}</dt><dd>${esc(k === 'source_checksum'
       ? String(st[k]).slice(0, 12) + '…' : st[k])}</dd>`).join('');
   el.innerHTML = `${esc(o.note || '')}
     ${st.warning ? `<br><b style="color:var(--warn)">${esc(st.warning)}</b>` : ''}
-    <dl class="stamp">${rows}</dl>
+    ${counted}<dl class="stamp">${rows}</dl>
     ${st.use_constraint ? `<b>${esc(st.use_constraint)}</b>` : ''}`;
 }
 
