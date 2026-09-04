@@ -89,6 +89,11 @@ def build(
     force: bool = typer.Option(False, "--force", help="re-run every stage, cache or no"),
 ) -> None:
     """One command, empty checkout to finished network."""
+    # FIRST, BEFORE ANYTHING EXPENSIVE. A read-only connection held by a viewer, a
+    # notebook or a measurement blocks the writer, and without this the build discovers
+    # it at its first write — after acquisition and after the terrain mosaic. See
+    # db.preflight for the eighteen minutes that bought this.
+    db.preflight()
     pipeline.run(force_all=force)
     _final_word()
 

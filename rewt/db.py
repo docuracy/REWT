@@ -14,6 +14,9 @@ Two things worth knowing before reading further:
 
 from __future__ import annotations
 
+import os
+import pathlib
+
 import contextlib
 import threading
 from typing import Any, Iterable, Iterator, Sequence
@@ -211,3 +214,53 @@ def tables() -> list[str]:
 
 def summarise() -> list[tuple[str, int]]:
     return [(t, count(t)) for t in tables()]
+
+
+def preflight() -> None:
+    """Refuse to start a build while another process holds the database, and say who.
+
+    **A read-only connection blocks writers** (AGENTS.md), and the failure arrives at
+    the first write — which for a build is after acquisition, after the terrain mosaic,
+    after everything expensive. Eighteen minutes in, this session's own analysis script
+    blocked its own build, having held a read-only connection while it clipped 193,040
+    geometries. The rule was known, quoted at other sessions the same day, and not
+    applied to a measurement left running in another window.
+
+    So the check happens FIRST, in the first second, and it names the holder rather than
+    reporting a lock. DuckDB's own message carries the pid; `/proc` supplies what the
+    process actually is, which is the part that tells you whether to wait or to kill it.
+
+    Raises nothing when the database does not exist yet: an empty checkout has no lock
+    to conflict with, and a build is exactly how it comes to exist.
+    """
+    import re
+
+    if not paths.DB_PATH.exists():
+        return
+    try:
+        con = duckdb.connect(str(paths.DB_PATH), read_only=False)
+    except duckdb.IOException as exc:
+        pid = None
+        found = re.search(r"PID (\d+)", str(exc))
+        if found:
+            pid = int(found.group(1))
+        detail = ""
+        if pid:
+            try:
+                args = pathlib.Path(f"/proc/{pid}/cmdline").read_bytes().replace(b"\0", b" ").decode().strip()
+            except OSError:
+                args = "(gone)"
+            try:
+                cwd = os.readlink(f"/proc/{pid}/cwd")
+            except OSError:
+                cwd = "?"
+            detail = f"\n\n      pid {pid}: {args}\n      cwd: {cwd}"
+        raise SystemExit(
+            f"{paths.rel(paths.DB_PATH)} is locked by another process, so this build "
+            "would fail at its first write rather than here."
+            + detail
+            + "\n\n      A read-only connection blocks writers (AGENTS.md). If that is a "
+            "viewer, a notebook or a measurement left running, stop it. If you cannot "
+            "account for it, ask on the board before killing it."
+        ) from None
+    con.close()
