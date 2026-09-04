@@ -76,9 +76,26 @@ NODE = "os:node/7D63F86E-1FBE-4AC3-AEFE-B28073CDAF05"
 NODE_AT = (-0.557454, 51.760481)
 
 
-def wait_ready(page, timeout_ms: int) -> dict:
-    """Wait for the viewer's OWN completion flag. Bounded; a timeout is a result."""
+def wait_ready(page, timeout_ms: int, errors=None) -> dict:
+    """Wait for the viewer's OWN completion flag. Bounded; a timeout is a result.
+
+    AND THE RESULT HAS TO SAY ENOUGH TO TELL A SLOW PAGE FROM A DEAD ONE, which is
+    london-customs-accounts-dd's refinement and it is earned: their page loads 46
+    gzipped volumes into IndexedDB before its table exists, they set the deadline at
+    120s and then 300s, and read the timeout as a broken page. It was not — at 300s the
+    progress bar was at 20% and climbing, and a cold headless boot there is 5 to 8
+    minutes. The bounded wait saved them only because the report happened to carry a row
+    count; it did not carry the progress, so their first reading of it was still wrong.
+
+    So the report carries what MOVED as well as what is missing: this viewer's own
+    progress line, sampled at the start and at the end of the wait, and the console
+    errors seen. A page whose progress text has changed is slow; one where it has not,
+    with an error in the console, is dead. "A timeout is a result" is only worth
+    anything if the result can distinguish those two.
+    """
     deadline = time.time() + timeout_ms / 1000
+    first_progress = page.evaluate(
+        "() => (document.querySelector('#loading-what') || {}).textContent || null")
     while time.time() < deadline:
         state = page.evaluate("""() => ({
             ready: !!(window.rewt && window.rewt.ready),
@@ -91,9 +108,32 @@ def wait_ready(page, timeout_ms: int) -> dict:
             return state
         time.sleep(0.25)
     state["timedOut"] = True
+    state["progressAtStart"] = first_progress
+    state["progressNow"] = page.evaluate(
+        "() => (document.querySelector('#loading-what') || {}).textContent || null")
+    state["progressMoved"] = state["progressNow"] != first_progress
+    state["consoleErrors"] = (errors or [])[:5]
     if state["styleLoaded"] and not state["loaded"]:
         state["note"] = ("styleLoaded true with loaded false: the map is getting no "
                          "animation frames. Software GL missing, or a hidden tab.")
+    elif state["progressMoved"]:
+        state["note"] = (f"the progress line moved during the wait "
+                         f"({first_progress!r} -> {state['progressNow']!r}), so this is a "
+                         f"SLOW page and not a dead one: raise --timeout rather than hunt "
+                         f"a bug.")
+    elif state["progressAtStart"] is not None:
+        # A NAMED STAGE IS EVIDENCE EVEN WITHOUT MOVEMENT. The app booted far enough to
+        # say what it is doing, so it is alive and stopped HERE — which is a different
+        # report from one that never got as far as a progress line. Two samples over a
+        # short wait cannot see movement at all, so the stage name is what carries the
+        # information when the deadline is tight.
+        state["note"] = (f"the page booted and is at {state['progressAtStart']!r}. It did "
+                         f"not move during a {timeout_ms} ms wait, which at that length "
+                         f"tells you nothing about whether it is slow or stuck — run it "
+                         f"again with a longer --timeout before concluding either.")
+    elif not state["consoleErrors"]:
+        state["note"] = ("no progress line at all and nothing in the console: the page "
+                         "never reached the point of saying what it was doing.")
     return state
 
 
@@ -601,8 +641,11 @@ def main() -> int:
         with sync_playwright() as pw:
             browser = pw.chromium.launch(args=GL)
             page = browser.new_page(viewport={"width": 1400, "height": 900})
+            errors: list[str] = []
+            page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+            page.on("pageerror", lambda e: errors.append(f"pageerror: {e}"))
             page.goto(url, wait_until="domcontentloaded")
-            state = wait_ready(page, a.timeout)
+            state = wait_ready(page, a.timeout, errors)
             if not state["ready"]:
                 print(f"the page never became ready: {json.dumps(state)}")
                 if not a.prove_it_fails:
