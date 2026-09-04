@@ -111,3 +111,107 @@ def curated_judgements():
     from rewt import curated
 
     return curated.read_all()
+
+
+# --------------------------------------------------------------- standing failures
+#
+# **A STANDING FAILURE THAT GETS FIXED LEAVES A STALE RECORD, AND NOTHING CAUGHT THAT.**
+#
+# tests/README.md names the failures that are expected and what clears each, so that a
+# reader can tell "red because the work is not done" from "red because something broke"
+# — rewt-46's point, that a permanently red suite trains people to read the failure
+# count as weather. It worked in the direction it was written for. It had no answer in
+# the other direction: when D-079 was fixed and the build rebuilt, its row sat there
+# claiming a rebuild would not clear it, and I only noticed because I happened to be
+# editing the file for another reason.
+#
+# That is the same shape as the four stale comments this repository found in a day
+# (D-091): a sentence describing the state of the tree, written by whoever had just
+# measured it, going quietly false afterwards. The remedy is the one that worked
+# everywhere else — do not write down what you saw, write down what to check — so the
+# table is now a claim the suite tests rather than a note somebody maintains.
+#
+# It does NOT make a red run green. An expected failure still fails; this only adds the
+# opposite direction, which nothing had: a listed test that PASSES fails the run until
+# its row is removed. Deselected and skipped tests are ignored, because a run that did
+# not reach a test has learnt nothing about it (D-082).
+
+_STANDING_ROW = None  # set in pytest_configure, so parsing failure is reported once
+
+
+def _standing_failures() -> set[str]:
+    """The test ids tests/README.md declares as expected failures.
+
+    Parsed from the table rather than duplicated into a second file: two renderings of
+    one fact drift, and this file exists because one of them did (D-067).
+    """
+    import re
+
+    readme = ROOT / "tests" / "README.md"
+    if not readme.exists():
+        return set()
+    text = readme.read_text(encoding="utf-8")
+    if "## Failures that are expected" not in text:
+        return set()
+    section = text.split("## Failures that are expected", 1)[1].split("\n## ", 1)[0]
+    # The table writes ids as `test_x.py::test_y`, and pytest reports node ids as
+    # `tests/test_x.py::test_y`. Accept either and normalise to the node id — the
+    # first version of this required the prefix, matched nothing, and was caught by
+    # the guard below rather than by me.
+    found = set()
+    for line in section.splitlines():
+        if not line.startswith("| `"):
+            continue
+        for m in re.finditer(r"`(?:tests/)?(test_[\w]+\.py::[\w\[\]\-.]+)`", line):
+            found.add(f"tests/{m.group(1)}")
+    return found
+
+
+def pytest_runtest_logreport(report: pytest.TestReport) -> None:
+    if report.when == "call" or (report.when == "setup" and report.skipped):
+        _OUTCOMES[report.nodeid] = report.outcome
+
+
+_OUTCOMES: dict[str, str] = {}
+
+
+def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    """Fail the run when a declared standing failure has started passing.
+
+    The row is then wrong, and a wrong row is worse than no row: it is what a reader
+    consults to decide whether a red line needs their attention.
+    """
+    declared = _standing_failures()
+    section_exists = (
+        (ROOT / "tests" / "README.md").exists()
+        and "## Failures that are expected"
+        in (ROOT / "tests" / "README.md").read_text(encoding="utf-8")
+    )
+    if section_exists and not declared:
+        # The section is there and nothing was parsed out of it: the table's shape has
+        # changed under a regex that then silently checks nothing.
+        session.config.stash  # noqa: B018  (keep the import-free branch obvious)
+        print(
+            "\nSTANDING FAILURES: tests/README.md has the section and no row this "
+            "could read. The check is looking at a table it no longer understands, "
+            "which is a check that cannot reach its subject rather than one that "
+            "passed."
+        )
+        session.exitstatus = session.exitstatus or 1
+        return
+
+    fixed = sorted(
+        nodeid
+        for nodeid in declared
+        if _OUTCOMES.get(nodeid) == "passed"
+    )
+    if fixed:
+        print(
+            "\nSTANDING FAILURES THAT NOW PASS — the table in tests/README.md is "
+            "out of date and says these are expected to fail:\n  "
+            + "\n  ".join(fixed)
+            + "\nRemove the row, and say in the commit what fixed it. A row claiming "
+            "a failure that no longer happens is what a reader consults to decide "
+            "whether a red line needs their attention."
+        )
+        session.exitstatus = session.exitstatus or 1

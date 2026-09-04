@@ -43,12 +43,17 @@ The cost of a visible failure is that somebody asks about it; that is the point.
 | test | why it is red | what clears it |
 |---|---|---|
 | `test_basins_and_the_sea.py::test_no_in_scope_basin_holds_more_sea_than_river` | D-080. Twelve in-scope basins enclose more sea network than river network, because the tidal surface is not removed before delineation. rewt-46's finding. | The delineation, not a rebuild. R-01 (OS Mean High Water as the coast) is the change most likely to move it. |
-| `test_config.py::test_every_stage_1_source_is_read_by_a_stage_or_says_why_not` | `scottish_gov_lidar_dtm` is read by the elevation sweep, and a sweep is not a stage — *a script somebody remembers to run is not part of the build* (AGENTS.md). Left red **deliberately**, with the reasoning in `conf/sources.yml` beside the entry: rewt-e8's judgement, and mine, that this is a defect to fix rather than a category to declare around. | The sweep becoming a stage. Not a `read_by:` declaration — that category is for a source nothing should read, and something does read this one. |
 
-Anything else red is transient or new. At the time of writing four others were failing
-because two sources had been registered without the rebuild and conf work that follows;
-those are not listed, because they clear themselves and a list that includes them would
-be stale within the hour.
+Anything else red is transient or new. Transient failures are deliberately not listed:
+they clear themselves, and a list that included them would be stale within the hour.
+
+**The table is checked, and in both directions.** A row here is a claim that a test
+fails, so `tests/conftest.py` fails the run when a listed test PASSES — the row is
+then wrong, and a wrong row is worse than none, because it is what a reader consults
+to decide whether a red line needs their attention. It does not make a red run green:
+an expected failure still fails. The first thing it caught was a row of its own
+section claiming `scottish_gov_lidar_dtm` was still unread, four commits after
+`ecf5bdc` made the sweep a stage.
 
 ## Markers
 

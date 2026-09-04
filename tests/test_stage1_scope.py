@@ -106,6 +106,14 @@ def test_the_model_stays_small():
         # after the connectors it must precede, and scope is not needed: which side
         # of the line a watercourse falls on is a fact about geometry.
         "high_water_side",
+        # The 1 m screen, added 2026-09-04 when the sweep that fills it became a
+        # stage rather than a script somebody remembers to run — which is what
+        # test_every_stage_1_source_is_read_by_a_stage_or_says_why_not had been
+        # saying for eight CI runs. A table rather than a column because no stage
+        # adds a column to another stage's table, and it carries the LAYER because
+        # resolution and required credit both vary by layer: a reading whose layer
+        # is unknown has unknown accuracy and unknown attribution.
+        "node_elevation",
     }
     unexplained = set(schema.TABLES) - four - derived
     assert not unexplained, (
