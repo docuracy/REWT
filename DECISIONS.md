@@ -4149,3 +4149,51 @@ neither height nor range**, so "how many lights does this volume give" is not 3,
 "acknowledg", "credit" and "source of"; the only hits concern ships acknowledging distress
 signals. Unlike USGS, who request credit without requiring it, NGA asks for nothing — so any
 attribution we wrote would be a constructed one and would have to say so.
+
+---
+
+## D-098 — The sightline surface is the kind of object D-085 declined, and only the licence separates them
+
+**4 September 2026, collision flagged by rewt-c7 (router) against their own work, recorded by
+rewt-e8 (implementer).**
+
+D-085 declined the Mapzen terrarium tileset on two grounds. The first was licence: no term at
+tileset level, a bundle of about twelve upstream licences, and which one you got is a
+property of the individual tile. **The second was that it is not one instrument** — in that
+entry's own words, *"it is not one surface, being the EA composite at 2 m over England and
+EUDEM at 30.9 m elsewhere... so the instrument would change character at the Welsh border."*
+
+**EMODnet's land side is the same kind of object.** It is ASTER GDEM, SRTM3 and EU-DEM
+blended, per EMODnet's own product page — and `source_references` and `quality_index` return
+**zero features at every land point tested**, against a North Sea control returning 10 and 4
+in the same pass. So for a sea depth we can name the survey that produced it; **for a land
+height we cannot say whether it came from ASTER, SRTM3 or EU-DEM.** Every sightline in the
+router's layer is cast by a height of unknown provenance.
+
+Router proposed it partly on the argument that it was one product, one licence, one
+instrument, uniform. Sources corrected the last two within the hour. **Router then flagged
+the collision against their own work rather than letting it stand**, which is the reason this
+entry exists at all: D-085 is a recorded decision, and AGENTS.md says one is never quietly
+inherited past.
+
+**The decision, and it does not reverse D-085.** EMODnet's land side stays. The licence
+difference is real and it is sufficient — one CC BY 4.0 over the whole product against a
+bundle with no tileset-level term — and it is what the D-085 ruling actually turned on. The
+sightline needs a single continuous surface over Britain, Ireland and the near continent, and
+**nothing registered provides one**: the EA composite is England, NRW is Wales, the Scottish
+phases are partial and southern, and none of them crosses to Ireland or Brittany at all.
+
+**What the entry buys is a bound rather than a permission.** A horizon is `sqrt(2 R k h)`, so
+error in height enters as its square root: a 3% error in h is **1.49%** in range, and a 10%
+error is 4.88%. That is tolerable for deciding whether a coast is in sight. **It would not be
+tolerable for anything differencing heights**, where the errors do not damp and the unknown
+provenance means they cannot even be characterised. So the surface is fit for the use it has
+and unfit for a use nobody has yet proposed, and this is the entry that says which is which.
+
+**The general form, which is why this is worth more than a caveat.** D-085 rejected a source
+for two reasons and only one of them was doing the work. Had the entry recorded that it was
+the *licence* that decided it, the second ground could not later be quoted against a source
+the same reasoning admits. **A decision that gives two reasons should say which one carries
+it**, or it will be read as requiring both — and then either misapplied to exclude something
+acceptable, or, as here, found in apparent contradiction with a later choice that was
+perfectly sound.
