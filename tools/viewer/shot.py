@@ -556,12 +556,21 @@ def check_coast(page) -> tuple[bool, str]:
         const note = document.querySelector('#note-coast-cells');
         const txt = note ? note.innerText : '';
         const panel = document.querySelector('#layers').innerText;
+        /* READ THE SENTENCE FROM THE FILE, DO NOT TYPE ITS NUMBER HERE. This asked for
+           the literal "32 connected components" — rewt-c7's figure frozen in my check,
+           the exact fault I had just warned them about. It survived their rebuild by
+           luck: the count happened to still be 32. The file now supplies the sentence
+           and the check asserts the page is carrying it, so a rebuild that changes the
+           number passes and a page that stops printing it fails. */
+        const norm = (t) => t.replace(/\s+/g, ' ').trim();
+        const props = (await (await fetch('../router/data/cells_r7_coast.geojson')).json())
+            .properties || {};
+        const band = props.this_layer_is_a_band_not_a_surface || '';
+        const ext = props.extent_deliberately_differs || '';
         return { cells, edges, linesTogether, cellClearedLines,
-            /* The file's own sentences, not my restatement of them: the band is a
-               window on the graph, so its 32 components are not a defect to fix, and
-               its extent is deliberately not the sightline layer's. */
-            saysComponents: /32 connected components/.test(panel),
-            saysExtentDiffers: /extent/i.test(panel) };
+            bandSentenceInFile: !!band,
+            saysComponents: !!band && norm(panel).includes(norm(band)),
+            saysExtentDiffers: !!ext && norm(panel).includes(norm(ext)) };
     }""")
     bad = []
     for name in ("cells", "edges"):
@@ -580,14 +589,20 @@ def check_coast(page) -> tuple[bool, str]:
     if not res["cellClearedLines"]:
         bad.append("turning a cell layer on left the line layers drawn, so a hexagon and "
                    "the lines between hexagon centres are on the map at once")
-    if not res["saysComponents"]:
-        bad.append("the panel does not carry the file's '32 connected components' sentence")
+    if not res["bandSentenceInFile"]:
+        bad.append("the coastal file no longer carries `this_layer_is_a_band_not_a_surface`, "
+                   "so there is no sentence to check the page against")
+    elif not res["saysComponents"]:
+        bad.append("the panel does not carry the file's own 'band not a surface' sentence")
+    if not res["saysExtentDiffers"]:
+        bad.append("the panel does not carry the file's `extent_deliberately_differs`")
     if bad:
         return False, "; ".join(bad)
     c, e = res["cells"], res["edges"]
     return True, (f"{c['drawn']:,} cells of {c['inFile']:,} and {e['drawn']:,} links of "
                   f"{e['inFile']:,} drew on the Crouch; two line layers draw together, a "
-                  f"cell layer clears them; the panel carries the 'not a defect' sentence")
+                  f"cell layer clears them; the panel carries both of the file's own "
+                  f"caveats verbatim")
 
 
 def check_joins(page) -> tuple[bool, str]:
@@ -710,6 +725,65 @@ def check_stranded(page) -> tuple[bool, str]:
     return True, (f"{res['drawnDistinct']} of {res['listed']} stranded termini drawn and "
                   f"none unlisted; the panel carries the file's answer, its "
                   f"percentage and its R-01 caveat")
+
+
+def check_generations(page) -> tuple[bool, str]:
+    """Two router layers from different passes must SAY SO on the page.
+
+    rewt-c7 stamps every artefact with a generation precisely so a reader holding two of
+    them can tell whether they came from one run, and the viewer is the only place two
+    are ever open at once. The mechanism has caught its author twice — once on two
+    layers an hour and a half apart, once on a stamp held still across a partial re-run
+    while the bytes moved underneath it.
+
+    Today the honest state is three stamps: the sightline surface is legitimately behind
+    because nothing it depends on has moved. Both of us know that, and that is exactly
+    why the warning is not suppressed — a reader who knows neither of us should still be
+    told. A warning nobody can see is worth nothing, so this asserts it appears and
+    names both generations rather than trusting that it would.
+
+    The generations are read from the files in the same run. Writing today's stamps in
+    here would be the frozen-constant fault this check exists alongside.
+    """
+    res = page.evaluate("""async () => {
+        const on = async (id) => {
+            const b = [...document.querySelectorAll('#layers .switch input')]
+                .find((x) => x.dataset.layer === id);
+            if (!b) return false;
+            b.disabled = false;
+            if (!window.map.getLayer(id)) window.rewt.loaded.delete(id);
+            if (!b.checked) { b.checked = true; b.dispatchEvent(new Event('change')); }
+            for (let i = 0; i < 80 && !window.map.getLayer(id); i++) {
+                await new Promise((r) => setTimeout(r, 500));
+            }
+            return !!window.map.getLayer(id);
+        };
+        const gen = async (f) => ((await (await fetch('../router/data/' + f)).json())
+            .properties || {}).generation;
+        const [a, b] = [await gen('sightline2_r6.geojson'), await gen('traces.geojson')];
+        const bothOn = (await on('sightline')) && (await on('traces'));
+        await new Promise((r) => setTimeout(r, 3000));
+        const note = document.querySelector('#router-generations');
+        const warn = document.querySelector('#warn');
+        const text = note ? note.innerText : '';
+        return { a, b, bothOn,
+            differ: !!a && !!b && a !== b,
+            shown: !!note && !!warn && !warn.hidden,
+            namesBoth: text.includes(a || '\u0000') && text.includes(b || '\u0000') };
+    }""")
+    if not res["bothOn"]:
+        return False, "could not get both layers on, so the comparison proves nothing"
+    if not res["differ"]:
+        # A LEGITIMATE STATE, not a pass by default: say which it was.
+        return True, (f"both layers carry {res['a']}, so there is nothing to warn about "
+                      "— the warning was not exercised")
+    if not res["shown"]:
+        return False, (f"{res['a']} and {res['b']} are loaded together and the page says "
+                       "nothing about it")
+    if not res["namesBoth"]:
+        return False, "the warning appears but does not name both generations"
+    return True, (f"{res['a']} and {res['b']} loaded together; the page warns and names "
+                  "both")
 
 
 def check_mobile(page) -> tuple[bool, str]:
@@ -843,8 +917,24 @@ def check_stamp(page) -> tuple[bool, str]:
     which is the coupling that went stale twice already.
     """
     res = page.evaluate("""async () => {
+        /* ESTABLISH THE STATE, DO NOT INHERIT IT. This read the stamp straight out of
+           `window.rewt.stamps` and reported "no stamp at all" when the layer had not
+           been loaded — so it passed in the full suite only because the `sightline`
+           check happens to run before it, and failed the moment the checks were run in
+           a different grouping. That is the fourth order-dependency in this file and
+           the same one each time: a green result that belonged to its neighbours.
+           `missing` may also have left this switch disabled with its layer removed. */
+        const b = [...document.querySelectorAll('#layers .switch input')]
+            .find((x) => x.dataset.layer === 'sightline');
+        if (!b) return { missing: true, why: 'no switch for the sightline layer' };
+        b.disabled = false;
+        if (!window.map.getLayer('sightline')) window.rewt.loaded.delete('sightline');
+        if (!b.checked) { b.checked = true; b.dispatchEvent(new Event('change')); }
+        for (let i = 0; i < 80 && !window.rewt.stamps.get('sightline'); i++) {
+            await new Promise((r) => setTimeout(r, 500));
+        }
         const st = window.rewt.stamps.get('sightline');
-        if (!st) return { missing: true };
+        if (!st) return { missing: true, why: 'the layer never loaded its stamp' };
         const note = document.querySelector('#note-sightline');
         const shown = note ? note.innerText : '';
         /* EVERY string the file carries, with no length threshold — the viewer's
@@ -878,7 +968,7 @@ def check_stamp(page) -> tuple[bool, str]:
                  controlFound: shown.includes('a sentence this file does not contain') };
     }""")
     if res.get("missing"):
-        return False, "the sightline layer carries no stamp at all"
+        return False, res.get("why", "the sightline layer carries no stamp at all")
     if res["controlFound"]:
         return False, "the control string was found; the match is not discriminating"
     if not res["constraint"]:
@@ -944,7 +1034,8 @@ CHECKS = {"panel": check_panel, "layers": check_layers,
           "popup": check_popup, "sightline": check_sightline,
           "stamp": check_stamp, "missing": check_missing_layer,
           "edges": check_edges, "coast": check_coast,
-          "stranded": check_stranded, "mobile": check_mobile,
+          "stranded": check_stranded,
+          "generations": check_generations, "mobile": check_mobile,
           "geometry": check_geometry_coverage, "joins": check_joins}
 
 
