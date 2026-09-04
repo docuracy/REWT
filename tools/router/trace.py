@@ -1,0 +1,222 @@
+"""Trace a path from a stranded river terminus to the sea grid, across the drying zone.
+
+    python3 tools/router/trace.py
+
+Run from the repository root; paths are relative (AGENTS.md).
+
+WHAT THIS IS FOR. PLAN.md 7 rule 3: 414 tidal termini are neither inside a grid cell nor
+adjacent to one. They sit up estuaries, behind ground that is sea at high water and dry at
+low. Reaching them needs a path chosen by BATHYMETRY rather than a straight line, which is
+what rules/H3.md asks for.
+
+THIS COST SURFACE IS NOT A WEIGHT, and the distinction is the same one PLAN.md 8 draws for
+the sightline. Where the water lies, and how deep, is geometry and measurement — as true in
+1450 as in 2026. How much a master would pay to avoid a shoal is a claim about a vessel and
+a period, and it is deferred. This finds the deepest available channel; it does not price it.
+
+NOT A CHART. conf/sources.yml carries DO NOT USE FOR NAVIGATION and it travels.
+"""
+from __future__ import annotations
+
+import heapq
+import json
+from pathlib import Path
+
+import geopandas as gpd
+import numpy as np
+import rasterio
+from pyproj import Transformer
+from rasterio.windows import from_bounds
+from scipy.spatial import cKDTree
+
+import h3
+from sightline import build_vrt
+
+ATTRIBUTION = ("Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): "
+               "EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0.")
+
+CONFIG = {
+    "windows": "data/raw/emodnet_bathymetry/*.tif",
+    "vrt": "tools/router/cache/emodnet.vrt",
+    "grid": "tools/router/cache/grid_r9.npz",
+    "network": "published/rewt_stage1_network.gpkg",
+    "joins": "docs/router/data/join_summary.json",
+    "out": "docs/router/data/traces.geojson",
+    "summary": "docs/router/data/trace_summary.json",
+    # THE COST SURFACE. Deliberately crude and deliberately untuned: one parameter with a
+    # reason, not a fitted model. Water costs 1 per pixel whatever its depth, because
+    # preferring depth is a vessel judgement and this is not making one. Ground above the
+    # lowest tide costs 1 + its height in metres, so a trace crosses a drying bank only
+    # when there is no wet route, and prefers the lowest saddle when it must.
+    "impassable_above_m": 5.0,   # above this it is land, not a drying bank
+    "margin_px": 40,             # window padding around the straight line
+    "earth_radius_m": 6371000.0,
+}
+
+
+def dijkstra(cost: np.ndarray, start: tuple[int, int], goal: np.ndarray):
+    """Least-cost path to ANY pixel in the goal mask. NaN cost = impassable.
+
+    THE GOAL IS THE GRID, NOT A CHOSEN CELL. The first version aimed at the nearest
+    grid cell centre by straight-line distance, which is a different question: 34 of
+    85 failures could reach open water perfectly well and simply could not reach THAT
+    cell. Aiming at a point when the requirement is "reach the network" invents an
+    obstacle out of the choice of target.
+    """
+    h, w = cost.shape
+    dist = np.full((h, w), np.inf)
+    prev = np.full((h, w, 2), -1, np.int32)
+    dist[start] = 0.0
+    pq = [(0.0, start)]
+    reached = None
+    steps = [(-1, 0, 1.0), (1, 0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
+             (-1, -1, 1.4142), (-1, 1, 1.4142), (1, -1, 1.4142), (1, 1, 1.4142)]
+    while pq:
+        d, (r, c) = heapq.heappop(pq)
+        if goal[r, c]:
+            reached = (r, c)
+            break
+        if d > dist[r, c]:
+            continue
+        for dr, dc, k in steps:
+            nr, nc = r + dr, c + dc
+            if not (0 <= nr < h and 0 <= nc < w):
+                continue
+            cc = cost[nr, nc]
+            if not np.isfinite(cc):
+                continue
+            nd = d + k * cc
+            if nd < dist[nr, nc]:
+                dist[nr, nc] = nd
+                prev[nr, nc] = (r, c)
+                heapq.heappush(pq, (nd, (nr, nc)))
+    if reached is None:
+        return None, np.inf
+    path = [reached]
+    while path[-1] != start:
+        r, c = path[-1]
+        p = tuple(prev[r, c])
+        if p == (-1, -1):
+            return None, np.inf
+        path.append(p)
+    return path[::-1], float(dist[reached])
+
+
+def main(cfg: dict = CONFIG) -> None:
+    src = rasterio.open(build_vrt(cfg))
+    g = np.load(cfg["grid"], allow_pickle=True)
+    glat, glon = g["lat"], g["lon"]
+    R = cfg["earth_radius_m"]
+
+    def xyz(la, lo):
+        la, lo = np.radians(la), np.radians(lo)
+        return np.column_stack([R*np.cos(la)*np.cos(lo), R*np.cos(la)*np.sin(lo), R*np.sin(la)])
+
+    tree = cKDTree(xyz(glat, glon))
+    cellset = set(g["cell"].tolist())
+    todo = json.loads(Path(cfg["joins"]).read_text())["rule3"]
+    print(f"{len(todo):,} rule-3 termini to trace "
+          f"({sum(t['in_scope'] for t in todo):,} in scope)")
+
+    feats, rows = [], []
+    for k, t in enumerate(todo):
+        la, lo = t["lat"], t["lon"]
+        _, j = tree.query(xyz(np.array([la]), np.array([lo])))
+        j = int(j[0])
+        tla, tlo = float(glat[j]), float(glon[j])
+        pad = cfg["margin_px"] * max(abs(src.transform.a), abs(src.transform.e))
+        w = from_bounds(min(lo, tlo) - pad, min(la, tla) - pad,
+                        max(lo, tlo) + pad, max(la, tla) + pad, src.transform)
+        a = src.read(1, window=w, boundless=True, fill_value=np.nan).astype("float64")
+        tw = rasterio.windows.transform(w, src.transform)
+
+        cost = np.where(a < 0, 1.0, 1.0 + np.maximum(a, 0.0))
+        cost[~np.isfinite(a)] = np.nan
+        cost[a >= cfg["impassable_above_m"]] = np.nan
+
+        def rc(lat, lon):
+            c, r = ~tw * (lon, lat)
+            return (int(np.clip(r, 0, a.shape[0]-1)), int(np.clip(c, 0, a.shape[1]-1)))
+
+        # the goal mask: any pixel lying in a cell the grid actually holds
+        goal = np.zeros(a.shape, bool)
+        wet = np.isfinite(a) & (a < 0)
+        for rr, cc in zip(*np.nonzero(wet)):
+            x, y = tw * (cc + 0.5, rr + 0.5)
+            if h3.latlng_to_cell(float(y), float(x), 9) in cellset:
+                goal[rr, cc] = True
+        s = rc(la, lo)
+        if not np.isfinite(cost[s]):
+            cost[s] = 1.0 + max(0.0, float(a[s]) if np.isfinite(a[s]) else 0.0)
+        if not goal.any():
+            rows.append({**t, "traced": False, "reason": "no grid cell in the window"})
+            continue
+        path, total = dijkstra(cost, s, goal)
+        if path is None:
+            rows.append({**t, "traced": False, "reason": "no passable route"})
+            continue
+
+        pts = [(tw * (c + 0.5, r + 0.5)) for r, c in path]
+        elev = np.array([a[r, c] for r, c in path])
+        seg = np.array([np.hypot((pts[i+1][0]-pts[i][0]) * 111320 * np.cos(np.radians(la)),
+                                 (pts[i+1][1]-pts[i][1]) * 111320) for i in range(len(pts)-1)])
+        dry = int((elev >= 0).sum())
+        rows.append({**t, "traced": True,
+                     "path_m": round(float(seg.sum())),
+                     "straight_m": t["dist_m"],
+                     "detour": round(float(seg.sum()) / max(t["dist_m"], 1), 2),
+                     "max_elev_crossed_m": round(float(np.nanmax(elev)), 1),
+                     "min_depth_m": round(float(np.nanmin(elev)), 1),
+                     "drying_px": dry,
+                     "drying_frac": round(dry / len(path), 3)})
+        feats.append({"type": "Feature",
+                      "geometry": {"type": "LineString",
+                                   "coordinates": [[round(x, 6), round(y, 6)] for x, y in pts]},
+                      "properties": {k2: v for k2, v in rows[-1].items()}})
+
+    ok = [r for r in rows if r["traced"]]
+    bad = [r for r in rows if not r["traced"]]
+    print(f"\ntraced {len(ok):,}, failed {len(bad):,}")
+    if ok:
+        det = np.array([r["detour"] for r in ok])
+        dfr = np.array([r["drying_frac"] for r in ok])
+        mx = np.array([r["max_elev_crossed_m"] for r in ok])
+        print(f"  detour vs straight line: median {np.median(det):.2f}x, "
+              f"90th {np.quantile(det,.9):.2f}x, max {det.max():.2f}x")
+        print(f"  fraction of path on drying ground: median {np.median(dfr):.2f}, "
+              f"max {dfr.max():.2f}")
+        print(f"  highest ground crossed: median {np.median(mx):.1f} m, max {mx.max():.1f} m")
+        print(f"  traces staying entirely below the lowest tide: "
+              f"{int((dfr == 0).sum()):,} of {len(ok):,}")
+    print(f"\nFAILURES — every one named (this answers 'is there anything else')")
+    for r in bad:
+        print(f"    {r['node_id']}  {r['dist_m']/1000:.2f} km  "
+              f"at {r['lat']:.4f} N {r['lon']:.4f} E  "
+              f"{'in scope' if r['in_scope'] else 'out of scope'}  — {r['reason']}")
+    if not bad:
+        print("    none — so check that impassable_above_m excludes something")
+
+    Path(cfg["summary"]).write_text(json.dumps({
+        "attempted": len(rows), "traced": len(ok), "failed": len(bad),
+        "impassable_above_m": cfg["impassable_above_m"],
+        "provisional": "R-01 is unbuilt. The implementer will land it in TWO passes — "
+                       "retirement of wholly-seaward links, then truncation of crossers "
+                       "at the high water line. This population moves under both. "
+                       "Re-derive after the second, not the first.",
+        "rows": rows}, indent=1))
+    Path(cfg["out"]).write_text(json.dumps({
+        "type": "FeatureCollection",
+        "properties": {"what": "traced paths from stranded river termini to the sea grid",
+                       "cost": "1 per pixel in water; 1 + height in metres on ground above "
+                               "the lowest tide; impassable above "
+                               f"{cfg['impassable_above_m']} m. NOT a weight — see module "
+                               "docstring.",
+                       "attribution": ATTRIBUTION,
+                       "provisional": "R-01 unbuilt; this population will move twice.",
+                       "use_constraint": "DO NOT USE FOR NAVIGATION"},
+        "features": feats}))
+    print(f"\nwrote {cfg['summary']} and {cfg['out']}")
+
+
+if __name__ == "__main__":
+    main()

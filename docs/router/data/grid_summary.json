@@ -1,0 +1,101 @@
+{
+ "coastal_sea_resolution": 9,
+ "total_cells": 214608,
+ "by_resolution": {
+  "3": 8,
+  "4": 84,
+  "5": 608,
+  "6": 2516,
+  "7": 8410,
+  "8": 33121,
+  "9": 169861
+ },
+ "bands": [
+  {
+   "resolution": 3,
+   "tested": 75,
+   "kept": 8,
+   "dropped_land": 0,
+   "subdivided": 67,
+   "off_grid": 0,
+   "nodata_centre": 0,
+   "threshold_m": 137958,
+   "edge_m": 68979
+  },
+  {
+   "resolution": 4,
+   "tested": 469,
+   "kept": 84,
+   "dropped_land": 10,
+   "subdivided": 356,
+   "off_grid": 19,
+   "nodata_centre": 0,
+   "threshold_m": 52144,
+   "edge_m": 26072
+  },
+  {
+   "resolution": 5,
+   "tested": 2492,
+   "kept": 608,
+   "dropped_land": 451,
+   "subdivided": 1412,
+   "off_grid": 21,
+   "nodata_centre": 0,
+   "threshold_m": 19708,
+   "edge_m": 9854
+  },
+  {
+   "resolution": 6,
+   "tested": 9884,
+   "kept": 2516,
+   "dropped_land": 2164,
+   "subdivided": 5191,
+   "off_grid": 13,
+   "nodata_centre": 0,
+   "threshold_m": 7449,
+   "edge_m": 3725
+  },
+  {
+   "resolution": 7,
+   "tested": 36337,
+   "kept": 8410,
+   "dropped_land": 9296,
+   "subdivided": 18625,
+   "off_grid": 6,
+   "nodata_centre": 0,
+   "threshold_m": 2813,
+   "edge_m": 1406
+  },
+  {
+   "resolution": 8,
+   "tested": 130375,
+   "kept": 33121,
+   "dropped_land": 45627,
+   "subdivided": 51625,
+   "off_grid": 2,
+   "nodata_centre": 0,
+   "threshold_m": 797,
+   "edge_m": 531
+  },
+  {
+   "resolution": 9,
+   "tested": 361375,
+   "kept": 169861,
+   "dropped_land": 191512,
+   "subdivided": 0,
+   "off_grid": 2,
+   "nodata_centre": 0,
+   "threshold_m": null,
+   "edge_m": 201
+  }
+ ],
+ "extent": [
+  -7.999999999999994,
+  49.49999999999999,
+  2.000000000000006,
+  60.99999999999999
+ ],
+ "coast": "EMODnet sign change = Lowest Astronomical Tide (PLAN.md 4)",
+ "attribution": "Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0.",
+ "use_constraint": "DO NOT USE FOR NAVIGATION"
+}
