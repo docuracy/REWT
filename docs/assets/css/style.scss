@@ -155,7 +155,7 @@ $rewt-rule: #d8d2c4;
 @media (max-width: 620px) {
   .sheet-figure.pair .frames { grid-template-columns: 1fr; }
 
-  /* On a phone the eleven links wrap to three rows, and three rows pinned to the top
+  /* On a phone the twelve links wrap to three rows, and three rows pinned to the top
      is a third of the screen given to a menu. One scrolling row instead — which also
      spends the free space the tool button was using, so it lands after the last link
      rather than at the right edge. It is the last thing in a row a reader swipes, and

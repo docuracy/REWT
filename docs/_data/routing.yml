@@ -1,0 +1,70 @@
+# GENERATED FILE -- do not edit.
+#
+# Written by tools/docs/routing_page.py from the router's own artefacts:
+#   docs/router/data/sightline2_r6.geojson  (its top-level `properties`)
+#   docs/router/data/reach_summary.json
+#
+# The horizon constant and refraction coefficient are PARSED from the layer's
+# formula string, never typed here, so the page cannot disagree with the code.
+# Counts of cells, joins and traces are not projected: they are still moving.
+generated_from: docs/router/data/sightline2_r6.geojson, docs/router/data/reach_summary.json
+generator: tools/docs/routing_page.py
+layer:
+  what: sight of land, computed from the land outwards in reach bands
+  method: banded distance transform in EPSG:32630
+  bands: 95
+  band_km: 2.0
+  max_reach_km: 188.3
+  horizon_formula: range_km = 3.7945 * sqrt(height_m), refraction_k = 1.13. NOT 3.86, which
+    is k = 1.17.
+  observer_height_m: 0.0
+  gov_h_m_definition: the tallest land that reaches this cell — the band that first marked
+    it. Absent where nothing reaches.
+  blind_sailing_buffer_km: 0.0
+  buffer_basis: 'the deepest a crossing wholly within the British Isles goes out of sight:
+    Land''s End to Cork, 56.4 km. It is a ROUTING decision, not a horizon and not a coast
+    -- the trimmed edge means nothing else.'
+  trimmed: 'cells beyond sight plus the buffer are absent, not coloured (H3-002 item 3). `known:
+    false` appears only where the answer still depends on land outside the cached data; absent
+    means answered.'
+  distance_crs: EPSG:32630
+  distance_crs_worst_error_pct: 0.33
+  validated_against: 'exact WGS84 geodesics on 250 sample points: 246 agree, and all 4 disagreements
+    are conservative (the raster misses visibility, never invents it)'
+  week_km: 1271
+  week_trim: 'cells beyond a week''s sailing of England and Wales are absent. The bound is
+    route distance ON THE NAVIGABLE SURFACE, calibrated by two attested week-long voyages:
+    London-Skagen 1271 km and Falmouth-Bordeaux 1195 km. Under the no-blind-sailing rule those
+    two agree to 6%; on a buffered surface they differed by 48%, because the route was free
+    to cut across open water that was never sailed.'
+  attribution: 'Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet
+    Digital Bathymetry (DTM 2024), licensed CC BY 4.0.'
+  use_constraint: DO NOT USE FOR NAVIGATION
+reach:
+  criterion: within a week's sailing of England and Wales, under typical conditions, measured
+    as route distance THROUGH the water
+  calibration:
+    London -> Skagen (N Denmark): 1271
+    Falmouth -> Bordeaux (Gironde mouth): 1195
+  calibration_source: 'eRutter, docuracy.github.io/Historical_Sea_Routing: London to the northern
+    tip of Denmark, and Falmouth to Bordeaux, each about a week in July'
+  week_km: 1271
+  anchors_disagree: 'the two attested week-long voyages imply different route distances. That
+    is information, not noise: route distance is a poor proxy for time, and the difference
+    is what wind and season would explain. The LARGER is taken so that both voyages fall inside
+    the bound.'
+  measured_on: the navigable surface (sight plus the blind-sailing buffer), not open water
+    — a route may not use water the router cannot
+  not_a_radius: measured along the water, so Norway is as far as the route round the Skagerrak
+    makes it, not as near as a straight line suggests
+  time_not_computed: sailing time needs wind, current and a hull, and weights are deferred.
+    This calibrates a DISTANCE against an attested duration; it does not claim to compute
+    duration.
+horizon:
+  constant_km_per_sqrt_m: 3.7945
+  refraction_k: 1.13
+  constant_check_sqrt_2Rk: 3.7945
+  illustrative_eye_m: 10
+  illustrative_eye_adds_km: 12.0
+  common_wrong_constant: 3.86
+  common_wrong_refraction_k: 1.17

@@ -183,6 +183,12 @@ to port computable, down one river, along the coast and up another, which is the
 [navigation evidence](evidence#navigation) is about and which no purely fluvial network can
 express.
 
+**The coastal half of that journey is built on a different rule and has its own page.** Where
+this section gives the sea a geometry so that a river mouth has something to end on, the
+[routing surface](routing) decides which water a passage may cross at all — and it decides it
+on sight of land, which is geometry rather than history and can be re-derived by anyone from a
+height and one formula.
+
 **And it changes what a published number means, so both readings go out together — but they
 are not two grades of one test.** Measured against this build, **93.58% of in-scope length
 reaches tidal water and 96.26% reaches the sea**, and the second is the larger because
