@@ -125,8 +125,11 @@ def main(cfg: dict = CONFIG) -> None:
     crosses = land_crossing_test(cfg["masks"])
     feats, over_land = [], 0
     for (pa, pb), r in sorted(par.items()):
-        la, lo = h3.cell_to_latlng(pa)
-        lb, ob = h3.cell_to_latlng(pb)
+        # TEST WHAT IS DRAWN, NOT WHAT IS COMPUTED. Publishing rounds the centre to
+        # 4 dp, which moves it up to ~11 m — enough to put the drawn line across a
+        # headland the exact line misses. One link of 47,367 did exactly that.
+        la, lo = (round(v, D) for v in h3.cell_to_latlng(pa))
+        lb, ob = (round(v, D) for v in h3.cell_to_latlng(pb))
         if crosses((la, lo), (lb, ob)):
             over_land += 1
             continue

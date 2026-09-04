@@ -47,6 +47,9 @@ AREAS = {
     "cornwall":   (-5.75, 49.70, -3.50, 50.75),
     "cardigan":   (-5.30, 50.90, -3.65, 53.20),
     "solent":     (-2.20, 50.35, -0.80, 51.10),
+    # the closed mid-Channel hop of PLAN.md 22: coarse cells inside a fine
+    # grid, so the seams that were hardest to see are all here
+    "channel":    (-1.30, 49.60,  0.40, 50.60),
 }
 
 

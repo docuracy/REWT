@@ -93,8 +93,9 @@ def main(cfg: dict = CONFIG) -> None:
             r["cross"] += int(gres[i] != gres[j])
         ef, over = [], 0
         for (pa, pb), r in sorted(par.items()):
-            la, lo = h3.cell_to_latlng(pa)
-            lb, ob = h3.cell_to_latlng(pb)
+            # test the rounded centres, which are what the file actually draws
+            la, lo = (round(v, D) for v in h3.cell_to_latlng(pa))
+            lb, ob = (round(v, D) for v in h3.cell_to_latlng(pb))
             if crosses((la, lo), (lb, ob)):
                 over += 1
                 continue

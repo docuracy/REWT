@@ -1339,3 +1339,50 @@ resolution so the two can never disagree:
 Res 7 is not offered for the whole extent — 416,635 edges, 80 MB. The routing-detail toggle
 gives 7 and finer for a named area. Aggregation follows `sightline2`'s own fold: **any**
 child that sees land makes the parent visible, and `gov_h_m` is the **maximum**.
+
+## 27. Why not Shapely — no good reason, and it was hiding real crossings
+
+Stephen asked why the intersection test was not simply a geometric one. There was no good
+answer. The land definition lives in a raster — `fine_sea` at 232 m, the same surface the
+traces walk and the node-in-water rule reads — so I stayed in raster space by reflex. **That
+is a reason to polygonise the mask once, not a reason to sample it a million times.**
+
+**The sampler was not merely inelegant; it was wrong, and I had written the error up as a
+tolerance.** Section 25 called the last 6 links "asymptotic rather than a defect… smaller
+than the coastline this mask is able to describe". An exact test finds those same 6 and they
+are real crossings — my eight-samples-per-pixel test caught **1 of the 6**. Every version of
+this test had a rate I kept raising and a residual I kept excusing.
+
+**Polygonising costs 1.7 s and gives 5,825 polygons, 192,120 vertices in total.** The naive
+version was slow — 133 s for 47,372 links — because a handful of rings hold most of those
+vertices and every query pays for the whole European mainland. Clipped to a 50 km grid the
+largest piece has 1,468 vertices:
+
+| method | correct? | 47,372 links |
+|---|---|---:|
+| 8 samples per pixel | no — misses 5 of 6 | 1.94 s |
+| Shapely, whole polygons | yes | 132.58 s |
+| Shapely, clipped to 50 km | yes | **0.14 s** |
+
+So the exact test is **950× faster than the naive geometric one and 14× faster than the
+sampler it replaces**. There was never a speed argument for sampling; I had simply not
+measured the alternative.
+
+**The mask stays the authority.** These polygons *are* `fine_sea`, so the link test still
+agrees with the traces, the node-in-water rule and the sea-connectivity fill. Substituting a
+vector coastline from another source — Boundary-Line, say — would have made this one test
+disagree with everything else in the pipeline, which is the failure of section 16 in a new
+costume.
+
+**Crossings now, exact, on the published geometry: 0 of 47,367 drawn links, 0 of 6,534 at
+res 5, 0 of 864 at res 4, and 0 of 416,588 in the routing graph itself.** The first time this
+has been provably clean rather than under a threshold.
+
+One further find on the way. The first exact run still showed **1 of 47,367**, because the
+exporter tested the exact cell centre and published it **rounded to 4 dp** — up to 11 m,
+enough to move a drawn line across a headland the tested line missed. The exporters now
+round first and test what they draw. Same lesson as the figures panel: measure the thing you
+are actually showing.
+
+A `channel` check area is added over the closed mid-Channel hop, where coarse cells sit
+inside a fine grid; seam coverage goes from 25 of 187 to **132 of 187**.
