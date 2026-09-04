@@ -1,0 +1,22 @@
+{
+ "method": "land-outwards, banded by reach",
+ "bands": 70,
+ "band_km": 2.0,
+ "max_reach_km": 139.0,
+ "tallest_land_m": 1342,
+ "horizon_km_per_sqrt_metre": 3.7945,
+ "distance_crs": "EPSG:32630",
+ "distance_crs_worst_error_pct": 0.33,
+ "observer_height_m": 0.0,
+ "sea_cells": 17556,
+ "see_land": 9938,
+ "reach_bound_evidence": {
+  "Ben Nevis GB": 139.2,
+  "Kerry IRL": 120.9,
+  "Brittany FRA": 73.9,
+  "W Norway (does NOT reach, 430 km away)": 146.2,
+  "Iceland (does NOT reach, 700 km away)": 143.8
+ },
+ "attribution": "Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0.",
+ "use_constraint": "DO NOT USE FOR NAVIGATION"
+}

@@ -52,6 +52,10 @@ const STAGES={
  sightline:{label:'2 · Sightline', legend:[['sees land','#3fb950'],['sees none','#484f58'],
    ['not knowable','#f0883e']],
    note:'Curvature only, no occlusion. Observer at sea level, so the envelope is a floor. Orange is where the land that would be visible lies outside the data — it is not a negative.'},
+ sightline2:{label:'2b · Rebuilt', legend:[['governed by land &gt;800 m','#f85149'],
+   ['400–800 m','#f0883e'],['200–400 m','#e3b341'],['80–200 m','#3fb950'],
+   ['under 80 m','#58a6ff'],['sees none','#484f58']],
+   note:'Same question, computed from the land outwards in 2 km reach bands. Colour is the TALLEST land that reaches each cell — the thing the inversion makes visible. Red water is held by a mountain; blue by a low hill, and it hugs the coast.'},
  joins:{label:'3 · Joins', legend:[['rule 1 — in a cell','#3fb950'],['rule 2 — adjacent','#58a6ff'],
    ['rule 3 — needs a path','#f85149']],
    note:'One line per tidal terminus to the grid cell it attaches to. Red is an inference not yet traced.'},
@@ -91,6 +95,14 @@ async function draw(){
     if(await src('sl', F+'sightline_r6.geojson'))
       map.addLayer({id:'x-sl',type:'fill',source:'sl',paint:{'fill-opacity':.42,
         'fill-color':['case',['get','visible'],'#3fb950',['get','known'],'#484f58','#f0883e']}});
+  } else if(stage==='sightline2'){
+    if(await src('sl2', F+'sightline2_r6.geojson'))
+      map.addLayer({id:'x-sl2',type:'fill',source:'sl2',paint:{'fill-opacity':.5,
+        'fill-color':['case',['!',['get','visible']],'#484f58',
+          ['>=',['get','gov_h_m'],800],'#f85149',
+          ['>=',['get','gov_h_m'],400],'#f0883e',
+          ['>=',['get','gov_h_m'],200],'#e3b341',
+          ['>=',['get','gov_h_m'],80],'#3fb950','#58a6ff']}});
   } else if(stage==='joins'){
     if(await src('jn', F+'joins.geojson'))
       map.addLayer({id:'x-jn',type:'line',source:'jn',paint:{'line-width':1.6,
@@ -118,6 +130,11 @@ function figures(){
       ['edges',e.edges],['components',e.components],['isolated',e.isolated],
       ['severed deep bodies',(g.severed_deep_water||[]).length]],
     sightline:[['sea cells',15861],['see land',8113],['not knowable',6735]],
+    sightline2:[['sea cells',(summaries.sightline_summary||{}).sea_cells],
+      ['see land',(summaries.sightline_summary||{}).see_land],
+      ['reach bands',(summaries.sightline_summary||{}).bands],
+      ['max reach km',(summaries.sightline_summary||{}).max_reach_km],
+      ['tallest land m',(summaries.sightline_summary||{}).tallest_land_m]],
     joins:[['termini',j.termini],['rule 1',(j.by_rule||{})['1']],['rule 2',(j.by_rule||{})['2']],
       ['rule 3',(j.by_rule||{})['3']]],
     traces:[['attempted',t.attempted],['traced',t.traced],['failed',t.failed]]}[stage]||[];

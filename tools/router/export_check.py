@@ -72,7 +72,8 @@ def main() -> None:
         print(f"  grid-{name}.geojson  {len(f):,} cells (res 8-9)")
 
     # the other three stages are already browser-readable; link, do not copy
-    for src in ("sightline_r6.geojson", "joins.geojson", "traces.geojson"):
+    for src in ("sightline_r6.geojson", "sightline2_r6.geojson",
+                "joins.geojson", "traces.geojson"):
         p = Path("docs/router/data") / src
         if p.exists():
             print(f"  (stage reads ../data/{src}, {p.stat().st_size/1e6:.1f} MB)")
@@ -94,7 +95,8 @@ def main() -> None:
     print("  index.html (from tools/router/check.html)")
 
     summary = {}
-    for s in ("grid_summary", "join_summary", "trace_summary", "edge_summary"):
+    for s in ("grid_summary", "join_summary", "trace_summary", "edge_summary",
+              "sightline_summary"):
         p = Path("docs/router/data") / f"{s}.json"
         if p.exists():
             summary[s] = json.loads(p.read_text())

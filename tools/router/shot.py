@@ -35,7 +35,7 @@ from pathlib import Path
 URL = "http://127.0.0.1:8021/router/check/"
 OUT = Path("docs/router/check/shots")
 GL = ["--enable-unsafe-swiftshader", "--use-gl=angle", "--use-angle=swiftshader"]
-STAGES = ["grid", "sightline", "joins", "traces"]
+STAGES = ["grid", "sightline", "sightline2", "joins", "traces"]
 
 
 def main() -> int:
@@ -79,12 +79,23 @@ def main() -> int:
             browser.close()
             return 1
 
-        for i, st in enumerate(stages):
-            want = i + 1
+        try:
+            page.wait_for_function("window.__drawn >= 1", timeout=a.timeout)
+        except PWError:
+            print("FAIL  the page never finished its first draw")
+            browser.close()
+            return 1
+
+        for st in stages:
             try:
-                if i:
-                    page.evaluate(f"window.setStage({st!r})")
-                page.wait_for_function(f"window.__drawn >= {want}", timeout=a.timeout)
+                # ALWAYS switch, and wait for the counter to MOVE. The first version
+                # skipped the switch when the requested stage was the first in the list,
+                # so `--stage sightline2` screenshotted the default stage and reported
+                # `ok` for a stage it never showed. The feature count was the evidence
+                # and I was not checking it against anything.
+                before = page.evaluate("window.__drawn")
+                page.evaluate(f"window.setStage({st!r})")
+                page.wait_for_function(f"window.__drawn > {before}", timeout=a.timeout)
                 if a.area != "all":
                     page.evaluate(f"window.zoomTo({a.area!r})")
                     page.wait_for_timeout(1200)
@@ -108,6 +119,14 @@ def main() -> int:
 
             # CONTENT, NOT JUST COMPLETION: did anything actually draw, and is there a
             # control that draws nothing? An absence means nothing without one.
+            # ASSERT THE SUBJECT, not just that something drew. A harness that cannot
+            # tell which stage it is looking at will happily pass the wrong one.
+            shown = page.evaluate("[...document.querySelectorAll('#stages button')]"
+                                  ".find(b=>b.classList.contains('on'))?.dataset.s")
+            if shown != st:
+                print(f"FAIL  {st:<10} the page is showing {shown!r}, not {st!r}")
+                bad += 1
+                continue
             n = page.evaluate("window.map.queryRenderedFeatures()"
                               ".filter(f=>f.layer.id.startsWith('x-')"
                               " && f.layer.id!=='x-coast').length")
