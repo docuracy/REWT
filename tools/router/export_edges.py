@@ -57,6 +57,13 @@ def main(cfg: dict = CONFIG) -> None:
     lat, lon = np.round(g["lat"], cfg["coord_dp"]), np.round(g["lon"], cfg["coord_dp"])
     cell = g["cell"].tolist()
     P, D = cfg["publish_resolution"], cfg["coord_dp"]
+    # AN EXPORT DOES NOT MINT A GENERATION. This re-rendered the same edges an hour
+    # later and stamped a fresh time on them, so two layers from one pass disagreed and
+    # the viewer's cross-layer check — reading my own files — caught my own claim that
+    # they matched. The stamp belongs to the pass that COMPUTED the data; re-rendering
+    # it is not a new pass. generation() is the fallback for edges built without one.
+    s = json.loads(Path(cfg["summary"]).read_text())
+    stamp = s.get("generation") or generation()
     z = np.load(cfg["edges"])
     e, length = z["edge"], z["length_m"]
     ra, rb = res[e[:, 0]].astype(int), res[e[:, 1]].astype(int)
@@ -128,7 +135,7 @@ def main(cfg: dict = CONFIG) -> None:
               for k in sub]
         Path(cfg["check_dir"], f"edges-{name}.geojson").write_text(json.dumps(
             {"type": "FeatureCollection",
-             "properties": {"generation": generation(), "aggregated": False,
+             "properties": {"generation": stamp, "aggregated": False,
                             "what": "the routing lattice itself, res 7-9, unaggregated"},
              "features": af}, separators=(",", ":")))
         print(f"  edges-{name}.geojson  {len(af):,} true edges")
@@ -137,7 +144,7 @@ def main(cfg: dict = CONFIG) -> None:
     fc = {
         "type": "FeatureCollection",
         "properties": {
-            "generation": generation(),
+            "generation": stamp,
             "what": "Links between the centres of adjacent sea cells: the surface a "
                     "route is measured on.",
             "an_edge_is_not_a_route":
@@ -180,6 +187,14 @@ def main(cfg: dict = CONFIG) -> None:
                 "cell centres. The same test decides which cells the grid keeps.",
             "length_is_not_a_weight":
                 "length_m is geometry. Weights — wind, tide, season — are deferred.",
+            "published_cells_with_no_edge": len(pub - {f["properties"]["h3_a"] for f in feats}
+                                                 - {f["properties"]["h3_b"] for f in feats}),
+            "cells_with_no_edge_meaning":
+                "Cells the sightline layer draws as sighted sea that the routing graph "
+                "never enters: every res-7 child was lost to the sea mask, the trim or "
+                "the land test. Two of 17,599, off Wexford and off Caithness. They are "
+                "counted here rather than left for a reader to find as hexes nothing "
+                "touches.",
             "components": s.get("components"),
             "largest_component": s.get("largest_component"),
             "attribution": s.get("attribution"),

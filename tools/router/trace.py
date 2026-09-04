@@ -292,7 +292,8 @@ def main(cfg: dict = CONFIG) -> None:
         "rows": rows}, indent=1))
     Path(cfg["out"]).write_text(json.dumps({
         "type": "FeatureCollection",
-        "properties": {"what": "traced paths from stranded river termini to the sea grid",
+        "properties": {"generation": generation(),
+                       "what": "traced paths from stranded river termini to the sea grid",
                        "cost": "1 per pixel in water; 1 + height in metres on ground above "
                                "the lowest tide; impassable above "
                                f"{cfg['impassable_above_m']} m. NOT a weight — see module "

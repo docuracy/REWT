@@ -225,7 +225,8 @@ def main(cfg: dict = CONFIG) -> None:
              for k, (_, r) in enumerate(t.iterrows())]
     Path(cfg["out"]).write_text(json.dumps({
         "type": "FeatureCollection",
-        "properties": {"what": "river terminus -> sea grid joins, one line each",
+        "properties": {"generation": generation(),
+                       "what": "river terminus -> sea grid joins, one line each",
                        "attribution": [
                            "Contains EMODnet Bathymetry data. EMODnet Bathymetry "
                            "Consortium (2024): EMODnet Digital Bathymetry (DTM 2024), "

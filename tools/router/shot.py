@@ -58,7 +58,7 @@ def main() -> int:
     stages = a.stage or STAGES
     # A real mapless page, not a flag the page cooperates with: the point is to exercise
     # the timeout path, and a page that politely declines to draw is not the same subject.
-    url = (a.url + "sightline_extent.geojson".join(["../data/", ""])
+    url = (a.url + "join_summary.json".join(["../data/", ""])
            if a.prove_it_fails else a.url)
     bad = 0
 

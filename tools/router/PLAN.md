@@ -672,7 +672,6 @@ cell, and then for each sea cell whether any land cell reaches it.
 | file | |
 |---|---|
 | `sightline_r6.geojson` | 15,861 res-6 sea cells, 6.2 MB. Per cell: `visible`, and where visible the governing landmark's height, distance, margin, and position — so a viewer can draw the sightline itself, not just the zone. |
-| `sightline_extent.geojson` | the rectangle within which the answer is known. |
 
 **Measured over the cached extent (−8.0, 49.5) to (2.0, 61.0):** 10,280 land cells and
 15,861 sea cells at res 6; the tallest land cell reads 1,342 m and reaches 139.0 km;
@@ -695,7 +694,7 @@ high, and a gazetteer is outside this data entirely.
 
 - **The hole must render as a third state.** West of longitude −8 there is no cached data,
   so Ireland's Atlantic coast computes as "no land visible" when the truth is "not known".
-  `sightline_extent.geojson` exists for that. **Unknown must fail towards the visible
+  There is no longer an unknown state to bound — see section 14. **Unknown must fail towards the visible
   fault** (D-077), and a blank sea is the invisible one.
 - **Observer height is 0 m** — an eye at sea level, the one value that assumes nothing. A
   deck at 3 m adds 6.7 km to every range, a masthead at 10 m adds 12.2 km. Observer height
@@ -1093,3 +1092,35 @@ and the count is a property rather than a silent loss.
 
 `crossing_a_band` counts features **in this layer**: 59. The res-7 graph behind it has 321,
 because several edges collapse into one drawn link. Both are published, named apart.
+
+## 18. An export does not mint a generation
+
+I told visualisation that the edges layer and the cells layer "came from one pass". They
+did not: 20260904T101447Z against 20260904T092019Z. Their cross-layer check — reading my
+files — caught my own claim. Two things were wrong, and the one they found was the smaller.
+
+**`export_edges.py` minted a fresh stamp every time it ran.** I re-rendered the same edges
+an hour later to fix a property name, and the stamp moved, so two artefacts of one pass
+disagreed about which pass they belonged to. **A generation belongs to the run that
+COMPUTED the data; re-rendering it is not a new run.** The exporter now takes its stamp
+from `edge_summary.json` and falls back to `generation()` only if there is none. It is
+idempotent: run it twice and the file is byte-identical.
+
+**And joins.geojson and traces.geojson carried no generation at all.** Their summaries did;
+the layers a viewer actually loads did not. So the check could compare the only two layers
+that happened to be stamped and was blind to the other two — the gap being invisible
+precisely because the stamped pair is what got tested. Both are stamped now, re-run under
+the pass's own generation, reproducing identically: 86 / 178 / 125 by rule, 102 traced.
+
+`sightline2_r6.geojson` at 092019Z is genuinely an earlier pass and correctly says so. It
+was not rebuilt because nothing it depends on changed, and the 220-cell drop orphaned none
+of its cells. **Two of its 17,599 cells have no routing cell beneath them** — off Wexford
+and off Caithness, sighted sea the graph never enters — and that is now a counted property
+of the edges layer, `published_cells_with_no_edge`, rather than two hexes for a reader to
+notice.
+
+`sightline_extent.geojson` is deleted. It was published data that no current script wrote,
+describing "the rectangle within which the answer is known" — a concept that stopped
+existing when the unknown state went (section 14). `shot.py` used it as a deliberately
+mapless page and now points at a summary instead. **A stale artefact nothing regenerates is
+worse than an unstamped one: it reads as current and has no run behind it.**
