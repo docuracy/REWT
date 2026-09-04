@@ -603,9 +603,23 @@ const OVERLAYS = [
              ['no land in sight, and that IS the answer', '#39414d'],
              ['NOT KNOWN — the land that would be visible lies outside the data, so '
               + 'this is not a negative', C.warn],
-             ['the EDGE of this layer is a ROUTING decision, not a horizon and not a '
-              + 'coast: cells out of sight, and cells beyond a week under sail, are '
-              + 'absent rather than drawn', null]],
+             /* THIS LINE USED TO PARAPHRASE THE FILE AND WENT BACKWARDS WITHIN A DAY.
+                It read "the EDGE of this layer is a ROUTING decision, not a horizon and
+                not a coast", which was true while the blind-sailing buffer was 56.4 km.
+                Stephen then ruled the buffer to zero, so the edge became the limit of
+                sight exactly — and my sentence asserted the opposite, in the legend, on
+                the deployed map. The file's own `buffer_basis` had already inverted with
+                it, and the stamp under this layer prints that sentence rather than
+                restating it, so the panel was right while the legend was wrong.
+
+                A number that moves is caught by a diff. A sentence that REVERSES is
+                caught only where the thing quoting it quotes rather than paraphrases,
+                because a paraphrase that was accurate when written reads exactly like
+                one that still is (rewt-68, who hit the same thing on /routing). So this
+                line no longer says what the edge means — it points at the words that do,
+                and those come from the file at render time. */
+             ['what the EDGE of this layer means is stated under it, in the words of '
+              + 'the file that drew it — it has already reversed once', null]],
     /* The tally counts what the file HOLDS, so a change of shape shows on the page
        rather than being noticed later. It reported three states yesterday; today it
        reports one, which is the trim having landed. */
@@ -875,7 +889,16 @@ async function ensure(o) {
       ?.querySelector('em');
     if (em) em.textContent = fmt(o.count);
   }
-  map.addSource(o.id, { type: 'geojson', data });
+  /* A LAYER'S OWN ATTRIBUTION GOES IN THE MAP'S ATTRIBUTION CONTROL, which is what
+     that control is for. The sightline surface is EMODnet under CC BY 4.0 and comes
+     from outside the release, so `summary.attribution` — which is the REWT build's —
+     does not cover it, and until now it was displayed NOWHERE. Not a cosmetic gap: this
+     repository's own README says attribution is a licence condition and not decoration.
+     MapLibre shows a source's `attribution` while that source is in the style, so the
+     credit appears when the layer is switched on and goes when it is switched off,
+     which is exactly the right behaviour for a layer nobody has to load. */
+  map.addSource(o.id, { type: 'geojson', data,
+    ...(data.properties?.attribution ? { attribution: data.properties.attribution } : {}) });
   if (o.kind === 'polygon') {
     map.addLayer({ id: o.id, type: 'fill', source: o.id,
       paint: { 'fill-color': o.colour, 'fill-opacity': o.opacity ?? 0.3 } },
@@ -1009,11 +1032,29 @@ const STAMP_FIELDS = [
   ['source_release', 'elevation'],
   ['source_checksum', 'digest'],
 ];
-/* Printed in full under the fields rather than squeezed into them: each is a sentence
-   that changes how the picture should be read, and the first is the one I asked rewt-c7
-   to carry — a trimmed layer has an EDGE, and an edge on a map reads as a boundary of
-   something real when it is a routing decision. */
-const STAMP_PROSE = ['buffer_basis', 'week_trim', 'trimmed', 'gov_h_m_definition'];
+/* EVERY SENTENCE THE FILE CARRIES, NOT A LIST OF THE ONES I KNEW ABOUT. This was
+   ['buffer_basis', 'week_trim', 'trimmed', 'gov_h_m_definition'] — four keys typed from
+   a file I had read once, and within the hour rewt-c7 added `known_invariant` and
+   `gov_reach_km_definition`, which are exactly the sentences a reader needs and which a
+   hardcoded list would have silently dropped. It is the same coupling as the cell count
+   that lived in this file and was wrong twice over: enumerating somebody else's schema
+   means going stale every time they improve it.
+
+   So anything long enough to be prose is prose, printed in the file's own order, minus
+   what is already shown as a labelled field or handled separately. A layer that gains a
+   caveat gains it on the page without my touching anything. */
+/* `attribution` and `what` were on this list on the assumption they were shown
+   elsewhere. `what` was not shown at all — my note said the same thing in my own words,
+   which is a second rendering of one fact — and `attribution` was shown NOWHERE, which
+   is a licence condition and not a formatting choice. Both are printed now, and the
+   length threshold is gone with them: it was 60 characters, chosen from the file as it
+   stood, and a short caveat is still a caveat. Anything not already a labelled field
+   is prose. */
+const STAMP_SHOWN = new Set(['use_constraint', 'warning',
+  ...STAMP_FIELDS.map(([k]) => k)]);
+const stampProse = (st) => Object.entries(st)
+  .filter(([k, v]) => typeof v === 'string' && !STAMP_SHOWN.has(k))
+  .map(([, v]) => v);
 function showStamp(o) {
   const st = stamps.get(o.id);
   const el = document.getElementById(`note-${o.id}`);
@@ -1031,7 +1072,7 @@ function showStamp(o) {
   el.innerHTML = `${esc(o.note || '')}
     ${st.warning ? `<br><b style="color:var(--warn)">${esc(st.warning)}</b>` : ''}
     ${counted}<dl class="stamp">${rows}</dl>
-    ${STAMP_PROSE.filter((k) => st[k]).map((k) => `<br>${esc(st[k])}`).join('')}
+    ${stampProse(st).map((v) => `<br>${esc(v)}`).join('')}
     ${st.use_constraint ? `<br><b>${esc(st.use_constraint)}</b>` : ''}`;
 }
 
@@ -1849,6 +1890,7 @@ map.on('load', async () => {
      for cannot be leant on by anything shipped. `ready` last, so a harness can wait on
      one flag instead of racing boot. */
   if (new URLSearchParams(location.search).has('debug')) {
-    window.rewt = { map, hits, split, describe, highlight, CLICKABLE, loaded, ready: true };
+    window.rewt = { map, hits, split, describe, highlight, CLICKABLE, loaded, stamps,
+      tallies, ready: true };
   }
 });

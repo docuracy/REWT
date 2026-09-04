@@ -264,6 +264,46 @@ def check_sightline(page) -> tuple[bool, str]:
                 f"{res['saysDerived']}; control over land found nothing")
 
 
+def check_stamp(page) -> tuple[bool, str]:
+    """Every sentence the layer's file carries must reach the page.
+
+    The layer comes from outside the release, so the panel's build fingerprint does not
+    cover it and its own properties are the only provenance a reader gets. Those
+    properties are rewt-c7's to change and they changed three times today — so this
+    asserts the RULE (nothing is dropped) rather than a list of the keys I know about,
+    which is the coupling that went stale twice already.
+    """
+    res = page.evaluate("""async () => {
+        const st = window.rewt.stamps.get('sightline');
+        if (!st) return { missing: true };
+        const note = document.querySelector('#note-sightline');
+        const shown = note ? note.innerText : '';
+        /* EVERY string the file carries, with no length threshold — the viewer's
+           threshold was a number chosen from one day's file, and a short caveat is
+           still a caveat. `use_constraint` is checked separately below because it is
+           rendered in bold rather than as a sentence. */
+        const prose = Object.entries(st)
+            .filter(([k, v]) => typeof v === 'string' && k !== 'use_constraint')
+            .map(([k, v]) => [k, v]);
+        const absent = prose.filter(([, v]) => !shown.includes(v.slice(0, 40))).map(([k]) => k);
+        return { prose: prose.length, absent,
+                 constraint: !st.use_constraint || shown.includes(st.use_constraint),
+                 // CONTROL: a sentence the file does NOT carry must not be found, or
+                 // "everything is shown" would be true of a page showing anything.
+                 controlFound: shown.includes('a sentence this file does not contain') };
+    }""")
+    if res.get("missing"):
+        return False, "the sightline layer carries no stamp at all"
+    if res["controlFound"]:
+        return False, "the control string was found; the match is not discriminating"
+    if not res["constraint"]:
+        return False, "the file's use_constraint is not on the page"
+    ok = not res["absent"]
+    return ok, (f"{res['prose']} prose members in the file, "
+                + (f"all printed on the page" if ok
+                   else f"NOT printed: {', '.join(res['absent'])}"))
+
+
 def check_missing_layer(page) -> tuple[bool, str]:
     """A layer whose file has gone must SAY so, not sit ticked over empty water.
 
@@ -314,7 +354,7 @@ def check_missing_layer(page) -> tuple[bool, str]:
 
 CHECKS = {"panel": check_panel, "layers": check_layers,
           "popup": check_popup, "sightline": check_sightline,
-          "missing": check_missing_layer}
+          "stamp": check_stamp, "missing": check_missing_layer}
 
 
 def main() -> int:
