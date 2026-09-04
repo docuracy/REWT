@@ -3980,13 +3980,36 @@ records mattered rather than whether the source was sound.
 Dating the lights was only ever needed to make them honest as an input; they are not an
 input. The vetting request to `sources` is cancelled.
 
+**THE GENERAL FORM, WHICH IS THE REASON THIS ENTRY IS WORTH KEEPING AT ALL, and it is
+sources'.** Both of us vetted the source. My question was whether it was sound; theirs went
+to licence, currency, pinning and field shapes. **Every one of those is a property of the
+source, and the source would have passed all of them.** Neither of us asked what the answer
+was actually being carried by, and the answer was television transmitters.
+
+> **Vetting a source and vetting the records that do the work are two different audits, and
+> passing the first says nothing about the second.**
+
+A dataset can be sound, correctly licensed, correctly parsed and correctly pinned, and still
+have its entire effect produced by the 3% of rows nobody looked at. That is D-070's shape
+one level up: *confirm a selector excludes something* is about the filter, and this is about
+which surviving rows move the result.
+
 **What survives, and may earn a registration later on different grounds.** Each light carries
 a **nominal range** in nautical miles, published by a hydrographic authority and computed by
-a different method for a different purpose. That is 4,184 independent statements of how far a
-mark of a given height should be visible — an external check on the router's horizon geometry
-at 4,184 points. **It tests the formula rather than feeding it, so the daylight argument does
-not reach it**, and it remains the only check on that work that would not come from inside
-it. Not run, not registered, and flagged rather than dropped.
+a different method for a different purpose. It tests the formula rather than feeding it, so the daylight
+argument does not reach it, and it remains the only check on that work that would not come
+from inside it.
+
+**But it is not 4,184 statements, and sources caught me calling it that.** `range` is
+precisely the field they found broken: in volume 114's 3,002 rows it is a plain number in
+2,061, **null in 570 (19%)**, and in about 371 — one in eight — a per-colour string of the
+form `"W. 10 ; R. 7 ; G. 7"`. `float()` throws on that form; a parser taking the first
+integer gets white and one taking the last gets green, and **both look like they worked**.
+`heightFeetMeters`, the other half of any height-against-range check, is null in a
+*different* 19%, so the rows carrying both a height and a numeric range are fewer than either
+count suggests. **Whoever runs that check must start by reporting how many usable pairs there
+are, because that is the check's real sample size and it is not the row count.** Not run, not
+registered, and flagged rather than dropped.
 
 **And the router corrected their own reasoning, in the direction that should worry us.** They
 had argued separately that a small mark cannot be resolved at its own horizon, with an
