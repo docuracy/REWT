@@ -46,22 +46,16 @@ map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-right');
 
 const RES={3:'#f85149',4:'#f0883e',5:'#e3b341',6:'#3fb950',7:'#2ea043',8:'#58a6ff',9:'#a371f7'};
 const STAGES={
- grid:{label:'1 · Grid', legend:[['res 3','#f85149'],['res 4','#f0883e'],['res 5','#e3b341'],
-   ['res 6','#3fb950'],['res 7','#2ea043'],['res 8','#58a6ff'],['res 9','#a371f7']],
-   note:'Bands emerge from a cell being kept when its centre is further from land than twice its own edge. Fine detail (res 8–9) is exported only for the named areas.'},
- sightline:{label:'2 · Sightline', legend:[['sees land','#3fb950'],['sees none','#484f58'],
-   ['not knowable','#f0883e']],
-   note:'Curvature only, no occlusion. Observer at sea level, so the envelope is a floor. Orange is where the land that would be visible lies outside the data — it is not a negative.'},
- sightline2:{label:'2b · Rebuilt', legend:[['governed by land &gt;800 m','#f85149'],
+ sightline2:{label:'1 · Sightline', legend:[['governed by land &gt;800 m','#f85149'],
    ['400–800 m','#f0883e'],['200–400 m','#e3b341'],['80–200 m','#3fb950'],
    ['under 80 m','#58a6ff'],['sees none','#484f58']],
    note:'Same question, computed from the land outwards in 2 km reach bands. Colour is the TALLEST land that reaches each cell — the thing the inversion makes visible. Red water is held by a mountain; blue by a low hill, and it hugs the coast.'},
- joins:{label:'3 · Joins', legend:[['rule 1 — in a cell','#3fb950'],['rule 2 — adjacent','#58a6ff'],
+ joins:{label:'2 · Joins', legend:[['rule 1 — in a cell','#3fb950'],['rule 2 — adjacent','#58a6ff'],
    ['rule 3 — needs a path','#f85149']],
    note:'One line per tidal terminus to the grid cell it attaches to. Red is an inference not yet traced.'},
- traces:{label:'4 · Traces', legend:[['traced path','#a371f7']],
+ traces:{label:'3 · Traces', legend:[['traced path','#a371f7']],
    note:'Least-cost paths across the drying ground for the stranded termini. The median path spends 83% of its length above the lowest tide.'}};
-let stage='grid', loaded={}, summaries={}, areas={};
+let stage='sightline2', loaded={}, summaries={}, areas={};
 window.map=map;                       // a top-level const is NOT on window
 window.__drawn=0;                     // increments when a stage has finished drawing
 window.setStage=async s=>{ stage=s;
@@ -89,18 +83,7 @@ async function draw(){
   map.addLayer({id:'x-coast',type:'fill',source:'coast',
     paint:{'fill-color':'#161b22','fill-outline-color':'#30363d'}});
   const resColour=['match',['get','res'],3,RES[3],4,RES[4],5,RES[5],6,RES[6],7,RES[7],8,RES[8],9,RES[9],'#888'];
-  if(stage==='grid'){
-    await src('gc', C+'grid-coarse.geojson');
-    map.addLayer({id:'x-gc',type:'fill',source:'gc',
-      paint:{'fill-color':resColour,'fill-opacity':.28,'fill-outline-color':resColour}});
-    for(const a of Object.keys(areas)){ if(await src('g-'+a, C+'grid-'+a+'.geojson'))
-      map.addLayer({id:'x-g-'+a,type:'fill',source:'g-'+a,
-        paint:{'fill-color':resColour,'fill-opacity':.45,'fill-outline-color':resColour}}); }
-  } else if(stage==='sightline'){
-    if(await src('sl', F+'sightline_r6.geojson'))
-      map.addLayer({id:'x-sl',type:'fill',source:'sl',paint:{'fill-opacity':.42,
-        'fill-color':['case',['get','visible'],'#3fb950',['get','known'],'#484f58','#f0883e']}});
-  } else if(stage==='sightline2'){
+  if(stage==='sightline2'){
     if(await src('sl2', F+'sightline2_r6.geojson'))
       map.addLayer({id:'x-sl2',type:'fill',source:'sl2',paint:{'fill-opacity':.5,
         'fill-color':['case',['!',['get','visible']],'#484f58',

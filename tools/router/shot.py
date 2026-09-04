@@ -35,7 +35,7 @@ from pathlib import Path
 URL = "http://127.0.0.1:8021/router/check/"
 OUT = Path("docs/router/check/shots")
 GL = ["--enable-unsafe-swiftshader", "--use-gl=angle", "--use-angle=swiftshader"]
-STAGES = ["grid", "sightline", "sightline2", "joins", "traces"]
+STAGES = ["sightline2", "joins", "traces"]
 
 
 def main() -> int:

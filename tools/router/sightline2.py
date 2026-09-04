@@ -37,7 +37,7 @@ from pathlib import Path
 import numpy as np
 import rasterio
 from rasterio.warp import Resampling, calculate_default_transform, reproject
-from rasterio.windows import Window
+from rasterio.windows import Window, from_bounds as _fb
 from scipy import ndimage
 
 import h3
@@ -69,9 +69,21 @@ CONFIG = {
     # matches rules/H3.md's scope -- the coastal waters of the British Isles -- but it
     # is a scope decision showing up as a rendering one.
     "buffer_km": 60.0,
+    # THE EXTENT IS A DECLARED PARAMETER, not the mosaic's bounds. Geometry does not
+    # bound this area: the continental shore is continuous, so a sight-plus-buffer
+    # surface keeps connecting coastwise for as long as land is in the extent — it would
+    # run to the Baltic and round Iberia. Where to stop must be SAID.
+    #
+    # Faroe was admitted on a bad rule and is now out: two buffers overlapping is two
+    # blind zones touching, which is not a route. The test is whether a landmass's buffer
+    # reaches water that is IN SIGHT of the existing area. Shetland-Faroe is 290 km with
+    # 113 and 80 km of sight, leaving 97 km blind against a 60 km buffer. It fails.
+    "aoi": (-13.24, 48.63, 3.00, 63.95),
     "crs": "EPSG:32630",
     "metres_per_pixel": 930.0,
     "min_land_height_m": 1.0,
+    "islet_max_px": 40,              # below this, test whether it stands on anything
+    "islet_min_seabed_m": -500.0,    # Rockall stands on a bank at about -200 m
     "earth_radius_m": 6371000.0,
     "out": "docs/router/data/sightline_r6.geojson",
     "summary": "docs/router/data/sightline_summary.json",
@@ -89,19 +101,23 @@ def main(cfg: dict = CONFIG) -> None:
     K = math.sqrt(2 * cfg["earth_radius_m"] * cfg["refraction_k"]) / 1000  # km / sqrt(m)
     src = rasterio.open(build_vrt(cfg))
     dec = cfg["decimate"]
-    h, w = src.height // dec, src.width // dec
+    aw = _fb(*cfg["aoi"], src.transform)
+    off_r, off_c = int(aw.row_off), int(aw.col_off)
+    ah, aw_ = int(aw.height), int(aw.width)
+    h, w = ah // dec, aw_ // dec
     print(f"working grid {w} x {h} at 1/{dec}")
 
     # Two reductions from one read. MAX for land, because peaks must survive it; and a
     # separate "does this block hold any water" at FOUR TIMES the resolution, because
     # the sea mask needs connectivity and a coarse block closes narrow channels.
     fine = 2
-    fh, fw = src.height // fine, src.width // fine
+    fh, fw = (h * dec) // fine, (w * dec) // fine   # the AOI, not the whole mosaic
     elev = np.full((h, w), np.nan, "float32")
     wet = np.zeros((fh, fw), bool)
     for r0 in range(0, h, 256):
         r1 = min(r0 + 256, h)
-        raw = nodata_to_nan(src.read(1, window=Window(0, r0*dec, w*dec, (r1-r0)*dec)))
+        raw = nodata_to_nan(src.read(1, window=Window(
+            off_c, off_r + r0 * dec, w * dec, (r1 - r0) * dec)))
         c = raw.reshape(r1 - r0, dec, w, dec)
         with np.errstate(invalid="ignore"):
             elev[r0:r1] = np.nanmax(c, axis=(1, 3))     # peaks must survive the reduction
@@ -123,7 +139,9 @@ def main(cfg: dict = CONFIG) -> None:
     k = dec // fine
     reaches = np.any(ocean.reshape(h, k, w, k), axis=(1, 3))   # back to the working grid
 
-    b = src.bounds
+    b = rasterio.coords.BoundingBox(*rasterio.windows.bounds(
+        Window(off_c, off_r, w * dec, h * dec), src.transform))
+    print(f"  extent (declared) {[round(v, 2) for v in b]}")
     # into a projected CRS with SQUARE pixels, so one `sampling` is true everywhere
     dst_tr, dw, dh = calculate_default_transform(
         src.crs, cfg["crs"], w, h, *b, resolution=cfg["metres_per_pixel"])
@@ -141,6 +159,31 @@ def main(cfg: dict = CONFIG) -> None:
     px = py = cfg["metres_per_pixel"]
     print(f"  reprojected to {cfg['crs']}: {dw} x {dh} at {px:.0f} m square")
     land = np.isfinite(elev) & (elev >= cfg["min_land_height_m"])
+
+    # A REAL ISLAND SHOALS TOWARDS IT. Six pixels reading +126 m sit in the Faroe-Shetland
+    # Channel at 61.696 N, 2.049 W, with a median seabed of -1,429 m for 50 km around and
+    # no shoaling at all — a 1,555 m spike out of deep water, and an artefact. It was
+    # casting 40 km of sightline over 150 cells, and nothing but the picture showed it.
+    # AREA CANNOT SEPARATE THESE: Rockall is a real navigational mark of 0.001 km2. What
+    # separates them is that Rockall stands on a bank at about -200 m and this stands on
+    # nothing.
+    llab, ln = ndimage.label(land, structure=ndimage.generate_binary_structure(2, 2))
+    lsz = np.bincount(llab.ravel())
+    dropped_spikes = 0
+    for i in range(1, ln + 1):
+        if lsz[i] > cfg["islet_max_px"]:
+            continue                              # big enough to be obviously real
+        rs, cs = np.nonzero(llab == i)
+        r0, r1 = max(rs.min() - 20, 0), min(rs.max() + 21, land.shape[0])
+        c0, c1 = max(cs.min() - 20, 0), min(cs.max() + 21, land.shape[1])
+        near = elev[r0:r1, c0:c1]
+        wet = near[np.isfinite(near) & (near < 0)]
+        if wet.size and float(np.median(wet)) < cfg["islet_min_seabed_m"]:
+            land[llab == i] = False
+            dropped_spikes += 1
+    if dropped_spikes:
+        print(f"  dropped {dropped_spikes} land specks standing in water deeper than "
+              f"{-cfg['islet_min_seabed_m']:.0f} m with no shoaling — spikes, not islands")
     sea = np.isfinite(elev) & (elev < 0) & (rea > 0.5)
     hmax = float(np.nanmax(elev))
     obs = K * math.sqrt(cfg["observer_height_m"]) if cfg["observer_height_m"] else 0.0
@@ -207,6 +250,49 @@ def main(cfg: dict = CONFIG) -> None:
               "sea PIXEL in a cell,\n  the old one tested the cell CENTRE, so a cell "
               "with a corner in sight now counts. The\n  reverse would be a defect.")
         return
+
+    # --- ADMISSION: A BUFFER MUST REACH WATER THAT IS IN SIGHT ---------------------
+    # Stephen's correction, and it is a rule about LANDMASSES, not about the extent. Two
+    # buffers overlapping is two blind zones touching, which is not a route. So: take the
+    # connected components of the VISIBLE zone, start from Great Britain, and admit
+    # another component only when the gap to an already-admitted one is within the
+    # buffer. Clipping the extent instead left Faroe's southern islands inside the
+    # rectangle, casting a sliced-off zone — the rule has to act on the land, not the box.
+    vlab, vn = ndimage.label(visible, structure=ndimage.generate_binary_structure(2, 2))
+    seed_lat, seed_lon = 53.60, -3.60                     # Liverpool Bay: sea, and in sight
+    sx, sy = Transformer.from_crs(4326, cfg["crs"], always_xy=True).transform(seed_lon, seed_lat)
+    sr, sc = rasterio.transform.rowcol(dst_tr, sx, sy)
+    seed = int(vlab[sr, sc])
+    if seed == 0:
+        raise SystemExit(f"seed {seed_lat} N {seed_lon} E is not in the visible zone — it "
+                         f"must be a point of SEA that can see land, not a point on land")
+    admitted = {seed}
+    while True:
+        mask = np.isin(vlab, list(admitted))
+        d = ndimage.distance_transform_edt(
+            ~mask, sampling=(cfg["metres_per_pixel"],) * 2) / 1000.0
+        gained = set()
+        for i in range(1, vn + 1):
+            if i in admitted:
+                continue
+            m = vlab == i
+            if m.any() and float(d[m].min()) <= cfg["buffer_km"]:
+                gained.add(i)
+        if not gained:
+            break
+        admitted |= gained
+    sizes = np.bincount(vlab.ravel())
+    rejected = [(int(sizes[i]), i) for i in range(1, vn + 1) if i not in admitted]
+    rejected.sort(reverse=True)
+    print(f"  visible zone has {vn} components; {len(admitted)} admitted, "
+          f"{len(rejected)} rejected as unreachable within the {cfg['buffer_km']:.0f} km buffer")
+    for n_, i in rejected[:4]:
+        rs, cs = np.nonzero(vlab == i)
+        x, y = rasterio.transform.xy(dst_tr, int(rs.mean()), int(cs.mean()))
+        blo, bla = Transformer.from_crs(cfg["crs"], 4326, always_xy=True).transform(x, y)
+        print(f"    {n_:>7,} px of sight around {bla:.2f} N {blo:.2f} E — "
+              f"{float(d[vlab == i].min()):.0f} km from anything in sight")
+    visible &= np.isin(vlab, list(admitted))
 
     # --- TRIM (H3-002 item 3) -----------------------------------------------------
     dblind = ndimage.distance_transform_edt(
