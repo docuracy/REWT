@@ -1650,3 +1650,45 @@ are only about 800 refused pairs in the entire grid. It ran for twenty minutes a
 going. The expensive test belongs after the cheap one — and the reason I wrote it the wrong
 way round is that I described the rule as "pairs near England and Wales whose link is
 refused" and then implemented the clauses in the order I had said them.
+
+## 34. What the mesh actually covers
+
+rewt-46 measured the mesh against the implementer's `sea_route` network and got **58.1%**
+of its 4,184 entries. I had told them my grid "supersedes it in function" without ever
+computing a coverage figure. Their number is right and the claim was not.
+
+**REPRODUCING IT FIRST, because a disagreement about a number is worthless until both
+sides compute the same thing.** My first attempt gave 38.1%, because I took each entry's
+position from `sea_entry.easting/northing` — and those are the **river mouth**, not the
+entry. `sea_entry` holds 11,958 rows over 4,184 entries, one of them carrying 108 mouths,
+so `drop_duplicates("entry_id")` hands back an arbitrary mouth's coordinates. Positioning
+entries the way rewt-46 did — intersecting the endpoints of every route incident to an
+entry, since `from_entry`/`to_entry` do not say which end is which — reproduces **2,432,
+58.1%, exactly**.
+
+**AND THEN THE QUESTION THAT MATTERS: is the gap rendering or absence?** 58.1% is against
+the **published res-6 layer**. Against the **res-7 routing grid**:
+
+| | entries | mouths |
+|---|---:|---:|
+| in a routing cell | 1,366 (32.6%) | 3,577 (29.9%) |
+| one ring away | 1,657 (39.6%) | 4,459 (37.3%) |
+| two rings away | 451 (10.8%) | 1,562 (13.1%) |
+| **absent** | **710 (17.0%)** | **2,360 (19.7%)** |
+
+**83.0% of entries are within two rings of the routing grid against 58.1% in a published
+cell, so most of the gap rewt-46 measured is rendering.** A cell one hexagon from a mouth is
+still a reachable coast, and the aggregation I publish — clipped to the sightline cells,
+4,504 perimeter cells removed so a viewer toggle would line up — hides it. That clip was
+made to satisfy a rendering requirement and nobody asked what it cost a consumer joining
+against the layer.
+
+**But 17.0% is genuinely absent, and that is a real limit of the surface**, not a drawing
+problem: 710 entries with 2,360 river mouths behind them, in creek heads and narrow
+estuaries the res-7 lattice cannot represent — the Cromarty firth heads, Southampton Water,
+Clementsgreen Creek on the Crouch, the Clyde above Dumbarton, the Tay above Perth. The same
+class as the fjords whose cells were dropped as unroutable.
+
+**So `sea_route` does not retire on the mesh's account** and that has been said to
+visualisation as my position. A surface that is provably clean over 83% of the entries and
+absent from a fifth of the mouths is not a replacement for one that covers all of them.

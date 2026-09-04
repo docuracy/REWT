@@ -191,6 +191,31 @@ def main(cfg: dict = CONFIG) -> None:
     dep = gdep[ni]
     t["attach_depth_m"] = np.where(rule < 3, dep, np.nan)
 
+    # MOVED ABOVE THE REPORT. This ran after the summary was written, so the
+    # published counts were the pre-demotion ones: the summary said 45/115/229
+    # while the file held 44/115/230. rewt-46 caught it by checking the rule counts
+    # against the geometry types, which is the right way to check a split — two
+    # views of the same number rather than one column trusted twice.
+    # TEST WHAT IS WRITTEN, not only what was decided. The rule-1 and rule-2 checks above
+    # run on the values in the loop; this runs on the LINE THE FILE WILL CONTAIN, after
+    # rounding and after the dataframe has been reassembled. One join survived the first
+    # check and failed the second, and rather than reason about which of the two was
+    # right I made the published artefact the thing that has to pass. A demotion here is
+    # not a second opinion — it is the same rule applied to the actual output.
+    demoted = 0
+    for k, (_, r) in enumerate(t.iterrows()):
+        if int(r.rule) == 3:
+            continue
+        p_ = h3.cell_to_latlng(str(r.cell))
+        if crosses_land((round(float(r.lat), 6), round(float(r.lon), 6)),
+                        (round(p_[0], 6), round(p_[1], 6))):
+            t.iat[k, t.columns.get_loc("rule")] = 3
+            demoted += 1
+    if demoted:
+        print(f"  demoted {demoted} join(s) to rule 3: the LINE crosses land even though "
+              f"the decision did not — the published geometry is what must pass")
+
+
     print("\nJOINS BY RULE")
     for label, sub in (("all", t), ("in scope", t[t.in_scope.astype(bool)])):
         n = len(sub)
@@ -231,25 +256,6 @@ def main(cfg: dict = CONFIG) -> None:
     # terminus has no attachment yet: drawing a straight line to the nearest cell
     # asserted a connection across 50 km of London, and it looked like a route. Those
     # are points now, and the actual path is stage 4's business.
-    # TEST WHAT IS WRITTEN, not only what was decided. The rule-1 and rule-2 checks above
-    # run on the values in the loop; this runs on the LINE THE FILE WILL CONTAIN, after
-    # rounding and after the dataframe has been reassembled. One join survived the first
-    # check and failed the second, and rather than reason about which of the two was
-    # right I made the published artefact the thing that has to pass. A demotion here is
-    # not a second opinion — it is the same rule applied to the actual output.
-    demoted = 0
-    for k, (_, r) in enumerate(t.iterrows()):
-        if int(r.rule) == 3:
-            continue
-        p_ = h3.cell_to_latlng(str(r.cell))
-        if crosses_land((round(float(r.lat), 6), round(float(r.lon), 6)),
-                        (round(p_[0], 6), round(p_[1], 6))):
-            t.iat[k, t.columns.get_loc("rule")] = 3
-            demoted += 1
-    if demoted:
-        print(f"  demoted {demoted} join(s) to rule 3: the LINE crosses land even though "
-              f"the decision did not — the published geometry is what must pass")
-
     def geom(r, k):
         p = h3.cell_to_latlng(str(r.cell))
         here = [round(r.lon, 6), round(r.lat, 6)]
