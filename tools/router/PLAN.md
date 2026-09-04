@@ -1459,12 +1459,15 @@ ones being the closed blind hops. What Stephen saw was the resolution selector m
 CELLS while the joins stayed put, so a join crossing a coarse hexagon read as attaching to
 it. The panel now says so whenever the selector is off res 6.
 
-## 30. The high water trim is what the traces exist to undo — for the implementer
+## 30. The trim deletes nothing — a conclusion of mine, withdrawn
 
-**Not mine to change, and the evidence is worth handing over.** `rewt/stages/high_water.py`
-truncates watercourses at the OS High Water Mark. Measuring the 389 in-scope termini against
-both tidal lines — `high_water`, and the seaward boundary of `country_region`, which that
-stage's own docstring establishes runs to the low-water limit:
+**The heading of this section used to read "The high water trim is what the traces exist to
+undo". That was wrong, and the error is worth keeping visible because it is the one this
+file keeps recording in new costumes.**
+
+`rewt/stages/high_water.py` truncates watercourses at the OS High Water Mark. Stephen
+proposed trimming at low water instead, and asked whether that would dissolve the ambiguity
+in my joins. I measured the 389 in-scope termini against both lines and reported this:
 
 | | to HIGH water (where cut) | to LOW water |
 |---|---:|---:|
@@ -1472,13 +1475,41 @@ stage's own docstring establishes runs to the low-water limit:
 | rule 2 — adjacent | 90 m | **12 m** |
 | rule 3 — needs a traced path | 110 m | **1,300 m** (90th: 14.4 km) |
 
-Every terminus sits near high water, as it must. **The split is entirely in how far that is
-from the water.** Where the intertidal zone is narrow, cutting at high water costs nothing
-and the join is an observation. Where it is wide — the Wash, Morecambe Bay, the Thames and
-Kent flats, the Solway — the terminus is left a median 1.3 km up the sands, and that is
-precisely the population that needs a traced path.
+**The table is correct. The inference from it was not.** I measured those distances on
+`published/rewt_stage1_network.gpkg`, which is the OUTPUT of the trim. Of course its termini
+sit at the trim line. **I measured the consequence and called it the cause** — the same
+family as a check that examines nothing, arrived at from the other direction.
 
-So **`trace.py` exists to rebuild the channel the trim deleted**: its paths spend a median
-83% of their length above the lowest tide. Trimming at low water instead would make most of
-that stage unnecessary rather than making it work better. That is R-01's territory and the
-implementer's call.
+**THE MEASUREMENT THAT SETTLES IT IS ON THE RAW SURVEY.** `data/raw/os_open_rivers`, before
+any trim, 11,539 links with `form = tidalRiver`, downstream end of each against `high_water`:
+
+| median | 75th | 90th | max | >500 m | >2 km |
+|---:|---:|---:|---:|---:|---:|
+| **39 m** | 115 m | 290 m | 7,212 m | 541 | 39 |
+
+**OS Open Rivers already ends its tidal rivers at essentially the high water line.** The trim
+is not discarding a tidal channel, because there is no tidal channel in the source to
+discard: the survey does not map watercourses across tidal flats. 11,637 published tidalRiver
+links against 11,539 raw — the trim barely changes the population, and the difference is
+truncation splitting links rather than removal.
+
+So both proposals gain almost nothing, for one reason. *Do not trim tidal rivers* would move
+a terminus a median **39 m**. A low-water trim line would have nothing to keep between the
+two lines. **The 1,300 m gap is in the world's data, not in the stage.**
+
+**AND THE ADMINISTRATIVE LOW-WATER LINE FAILS SEPARATELY**, which is worth recording whatever
+becomes of the rest. Probing `country_region` up four estuaries, it does not follow a
+low-water line inland — **it closes across the mouth**. At Gravesend a point lies 23.4 km from
+the country_region boundary and 0.64 km from high water; at Sharpness, 13.3 km against 0.19 km. The polygon swallows the whole tidal Thames and the whole tidal Severn.
+`high_water.py`'s "the administrative area runs to the low-water limit" holds on OPEN COAST —
+the Solway probe sits 50 m from the boundary and 4.8 km from high water — and does not hold
+in an estuary, which is exactly where anyone would reach for it.
+
+**What is actually true, as far as I can show it.** The river stops at the landward edge of
+the intertidal because that is where OS stops surveying it; the sea grid stops at the seaward
+edge because that is where there is water at every state of tide. **Nothing maps the channel
+between.** The traced paths reconstruct unmapped channel and are labelled rule 3, inference,
+which is the right label. The gap is honest and a different trim line does not close it.
+
+R-01 stands where it stood: nothing here argues for changing the seeding rule, only that one
+specific reason for changing it does not exist.
