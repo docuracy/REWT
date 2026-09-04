@@ -78,7 +78,7 @@ CONFIG = {
     # blind zones touching, which is not a route. The test is whether a landmass's buffer
     # reaches water that is IN SIGHT of the existing area. Shetland-Faroe is 290 km with
     # 113 and 80 km of sight, leaving 97 km blind against a 60 km buffer. It fails.
-    "aoi": (-13.24, 48.63, 3.00, 63.95),
+    "aoi": (-13.24, 44.5, 9.5, 62.12),
     "crs": "EPSG:32630",
     "metres_per_pixel": 930.0,
     "min_land_height_m": 1.0,

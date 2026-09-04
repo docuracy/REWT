@@ -778,3 +778,139 @@ constants there carry only one or two significant figures. **That concession was
 v3's edge had been computed from anything other than its own stored area constant, a rounded
 area would not reproduce the published edge to six digits. It does, at every resolution. The
 identity is informative at sixteen of sixteen.
+
+---
+
+## 13. The H3-002 rebuild
+
+`rules/H3-002.md`, Stephen, 4 September 2026. Five items. What follows is what each
+became, including the two where my first answer was wrong.
+
+### 13.1 The sightline is computed from the land outwards
+
+The first version asked each of 15,861 sea cells whether anything stood within its
+horizon. Turned round, each parcel of land illuminates a disc of its own horizon and the
+visible zone is their union.
+
+**Banded by REACH, not by height.** Range goes as the square root of height, so equal
+steps in height give wildly unequal steps in range. 70 bands of 2 km, descending, each
+one distance transform over the whole raster — O(pixels), independent of how much land
+is in the band. Crediting a band with its lower bound makes the quantisation
+conservative: a cell is never claimed visible on a reach it does not have.
+
+Stephen suggested coarse-to-fine over H3 land cells. This is the same idea in the form
+the data is already in, and it needs no hierarchy.
+
+**Cross-checked against the method it replaces:** 98.92% agree. 164 cells gained
+visibility, which is expected — this tests every sea *pixel* where the old one tested
+the cell *centre*. Only 7 lost, all with margins of 0.1–1.3 km against a 3.38 km budget
+of band, CRS and pixel.
+
+### 13.2 The bound is measured, and it is not Scandinavia
+
+Probing every coast that could cast a sightline in:
+
+| coast | height | reach | distance | reaches in? |
+|---|---:|---:|---:|:---|
+| W Norway | 1,484 m | 146 km | 430 km | no |
+| Iceland | 1,436 m | 144 km | 700 km | no |
+| Faroe | 885 m | 113 km | 290 km | no |
+| Denmark | 89 m | 36 km | 290 km | no |
+| **Ben Nevis** | **1,345 m** | **139 km** | — | **sets the maximum** |
+| Kerry | 1,015 m | 121 km | inside | yes |
+| Brittany / Boulogne / Normandy | 379 / 219 / 188 m | 74 / 56 / 52 km | 60 / 10 / 15 km | yes |
+
+### 13.3 The distance transform runs in a projected CRS
+
+The first inversion used one east-west pixel size taken at the mid-latitude across 11.5°
+of latitude: **12% short at 49.5 N and 18% long at 61 N**, 14.07% worst against the
+geodesic. Overstating in the north loses real visibility and shows up as a
+disagreement; understating in the south **claims visibility that is not there** and
+shows up as nothing at all. It was found only because the safe half was visible.
+
+Measured over the extent: UTM 30N 0.33% worst, LAEA Europe 0.61%, LCC Europe 3.43%. UTM
+30N is 453 m on a 139 km reach, inside the band quantisation. **Validated against exact
+WGS84 geodesics**: 250 random sea points, 246 agree, and all four disagreements are
+conservative.
+
+Stephen's instinct was that sightlines need angular geometry and should be worked in
+WGS84. The curvature is already inside `sqrt(2Rkh)`; what is left is pure distance, and
+working *in degrees* is what breaks it. That changes if occlusion is ever modelled —
+ray-casting needs azimuths, and conformality would become the criterion.
+
+### 13.4 The trim, and the blind-sailing buffer
+
+Cells beyond sight plus a buffer are **absent**, not coloured, so the layer shows only
+in sight or out of sight. The unknown state is gone by construction rather than by being
+explained.
+
+**The buffer is measured.** How deep does a real crossing go out of sight?
+
+| crossing | deepest blind |
+|---|---:|
+| Holyhead–Dublin, Orkney–Shetland, Kintyre–Antrim, Fair Isle–Shetland | **0.0 km** |
+| Scilly–Brittany | 12.1 km |
+| Land's End–Cork | **56.4 km** |
+
+That four coastwise routes never leave sight of land at all is a check on the model, not
+just on the buffer. 60 km covers the deepest that lies wholly within the British Isles.
+
+It is a **routing decision, not a horizon and not a coast**, and it is in the published
+stamp as its own field — rewt-46 asked for that, because a trimmed edge on a map reads
+as something real.
+
+### 13.5 A buffer must reach water that is IN SIGHT
+
+**Faroe was admitted on a bad rule and my own arithmetic said so.** I wrote that two
+60 km buffers cover a 97 km gap. Two blind zones touching is not a route. Stephen's
+correction: a landmass is admitted only when its buffer reaches cells that are in sight.
+
+And it is a rule about **landmasses, not extents** — clipping the box at 62.12 N left
+Faroe's southern islands inside it casting a sliced-off zone. So the visible zone is
+split into components, the walk starts from Liverpool Bay, and a component joins only
+when the gap to an admitted one is within the buffer. Faroe is rejected by its own
+figure: 62,798 px of sight, 97 km from anything in sight.
+
+### 13.6 A spike is not an island
+
+EMODnet has **six pixels reading +126 m** in the Faroe–Shetland Channel, standing in a
+seabed whose median is −1,429 m for 50 km around with no shoaling. It was casting 40 km
+of sightline over 150 cells and about 1,300 km² of open ocean.
+
+**Area cannot separate that from a real mark** — Rockall is 0.001 km² and matters. What
+separates them is that Rockall stands on a bank at about −200 m and this stands on
+nothing. A land speck below 40 px is tested against the seabed it sits in.
+
+### 13.7 The extent is declared, and two of its edges cannot be derived
+
+| edge | value | basis |
+|---|---:|---|
+| west | −13.24 | derived: Kerry 1,015 m, 121 km + 60 |
+| north | 62.12 | derived: Ronas Hill 450 m, 80 km + 60 |
+| **south** | **44.50** | **declared: the Gironde** |
+| **east** | **9.50** | **declared: the Elbe** |
+
+**Geometry does not bound this area.** Every destination that matters to England and
+Wales is reached coastwise, not by open crossing — Kent to the Scheldt is 88 km blind
+direct but never blind hugging Calais, Ostend and Zeeland. The continental shore is
+continuous, so the surface keeps connecting for as long as land is in the extent: it
+would run to the Baltic and round Iberia.
+
+**Stephen's criterion (option C): include coasts where coastwise sailing is how the
+voyage was made; exclude those reached by an open crossing this surface cannot
+represent.** Northern Spain is excluded on that ground and not on cost — it is 52 more
+windows. Biscay is 281 km blind, so including Spain would add land the router could only
+reach by going round the whole French coast: a confidently wrong answer rather than an
+absent one. If it is wanted, it needs an explicit deep-sea leg, which is a different
+mechanism and a separate decision.
+
+432 windows, ~1.7 GB.
+
+### 13.8 Finer resolution in estuaries: still overruled, and now with evidence
+
+Item 5 asked whether res 10 was overruled. It was, and two findings since support it
+rather than merely inherit it: the 41 untraceable termini are walled in by a median
+6.1 m barrier, and Loch Etive is severed because EMODnet reads **+6.8 m at the Connel
+narrows** — a 200 m channel averaged into land. Finer H3 cells over a 115 m surface
+would subdivide an instrument that already cannot see the channel. **Res 10 needs finer
+bathymetry, not finer cells.**

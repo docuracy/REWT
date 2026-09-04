@@ -40,6 +40,7 @@ from sightline import build_vrt, nodata_to_nan
 
 CONFIG = {
     "coastal_sea_resolution": 9,   # PLAN.md 5.2: the floor, set by the bathymetry
+    "aoi": (-13.24, 44.5, 9.5, 62.12),
     "start_resolution": 3,
     "decimate": 2,                 # ~230 m working grid for the distance transforms
     "windows": "data/raw/emodnet_bathymetry/*.tif",

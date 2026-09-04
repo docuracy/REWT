@@ -18,10 +18,21 @@ permitted, and this is the same coverage at the same resolution.
 THE EXTENT IS DERIVED, not chosen — everything within sight of land plus the 60 km
 blind-sailing buffer (PLAN.md 8, tools/router/sightline2.py):
 
-    W  -13.24  Kerry, 1,015 m, reaches 121 km            + 60
-    N   63.95  Faroe, 885 m measured, reaches 113 km     + 60   (Stephen's ruling)
-    S   48.63  Bodmin and Scilly, 420 m, reach 78 km     + 60
-    E    3.00  the open North Sea is trimmed away, so the far side is not needed
+    W  -13.24  Kerry, 1,015 m, reaches 121 km + 60. Derived.
+    N   62.12  Shetland's Ronas Hill, 450 m, reaches 80 km + 60. Derived. FAROE IS OUT:
+               its buffer reaches another buffer, not water in sight, and two blind
+               zones touching is not a route.
+    S   44.50  DECLARED, not derived. The Gironde.
+    E    9.50  DECLARED, not derived. The Elbe.
+
+THE SOUTHERN AND EASTERN EDGES CANNOT BE DERIVED, and pretending otherwise is the
+mistake Faroe was. The continental shore is continuous, so a sight-plus-buffer surface
+keeps connecting coastwise for as long as land is in the extent — it would run to the
+Baltic and round Iberia. The criterion Stephen chose (option C): include coasts where
+coastwise sailing is how the voyage was made, and exclude those reached by an open
+crossing this surface cannot represent. Biscay is 281 km blind, so northern Spain would
+be land the router could only reach by going round the whole French coast — a
+confidently wrong answer rather than an absent one.
 """
 from __future__ import annotations
 
@@ -32,7 +43,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-EXTENT = (-13.24, 48.63, 3.00, 63.95)
+EXTENT = (-13.24, 44.5, 9.5, 62.12)
 RAW = Path("data/raw/emodnet_bathymetry")
 OUT = Path("tools/router/cache/windows")
 BASE = "https://ows.emodnet-bathymetry.eu/wcs?"
