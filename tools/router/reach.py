@@ -221,6 +221,20 @@ def main(cfg: dict = CONFIG) -> None:
             "because two soft durations agreeing on soft distances tests little.")
         lay.write_text(json.dumps(gj))
         print(f"  trimmed the layer to a week's sailing: {before:,} -> {len(out):,} cells")
+        # only THIS stage knows the published count: sightline2 writes the summary before
+        # the week trim happens, so it leaves the field null and this fills it. Without
+        # this the check panel showed `cells_considered` — 59,830 against a published
+        # 17,599 — as though it described the layer.
+        sl = Path("docs/router/data/sightline_summary.json")
+        if sl.exists():
+            sj = json.loads(sl.read_text())
+            sj["cells_published"] = len(out)
+            sj["cells_published_note"] = ("the count of what is in sightline2_r6.geojson "
+                                          "after admission and after the week trim. The "
+                                          "other counts are earlier populations and do "
+                                          "not describe the layer.")
+            sl.write_text(json.dumps(sj, indent=1))
+            print(f"  wrote cells_published={len(out):,} back to the sightline summary")
 
 
 if __name__ == "__main__":

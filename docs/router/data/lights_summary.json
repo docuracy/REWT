@@ -1,0 +1,19 @@
+{
+ "generation": "20260904T092613Z",
+ "what": "NGA List of Lights, lighted aids with a stated height, inside the extent",
+ "source": "National Geospatial-Intelligence Agency, List of Lights, Radio Aids and Fog Signals, Pub. 113-116, msi.nga.mil",
+ "licence": "NOT public domain on the publication's own wording. Pub 114 states '(c) COPYRIGHT 2019 BY THE UNITED STATES GOVERNMENT. NO COPYRIGHT CLAIMED UNDER TITLE 17 U.S.C.' \u2014 a disclaimer under the US statute only, which is glossed elsewhere as asserting protection for distribution OUTSIDE the United States. This repository publishes from the UK. Unresolved; the source is NOT registered and is NOT an input (D-097).",
+ "registered_in_conf_sources": false,
+ "registration_note": "conf/sources.yml is the implementer's file. This is fetched to the router's cache and the registration is PROPOSED.",
+ "count": 4184,
+ "by_volume": {
+  "113": 363,
+  "114": 2401,
+  "115": 735,
+  "116": 685
+ },
+ "height_m_median": 10.0,
+ "height_m_max": 448.0,
+ "NO_TEMPORAL_INFORMATION": "the only date-like field is `noticeYear`, the year the ENTRY was last amended \u2014 2015 for Bishop Rock, which has stood since 1858. These are the lights standing NOW. Most are 18th or 19th century. Every reach that depends on one is a reach available to a mariner of that date and not necessarily to an earlier one.",
+ "deferred_work_package": "dating the lights: queued, deferred (Stephen, 4 Sep 2026). Until it lands this surface carries undated structures by explicit decision, not by oversight."
+}

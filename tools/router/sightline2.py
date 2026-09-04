@@ -52,7 +52,51 @@ CONFIG = {
     "resolution": 6,
     "decimate": 8,               # ~930 m working grid; the envelope is a 100 km object
     "refraction_k": 1.13,
-    "observer_height_m": 0.0,
+    # OBSERVER HEIGHT: 10 m, a lookout at the masthead. Stephen's ruling, 4 Sep 2026,
+    # and this was never mine to choose — it is a decision about vessels. I had it at
+    # 0.0 and defended that as "the one value that assumes nothing", which is wrong: an
+    # eye at sea level assumes something FALSE. Nobody observes from the waterline, and a
+    # lookout standing on the deck of the smallest craft is already at 2 m.
+    #
+    # THE LITERATURE. Litvine, Lewis and Starzec (2024), "A multi-criteria simulation of
+    # European coastal shipping routes in the 'age of sail'", Humanities and Social
+    # Sciences Communications 11:666, doi:10.1057/s41599-024-02906-9, CC BY 4.0. They
+    # report Alvarez-Palau and Dunn (2019) — coastal routing for ENGLAND AND WALES,
+    # which is this project's area — as taking h1 = 10 m, located on the ship's mast.
+    #
+    # AND THE VERSION OF RECORD IS WRONG ON THIS FIGURE. The typeset Nature article reads
+    # "1.0 m (located on the ship's mast)"; the accepted manuscript in the Cambridge
+    # repository reads "10m". An observer one metre up a mast is nonsense, so 10 m is the
+    # figure and the production typesetting corrupted it. The copy that looks most
+    # authoritative is the broken one.
+    #
+    # WHERE WE DIFFER FROM THEM, deliberately. Their relation is sqrt(2*R*h) with no
+    # refraction and R = 6378 km, giving 3.5716*sqrt(h); this uses k = 1.13, giving
+    # 3.7945*sqrt(h) — about 6% more generous. And they add a flat 20 m landmark to every
+    # one of 13,000 coastal points; this takes the land's own height from the DEM, which
+    # is the correction Litvine et al. themselves make.
+    "observer_height_m": 10.0,
+    # SEAMARKS OFF (Stephen, 4 September 2026). They were stamped as sightline sources
+    # for about an hour and are now disabled — the data, the fetcher and this code path
+    # are kept, because the reasons are worth keeping with them.
+    #
+    # STEPHEN'S ARGUMENT: a light serves night navigation. By day what a mariner sees is
+    # the land. That is the substantive objection and it stands on its own.
+    #
+    # AND THE MEASUREMENT AGREED, from an angle neither of us expected. Of 4,184 lights
+    # inside the extent, 1,383 stand above the local terrain and so add any reach at all;
+    # 56% of those are under 20 m, which is where the daylight objection bites hardest.
+    # And the ones adding MOST are aviation obstruction lights on broadcast masts —
+    # Wenvoe (+257 m), St Hilary (+215 m), Ben-a-chielt (+195 m), which are 20th-century
+    # television transmitters. The single largest effect of a navigational dataset on
+    # this surface came from TV masts.
+    #
+    # WHAT IS NOT THE ARGUMENT. I claimed a small mark cannot be resolved at its own
+    # horizon and computed an angular size to prove it. That calculation was wrong: it
+    # assumed the whole height visible at the horizon, when the horizon is by definition
+    # where the TOP becomes tangent and a vanishing sliver is all that shows. The error
+    # favoured the conclusion, which is the worst direction for an error to run.
+    "use_seamarks": False,
     "band_km": 2.0,              # reach quantisation; 2 km on a 139 km maximum
     # THE DISTANCE TRANSFORM RUNS IN A PROJECTED CRS, and this is not a refinement.
     # The first version used one east-west pixel size taken at the mid-latitude across
@@ -216,6 +260,40 @@ def main(cfg: dict = CONFIG) -> None:
     print(f"  land {land.sum():,} px, sea {sea.sum():,} px")
     print(f"  maximum reach {rmax:.1f} km  (square pixel {px:.0f} m)")
 
+    # --- SEAMARKS AS SIGHTLINE SOURCES (Stephen, 4 Sep 2026) ----------------------
+    # A light stands where mariners needed a mark, at a height somebody measured. It is
+    # a far stronger claim about PLACE than Alvarez-Palau and Dunn's flat 20 m at every
+    # coastal point, and a far weaker one about DATE — the list has none, and the dating
+    # is a queued, deferred work package. See tools/router/lights.py for what that
+    # accepts.
+    #
+    # A light casts sightlines whether or not it stands on land: that is what a
+    # lighthouse on a rock is for. So sources are LAND HEIGHT where there is land, and
+    # the light's own height at a light, whichever is greater — and the sea/land masks
+    # are untouched, because a beacon is not a coastline.
+    src_h = np.where(land, np.nan_to_num(elev, nan=0.0), 0.0).astype("float32")
+    n_lights = 0
+    lp = Path("tools/router/cache/lights/lights.json")
+    if cfg["use_seamarks"] and lp.exists():
+        lights = json.loads(lp.read_text())
+        fwd_l = Transformer.from_crs(4326, cfg["crs"], always_xy=True)
+        for L in lights:
+            x, y = fwd_l.transform(L["lon"], L["lat"])
+            c_ = int((x - dst_tr[2]) / dst_tr[0]); r_ = int((y - dst_tr[5]) / dst_tr[4])
+            if 0 <= r_ < src_h.shape[0] and 0 <= c_ < src_h.shape[1]:
+                if L["height_m"] > src_h[r_, c_]:
+                    src_h[r_, c_] = L["height_m"]
+                n_lights += 1
+        print(f"  {n_lights:,} seamarks stamped as sightline sources "
+              f"(median {sorted(l['height_m'] for l in lights)[len(lights)//2]:.0f} m)")
+    # only a SEAMARK may raise the bound. Taking src_h.max() raised it by ALL LAND,
+    # undoing the 'land that can reach the sea' reduction and putting the Alps back:
+    # 138 bands where 95 were needed, and a summary reporting 4,792 m as the tallest
+    # land that matters when the run had just printed 2,464.
+    if n_lights:
+        hmax = max(hmax, float(src_h.max()))
+    rmax = K * math.sqrt(hmax) + obs
+
     bands = np.arange(cfg["band_km"], rmax + cfg["band_km"], cfg["band_km"])[::-1]
     visible = np.zeros(elev.shape, bool)      # AFTER reprojection: not (h, w) any more
     gov = np.zeros(elev.shape, "float32")
@@ -224,7 +302,7 @@ def main(cfg: dict = CONFIG) -> None:
         h_need = ((r_km - obs) / K) ** 2
         if h_need > hmax:
             continue
-        m = land & (elev >= h_need)
+        m = src_h >= h_need           # land at its own height, or a seamark at its own
         if not m.any():
             continue
         d = ndimage.distance_transform_edt(~m, sampling=(py, px)) / 1000.0
@@ -480,6 +558,31 @@ def main(cfg: dict = CONFIG) -> None:
                                            "rewt-46 caught 221 such cells reaching 1,823 m "
                                            "while a buffer regression was live; under the "
                                            "no-blind-sailing rule there are none.",
+            "seamarks": int(n_lights),
+            "seamarks_basis": ("OFF. Land only: by day a mariner sees the land, and a "
+                               "light serves the night (Stephen, 4 Sep 2026). Of 4,184 "
+                               "lights in the extent only 1,383 stood above local "
+                               "terrain, 56% of those under 20 m, and the largest "
+                               "contributors were aviation obstruction lights on "
+                               "20th-century television masts. Kept as a rejected option "
+                               "with its reasons, not deleted. Previously: NGA List of "
+                               "Lights, public domain, stamped as sightline "
+                               "sources at their own stated heights. THE LIST HAS NO "
+                               "TEMPORAL INFORMATION — these are the lights standing now, "
+                               "mostly 18th and 19th century — and the dating is a queued, "
+                               "deferred work package. Until it lands, a reach that depends "
+                               "on a light is a reach available at that later date and not "
+                               "necessarily to an earlier mariner."),
+            "observer_height_basis": ("10 m, a lookout at the masthead. After "
+                "Alvarez-Palau and Dunn (2019) as reported by Litvine, Lewis and Starzec "
+                "(2024), doi:10.1057/s41599-024-02906-9 (CC BY 4.0), whose coastal "
+                "routing model for England and Wales takes the observer at 10 m on the "
+                "ship's mast. NOTE the typeset article reads '1.0 m (located on the "
+                "ship's mast)' where the accepted manuscript reads '10m' — an observer "
+                "one metre up a mast is nonsense, and the version of record is the "
+                "corrupted one. Ranges here are therefore NOT floors at sea level: they "
+                "assume a masthead lookout, and a deck observer at 2 m would see "
+                "5.4 km less."),
             "gov_h_m_definition": "the tallest land that reaches this cell — the band "
                                   "that first marked it. Absent where nothing reaches.",
             "gov_reach_km_definition": ("DERIVED FROM gov_h_m, not measured alongside "
@@ -505,12 +608,17 @@ def main(cfg: dict = CONFIG) -> None:
         "method": "land-outwards, banded by reach",
         "bands": int(len(bands)), "band_km": cfg["band_km"],
         "max_reach_km": round(rmax, 1), "tallest_land_m": round(hmax),
+        "tallest_land_m_note": "the tallest land that can reach the sea, not the tallest in the box — the extent also holds the Alps at 4,792 m, some 600 km from any water in scope, and banding to their horizon costs 43 extra distance transforms for nothing.",
         "horizon_km_per_sqrt_metre": round(K, 4),
         "distance_crs": cfg["crs"],
         "distance_crs_worst_error_pct": 0.33,
         "observer_height_m": cfg["observer_height_m"],
-        "sea_cells": int(len(uniq)), "see_land": int(any_vis.sum()),
-        "kept_after_trim": int(keep_cell.sum()),
+        "cells_considered": int(len(uniq)),
+        "cells_in_sight_before_admission": int(any_vis.sum()),
+        "cells_after_admission": int(keep_cell.sum()),
+        "cells_published": None,
+        "counts_note": "`cells_published` is the only count that describes the layer; it is filled by reach.py after the week trim, which happens downstream of this file. The others are earlier populations, and the check panel was showing the largest of them (59,830) as though it were the layer (14,991).",
+
         "detached_cells_dropped": int(len(lost)) if lost else 0,
         "detached_note": "a pocket of water joined to the rest only through a channel "
                          "narrower than a cell becomes an island of cells no route can "

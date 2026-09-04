@@ -1,5 +1,5 @@
 {
- "generation": "20260904T085211Z",
+ "generation": "20260904T092019Z",
  "scheme": "banded by state, not by distance",
  "states": {
   "blind buffer": 6,
@@ -10,9 +10,9 @@
   ]
  },
  "refinement_rule": "a cell is subdivided only where it is adjacent to land AND required by a join or a trace \u2014 not within N km of anything",
- "total_cells": 103476,
+ "total_cells": 143271,
  "by_resolution": {
-  "7": 103130,
+  "7": 142925,
   "8": 338,
   "9": 8
  },
