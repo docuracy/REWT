@@ -1474,16 +1474,31 @@ function checkGenerations() {
    the page rather than by anything failing. */
 function stampValue(v) {
   if (Array.isArray(v)) {
+    if (!v.length) return '(none)';
     return v.every((n) => typeof n === 'number')
-      ? v.map((n) => fmt(n, 2)).join(', ')
+      ? v.map(stampNumber).join(', ')
       : `${fmt(v.length)} listed \u2014 see the map`;
   }
   if (v && typeof v === 'object') {
-    return Object.entries(v)
-      .map(([k, x]) => `${k} ${typeof x === 'number' ? fmt(x) : stampValue(x)}`)
+    const pairs = Object.entries(v);
+    if (!pairs.length) return '(none)';
+    return pairs
+      .map(([k, x]) => `${k} ${typeof x === 'number' ? stampNumber(x) : stampValue(x)}`)
       .join('; ');
   }
-  return v;
+  return typeof v === 'number' ? stampNumber(v) : v;
+}
+
+/* A NUMBER AT THE PRECISION IT WAS WRITTEN WITH. `fmt` defaults to no decimal places,
+   which is right for a count of cells and silently destroys a ratio: rewt-c7's detour
+   percentiles 1.895, 2.058, 2.649, 3.169, 5.893 rendered as "2; 2; 3; 3; 6". That is
+   worse than the [object Object] it replaced — gibberish announces itself, and a
+   rounded ratio reads as a measurement. An integer still prints as an integer, so a
+   count does not grow a decimal point it never had. */
+function stampNumber(x) {
+  if (!Number.isFinite(x)) return fmt(x);
+  if (Number.isInteger(x)) return fmt(x, 0);
+  return fmt(x, Math.min((String(x).split('.')[1] || '').length, 6));
 }
 
 function showStamp(o) {
@@ -2422,6 +2437,10 @@ map.on('load', async () => {
      one flag instead of racing boot. */
   if (new URLSearchParams(location.search).has('debug')) {
     window.rewt = { map, hits, split, describe, highlight, CLICKABLE, loaded, stamps,
-      tallies, STAMP_FIELDS, ready: true };
+      /* `stampValue` is exported so the harness can render rewt-c7's WHOLE
+         population of non-scalar properties through it, not just the two that
+         happen to be on layers I load. Three of them had reached readers as
+         gibberish before anyone rendered the rest. */
+      tallies, STAMP_FIELDS, stampValue, ready: true };
   }
 });

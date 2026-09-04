@@ -4327,3 +4327,39 @@ not authorise a group containing every instance of both kinds.** Generalising it
 cheap, looks tidier, and quietly forbids things nobody objected to. The tell here was
 available before anyone complained — a note and a control in the same file that could
 not both be true.
+
+## D-102 — A rounded ratio is worse than gibberish, and an "everything" check must run where everything is
+
+Three of rewt-c7's structured properties reached readers as nonsense through the
+viewer's stamp renderer, and the three are not equally bad.
+
+    an array of records    "NaN, NaN, NaN…"      announces itself
+    a nested object        "[object Object]"      announces itself
+    a ratio of 1.895       "2"                    reads as a measurement
+
+**The third is the dangerous one.** Their detour percentiles — 1.895, 2.058, 2.649,
+3.169, 5.893 — printed as "2; 2; 3; 3; 6", because the formatter defaults to no decimal
+places, which is right for a count of cells and destroys a ratio. Gibberish gets
+reported by the first reader who sees it. **A plausible wrong number gets repeated.**
+
+The renderer now handles KINDS rather than keys, and prints a number at the precision it
+was written with: an integer stays an integer, so a count grows no decimal point it
+never had.
+
+**WHERE THE ASSERTION LIVES IS THE LARGER LESSON, and rewt-c7 put it best: an assertion
+about "everything" has to run where everything is present, and there is no symptom when
+it does not.** "No field on the page renders as nonsense" was first asserted in a check
+that switches on ONE layer. It was green while a nested object printed as
+`[object Object]` two layers away. Moved to the only check that switches on every layer,
+it fails as it should. The check whose job was to catch the class had the class in it.
+
+**And a population must be globbed, not named.** The permanent check reads every
+non-scalar property off disk and renders each through the viewer's own formatter. Their
+count of what they publish was 28; mine over the same directory was 33. Neither of us
+was lying — a list of the keys you know about is exactly the coupling that goes stale,
+which is the same fault as the frozen constant one entry above.
+
+**The check invented a fault before it found one.** Its first version called three files
+"lost precision" because an array of records is deliberately summarised as a count, and
+a count has no decimal point. An assertion about a renderer has to mirror the renderer's
+own contract or it reports the contract as a bug.

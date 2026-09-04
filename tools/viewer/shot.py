@@ -803,6 +803,86 @@ def check_generations(page) -> tuple[bool, str]:
                   "both")
 
 
+def check_renderers(page) -> tuple[bool, str]:
+    """EVERY non-scalar property rewt-c7 publishes, rendered through the viewer's own
+    formatter — not just the ones on layers this harness happens to load.
+
+    Three of their structured values reached readers as gibberish before anyone rendered
+    the rest: an array of records as "NaN, NaN…", a nested object as "[object Object]",
+    and a ratio of 1.895 rounded to "2". The first two announce themselves. The third
+    does not, which is why this asserts precision as well as legibility — a rounded
+    ratio reads as a measurement and is the only one of the three a reader would repeat.
+
+    The population is globbed from disk here rather than named, because rewt-c7's
+    artefacts are theirs to add to and a list of the keys I know about is the coupling
+    that goes stale. It found 33 where their own count was 28.
+    """
+    import glob
+    import json as _json
+    import os
+    pop = []
+    for f in sorted(glob.glob("docs/router/data/*.json")) + \
+            sorted(glob.glob("docs/router/data/*.geojson")):
+        try:
+            d = _json.load(open(f))
+        except Exception as e:
+            return False, f"{os.path.basename(f)} did not parse: {e}"
+        props = d.get("properties", d if isinstance(d, dict) else {})
+        if not isinstance(props, dict):
+            continue
+        for k, v in props.items():
+            if isinstance(v, (dict, list)):
+                pop.append({"file": os.path.basename(f), "key": k, "value": v})
+    if not pop:
+        # CONTROL: an empty population would pass every assertion below.
+        return False, "no non-scalar properties found at all, so nothing was rendered"
+    res = page.evaluate("""(pop) => {
+        if (typeof window.rewt.stampValue !== 'function') {
+            return { noRenderer: true };
+        }
+        const bad = [];
+        /* Does this value contain a fraction THE RENDERER UNDERTAKES TO PRINT? Checked
+           against the input, so the assertion is about what the file said rather than
+           what came out — the direction that catches a silent rounding.
+
+           It must mirror the renderer's own contract or it invents faults. The first
+           version did: an array of RECORDS is deliberately summarised as "230 listed —
+           see the map", so it has no decimal point by design, and the check called that
+           lost precision on three of rewt-c7's files. A count is not a rounding. */
+        const hasFraction = (v) => {
+            if (typeof v === 'number') return !Number.isInteger(v);
+            if (Array.isArray(v)) {
+                // Records are counted, not rendered — nothing inside them is promised.
+                return v.every((n) => typeof n === 'number') && v.some(hasFraction);
+            }
+            if (v && typeof v === 'object') return Object.values(v).some(hasFraction);
+            return false;
+        };
+        for (const p of pop) {
+            let s;
+            try { s = String(window.rewt.stampValue(p.value)); }
+            catch (e) { bad.push(`${p.file}:${p.key} threw ${e.message}`); continue; }
+            if (/NaN|\[object Object\]|undefined/.test(s)) {
+                bad.push(`${p.file}:${p.key} rendered as ${s.slice(0, 40)}`);
+            } else if (s === '') {
+                bad.push(`${p.file}:${p.key} rendered as nothing at all`);
+            } else if (hasFraction(p.value) && !/\./.test(s)) {
+                /* A fractional input that comes out with no decimal point anywhere has
+                   been rounded away. rewt-c7's detour percentiles did exactly this. */
+                bad.push(`${p.file}:${p.key} lost its precision: ${s.slice(0, 40)}`);
+            }
+        }
+        return { bad, checked: pop.length };
+    }""", pop)
+    if res.get("noRenderer"):
+        return False, "the viewer does not expose stampValue, so nothing could be rendered"
+    if res["bad"]:
+        return False, "; ".join(res["bad"][:4]) + (
+            f" (and {len(res['bad']) - 4} more)" if len(res["bad"]) > 4 else "")
+    return True, (f"{res['checked']} non-scalar properties rendered; none as NaN, "
+                  f"[object Object], undefined or nothing, and none rounded away")
+
+
 def check_mobile(page) -> tuple[bool, str]:
     """Below the breakpoint the map gets the whole screen and the panel is a drawer.
 
@@ -1052,7 +1132,8 @@ CHECKS = {"panel": check_panel, "layers": check_layers,
           "stamp": check_stamp, "missing": check_missing_layer,
           "edges": check_edges, "coast": check_coast,
           "stranded": check_stranded,
-          "generations": check_generations, "mobile": check_mobile,
+          "generations": check_generations,
+          "renderers": check_renderers, "mobile": check_mobile,
           "geometry": check_geometry_coverage, "joins": check_joins}
 
 
