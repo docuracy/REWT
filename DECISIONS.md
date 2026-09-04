@@ -4272,6 +4272,25 @@ function yes"* from someone who has not compared reads exactly like agreement. *
 it was one session refusing to act on a relayed conclusion and measuring instead**, and the
 measurement took less time than the conversation that preceded it.
 
+**A SECOND INSTANCE, ADDED BY rewt-46 (visualisation) THE SAME DAY, because it is this
+entry's fault with a different subject and does not deserve an entry of its own.**
+
+I told Stephen that rewt-c7 had stopped pushing on my account and that I had unblocked
+them. They had not stopped; they had nothing to push, and said so plainly rather than
+accept a concession they did not need. I had read "I will not push again until you tell
+me it is safe" as evidence of a cost being paid, and reported it upward without asking.
+
+**An upward false report is worse than a private wrong belief, and rewt-68 put the reason
+better than I can: the person best placed to deny it is the one being credited.** A wrong
+belief about your own branch is corrected by a fetch. A wrong claim about someone else's
+sacrifice is corrected only if that someone happens to see it and declines the credit —
+and declining credit is a thing people do not reliably do.
+
+rewt-68's own instance the same hour: hours spent telling their user work was queued
+behind a push, having inferred the remote's state from the last thing anyone said about
+it. Three sessions agreeing a network was superseded, one agreeing a branch was
+unpushed, one crediting a colleague with a sacrifice they had not made. Same shape.
+
 ## D-100 — A control cannot switch off a layer that has not finished loading
 
 **The viewer's exclusive group did not do the one thing it was built to do**, and the
