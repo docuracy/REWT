@@ -86,6 +86,27 @@ def wait_ready(page, timeout_ms: int) -> dict:
 # ── the checks ───────────────────────────────────────────────────────────────
 # Each returns (ok, detail). Each carries its own control, because an absence is only
 # evidence when the same call has found a presence in the same run.
+#
+# AND EACH SETS UP ITS OWN SUBJECT, because three of these have now passed alone and
+# failed in the suite — `sightline` when `layers` had not run, `missing` when it had,
+# and `edges` when `missing` had disabled the switch it needed. The page is one long
+# lived object and every check mutates it: layers get switched on, sources get removed,
+# a fetch gets broken on purpose. A check that assumes the state it finds is a check
+# whose result depends on what ran before it, and the failure mode is the worst one
+# available — it goes GREEN alone, which is how it will be run while it is being
+# written, and red only in the suite where somebody will read the message rather than
+# the reason.
+#
+# The rule that survives all three: assert nothing about the state you did not
+# establish in this function. Re-enable the switch, wait for VISIBLE rather than
+# present. It is more code and it is the difference between a check and a coincidence.
+#
+# AND THE FIX FOR THAT RULE BROKE THE NEXT RUN, which is worth keeping. The first
+# version dropped every layer from `loaded` so `ensure` would rebuild it — including
+# layers that were still in the style, where `addLayer` throws on a duplicate id. The
+# seams then drew nothing and carried no stamp, and the check reported "no seams drew,
+# of None in the file": true, and entirely about my own helper. Forcing a rebuild is not
+# the same as asking for one. Restore only what is actually missing.
 
 def check_panel(page) -> tuple[bool, str]:
     """Every figure the panel prints, against published/audit/audit.json."""
@@ -264,6 +285,89 @@ def check_sightline(page) -> tuple[bool, str]:
                 f"{res['saysDerived']}; control over land found nothing")
 
 
+def check_edges(page) -> tuple[bool, str]:
+    """The routing graph, its seams, and that it SWITCHES with the cells rather than
+    adding to them.
+
+    Stephen asked for a control that switches the sea cells to the routing edges. Two
+    things must hold: turning the graph on turns the cells off, and the seams — 59 of
+    49,080, 0.12% — actually draw, because a feature that rare is one styling mistake
+    from being invisible and nothing else on the page would say so.
+    """
+    res = page.evaluate("""async () => {
+        /* SELF-SUFFICIENT, because this check runs after `missing`, which deliberately
+           breaks the sightline fetch and leaves that switch unchecked AND DISABLED with
+           its layer removed. Passing alone and failing in the suite is the third time
+           an order-dependency has bitten a check I wrote — so this one restores what it
+           needs rather than assuming a state, and waits for the layer to be VISIBLE
+           rather than merely present. */
+        const on = async (label) => {
+            const row = [...document.querySelectorAll('#layers .switch')]
+                .find((r) => r.textContent.includes(label));
+            if (!row) return null;
+            const b = row.querySelector('input');
+            b.disabled = false;
+            /* Drop it from `loaded` ONLY when the layer is genuinely gone — which is
+               the state `missing` leaves behind. Doing it unconditionally made `ensure`
+               re-run against a layer still in the style, and `addLayer` throws on a
+               duplicate id: the seams then drew nothing and carried no stamp, and the
+               check reported "no seams drew, of None in the file", which was true and
+               was about my own helper. Forcing a rebuild is not the same as asking for
+               one. */
+            if (!window.map.getLayer(b.dataset.layer)) {
+                window.rewt.loaded.delete(b.dataset.layer);
+            }
+            if (!b.checked) { b.checked = true; b.dispatchEvent(new Event('change')); }
+            const vis = () => window.map.getLayer(b.dataset.layer)
+                && window.map.getLayoutProperty(b.dataset.layer, 'visibility') !== 'none';
+            for (let i = 0; i < 80 && !vis(); i++) {
+                await new Promise((r) => setTimeout(r, 500));
+            }
+            return b.dataset.layer;
+        };
+        const cells = await on('can be seen from the sea');
+        await new Promise((r) => setTimeout(r, 3000));
+        const cellsOnFirst = !!window.map.getLayer('sightline')
+            && window.map.getLayoutProperty('sightline', 'visibility') !== 'none';
+        const graph = await on('routing graph');
+        await new Promise((r) => setTimeout(r, 6000));
+        const seams = await on('Seams');
+        await new Promise((r) => setTimeout(r, 4000));
+        window.map.jumpTo({ center: [-4.5, 54.0], zoom: 6 });
+        await new Promise((r) => { const t = setTimeout(r, 20000);
+            window.map.once('idle', () => { clearTimeout(t); r(); }); });
+        const vis = (id) => window.map.getLayer(id)
+            && window.map.getLayoutProperty(id, 'visibility') !== 'none';
+        return {
+            cellsOnFirst,
+            cellsOffAfter: !vis('sightline'),
+            graphOn: vis('edges'),
+            edgesDrawn: window.map.queryRenderedFeatures({ layers: ['edges'] }).length,
+            seamsDrawn: window.map.queryRenderedFeatures({ layers: ['edges-seam'] }).length,
+            seamsInFile: (window.rewt.stamps.get('edges-seam') || {}).crossing_a_band,
+            saysNotARoute: (document.querySelector('#note-edges') || {}).innerText
+                ? /ADJACENCY, not a track/.test(document.querySelector('#note-edges').innerText)
+                : false,
+        };
+    }""")
+    if not res["cellsOnFirst"]:
+        return False, "the cells layer never came on, so the switch proves nothing"
+    bad = []
+    if not res["cellsOffAfter"]:
+        bad.append("turning the graph on did not turn the cells off")
+    if not res["graphOn"] or res["edgesDrawn"] == 0:
+        bad.append(f"the graph drew {res['edgesDrawn']} links")
+    if res["seamsDrawn"] == 0:
+        bad.append(f"no seams drew, of {res['seamsInFile']} in the file")
+    if not res["saysNotARoute"]:
+        bad.append("the panel does not carry the file's 'adjacency, not a track' sentence")
+    if bad:
+        return False, "; ".join(bad)
+    return True, (f"{res['edgesDrawn']:,} links and {res['seamsDrawn']} seams drawn of "
+                  f"{res['seamsInFile']} in the file; the cells went off when the graph "
+                  f"came on; the panel carries the file's own sentence")
+
+
 def check_mobile(page) -> tuple[bool, str]:
     """Below the breakpoint the map gets the whole screen and the panel is a drawer.
 
@@ -433,7 +537,7 @@ def check_missing_layer(page) -> tuple[bool, str]:
 CHECKS = {"panel": check_panel, "layers": check_layers,
           "popup": check_popup, "sightline": check_sightline,
           "stamp": check_stamp, "missing": check_missing_layer,
-          "mobile": check_mobile}
+          "edges": check_edges, "mobile": check_mobile}
 
 
 def main() -> int:

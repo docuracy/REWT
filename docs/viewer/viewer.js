@@ -578,7 +578,52 @@ const OVERLAYS = [
      Drawn at all, rather than waited for, BECAUSE the third state will move: a layer
      that arrives after the extension shows a confident zone with no history, and one
      that arrives now shows a reader where the edge of knowledge was. */
-  { id: 'sightline', label: 'Where land can be seen from the sea',
+  /* ── THE ROUTING GRAPH, WHICH IS THE OTHER VIEW OF THE SAME WATER ───────────
+     Stephen asked for a control that switches the sea cells to the actual routing
+     edges between cell centres — the graph rather than the tiling. So these two are
+     EXCLUSIVE: turning one on turns the other off, because a hexagon and the line
+     between two hexagon centres drawn together are a mess that answers neither
+     question, and the point of the switch is to see the same water two ways.
+
+     WHAT IS DRAWN IS NOT WHAT IS ROUTED, TWICE OVER, and rewt-c7 put both sentences in
+     the file rather than leaving me to write them: an edge is an ADJACENCY and not a
+     track, and these links are the res-7 graph aggregated to the res 6 of the cells,
+     so the drawn centres are ones no route uses. Separately each is a caveat; together
+     they say this is a schematic of a graph. They print first, above the rest.
+
+     `crosses_band` IS 59 OF 49,080 — 0.12%, and it is the interesting feature: the
+     seam where two resolutions meet, which is what shows the banding is actually
+     joined rather than seven disconnected sheets each locally perfect. rewt-c7 first
+     told me 321; the file says 59, because several res-7 edges collapse into one drawn
+     link. Reading it from the file rather than taking the number is what saved it, and
+     `crossing_a_band_before_aggregation` holds the 321 so neither is lost. At that
+     density a line is a hair, so the seams get marks of their own and their own
+     toggle. */
+  { id: 'edges', label: 'The routing graph — links between cell centres',
+    file: '../router/data/edges.geojson', kind: 'line', exclusive: 'router',
+    width: ['interpolate', ['linear'], ['zoom'], 5, 0.4, 9, 0.8, 14, 1.6],
+    colour: '#7ad6ff', on: false,
+    legend: [['a link between two adjacent cell centres — an adjacency, not a track',
+              '#7ad6ff']],
+    note: 'the graph a route is measured on. Click a link for the cells it joins.' },
+  /* NOT IN THE EXCLUSIVE GROUP. The seams are an overlay ON the graph, not an
+     alternative to it — and putting them in the group made turning them on turn the
+     graph off, so the check reported "the graph drew 0 links" and was right. The group
+     is for the two views of the same water, the tiling and the lattice; a marker layer
+     that annotates one of them is a third thing. */
+  { id: 'edges-seam', label: 'Seams — links where two cell resolutions meet',
+    /* THE GRAPH'S OWN SOURCE, not a second fetch of the same 11 MB. Two overlays
+       pointing at one file meant two sources, two parses and two copies in memory of
+       49,080 links — and, worse, two chances for the seams and the graph to be
+       describing different data if the file changed between the fetches. `sourceOf`
+       says: draw from that layer's source, and load it first if it is not there. */
+    sourceOf: 'edges', kind: 'point',
+    filter: ['get', 'crosses_band'], colour: C.add, on: false,
+    radius: ['interpolate', ['linear'], ['zoom'], 5, 2.6, 12, 6],
+    legend: [['a seam: the two cells sit at different resolutions', C.add]],
+    note: 'the banding is only a grid if these join it. A count cannot show that and a '
+      + 'picture can.' },
+  { id: 'sightline', label: 'Where land can be seen from the sea', exclusive: 'router',
     file: '../router/data/sightline2_r6.geojson', kind: 'polygon',
     /* NO `count` HERE. It was 15,861, typed from a message, and it was wrong within a
        day — wrong file and wrong number at once. The count is a property of rewt-c7's
@@ -701,6 +746,26 @@ function crossingImage(ring) {
   g.beginPath(); g.moveTo(c - d, c - d); g.lineTo(c + d, c + d);
   g.moveTo(c + d, c - d); g.lineTo(c - d, c + d); g.stroke();
   return g.getImageData(0, 0, s, s);
+}
+
+/* A seam mark: a filled disc with a dark rim, so it reads at 5 px over a pale sea and
+   over a dark one. Drawn rather than borrowed from the crossing glyphs, which mean
+   something else entirely — two watercourses that do not join. */
+function seamImage(size = 16) {
+  const d = new Uint8ClampedArray(size * size * 4);
+  const c = (size - 1) / 2, r = size / 2 - 1.5;
+  const fill = [255, 210, 30], rim = [13, 17, 23];
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const dist = Math.hypot(x - c, y - c);
+      const i = (y * size + x) * 4;
+      if (dist > r) continue;
+      const col = dist > r - 1.6 ? rim : fill;
+      d[i] = col[0]; d[i + 1] = col[1]; d[i + 2] = col[2];
+      d[i + 3] = Math.round(255 * Math.min(1, r - dist + 1));
+    }
+  }
+  return { width: size, height: size, data: d };
 }
 
 function arrowImage(fill) {
@@ -849,13 +914,48 @@ async function addNetwork() {
   return true;
 }
 
+/* `loaded` MARKS A LAYER WHEN THE FETCH STARTS, NOT WHEN IT FINISHES, and that is a
+   race as soon as one layer depends on another. The seams draw from the graph's source
+   and `await ensure(edges)` — but if the graph's own fetch is already in flight, that
+   call returns immediately on `loaded.has`, the source does not exist yet, and the
+   seams give up silently. Turning both switches on together does exactly that, which is
+   what the panel does when it restores a remembered view.
+
+   So an in-flight ensure is remembered as a PROMISE and a second caller awaits it. The
+   symptom was a check reporting "no seams drew, of None in the file" in the suite while
+   passing alone — and the suite was right: run one at a time, the graph had finished
+   before the seams asked. */
+const inflight = new Map();
+
 async function ensure(o) {
   if (o.tiled) return;                 // already in the style, from the tile archives
+  if (inflight.has(o.id)) return inflight.get(o.id);
   if (loaded.has(o.id)) return;
+  const done = ensureOnce(o).finally(() => inflight.delete(o.id));
+  inflight.set(o.id, done);
+  return done;
+}
+
+async function ensureOnce(o) {
   loaded.add(o.id);
   /* Some layers are the audit's own findings rather than a file of their own. Built
      here from the array the panel already lists, so there is one copy of them on the
      page and a place in the list and a mark on the map cannot disagree. */
+  /* A layer that draws from another's source: make sure that one is loaded, then use
+     it. Its stamp and tally belong to the layer that fetched it. */
+  if (o.sourceOf) {
+    const owner = OVERLAYS.find((x) => x.id === o.sourceOf);
+    if (owner) await ensure(owner);
+    if (!map.getSource(o.sourceOf)) { loaded.delete(o.id); return; }
+    map.addLayer({ id: o.id, type: 'symbol', source: o.sourceOf,
+      ...(o.filter ? { filter: o.filter } : {}),
+      layout: { 'symbol-placement': 'line-center', 'icon-image': 'seam',
+        'icon-allow-overlap': true, 'icon-ignore-placement': true,
+        'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.5, 12, 1.1] } });
+    stamps.set(o.id, stamps.get(o.sourceOf));
+    wireClicks(o);
+    return;
+  }
   const data = o.findings ? findingsAsPoints(o.findings)
     : await grab(o.file, o.label.toLowerCase());
   /* A TICKED BOX THAT DRAWS NOTHING IS A LIE, and this map is one rename away from it.
@@ -895,7 +995,7 @@ async function ensure(o) {
      nothing that came from outside it. Read from the data so it cannot drift from what
      was actually loaded — a stamp retyped into this file would be a second rendering of
      one fact, which is how the last four went wrong. */
-  if (data.properties) stamps.set(o.id, data.properties);
+  if (data.properties) { stamps.set(o.id, data.properties); checkGenerations(); }
   /* THE COMPOSITION OF THE FILE, COUNTED FROM THE FILE. A three-state layer whose
      third state has gone should say so on the page, not leave a reader to notice that
      a colour has stopped appearing. H3-002 §3 trims the grid to where the answer is
@@ -953,6 +1053,15 @@ async function ensure(o) {
         layout: { 'symbol-placement': 'line', 'icon-image': 'arrow-reversed',
           'icon-size': 0.9, 'icon-allow-overlap': true, 'icon-rotation-alignment': 'map' } });
     }
+  } else if (o.kind === 'point' && data.features[0]?.geometry?.type === 'LineString') {
+    /* A CIRCLE LAYER OVER LINESTRINGS DRAWS AT EVERY VERTEX — two marks per link, one
+       at each end, in the wrong places. A symbol placed at `line-center` puts exactly
+       one where the link is, which is what "a mark is a place" meant. */
+    map.addLayer({ id: o.id, type: 'symbol', source: o.id,
+      ...(o.filter ? { filter: o.filter } : {}),
+      layout: { 'symbol-placement': 'line-center', 'icon-image': 'seam',
+        'icon-allow-overlap': true, 'icon-ignore-placement': true,
+        'icon-size': ['interpolate', ['linear'], ['zoom'], 5, 0.5, 12, 1.1] } });
   } else if (o.kind === 'symbol') {
     map.addLayer({ id: o.id, type: 'symbol', source: o.id,
       layout: { 'icon-image': o.icon, 'icon-allow-overlap': true,
@@ -1019,11 +1128,27 @@ function buildLayerPanel() {
     if (o.dash && uniq.length === 1) {
       sw = `repeating-linear-gradient(90deg, ${uniq[0]} 0 3px, transparent 3px 6px)`;
     }
-    row.innerHTML = `<input type="checkbox" ${o.on ? 'checked' : ''}>
+    /* The layer id on the switch, so an exclusive group can find its siblings without
+       matching on label text — a label is prose and gets reworded. */
+    row.innerHTML = `<input type="checkbox" data-layer="${esc(o.id)}" ${o.on ? 'checked' : ''}>
       <i class="sw ${o.kind === 'point' || o.kind === 'symbol' ? 'dot' : ''}" style="background:${sw}"
          title="${esc(uniq.join(' · '))}"></i>
       <span>${esc(o.label)}</span><em>${o.count != null ? fmt(o.count) : ''}</em>`;
     row.querySelector('input').onchange = async (e) => {
+      /* EXCLUSIVE GROUPS. Stephen asked for a control that SWITCHES the sea cells to
+         the routing edges, not one that adds them: a hexagon and the line between two
+         hexagon centres drawn together answer neither question. Turning one member on
+         turns its siblings off, through their own switches so the panel, the URL and
+         what is remembered all stay in step — setting `checked` alone would leave the
+         hash claiming a layer that is not drawn. */
+      if (e.target.checked && o.exclusive) {
+        for (const other of OVERLAYS) {
+          if (other === o || other.exclusive !== o.exclusive) continue;
+          const box = [...document.querySelectorAll('#layers .switch input')]
+            .find((b) => b.dataset.layer === other.id);
+          if (box && box.checked) { box.checked = false; box.dispatchEvent(new Event('change')); }
+        }
+      }
       if (e.target.checked) { await ensure(o); setVisible(o, true); } else setVisible(o, false);
       applyTheme(); writeHash();
       showStamp(o);
@@ -1076,9 +1201,80 @@ const STAMP_FIELDS = [
    is prose. */
 const STAMP_SHOWN = new Set(['use_constraint', 'warning',
   ...STAMP_FIELDS.map(([k]) => k)]);
-const stampProse = (st) => Object.entries(st)
-  .filter(([k, v]) => typeof v === 'string' && !STAMP_SHOWN.has(k))
-  .map(([, v]) => v);
+/* TWO SENTENCES THAT MUST BE READ TOGETHER GO FIRST. rewt-c7 asked that
+   `an_edge_is_not_a_route` and `aggregation` be visible without scrolling, and they are
+   right about why: separately each is a caveat, together they say the picture is a
+   schematic of a graph and not anything anybody could sail. I told them it was done
+   before it was — the prose printed in file order, which put one second and the other
+   fifth of twenty-two.
+
+   A PREFERENCE, NOT A SCHEMA. Naming a key here cannot hide anything: everything is
+   still printed, this only decides what comes first, and a key that is absent simply
+   does not sort. That is the difference between this list and the one that dropped
+   three of rewt-c7's sentences this morning. */
+const STAMP_FIRST = ['an_edge_is_not_a_route', 'aggregation'];
+const stampProse = (st) => {
+  const rest = Object.entries(st)
+    .filter(([k, v]) => typeof v === 'string' && !STAMP_SHOWN.has(k));
+  const rank = (k) => (STAMP_FIRST.indexOf(k) + 1) || Infinity;
+  return rest.sort(([a], [b]) => rank(a) - rank(b)).map(([, v]) => v);
+};
+/* TWO LAYERS FROM TWO PASSES, WHICH ONLY THE THING HOLDING BOTH CAN SEE. rewt-c7 puts
+   a `generation` on every router artefact precisely so a reader who has two of them can
+   tell whether they came from one run — and the viewer is the only place two of them
+   are ever open at once. Their own message said the edges layer carried the same
+   generation as the cells layer; the files said 20260904T101447Z and 20260904T092019Z,
+   an hour and a half apart. The mechanism caught its author, which is the strongest
+   thing that can be said for a mechanism.
+
+   Not an error, and it does not stop anything drawing: the sightline surface may simply
+   not have been rebuilt in the last pass. But a reader comparing a cell against the
+   links leaving it is comparing two states of a graph that has moved, and nothing else
+   on the page would tell them. */
+function checkGenerations() {
+  const all = [...stamps.entries()];
+  const seen = all.filter(([, st]) => st && st.generation)
+    .map(([id, st]) => [id, st.generation]);
+  /* A LAYER WITH NO GENERATION IS NOT IN THE COMPARISON, and silence about that is the
+     whole failure. rewt-c7 found that `joins.geojson` and `traces.geojson` carried no
+     stamp at all while the two I happened to load did — so this check could have
+     reported "one generation, no disagreement" over a set where half the members were
+     never eligible, and the reassurance would have been manufactured entirely by the
+     ones that had the field. D-082 with the polarity reversed: not a negative with no
+     control, but agreement across a population nobody named. So the population is
+     named, and an unstamped layer is reported even when the stamped ones agree. */
+  const unstamped = all.filter(([, st]) => !st || !st.generation).map(([id]) => id);
+  const distinct = new Set(seen.map(([, g]) => g));
+  const el = document.querySelector('#warn');
+  const NOTE = 'router-generations';
+  document.getElementById(NOTE)?.remove();
+  if (!el || (distinct.size < 2 && !unstamped.length)) return;
+  if (distinct.size < 2 && unstamped.length) {
+    el.hidden = false;
+    const q = document.createElement('div');
+    q.id = NOTE;
+    q.innerHTML = `<b>${fmt(unstamped.length)} loaded layer`
+      + `${unstamped.length === 1 ? ' carries' : 's carry'} no build stamp:</b> `
+      + unstamped.map((id) => `<code>${esc(id)}</code>`).join(', ')
+      + `. The ${fmt(seen.length)} that do agree, but that agreement says nothing about `
+      + `these — they were never in the comparison.`;
+    el.append(q);
+    return;
+  }
+  el.hidden = false;
+  const p = document.createElement('div');
+  p.id = NOTE;
+  p.innerHTML = `<b>Two router layers built in different passes.</b> `
+    + seen.map(([id, g]) => `<code>${esc(id)}</code> ${esc(g)}`).join(', ')
+    + `. They describe the same water at different moments, so a link and the cell it `
+    + `leaves may disagree. Everything drawn is internally consistent; the two are not `
+    + `necessarily consistent with each other.`
+    + (unstamped.length
+      ? ` A further ${fmt(unstamped.length)} loaded layer(s) carry no stamp at all and `
+        + `are in none of this: ${unstamped.map((id) => esc(id)).join(', ')}.` : '');
+  el.append(p);
+}
+
 function showStamp(o) {
   const st = stamps.get(o.id);
   const el = document.getElementById(`note-${o.id}`);
@@ -1906,6 +2102,7 @@ const doneLoading = () => {
 map.on('load', async () => {
   map.addImage('arrow-reversed', arrowImage(C.rev));
   for (const [name, ring] of CROSSING_CLASSES) map.addImage(name, crossingImage(ring));
+  map.addImage('seam', seamImage());
   progress('Fetching the network…');
   await addNetwork();
   wireNetwork();
