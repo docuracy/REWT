@@ -155,24 +155,91 @@ def main(cfg: dict = CONFIG) -> None:
     # over a headland the res-7 path goes round. Stephen caught the omission the moment
     # the geometry went back to parent centres. Same test, same 232 m mask.
     crosses = land_crossing_test(cfg["masks"])
-    feats, over_land = [], 0
+
+    # WHERE THE CHORD CANNOT REPRESENT THE ROUTE, DRAW THE ROUTE. A res-6 chord between two
+    # cell centres crosses land wherever the water between them is narrower than the cells
+    # are wide — the north Solent, the Exe. Dropping those links made the drawn network say
+    # the channel is impassable, when the res-7 routing graph goes through it perfectly
+    # well: Hurst to Cowes Roads is 20.0 km of routing against an 18.4 km straight line, a
+    # ratio of 1.1. Stephen read the gap as a routing failure and it was a drawing failure.
+    #
+    # So instead of dropping such a link, walk the res-7 path between the two cells and draw
+    # THAT. The search is restricted to res-7 nodes lying under the two parents, which is at
+    # most fourteen of them, so it answers exactly the local question "how does a route get
+    # from this cell to that one" and stays cheap.
+    import heapq
+    from collections import defaultdict
+    kids = defaultdict(list)
+    for i7, c7 in enumerate(cell):
+        kids[h3.cell_to_parent(c7, P)].append(i7)
+    nbr = defaultdict(list)
+    for k, (i, j) in enumerate(e):
+        nbr[int(i)].append((int(j), float(length[k])))
+        nbr[int(j)].append((int(i), float(length[k])))
+
+    def path_between(pa, pb):
+        """Shortest res-7 path from pa's children to pb's, staying under the two."""
+        allowed = set(kids[pa]) | set(kids[pb])
+        if not kids[pa] or not kids[pb]:
+            return None
+        goal = set(kids[pb])
+        # a monotonic counter as the tiebreaker: without it two entries with equal
+        # distance and equal node fall through to comparing the predecessor, and None
+        # against an int raises
+        from itertools import count
+        tick = count()
+        seen, prev = {}, {}
+        h = [(0.0, next(tick), i, None) for i in kids[pa]]
+        heapq.heapify(h)
+        while h:
+            d, _, u, pv = heapq.heappop(h)
+            if u in seen:
+                continue
+            seen[u] = d
+            prev[u] = pv
+            if u in goal:
+                out = []
+                while u is not None:
+                    out.append(u)
+                    u = prev[u]
+                return out[::-1]
+            for v, w in nbr[u]:
+                if v in allowed and v not in seen:
+                    heapq.heappush(h, (d + w, next(tick), v, u))
+        return None
+
+    feats, over_land, routed = [], 0, 0
     for (pa, pb), r in sorted(par.items()):
         # TEST WHAT IS DRAWN, NOT WHAT IS COMPUTED. Publishing rounds the centre to
         # 4 dp, which moves it up to ~11 m — enough to put the drawn line across a
         # headland the exact line misses. One link of 47,367 did exactly that.
         la, lo = (round(v, D) for v in h3.cell_to_latlng(pa))
         lb, ob = (round(v, D) for v in h3.cell_to_latlng(pb))
+        coords = [[round(lo, D), round(la, D)], [round(ob, D), round(lb, D)]]
+        how = "chord"
         if crosses((la, lo), (lb, ob)):
-            over_land += 1
-            continue
+            pth = path_between(pa, pb)
+            ok = False
+            if pth and len(pth) > 1:
+                cc = [[round(float(lon[i]), D), round(float(lat[i]), D)] for i in pth]
+                ok = all(not crosses((cc[k][1], cc[k][0]), (cc[k + 1][1], cc[k + 1][0]))
+                         for k in range(len(cc) - 1))
+                if ok:
+                    coords, routed, how = cc, routed + 1, "res-7 path"
+            if not ok:
+                over_land += 1
+                continue
         feats.append({
             "type": "Feature",
-            "geometry": {"type": "LineString", "coordinates": [
-                [round(lo, D), round(la, D)], [round(ob, D), round(lb, D)]]},
+            "geometry": {"type": "LineString", "coordinates": coords},
             "properties": {
                 "h3_a": pa, "h3_b": pb,
                 "routing_edges": r["n"],
                 "crosses_band": bool(r["cross"]),
+                # NOT inferred from the vertex count: a res-7 path between two adjacent
+                # cells is usually two points as well, so counting vertices
+                # labelled all 1,845 routed links as chords.
+                "drawn_as": how,
                 "mean_edge_m": int(round(r["len"] / r["n"])),
                 "drawn_edge_m": int(round(r["best"])),
             },
@@ -220,6 +287,7 @@ def main(cfg: dict = CONFIG) -> None:
 
     feats, dropped, frags = largest_component(feats)
     print(f"  dropped {dropped:,} links in {frags} fragments left isolated by the land trim")
+    print(f"  {routed:,} links drawn along their res-7 path (the chord crossed land)")
 
     s = json.loads(Path(cfg["summary"]).read_text())
     fc = {
@@ -242,6 +310,13 @@ def main(cfg: dict = CONFIG) -> None:
                 "still one component; it reaches these cells round a headland by a path "
                 "no single res-6 chord can represent.",
             "links_over_land_not_drawn": over_land,
+            "links_drawn_as_res7_path": routed,
+            "res7_path_note":
+                "Where the straight chord between two cell centres crosses land but the "
+                "res-7 routing graph joins them anyway — a channel narrower than the "
+                "cells are wide — the link is drawn along the actual res-7 path instead "
+                "of being dropped. Dropping it made the picture claim the channel is "
+                "impassable when the route goes through it.",
             "land_trim":
                 "A link is not drawn where the straight line between the two CELL CENTRES "
                 "crosses land at 232 m, even though a res-7 route joins them round the "

@@ -1513,3 +1513,50 @@ which is the right label. The gap is honest and a different trim line does not c
 
 R-01 stands where it stood: nothing here argues for changing the seeding rule, only that one
 specific reason for changing it does not exist.
+
+## 31. Three reported failures, all of them in the picture
+
+Stephen reported joins that attach to nothing off the Exe, no network through the north
+Solent, and missing joins on the Crouch and the Blackwater. **All three are presentation.
+The routing graph was right in every case**, which is worth stating plainly because two of
+them looked like routing failures and one of them looked like a missing algorithm.
+
+**225 of the 389 joins had never been drawn.** Rule 3 emits a **Point** — deliberately,
+because there is no straight line to assert; the path is stage 4's business — and the layer
+was a `line` layer. MapLibre draws nothing for a Point on a line layer and reports no error.
+So 58% of the joins were invisible, and the Crouch had 4 of them and the Blackwater 10.
+Sheppey has joins at both ends, as Stephen suspected it should: the north-west one is a
+line, the south-east one was a dot nobody drew. A `circle` layer filtered on geometry type
+now draws them.
+
+**The other two are one fault: a res-6 chord cannot represent a res-7 route.** Where the
+water between two cell centres is narrower than the cells are wide, the straight chord
+crosses land and was dropped — so the picture claimed the channel was impassable. The res-7
+routing graph goes through it perfectly well: **Hurst to Cowes Roads is 20.0 km routed
+against 18.4 km straight, a ratio of 1.08.** Rather than drop such a link, the exporter now
+walks the res-7 path between the two cells and draws THAT. The search is restricted to the
+res-7 children of the two parents — at most fourteen nodes — so it answers the local
+question cheaply. **1,844 links are now drawn along their route instead of being dropped**,
+in green, and the isolated-fragment drop falls from 18 links in 8 pieces to 1 in 1.
+
+The Exe join that appeared to land in open water attaches to a cell whose res-6 parent had
+no drawable chord. It has one now.
+
+**What resolution threads what channel**, since Stephen asked. A link needs both centres in
+water AND the chord in water, so a channel much narrower than the centre spacing is threaded
+only by luck of alignment:
+
+| res | edge | centre-to-centre | channel it can thread |
+|---:|---:|---:|---:|
+| 5 | 9.85 km | 17.07 km | ~17 km |
+| 6 | 3.72 km | 6.45 km | ~6.5 km |
+| 7 | 1.41 km | 2.44 km | **~2.4 km** |
+| 8 | 0.53 km | 0.92 km | ~0.9 km |
+| 9 | 0.20 km | 0.35 km | ~0.3 km |
+
+The routing grid is res 7, so it threads down to about 2.4 km reliably and the Solent only
+just qualifies. **Nothing is severed today — the graph is one component — so this is a
+question of detour, not of connectivity**, and the detours measured here are 1.08x and 1.19x.
+Extending the estuary refinement rule to subdivide wherever a link is refused for crossing
+land is the natural next step and is NOT done: it should be justified by measured detours,
+not by the fact that it is possible.

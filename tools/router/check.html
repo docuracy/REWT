@@ -92,12 +92,15 @@ const LAYERS={
        ['>=',['get','gov_h_m'],200],'#e3b341',['>=',['get','gov_h_m'],80],'#3fb950',
        '#58a6ff']}})},
  net:{label:'sea network', src:()=>['ed', srcUrl(1)],
-   legend:[['cell-centre link','#c9d1d9'],['crosses a resolution band','#f0883e']],
-   note:'The travelling surface: links between the centres of adjacent sea cells. AN EDGE IS AN ADJACENCY, NOT A TRACK — no vessel sailed the straight line between two hexagon centres. Aggregated to the resolution of the cells drawn beneath it, so these are not the centres a route uses either. A link CROSSES A RESOLUTION BAND where the two routing cells behind it sit at different resolutions — which happens where an estuary was refined finer, and around the closed blind hops, which are binned coarser because nothing there sees land. A seam is a place the grid changes scale.',
+   legend:[['cell-centre link','#c9d1d9'],['drawn along its res-7 path','#3fb950'],
+     ['crosses a resolution band','#f0883e']],
+   note:'The travelling surface: links between the centres of adjacent sea cells. AN EDGE IS AN ADJACENCY, NOT A TRACK — no vessel sailed the straight line between two hexagon centres. Aggregated to the resolution of the cells drawn beneath it, so these are not the centres a route uses either. A link CROSSES A RESOLUTION BAND where the two routing cells behind it sit at different resolutions — which happens where an estuary was refined finer, and around the closed blind hops, which are binned coarser because nothing there sees land. A seam is a place the grid changes scale. GREEN links are drawn along their actual res-7 path rather than as a straight chord, because the water between the two cell centres is narrower than the cells are wide — the north Solent, the Exe. Dropping them made the picture claim a channel was impassable when the route goes through it.',
    add:()=>{ map.addLayer({id:'x-net',type:'line',source:'ed',
-       paint:{'line-width':['case',['get','crosses_band'],2.0,0.7],
-              'line-color':['case',['get','crosses_band'],'#f0883e','#c9d1d9'],
-              'line-opacity':['case',['get','crosses_band'],1,0.8]}}); }},
+       paint:{'line-width':['case',['get','crosses_band'],2.0,
+                            ['==',['get','drawn_as'],'res-7 path'],1.4,0.7],
+              'line-color':['case',['get','crosses_band'],'#f0883e',
+                            ['==',['get','drawn_as'],'res-7 path'],'#3fb950','#c9d1d9'],
+              'line-opacity':['case',['get','crosses_band'],1,0.85]}}); }},
  traces:{label:'traces', src:['tr', F+'traces.geojson'],
    legend:[['traced path','#a371f7']],
    note:'Least-cost paths across the drying ground for the stranded termini.',
@@ -119,10 +122,19 @@ const LAYERS={
                 'line-opacity':.9}}); }},
  joins:{label:'joins', src:['jn', F+'joins.geojson'],
    legend:[['rule 1 - in a cell','#3fb950'],['rule 2 - adjacent','#58a6ff'],
-     ['rule 3 - needs a path','#f85149']],
-   note:'One line per tidal terminus to the cell it attaches to. Red is an inference not yet traced.',
-   add:()=>map.addLayer({id:'x-joins',type:'line',source:'jn',paint:{'line-width':1.6,
-     'line-color':['match',['get','rule'],1,'#3fb950',2,'#58a6ff','#f85149']}})}};
+     ['rule 3 - needs a path (drawn as a dot)','#f85149']],
+   note:'One line per tidal terminus to the cell it attaches to. Red DOTS are rule 3: no straight line is asserted because the path is worked out by the trace stage. They are 225 of the 389 joins, so most of this layer is dots.',
+   add:()=>{ map.addLayer({id:'x-joins',type:'line',source:'jn',paint:{'line-width':1.6,
+       'line-color':['match',['get','rule'],1,'#3fb950',2,'#58a6ff','#f85149']}});
+     // A LINE LAYER CANNOT DRAW A POINT. Rule 3 emits a Point deliberately — there is no
+     // straight line to assert, the path is the trace stage's business — and 225 of the
+     // 389 joins are rule 3. So 58% of the joins had never appeared on this page, and
+     // Stephen read their absence as missing joins on the Crouch and the Blackwater.
+     // They were there; nothing drew them.
+     map.addLayer({id:'x-joins-pt',type:'circle',source:'jn',
+       filter:['==',['geometry-type'],'Point'],
+       paint:{'circle-radius':4,'circle-color':'#f85149','circle-opacity':.85,
+              'circle-stroke-width':1,'circle-stroke-color':'#ffb4ab'}}); }}};
 // A bookmarked URL from when these were stages must still open somewhere sensible.
 const FROM_STAGE={sightline2:'cells', sightline:'cells', joins:'joins', traces:'traces'};
 function hashGet(k){ for(const p of location.hash.replace(/^#/,'').split('&')){
