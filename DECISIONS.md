@@ -4363,3 +4363,41 @@ which is the same fault as the frozen constant one entry above.
 "lost precision" because an array of records is deliberately summarised as a count, and
 a count has no decimal point. An assertion about a renderer has to mirror the renderer's
 own contract or it reports the contract as a bug.
+
+## D-103 — Prose and the object protect different readers, and "it cannot reach my page" is not "it is safe"
+
+Two conclusions from the same day contradicted each other until both were tested, and
+each was reached by one session that could not have reached the other's.
+
+**After a nested object printed as `[object Object]`** on the viewer, the conclusion was:
+a structured value must sit BESIDE its scalar summary, never instead of it, so a
+consumer that renders objects badly still sees the figure in prose.
+
+**The opposite case was live in the same files.** `reach_bound_evidence` holds
+`{"Ben Nevis GB": 139.2, "Brittany FRA": 73.9}` — kilometres, being the distance each
+summit can be seen FROM. Against a peak name, `73.9` reads as a height. What actually
+reaches the viewer's panel is rewt-c7's prose — *"if this exceeds 1,345 m — Ben Nevis"*
+and *"London-Skagen 1169 km"* — and the sentence carries its unit where the bare key
+does not.
+
+**So: the object is the safer form for a consumer that must COMPUTE with the value; the
+prose is the safer form for a reader who must not MISREAD it. Publishing both is not
+redundancy.** Neither session would have got there alone — one had the renderer, the
+other had the field.
+
+**AND THE SECOND HALF MATTERS MORE.** Confirming that the ambiguous keys cannot reach the
+viewer's panel — seven files fetched, none of them among them — did not clear the
+hazard. **It moved it to everyone who opens the file**: the author, a later session,
+anyone joining the repository. Looking at the neighbourhood rather than the key then
+showed the arrangement was worse than neutral: `reach_bound_evidence`, in kilometres,
+sits beside `tallest_land_m_note`, a sentence about metres.
+
+*"It cannot reach my surface"* answers a narrower question than *"is it safe"*, and the
+narrower answer is the one that feels like completion. The check that produced it was
+right and the conclusion drawn from it would have been wrong.
+
+**A false green wastes the checker's time; a false red spends someone else's.** Recorded
+here because it is the reason to make a harness under-claim about another session's
+files rather than over-claim: a red from a trusted harness is acted on without argument,
+which is exactly what makes a wrong one expensive. Mine spent ten minutes of rewt-c7's
+attention on three files that were correct.
