@@ -35,12 +35,29 @@ is read out of the layer's own formula string when the page is built, and checke
 `sqrt(2Rk)` for the coefficient it names, so the prose here cannot drift from the code that
 drew the map — and if the two ever disagree, the build stops rather than publishing either.
 
-**Every range here is a floor.** The observer is at
-{{ site.data.routing.layer.observer_height_m }} m — an eye at sea level, the one height that
-assumes nothing about a vessel. A lookout {{ site.data.routing.horizon.illustrative_eye_m }} m
-up adds {{ site.data.routing.horizon.illustrative_eye_adds_km }} km to every one of them, and
-a masthead more. That is an illustration and not a claim about any ship: choosing a real
-height means choosing a real vessel, and a vessel implies a period.
+**A sighted range has two terms, and the difference between them decides what any number
+here means.** Land goes below the horizon at a distance set by *its* height; an observer
+sees over the horizon by a distance set by *theirs*; and a coast is in sight when the two
+together span the gap. So every reach quoted from this layer is the land's term, and the
+water actually in sight extends a further
+**{{ site.data.routing.horizon.observer_term_km }} km** beyond it.
+
+{% if site.data.routing.horizon.ranges_are_floors %}**The observer is at sea level** —
+{{ site.data.routing.layer.observer_height_m }} m, the one height that assumes nothing about a
+vessel — so every range here is a floor, and any real eye adds to it.
+{% else %}**The observer is not at sea level**, and that is a choice with a citation rather
+than a default: {{ site.data.routing.layer.observer_height_basis }}
+
+So these ranges are **not floors**. They assume someone is aloft. A lookout on deck at
+{{ site.data.routing.horizon.deck_eye_m }} m has an observer term of
+{{ site.data.routing.horizon.deck_term_km }} km and therefore sees
+**{{ site.data.routing.horizon.deck_sees_less_km }} km less** than this surface allows —
+which is the figure that matters, and is not the same as that observer's own horizon.
+{% endif %}
+
+**Choosing a height is choosing a kind of ship**, which is why it is the one parameter here
+that had to be argued rather than set: it is the point at which geometry starts to describe
+somebody's vessel.
 
 **What each cell records is the tallest land that reaches it** — {{ site.data.routing.layer.gov_h_m_definition }}
 So the surface is not a buffer round a coastline. A high headland projects sight much further

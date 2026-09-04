@@ -12,31 +12,62 @@ generator: tools/docs/routing_page.py
 layer:
   what: sight of land, computed from the land outwards in reach bands
   method: banded distance transform in EPSG:32630
-  bands: 95
+  bands: 101
   band_km: 2.0
-  max_reach_km: 188.3
+  max_reach_km: 200.3
   horizon_formula: range_km = 3.7945 * sqrt(height_m), refraction_k = 1.13. NOT 3.86, which
     is k = 1.17.
-  observer_height_m: 0.0
+  observer_height_m: 10.0
+  observer_height_basis: '10 m, a lookout at the masthead. After Alvarez-Palau and Dunn (2019)
+    as reported by Litvine, Lewis and Starzec (2024), doi:10.1057/s41599-024-02906-9 (CC BY
+    4.0), whose coastal routing model for England and Wales takes the observer at 10 m on
+    the ship''s mast. NOTE the typeset article reads ''1.0 m (located on the ship''s mast)''
+    where the accepted manuscript reads ''10m'' — an observer one metre up a mast is nonsense,
+    and the version of record is the corrupted one. Ranges here are therefore NOT floors at
+    sea level: they assume a masthead lookout, and a deck observer at 2 m has an observer
+    term of 5.4 km, which is 6.6 km LESS than the 12.0 km used here — 5.4 is that observer''s
+    own horizon, NOT the difference.'
   gov_h_m_definition: the tallest land that reaches this cell — the band that first marked
     it. Absent where nothing reaches.
+  gov_h_m_provenance: gov_h_m is a height off EMODnet's land side, which is ASTER, SRTM3 and
+    EU-DEM blended with no per-pixel provenance (D-098). It is NOT a surveyed summit and should
+    not be quoted as one. It is fit for deciding whether a coast is in sight, where a 3% height
+    error moves the range by 1.49%.
+  gov_reach_km_definition: 'DERIVED FROM gov_h_m, not measured alongside it: 3.7945 * sqrt(gov_h_m),
+    exactly. One variable in two units. Shown side by side the pair reads as two measurements
+    agreeing, which is the most persuasive thing a single measurement can pretend to be —
+    rewt-46 found 67 distinct heights and 67 distinct pairs across all cells. Do not cite
+    them as corroborating each other. EXCLUDES THE OBSERVER TERM: admission added 12.0 km
+    on top of this, so the sighted zone reaches that much further than gov_reach_km says.
+    The per-coast medians exclude it too, which keeps Britain and the Low Countries a like-for-like
+    comparison of the LAND — but neither figure is the distance at which a cell was admitted.'
   blind_sailing_buffer_km: 0.0
   buffer_basis: 'NO BLIND SAILING (Stephen, 4 Sep 2026): the buffer is zero. A cell is in
     the surface only if land is in sight from it, and a landmass joins only when its sighted
     water TOUCHES sighted water already admitted — two blind zones meeting is not a route.
     The trimmed edge is therefore the limit of sight itself, not a routing decision and not
-    a coast. Land''s End to Cork, 56.4 km blind, is NOT in this surface.'
+    a coast. A crossing that leaves sight of land — Land''s End to Cork among them — is therefore
+    NOT in this surface. The blind span of that crossing was measured on the superseded buffered
+    surface and is not restated here, because a figure derived from a surface that no longer
+    exists is worse than no figure.'
   trimmed: 'cells out of sight of land are absent, not coloured (H3-002 item 3). There is
     no unknown state left to render: `known` is absent from every feature, and an absent `known`
     means answered.'
+  computation_domain_note: where the question was asked. The CELLS are what was found, and
+    after trimming they cover less — about a degree of west Atlantic separates the two. Do
+    not conflate them in a caption (rewt-46).
+  tallest_governing_land_note: if this exceeds 1,345 m — Ben Nevis — then land outside the
+    British Isles is casting sightlines into the surface, and a reader who knows these islands
+    will rightly wonder. rewt-46 caught 221 such cells reaching 1,823 m while a buffer regression
+    was live; under the no-blind-sailing rule there are none.
   distance_crs: EPSG:32630
   distance_crs_worst_error_pct: 0.33
   validated_against: 'exact WGS84 geodesics on 250 sample points: 246 agree, and all 4 disagreements
     are conservative (the raster misses visibility, never invents it)'
-  week_km: 1271
+  week_km: 1169
   week_trim: 'cells beyond a week''s sailing of England and Wales are absent. The bound is
     route distance ON THE NAVIGABLE SURFACE, calibrated by two attested week-long voyages:
-    London-Skagen 1271 km and Falmouth-Bordeaux 1195 km. Both anchors are APPROXIMATE — eRutter
+    London-Skagen 1169 km and Falmouth-Bordeaux 876 km. Both anchors are APPROXIMATE — eRutter
     says so, and is better for comparing routes than for definitive times — so this is an
     order of magnitude, not a threshold. That the two converge under the no-blind-sailing
     rule (6%, against 48% on a buffered surface) is consistent with the constraint being right;
@@ -45,15 +76,16 @@ layer:
   attribution: 'Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet
     Digital Bathymetry (DTM 2024), licensed CC BY 4.0.'
   use_constraint: DO NOT USE FOR NAVIGATION
+  generation: 20260904T092019Z
 reach:
   criterion: within a week's sailing of England and Wales, under typical conditions, measured
     as route distance THROUGH the water
   calibration:
-    London -> Skagen (N Denmark): 1271
-    Falmouth -> Bordeaux (Gironde mouth): 1195
+    London -> Skagen (N Denmark): 1169
+    Falmouth -> Bordeaux (Gironde mouth): 876
   calibration_source: 'eRutter, docuracy.github.io/Historical_Sea_Routing: London to the northern
     tip of Denmark, and Falmouth to Bordeaux, each about a week in July'
-  week_km: 1271
+  week_km: 1169
   anchors_disagree: 'the two attested week-long voyages imply different route distances. That
     is information, not noise: route distance is a poor proxy for time, and the difference
     is what wind and season would explain. The LARGER is taken so that both voyages fall inside
@@ -69,7 +101,11 @@ horizon:
   constant_km_per_sqrt_m: 3.7945
   refraction_k: 1.13
   constant_check_sqrt_2Rk: 3.7945
-  illustrative_eye_m: 10
-  illustrative_eye_adds_km: 12.0
+  observer_height_m: 10.0
+  observer_term_km: 12.0
+  ranges_are_floors: false
+  deck_eye_m: 2
+  deck_term_km: 5.4
+  deck_sees_less_km: 6.6
   common_wrong_constant: 3.86
   common_wrong_refraction_k: 1.17

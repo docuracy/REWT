@@ -42,20 +42,22 @@ TARGET = Path("docs/_data/routing.yml")
 # What the page says about the layer's method, in the order the page reads them.
 FROM_LAYER = [
     "what", "method", "bands", "band_km", "max_reach_km",
-    "horizon_formula", "observer_height_m", "gov_h_m_definition",
+    "horizon_formula", "observer_height_m", "observer_height_basis",
+    "gov_h_m_definition", "gov_h_m_provenance", "gov_reach_km_definition",
     "blind_sailing_buffer_km", "buffer_basis", "trimmed",
+    "computation_domain_note", "tallest_governing_land_note",
     "distance_crs", "distance_crs_worst_error_pct", "validated_against",
-    "week_km", "week_trim", "attribution", "use_constraint",
+    "week_km", "week_trim", "attribution", "use_constraint", "generation",
 ]
 FROM_REACH = [
     "criterion", "calibration", "calibration_source", "week_km",
     "anchors_disagree", "measured_on", "not_a_radius", "time_not_computed",
 ]
 
-# A masthead height worth naming, because "the ranges are floors" is abstract until
-# something is added to one. Not a claim about any vessel -- an illustration, and the
-# page says so.
-ILLUSTRATIVE_EYE_M = 10
+# A deck observer, for saying what a lower eye costs against the masthead the surface
+# assumes. Not a claim about any vessel: it is the comparison that makes the observer
+# height a choice rather than a constant nobody noticed.
+DECK_EYE_M = 2
 
 BANNER = (
     "# GENERATED FILE -- do not edit.\n"
@@ -140,11 +142,29 @@ def project() -> dict:
         "horizon": h,
     }
 
-    # Everything the page says about a range, computed here from the parsed constant.
-    eye = ILLUSTRATIVE_EYE_M
-    out["horizon"]["illustrative_eye_m"] = eye
-    out["horizon"]["illustrative_eye_adds_km"] = round(
-        h["constant_km_per_sqrt_m"] * math.sqrt(eye), 1)
+    # THE OBSERVER TERM, computed from the layer's own height and constant rather than
+    # described. A sighted range is the land's horizon PLUS the observer's own, and the
+    # page must say which of the two any number is.
+    #
+    # `ranges_are_floors` exists because this page has already been wrong about it once,
+    # in the way that is hardest to catch: the height is projected, so it changed from 0
+    # to 10 by itself, while the prose around it went on saying "an eye at sea level, the
+    # one height that assumes nothing" and offering a masthead as something further to
+    # add. Ten metres IS the masthead. A projected value cannot fix the sentence built on
+    # its old meaning, so the page branches on this flag instead of asserting either.
+    c = h["constant_km_per_sqrt_m"]
+    eye_m = float(layer.get("observer_height_m", 0) or 0)
+    out["horizon"]["observer_height_m"] = eye_m
+    out["horizon"]["observer_term_km"] = round(c * math.sqrt(eye_m), 1)
+    out["horizon"]["ranges_are_floors"] = eye_m == 0
+    # What a lower observer costs, as a DIFFERENCE rather than as that observer's own
+    # horizon. The router's own note conflated the two -- 5.4 km is a 2 m observer's
+    # horizon, 6.6 km is what they lose against a masthead -- so it is computed here.
+    deck = DECK_EYE_M
+    out["horizon"]["deck_eye_m"] = deck
+    out["horizon"]["deck_term_km"] = round(c * math.sqrt(deck), 1)
+    out["horizon"]["deck_sees_less_km"] = round(
+        c * math.sqrt(eye_m) - c * math.sqrt(deck), 1)
     # The value a reader is likely to supply from memory, named so the page can say
     # what it is rather than leaving the difference to be discovered.
     out["horizon"]["common_wrong_constant"] = 3.86
