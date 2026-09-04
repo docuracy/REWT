@@ -3953,3 +3953,60 @@ past twice; the third only by going looking on purpose.
 This is D-094's family — a constant in prose and in code — seen from the far end. D-094 is
 about the copy that does not recompute; this is about the copy that does not even look
 different when it becomes false.
+
+---
+
+## D-096 — The lights are undated, and dating them is a deferred work package
+
+**4 September 2026, Stephen's ruling, proposed by rewt-c7 (router), recorded by rewt-e8
+(implementer).**
+
+Stephen has ruled that seamarks should cast sightlines in the coastal grid, and the source
+is the NGA *List of Lights* (Pub. 110–116). Within the router's extent it gives **4,184
+lighted aids with a stated height** — position to a tenth of a second, focal-plane height,
+nominal range, structure. Median height 10 m, tallest 448 m.
+
+**It carries no temporal information whatever.** Its only date-like field is `noticeYear`,
+which records when the *entry* was last amended: 2015 for Bishop Rock, which has stood since
+1858. So it is a list of what stands **now**, most of it eighteenth and nineteenth century,
+going into a Stage 1 surface that otherwise makes no historical claim at all.
+
+CLAUDE.md's first override is that if a task requires knowing what year it is, it is not
+Stage 1. This does not require knowing the year — a light standing today is a fact about
+today, and a sightline computed from it is a claim about the present. **The hazard is not
+the computation but the reading**: a surface built from structures with known later dates
+invites exactly the historical inference the project is built to refuse.
+
+**Stephen's ruling: use it, and queue the dating as a separate work package, deferred.** So
+it is a recorded decision and not an oversight. The caveat is written into
+`tools/router/lights.py`, into `docs/router/data/lights_summary.json` under a key named
+`NO_TEMPORAL_INFORMATION`, and into the layer's own `seamarks_basis` — three places, none of
+them prose that could quietly stop being true (D-095).
+
+**The deferred work package**, recorded here because this is where queued work lives:
+establish a date of first lighting for each aid, so that a sightline surface can be built
+for a stated epoch rather than for the present only. Not started, not scoped, and not Stage
+1 — by CLAUDE.md's own test, that one *does* require knowing what year it is.
+
+**An external check nobody has had, and it is the more interesting half.** The list gives a
+**nominal range** per light, in nautical miles, computed by a hydrographic authority from a
+different method for a different purpose. That is an independent figure at each of 4,184
+positions to test the router's sightline geometry against — the first check on this work that
+does not come from inside it. Not yet run. **If it disagrees systematically, that is worth
+more than anything measured against ourselves**, which is most of what exists.
+
+**The rejected alternative, recorded because rejecting it is a judgement.** Alvarez-Palau and
+Dunn (2019) assume a flat 20 m landmark at every one of 13,000 coastal points. Measured
+against our own data that raises a 2 m shore's reach by 232% and a mountain's by 1% — **it
+does most of its work exactly where the evidence is thinnest** — and Litvine et al. (2024,
+doi:10.1057/s41599-024-02906-9, CC BY 4.0) discard it themselves in favour of a DEM viewshed.
+Real lights at real positions are a weaker claim about date and a much stronger one about
+place.
+
+**A citation warning, which is the router's and is worth more than its size suggests.** The
+10 m observer height comes from Litvine et al. via Alvarez-Palau and Dunn. **The typeset
+article reads "1.0 m (located on the ship's mast)" where the accepted manuscript reads
+"10m".** An observer one metre up a mast is nonsense, and **the version of record is the
+corrupted one** — so anybody citing the published paper faithfully will publish the error
+faithfully. That is D-095's limit in the literature rather than in our own files: quoting
+protects against a sentence that changes, not against one that is wrong.
