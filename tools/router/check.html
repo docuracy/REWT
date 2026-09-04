@@ -1,0 +1,150 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>REWT router — staged check</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<style>
+ :root{--bg:#0d1117;--fg:#e6edf3;--dim:#8b949e;--line:#30363d;--accent:#58a6ff}
+ *{box-sizing:border-box} html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
+   font:13px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+ #map{position:absolute;inset:0}
+ #panel{position:absolute;top:0;left:0;bottom:0;width:310px;overflow-y:auto;z-index:2;
+   background:rgba(13,17,23,.94);border-right:1px solid var(--line);padding:14px 16px}
+ h1{font-size:14px;margin:0 0 2px} .sub{color:var(--dim);font-size:11.5px;margin-bottom:14px}
+ h2{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);
+   margin:16px 0 7px;border-top:1px solid var(--line);padding-top:11px}
+ button{background:#161b22;color:var(--fg);border:1px solid var(--line);border-radius:5px;
+   padding:5px 9px;margin:0 4px 4px 0;cursor:pointer;font:inherit;font-size:12px}
+ button:hover{border-color:var(--accent)} button.on{background:var(--accent);color:#08111f;
+   border-color:var(--accent);font-weight:600}
+ .key{display:flex;align-items:center;gap:7px;margin:3px 0;font-size:12px}
+ .sw{width:13px;height:13px;border-radius:3px;flex:none;border:1px solid rgba(255,255,255,.25)}
+ table{width:100%;border-collapse:collapse;font-size:11.5px} td{padding:1px 0;color:var(--dim)}
+ td.v{text-align:right;color:var(--fg);font-variant-numeric:tabular-nums}
+ .warn{color:#f0883e;font-size:11.5px;margin-top:8px;line-height:1.45}
+ .maplibregl-popup-content{background:#161b22;color:var(--fg);font:12px system-ui;
+   border:1px solid var(--line);border-radius:6px}
+ .maplibregl-popup-tip{border-top-color:#161b22!important;border-bottom-color:#161b22!important}
+</style></head><body>
+<div id="map"></div>
+<div id="panel">
+  <h1>Router — staged check</h1>
+  <div class="sub">Local instrument, not published. Coastline is OS Boundary-Line (OGL);
+    depths EMODnet DTM 2024 (CC BY 4.0). <b>Not for navigation.</b></div>
+  <h2>Stage</h2><div id="stages"></div>
+  <h2>Zoom to</h2><div id="areas"></div>
+  <h2>Legend</h2><div id="legend"></div>
+  <h2>Figures</h2><table id="figs"></table>
+  <div class="warn" id="warn"></div>
+</div>
+<script>
+const F='../data/', C='./';
+const map=new maplibregl.Map({container:'map',center:[-3.5,54.5],zoom:4.6,
+  style:{version:8,sources:{},layers:[{id:'bg',type:'background',paint:{'background-color':'#0d1117'}}]}});
+map.addControl(new maplibregl.NavigationControl(),'top-right');
+map.addControl(new maplibregl.ScaleControl({unit:'metric'}),'bottom-right');
+
+const RES={3:'#f85149',4:'#f0883e',5:'#e3b341',6:'#3fb950',7:'#2ea043',8:'#58a6ff',9:'#a371f7'};
+const STAGES={
+ grid:{label:'1 · Grid', legend:[['res 3','#f85149'],['res 4','#f0883e'],['res 5','#e3b341'],
+   ['res 6','#3fb950'],['res 7','#2ea043'],['res 8','#58a6ff'],['res 9','#a371f7']],
+   note:'Bands emerge from a cell being kept when its centre is further from land than twice its own edge. Fine detail (res 8–9) is exported only for the named areas.'},
+ sightline:{label:'2 · Sightline', legend:[['sees land','#3fb950'],['sees none','#484f58'],
+   ['not knowable','#f0883e']],
+   note:'Curvature only, no occlusion. Observer at sea level, so the envelope is a floor. Orange is where the land that would be visible lies outside the data — it is not a negative.'},
+ joins:{label:'3 · Joins', legend:[['rule 1 — in a cell','#3fb950'],['rule 2 — adjacent','#58a6ff'],
+   ['rule 3 — needs a path','#f85149']],
+   note:'One line per tidal terminus to the grid cell it attaches to. Red is an inference not yet traced.'},
+ traces:{label:'4 · Traces', legend:[['traced path','#a371f7']],
+   note:'Least-cost paths across the drying ground for the stranded termini. The median path spends 83% of its length above the lowest tide.'}};
+let stage='grid', loaded={}, summaries={}, areas={};
+window.map=map;                       // a top-level const is NOT on window
+window.__drawn=0;                     // increments when a stage has finished drawing
+window.setStage=async s=>{ stage=s;
+  [...stages.children].forEach(b=>b.classList.toggle('on',b.dataset.s===s)); await draw(); };
+window.zoomTo=a=>{ if(a==='all') map.fitBounds([[-8,49.5],[2,61]],{padding:20});
+  else map.fitBounds([[areas[a][0],areas[a][1]],[areas[a][2],areas[a][3]]],{padding:40}); };
+
+async function gj(u){ if(loaded[u])return loaded[u];
+  const r=await fetch(u); if(!r.ok) return null; loaded[u]=await r.json(); return loaded[u]; }
+
+async function src(id,url){ const d=await gj(url); if(!d)return false;
+  if(map.getSource(id)) map.getSource(id).setData(d); else map.addSource(id,{type:'geojson',data:d});
+  return true; }
+
+function clear(){ for(const l of map.getStyle().layers) if(l.id.startsWith('x-')) map.removeLayer(l.id); }
+
+async function draw(){
+  clear();
+  await src('coast', C+'coastline.geojson');
+  map.addLayer({id:'x-coast',type:'fill',source:'coast',
+    paint:{'fill-color':'#161b22','fill-outline-color':'#30363d'}});
+  const resColour=['match',['get','res'],3,RES[3],4,RES[4],5,RES[5],6,RES[6],7,RES[7],8,RES[8],9,RES[9],'#888'];
+  if(stage==='grid'){
+    await src('gc', C+'grid-coarse.geojson');
+    map.addLayer({id:'x-gc',type:'fill',source:'gc',
+      paint:{'fill-color':resColour,'fill-opacity':.28,'fill-outline-color':resColour}});
+    for(const a of Object.keys(areas)){ if(await src('g-'+a, C+'grid-'+a+'.geojson'))
+      map.addLayer({id:'x-g-'+a,type:'fill',source:'g-'+a,
+        paint:{'fill-color':resColour,'fill-opacity':.45,'fill-outline-color':resColour}}); }
+  } else if(stage==='sightline'){
+    if(await src('sl', F+'sightline_r6.geojson'))
+      map.addLayer({id:'x-sl',type:'fill',source:'sl',paint:{'fill-opacity':.42,
+        'fill-color':['case',['get','visible'],'#3fb950',['get','known'],'#484f58','#f0883e']}});
+  } else if(stage==='joins'){
+    if(await src('jn', F+'joins.geojson'))
+      map.addLayer({id:'x-jn',type:'line',source:'jn',paint:{'line-width':1.6,
+        'line-color':['match',['get','rule'],1,'#3fb950',2,'#58a6ff','#f85149']}});
+  } else if(stage==='traces'){
+    if(await src('tr', F+'traces.geojson'))
+      map.addLayer({id:'x-tr',type:'line',source:'tr',
+        paint:{'line-width':2,'line-color':'#a371f7'}});
+  }
+  const S=STAGES[stage];
+  legend.innerHTML=S.legend.map(([t,c])=>`<div class="key"><div class="sw" style="background:${c}"></div>${t}</div>`).join('');
+  warn.textContent=S.note;
+  figures();
+  // Signal completion from the page rather than have the driver guess. `load` fires
+  // long before anything is drawn: my first headless shot was a blank panel and an
+  // empty map, and it was the screenshot that was early, not the page that was broken.
+  await new Promise(r=>map.once('idle',r));
+  window.__drawn++;
+}
+
+function figures(){
+  const g=summaries.grid_summary||{}, j=summaries.join_summary||{},
+        t=summaries.trace_summary||{}, e=summaries.edge_summary||{};
+  const rows={grid:[['cells',g.total_cells],['finest res',g.coastal_sea_resolution],
+      ['edges',e.edges],['components',e.components],['isolated',e.isolated],
+      ['severed deep bodies',(g.severed_deep_water||[]).length]],
+    sightline:[['sea cells',15861],['see land',8113],['not knowable',6735]],
+    joins:[['termini',j.termini],['rule 1',(j.by_rule||{})['1']],['rule 2',(j.by_rule||{})['2']],
+      ['rule 3',(j.by_rule||{})['3']]],
+    traces:[['attempted',t.attempted],['traced',t.traced],['failed',t.failed]]}[stage]||[];
+  figs.innerHTML=rows.filter(r=>r[1]!==undefined)
+    .map(([k,v])=>`<tr><td>${k}</td><td class="v">${(v??'—').toLocaleString?.()??v}</td></tr>`).join('');
+}
+
+map.on('click',e=>{ const f=map.queryRenderedFeatures(e.point).filter(f=>f.layer.id.startsWith('x-')&&f.layer.id!=='x-coast')[0];
+  if(!f)return; const p=f.properties;
+  new maplibregl.Popup().setLngLat(e.lngLat).setHTML(
+    Object.entries(p).filter(([k])=>!k.startsWith('landmark_l'))
+      .map(([k,v])=>`<b>${k}</b> ${v}`).join('<br>')).addTo(map); });
+
+map.on('load',async()=>{
+  summaries=await gj(C+'summaries.json')||{}; areas=await gj(C+'areas.json')||{};
+  stages.innerHTML=Object.entries(STAGES).map(([k,v])=>
+    `<button data-s="${k}"${k===stage?' class="on"':''}>${v.label}</button>`).join('');
+  stages.onclick=ev=>{ const s=ev.target.dataset.s; if(!s)return; stage=s;
+    [...stages.children].forEach(b=>b.classList.toggle('on',b.dataset.s===s)); draw(); };
+  areasEl.innerHTML=`<button data-a="all">all</button>`+Object.keys(areas).map(a=>
+    `<button data-a="${a}">${a}</button>`).join('');
+  areasEl.onclick=ev=>{ const a=ev.target.dataset.a; if(!a)return;
+    if(a==='all') map.fitBounds([[-8,49.5],[2,61]],{padding:20});
+    else map.fitBounds([[areas[a][0],areas[a][1]],[areas[a][2],areas[a][3]]],{padding:40}); };
+  draw();
+});
+const legend=document.getElementById('legend'), figs=document.getElementById('figs'),
+      warn=document.getElementById('warn'), stages=document.getElementById('stages'),
+      areasEl=document.getElementById('areas');
+</script></body></html>

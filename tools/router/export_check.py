@@ -88,6 +88,11 @@ def main() -> None:
     (OUT / "coastline.geojson").write_text(cr[["Name", "geometry"]].to_json())
     print(f"  coastline.geojson  {len(cr):,} polygons (OS Boundary-Line, OGL)")
 
+    # The page is SOURCE and lives in tools/; check/ is gitignored, so an index.html
+    # written straight into it would vanish on a clean checkout.
+    (OUT / "index.html").write_text(Path("tools/router/check.html").read_text())
+    print("  index.html (from tools/router/check.html)")
+
     summary = {}
     for s in ("grid_summary", "join_summary", "trace_summary", "edge_summary"):
         p = Path("docs/router/data") / f"{s}.json"
