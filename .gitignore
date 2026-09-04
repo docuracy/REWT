@@ -35,3 +35,8 @@ tools/nls_layers.json
 docs/viewer/keys.json
 # Runtime state: which session holds which role on THIS machine, now.
 .team/
+
+# Harness screenshots from tools/viewer/shot.py --shot. Development output, and they
+# sit under docs/ where Jekyll would publish them — a picture of the map that nobody
+# curated is exactly the stale artefact this repository spent 3 September on.
+docs/viewer/shots/

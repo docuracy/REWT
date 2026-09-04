@@ -120,6 +120,42 @@ short attribution may never attribute less than that file does.
 `window.map` is the MapLibre map and `window.rewt.summary` is the figures payload, so
 `map.flyTo({center: [lng, lat], zoom: 16})` gets you to a place somebody read out.
 
+## Checking the DEPLOYED viewer without a browser window
+
+    /usr/bin/python3 tools/viewer/shot.py --serve      # every check, own server
+    /usr/bin/python3 tools/viewer/shot.py --prove-it-fails
+
+`tools/viewer/shot.py` drives `docs/viewer/` headlessly through Playwright. **System
+python**, not the project venv: playwright is installed for `/usr/bin/python3` and is
+deliberately not a project dependency. It checks the panel's figures against
+`published/audit/audit.json`, that every overlay draws, the popup at Stephen's
+Berkhamsted node, and the sightline layer's three states — each with a control in the
+same run, because an absence is only evidence when the same call found a presence.
+
+**Run `--prove-it-fails` before believing a pass.** It points every check at a page with
+no map and requires each to fail. A green run can otherwise mean the subject never
+rendered at all.
+
+Three things it took three attempts to get right, recorded so the next person skips them:
+
+- **Software GL is not optional.** Headless chromium has no GPU, so a WebGL map never
+  resolves its sources, `map.loaded()` stays false and `idle` never fires — every run
+  then times out on a working page and a broken one alike.
+- **Wait on `window.rewt.ready`, not on `load`.** `map.on('load')` fires when the STYLE
+  loads, long before the sources, the tiles or the page's own fetches. The same applies
+  to a hidden tab in a real browser, where `load` never fires at all: `isStyleLoaded()`
+  true with `loaded()` false is that signature, and the harness reports it by name.
+- **Assert the synthetic click LANDED.** `project()` before the camera settles returns a
+  point for the old view, the click hits open water, and a check of the form "the ray is
+  absent for a cell without a landmark" then passes for the wrong reason. The first
+  version of the sightline check did exactly that.
+
+It found a real defect on its first honest run: the sightline ray was drawn during
+`describe()`, before the popup was shown, and showing the popup fires `close` on the
+reused instance — which clears the ray. So it worked on the first sightline click of a
+session and silently not afterwards. Hand-testing never caught it because a hand test
+starts with no popup open.
+
 ## Stage 1 only
 
 Nothing here knows what year it is. There are no dates, no old courses, no attestation

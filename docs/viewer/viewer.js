@@ -1320,7 +1320,13 @@ function markBlock({ d, f }) {
       extra = '<div class="quote">No land in sight, and this cell is far enough inside '
         + 'the data for that to be the answer rather than a gap.</div>';
     }
-    drawRay(p, f.geometry);
+    /* The ray is NOT drawn here. `describe` runs before the popup is shown, and
+       showing it re-adds the same Popup instance, which fires `close` — whose
+       handler clears the ray. Drawing it here therefore worked on the FIRST
+       sightline click of a session and silently not afterwards, because only
+       then was there no open popup to close. The click handler draws it after
+       the popup instead. Found by tools/viewer/shot.py, which clicks a node
+       before a cell and so hit the case I never did by hand. */
   }
   return `<b>${esc(d.label)}</b>` + dl(p) + extra;
 }
@@ -1390,6 +1396,10 @@ function wireMapClicks() {
     if (!links.length && !marks.length) { detail.remove(); return; }
     popup(e.lngLat, describe(links, marks));
     highlight([...marks, ...links].map((x) => x.f));
+    /* AFTER the popup, for the reason in `markBlock`: showing it closes the previous
+       one, and the close handler clears the ray. */
+    const sight = marks.find((m) => m.d.o && m.d.o.id === 'sightline');
+    drawRay(sight ? sight.f.properties : null, sight ? sight.f.geometry : null);
   });
 
   /* HOVER IS A PREVIEW AND CLICK IS A PIN, so hover never disturbs an open popup.
