@@ -46,7 +46,7 @@ water actually in sight extends a further
 {{ site.data.routing.layer.observer_height_m }} m, the one height that assumes nothing about a
 vessel — so every range here is a floor, and any real eye adds to it.
 {% else %}**The observer is not at sea level**, and that is a choice with a citation rather
-than a default: {{ site.data.routing.layer.observer_height_basis }}
+than a default: {{ site.data.routing.layer.observer_height_basis_short }}
 
 So these ranges are **not floors**. They assume someone is aloft. A lookout on deck at
 {{ site.data.routing.horizon.deck_eye_m }} m has an observer term of
@@ -59,7 +59,7 @@ which is the figure that matters, and is not the same as that observer's own hor
 that had to be argued rather than set: it is the point at which geometry starts to describe
 somebody's vessel.
 
-**What each cell records is the tallest land that reaches it** — {{ site.data.routing.layer.gov_h_m_definition }}
+**Each cell carries the height that governs it:** {{ site.data.routing.layer.gov_h_m_definition }}
 So the surface is not a buffer round a coastline. A high headland projects sight much further
 than the flat shore beside it, and the reach of a stretch of water is set by the highest thing
 that can see it.
@@ -89,10 +89,9 @@ rounded estimate of a voyage becomes a boundary condition the moment it is writt
 that word. Nothing here computes duration:
 {{ site.data.routing.reach.time_not_computed }}
 
-**A week is also measured along the water.**
-{{ site.data.routing.reach.not_a_radius }}
+**A week is not a radius** — {{ site.data.routing.reach.not_a_radius }}
 
-**And the two anchors still disagree, which is kept rather than averaged away.**
+**And the two anchors still disagree, which is kept rather than averaged away:**
 {{ site.data.routing.reach.anchors_disagree }}
 
 ## What is not published here, and why

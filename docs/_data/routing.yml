@@ -77,6 +77,11 @@ layer:
     Digital Bathymetry (DTM 2024), licensed CC BY 4.0.'
   use_constraint: DO NOT USE FOR NAVIGATION
   generation: 20260904T092019Z
+  observer_height_basis_short: 10 m, a lookout at the masthead. After Alvarez-Palau and Dunn
+    (2019) as reported by Litvine, Lewis and Starzec (2024), doi:10.1057/s41599-024-02906-9
+    (CC BY 4.0), whose coastal routing model for England and Wales takes the observer at 10
+    m on the ship's mast.
+  observer_height_basis_trimmed: true
 reach:
   criterion: within a week's sailing of England and Wales, under typical conditions, measured
     as route distance THROUGH the water

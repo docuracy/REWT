@@ -152,6 +152,18 @@ def project() -> dict:
     # one height that assumes nothing" and offering a masthead as something further to
     # add. Ten metres IS the masthead. A projected value cannot fix the sentence built on
     # its old meaning, so the page branches on this flag instead of asserting either.
+    # The observer-height basis carries a bibliographic aside for whoever implements it --
+    # which edition of the cited paper is corrupted, and how. That belongs with the router,
+    # not on a page explaining what the surface is, so the projection also offers the
+    # reader-facing part: everything up to the first sentence the router marks NOTE.
+    # The full string is projected too and nothing is lost; if the aside is ever moved out
+    # of the property, `_short` and the full string become the same text on their own.
+    basis = str(layer.get("observer_height_basis", "")).strip()
+    short = re.split(r"(?:^|\s)NOTE\b", basis, maxsplit=1)[0].strip()
+    if basis:
+        out["layer"]["observer_height_basis_short"] = short
+        out["layer"]["observer_height_basis_trimmed"] = short != basis
+
     c = h["constant_km_per_sqrt_m"]
     eye_m = float(layer.get("observer_height_m", 0) or 0)
     out["horizon"]["observer_height_m"] = eye_m
