@@ -623,6 +623,40 @@ const OVERLAYS = [
     legend: [['a seam: the two cells sit at different resolutions', C.add]],
     note: 'the banding is only a grid if these join it. A count cannot show that and a '
       + 'picture can.' },
+  /* ── WHERE THE RIVERS MEET THE SEA GRID ─────────────────────────────────────
+     rewt-c7's joins: 389 attachments from a tidal terminus to the routing grid. MIXED
+     GEOMETRY BY DESIGN, and the design is the argument — rules 1 and 2 are a LINE from
+     the terminus to the cell centre, because a direct attachment is being ASSERTED and
+     the line is the assertion; rule 3 is a POINT, because no straight connection is
+     claimed and a line there would draw a route nobody computed. 44 / 115 / 230.
+
+     So the LINES are what the grid knows and the POINTS are what it does not, and they
+     are coloured accordingly rather than as one layer with two shapes in it. 230 of 389
+     — the majority — are the inference case, which is the honest direction and is why
+     the traces beside them must not look more settled than these do.
+
+     This is the file that would have been drawn as a line layer and quietly lost its
+     230 points: rewt-c7's own check page did exactly that and Stephen read the absence
+     as missing joins on the Crouch. `mixed: true` draws both. */
+  { id: 'joins', label: 'River mouths joined to the sea grid',
+    file: '../router/data/joins.geojson', kind: 'point', mixed: true,
+    colour: ['case', ['==', ['get', 'rule'], 3], C.warn, C.add],
+    width: 1.6,
+    radius: ['interpolate', ['linear'], ['zoom'], 5, 2.2, 12, 5],
+    legend: [['a line — the grid reaches this terminus directly (rules 1 and 2)', C.add],
+             ['a mark — no direct attachment is claimed; the way is the trace stage\u2019s '
+              + 'to find (rule 3)', C.warn]],
+    note: 'click one for the rule that placed it and how far it reached.' },
+  /* THE PATHS FOUND FOR THE TERMINI THE GRID COULD NOT REACH DIRECTLY, and rewt-c7 has
+     put `provisional` in the file: "R-01 unbuilt; this population will move twice."
+     Dashed for the same reason the connectors are dashed — no surveyor drew this line
+     and no vessel sailed it; it is a route inferred over a cost surface. */
+  { id: 'traces', label: 'Traced ways out — provisional',
+    file: '../router/data/traces.geojson', kind: 'line', colour: C.rev, width: 1.4,
+    dash: [2, 2],
+    legend: [['a traced path from a stranded terminus to the grid — inferred, not '
+              + 'surveyed and not sailed', C.rev]],
+    note: 'these move when R-01 lands. Click one for what it crossed.' },
   { id: 'sightline', label: 'Where land can be seen from the sea', exclusive: 'router',
     file: '../router/data/sightline2_r6.geojson', kind: 'polygon',
     /* NO `count` HERE. It was 15,861, typed from a message, and it was wrong within a
@@ -1021,8 +1055,16 @@ async function ensureOnce(o) {
      MapLibre shows a source's `attribution` while that source is in the style, so the
      credit appears when the layer is switched on and goes when it is switched off,
      which is exactly the right behaviour for a layer nobody has to load. */
+  /* AN ATTRIBUTION MAY BE A STRING OR A LIST, and MapLibre only takes a string.
+     Three of rewt-c7's four layers carry one string; `joins` carries two, because it
+     derives from the bathymetry AND from the river network and credits both. Passing
+     the array straight through made `addSource` reject the source, so the layer never
+     appeared — no source, no layer, no error a reader would see, and the switch simply
+     did nothing. Joined rather than truncated, because a short attribution may never
+     attribute less than the manifest does. */
+  const credit = data.properties?.attribution;
   map.addSource(o.id, { type: 'geojson', data,
-    ...(data.properties?.attribution ? { attribution: data.properties.attribution } : {}) });
+    ...(credit ? { attribution: Array.isArray(credit) ? credit.join(' ') : credit } : {}) });
   if (o.kind === 'polygon') {
     map.addLayer({ id: o.id, type: 'fill', source: o.id,
       paint: { 'fill-color': o.colour, 'fill-opacity': o.opacity ?? 0.3 } },

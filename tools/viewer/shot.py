@@ -455,6 +455,59 @@ def check_edges(page) -> tuple[bool, str]:
                   f"came on; the panel carries the file's own sentence")
 
 
+def check_joins(page) -> tuple[bool, str]:
+    """The joins layer draws BOTH its geometries, and the counts agree two ways.
+
+    This is the file rewt-c7's own check page drew as a line layer, losing all 230 of
+    its points — Stephen read the gap as missing joins on the Crouch. It is also where
+    a published summary said 45/115/229 while the file held 44/115/230, because the
+    land-crossing demotion ran after the counts were taken. Both faults are invisible
+    from one view of the data, so this takes two: by `rule` and by geometry type, which
+    must agree.
+    """
+    res = page.evaluate("""async () => {
+        const row = [...document.querySelectorAll('#layers .switch')]
+            .find((r) => /joined to the sea grid/.test(r.textContent));
+        if (!row) return { missing: true };
+        const b = row.querySelector('input');
+        b.disabled = false;
+        if (!window.map.getLayer('joins')) window.rewt.loaded.delete('joins');
+        if (!b.checked) { b.checked = true; b.dispatchEvent(new Event('change')); }
+        for (let i = 0; i < 80 && !window.map.getSource('joins'); i++) {
+            await new Promise((r) => setTimeout(r, 500));
+        }
+        const m = window.map;
+        const src = m.getSource('joins');
+        if (!src) return { missing: true };
+        const fs = src._data.features;
+        const byRule = {}, byGeom = {};
+        for (const f of fs) {
+            byRule[f.properties.rule] = (byRule[f.properties.rule] || 0) + 1;
+            byGeom[f.geometry.type] = (byGeom[f.geometry.type] || 0) + 1;
+        }
+        m.jumpTo({ center: [-2.5, 53.5], zoom: 5 });
+        await new Promise((r) => { const t = setTimeout(r, 25000);
+            m.once('idle', () => { clearTimeout(t); r(); }); });
+        return { byRule, byGeom, total: fs.length,
+                 pointLayer: m.queryRenderedFeatures({ layers: ['joins'] }).length,
+                 lineLayer: m.getLayer('joins-line')
+                     ? m.queryRenderedFeatures({ layers: ['joins-line'] }).length : null };
+    }""")
+    if res.get("missing"):
+        return False, ("the joins layer never loaded. A source that MapLibre rejects "
+                       "produces no layer and no visible error — check the console and "
+                       "the source spec, not the data")
+    r, g = res["byRule"], res["byGeom"]
+    if r.get("3") != g.get("Point") or (r.get("1", 0) + r.get("2", 0)) != g.get("LineString"):
+        return False, (f"the two views disagree: by rule {r}, by geometry {g} — a "
+                       f"published summary already got this wrong once")
+    if not res["pointLayer"] or not res["lineLayer"]:
+        return False, (f"only one geometry drew: {res['pointLayer']} points and "
+                       f"{res['lineLayer']} lines. This is the fault that lost 230 joins.")
+    return True, (f"{res['total']} joins, by rule {r} and by geometry {g} — the two views "
+                  f"agree; {res['pointLayer']} points and {res['lineLayer']} lines drawn")
+
+
 def check_mobile(page) -> tuple[bool, str]:
     """Below the breakpoint the map gets the whole screen and the panel is a drawer.
 
@@ -687,7 +740,7 @@ CHECKS = {"panel": check_panel, "layers": check_layers,
           "popup": check_popup, "sightline": check_sightline,
           "stamp": check_stamp, "missing": check_missing_layer,
           "edges": check_edges, "mobile": check_mobile,
-          "geometry": check_geometry_coverage}
+          "geometry": check_geometry_coverage, "joins": check_joins}
 
 
 def main() -> int:
