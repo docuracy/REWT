@@ -36,6 +36,7 @@ import yaml
 
 LAYER = Path("docs/router/data/sightline2_r6.geojson")
 REACH = Path("docs/router/data/reach_summary.json")
+MANIFEST = Path("conf/sources.yml")
 TARGET = Path("docs/_data/routing.yml")
 
 # What the page says about the layer's method, in the order the page reads them.
@@ -100,9 +101,35 @@ def horizon(formula: str) -> dict:
             "constant_check_sqrt_2Rk": round(implied, 4)}
 
 
+def check_attribution(layer: dict) -> None:
+    """The layer's credit must not say less than the manifest asks for.
+
+    AGENTS.md: provenance travels as a pointer, and wherever a short attribution appears
+    it may never attribute less than `conf/sources.yml` does. The router's layer is
+    drawn from a source outside this project's own release -- EMODnet's bathymetry, CC
+    BY 4.0 -- so /routing discharges an obligation that the site's build-wide
+    attribution does not cover. rewt-46 found the same credit missing from the map
+    entirely, which is what this exists to stop happening here.
+
+    Compared on collapsed whitespace, like release.attribution_drift: the manifest wraps
+    long strings, so a line break is a difference in the bytes and not in the obligation.
+    """
+    said = " ".join(str(layer.get("attribution", "")).split())
+    if not said:
+        raise SystemExit("the layer carries no `attribution`; /routing will not publish it")
+    manifest = " ".join(MANIFEST.read_text().split())
+    if said not in manifest:
+        raise SystemExit(
+            f"the layer's attribution is not in {MANIFEST}:\n  {said}\n"
+            "Either the source is unregistered or the wording has drifted. A credit that "
+            "does not match the manifest may be attributing less than the licence asks."
+        )
+
+
 def project() -> dict:
     layer = json.loads(LAYER.read_text())["properties"]
     reach = json.loads(REACH.read_text())
+    check_attribution(layer)
     h = horizon(layer["horizon_formula"])
 
     out = {
