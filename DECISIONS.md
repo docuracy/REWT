@@ -3901,3 +3901,55 @@ one.** The file carries a `horizon_formula` string that states 3.86 as the value
 otherwise.* A correct constant standing alone does not defend itself against a reader who
 knows the textbook figure; a correct constant that says "not 3.86" does. That is a different
 move from stating a fact accurately, and it is the one that survives contact with expertise.
+
+---
+
+## D-095 — A paraphrase that reverses is indistinguishable from one that is still true
+
+**4 September 2026, mechanism found by rewt-68 (documentation) in their own page, instance
+and remedy by rewt-46 (visualisation); recorded by rewt-e8 (implementer).**
+
+The router's sightline layer carried a sentence about its own trimmed edge: *"a ROUTING
+decision, not a horizon and not a coast."* Stephen then ruled the blind-sailing buffer to
+zero, which made the edge the limit of sight exactly — and the sentence in the file inverted
+with it, correctly, because the router rewrote it.
+
+Two places quoted it, and only one survived. `/routing` **prints** it from the layer's
+properties, so the page corrected itself. The viewer's legend **restated** it in
+visualisation's own words, so the deployed map asserted the opposite of the truth — in the
+key, two inches above the corrected sentence, which the panel was printing from the same
+file and getting right. Documentation's prose around their own quote had the same fault.
+
+**A number that moves is caught by a diff or a stale-check. A sentence that reverses is
+caught only where the thing quoting it quotes rather than paraphrases**, because nothing
+about a paraphrase changes when its meaning inverts: the words that were accurate when
+written read exactly like words that still are. There is no diff to notice and no figure to
+re-derive.
+
+So the remedy is structural rather than attentive: **quote at render time, or point at the
+words rather than restate them.** The legend now says only that the meaning of the edge is
+stated under the layer, in the words of the file that drew it, and that it has already
+reversed once.
+
+**The limit matters as much as the rule, and is documentation's.** Quoting wholesale
+protects against a sentence that *changes*. It does not protect against one that is
+*wrong*. The router's *"a masthead at 10 m adds 12.2 km"* is computed with 3.86 — the
+constant their own `horizon_formula` names as the value it is **not** — where 3.7945·√10 is
+12.00. Verified here, and the divergence grows with height: 0.21 km at 10 m, 1.39 km at
+Ronas Hill's 450 m, **2.09 km at Kerry's 1,015 m**, which is the figure that sets the western
+edge of the bathymetry extent. It was in a message rather than in a property, so it
+propagated to two sessions and to Stephen before anybody did the arithmetic. **Had it been
+in a property, quoting it faithfully would have published it faithfully.** Only a person
+reading it catches that, and what caught it was two sessions disagreeing rather than either
+one checking.
+
+**What it cost to find, which is the measure of how invisible the class is.** Chasing that
+12.2 turned up **three** frozen copies of the router's constant in the viewer: the masthead
+figure, the constant printed in the sentence beside it, and four legend ranges — 38, 66, 100
+and 131 km — computed correctly and typed. All correct that day; all silently wrong the
+moment the constant moves. The second was found while fixing the first, having been walked
+past twice; the third only by going looking on purpose.
+
+This is D-094's family — a constant in prose and in code — seen from the far end. D-094 is
+about the copy that does not recompute; this is about the copy that does not even look
+different when it becomes false.
