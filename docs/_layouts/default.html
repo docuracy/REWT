@@ -29,11 +29,37 @@
       <nav class="site-nav" aria-label="Navigation">
         {%- assign here = page.url | remove: 'index.html' | remove: '.html' -%}
         {%- for item in site.nav -%}
-          {%- assign target = item.url -%}
-          {%- if here == target -%}
-            <a href="{{ target | relative_url }}" aria-current="page">{{ item.title }}</a>
-          {%- else -%}
-            <a href="{{ target | relative_url }}">{{ item.title }}</a>
+          {%- unless item.right -%}
+            {%- assign target = item.url -%}
+            {%- if here == target -%}
+              <a href="{{ target | relative_url }}" aria-current="page">{{ item.title }}</a>
+            {%- else -%}
+              <a href="{{ target | relative_url }}">{{ item.title }}</a>
+            {%- endif -%}
+          {%- endunless -%}
+        {%- endfor -%}
+        {%- comment -%}
+          The tools, at the far end. A second pass rather than one loop with a filter,
+          because the order within each group is _config.yml's and neither group may
+          reorder the other. Note that nothing under /viewer/ or /trace/ carries YAML
+          front matter — that is deliberate and load-bearing — so Jekyll never renders
+          this layout for them and `aria-current` cannot fire on a tool from inside the
+          tool. The branch is written anyway: it costs nothing and it is correct the day
+          a page about the viewer sits at that URL.
+        {%- endcomment -%}
+        {%- for item in site.nav -%}
+          {%- if item.right -%}
+            {%- assign target = item.url -%}
+            <a class="nav-app" href="{{ target | relative_url }}"{% if here == target %} aria-current="page"{% endif %}>
+              {%- if item.icon == 'map' -%}
+              <svg class="nav-app-mark" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                   stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14"/><path d="M15 6v14"/>
+              </svg>
+              {%- endif -%}
+              {{ item.title }}
+            </a>
           {%- endif -%}
         {%- endfor -%}
       </nav>

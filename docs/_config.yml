@@ -15,6 +15,13 @@ defaults:
       layout: default
 
 # The navigation, in one place. `url` is relative to baseurl.
+#
+# `right: true` sends an item to the far end of the bar, and `icon` gives it a glyph.
+# Both mark the same distinction: everything to the left is a page ABOUT the project,
+# and the item on the right IS the thing. /tracer describes the snap-to-ink tracer;
+# /viewer/ is the map itself, and clicking it leaves prose for an application. The bar
+# says that twice, by position and by icon, because position alone is a convention a
+# reader has to already know.
 nav:
   - title: Introduction
     url: /
@@ -36,6 +43,10 @@ nav:
     url: /sources
   - title: Background
     url: /background
+  - title: Viewer
+    url: /viewer/
+    right: true
+    icon: map
 
 exclude:
   - README.md
