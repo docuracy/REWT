@@ -4197,3 +4197,77 @@ the same reasoning admits. **A decision that gives two reasons should say which 
 it**, or it will be read as requiring both — and then either misapplied to exclude something
 acceptable, or, as here, found in apparent contradiction with a later choice that was
 perfectly sound.
+
+---
+
+## D-099 — Three sessions agreed the sea network was superseded, and none had compared them
+
+**4 September 2026, measured by rewt-46 (visualisation), recorded by rewt-e8
+(implementer).**
+
+Stephen said the viewer's `sea_route` layer was superseded by a network built from the
+router's H3 mesh. That reached visualisation through me, and the natural next step was to
+remove the layer. **They refused, on the ground that dropping a layer the release publishes
+is a decision and not a deletion by whoever noticed first** — and then observed that nobody
+in the conversation had compared the two networks, while three of us had been talking as
+though the question were settled.
+
+The router would not say theirs superseded it, because they had never compared them. I would
+not say mine was redundant, for the same reason. *"Superseded in function"* was a judgement
+none of us had earned.
+
+**Measured, it is false.**
+
+| | |
+|---|---:|
+| sea-network entries | 4,184 |
+| falling in a cell the mesh publishes | 2,432 (58.1%) |
+| **not covered by the mesh** | **1,752** |
+| river mouths behind those | **5,557 of 11,958 (46%)** |
+
+Nearly half the entries, and 46% of every river mouth in the network, are in no published
+mesh cell. **The mesh cannot yet reach the places `sea_route` exists to reach**, and the
+mouths are the whole point of `sea_entry`. The layer stays.
+
+**And the legend's claim about it turned out to be true, which nobody had tested either.**
+It says *"a tree not a loop, every line the only way between the coasts it joins"* — a
+topological assertion that had been on the map since it was written, asserted rather than
+measured. 4,184 entries, 4,183 routes, one connected component, and `edges − (nodes −
+components) = 0`. **A spanning tree exactly, no cycle anywhere.** So every line really is
+the only way between the coasts it joins.
+
+**What the mesh does cover, it covers completely.** All 2,425 covered entries whose cell is
+in the edge graph sit in one component, 17,583 of 17,583 cells reachable from any of them.
+**The gap is coverage, not connectivity** — which makes it a thing that may close rather
+than a disagreement about the coast. The largest uncovered entries are estuarine and
+creek-head: the Channel of River Waver on the Solway (86 mouths behind it), Burrows Pool and
+Calder Brook on the Ribble (57), Burrow Beck near Lancaster (50), Bartley Water on
+Southampton Water (50), Clementsgreen Creek on the Crouch (48) — exactly the narrow water the
+router has already flagged as falling below a res-7 cell.
+
+**Four things visualisation refused to conclude, and the first is the one that bounds the
+result.** They compared against the **published aggregated layer** — res-6, clipped to the
+sightline cells, with 12,054 links dropped by that clip — while the true routing graph is
+res-7 and finer. **So 58.1% is a lower bound on the mesh's coverage**, not a measurement of
+it. They also did not test whether the mesh reaches those mouths by *any* route, only whether
+each entry's own cell is published; a cell one hexagon away would still be a reachable coast.
+
+**Two defects in my own tables, found on the way through.**
+
+`sea_entry.entry_id` **is not a row key**: 11,958 rows over 4,184 entries, one entry carrying
+108 mouths. Their first pass counted rows and produced a coverage figure that was silently
+about a different population — the same shape as every other frame error recorded here, in a
+table of mine that invites it.
+
+`sea_link.from_entry` / `to_entry` **do not tell you which end of a route's geometry belongs
+to which entry**: 3,275 of 4,183 routes disagree with the obvious reading. The data is
+consistent — they derived each entry's position by intersecting the endpoints of all incident
+routes, 3,195 directly and 989 leaves by elimination, with **zero contradictions** — so it is
+the column *order* that is uninformative rather than the values that are wrong. Anyone
+joining those tables on the obvious assumption gets the wrong endpoint four times in five.
+
+**The lesson is not about sea networks.** A claim can pass through three sessions, each
+declining to assert it themselves, and arrive at the fourth as settled — because *"in
+function yes"* from someone who has not compared reads exactly like agreement. **What broke
+it was one session refusing to act on a relayed conclusion and measuring instead**, and the
+measurement took less time than the conversation that preceded it.
