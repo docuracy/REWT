@@ -1836,3 +1836,35 @@ with, and the whole pass rebuilt under `20260904T204057Z`.
 `docs/router/data` now carries three stamps, each explicable: 12 files from this pass, 3
 where the sightline surface sits because nothing it depends on has moved, 1 for the disabled
 lights. The ledger holds 29 entries over 5 generations and passes.
+
+## 39. What shape everything is, since three consumers have now been surprised by one
+
+rewt-46 has had three values reach a reader as nonsense — an array of records as
+"NaN, NaN…", an undefined, and my `coverage` object as "[object Object]". Their renderer
+handles kinds rather than keys now and they asked for nothing. **All three were found by
+looking at the page, and none by a check**, which is the observation worth keeping.
+
+I audited what this directory actually publishes at top level. **28 non-scalar properties:
+18 objects, 6 plain arrays, and 4 arrays of records.**
+
+The four record lists, which are the shape that produced the NaNs:
+
+| file | key | records | what it is |
+|---|---|---:|---|
+| `join_summary.json` | `rule3` | 230 | **an input to `trace.py`**, not a report |
+| `trace_summary.json` | `rows` | 230 | one row per traced terminus |
+| `network_summary.json` | `stranded` | 30 | the termini with no way to the sea |
+| `detour_summary.json` | `worst` | 12 | the worst detours, for inspection |
+
+**They are staying.** `rule3` is a stage's input and moving it would break a contract to tidy
+a presentation problem; the other three are the population behind a headline figure, and a
+consumer that wants to draw them — as rewt-46 does with `stranded` — needs the records
+rather than the count. What I said earlier, that I would keep records out of the scalar
+summaries, was a good instinct applied to the wrong object: **the fix is that a renderer
+should handle kinds, not that every artefact should be flat.**
+
+The rule I will hold to instead: **a structured value must be beside its scalar summary, not
+instead of it.** `coverage` on the coastal layers is an object AND the sentence quoting it is
+generated from the same numbers, so a consumer that renders neither well still sees the
+figure in prose, and one that renders objects well need not parse my English. That is why the
+object was worth adding even though it broke a renderer.
