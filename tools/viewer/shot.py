@@ -251,7 +251,16 @@ def check_layers(page) -> tuple[bool, str]:
             const vis = m.getLayoutProperty(id, 'visibility') !== 'none';
             if (vis !== b.checked) desync.push(`${id} box=${b.checked} visible=${vis}`);
         }
-        return { drawn, layerCount: ids.length, desync };
+        /* NO FIELD MAY RENDER AS NONSENSE, asserted HERE because this is the only
+           check with every layer switched on, so every stamp on the page has been
+           rendered. Three kinds of value have reached the page as gibberish — an array
+           of records as "NaN, NaN…", a nested object as "[object Object]", and
+           undefined — and every one was found by reading the page rather than by a
+           check. Asserting it in `stranded`, which loads one layer, would have been
+           green while the coastal `coverage` object printed as [object Object]. */
+        const panel = document.querySelector('#layers').innerText;
+        const nonsense = (panel.match(/NaN|\[object Object\]|undefined/g) || []);
+        return { drawn, layerCount: ids.length, desync, nonsense: [...new Set(nonsense)] };
     }""")
     drawn = res["drawn"]
     live = {k: v for k, v in drawn.items() if v > 0}
@@ -260,8 +269,12 @@ def check_layers(page) -> tuple[bool, str]:
         return False, f"no layer drew anything at all, of {res['layerCount']} in the style"
     if res["desync"]:
         return False, ("the panel and the map disagree: " + "; ".join(res["desync"]))
+    if res["nonsense"]:
+        return False, ("a stamp field rendered as nonsense on the panel: "
+                       + ", ".join(res["nonsense"]))
     return True, (f"{len(live)} of {res['layerCount']} style layers drew; "
-                  f"network={drawn.get('network', 0)}; every switch agrees with the map")
+                  f"network={drawn.get('network', 0)}; every switch agrees with the map; "
+                  f"no stamp field rendered as nonsense")
 
 
 def check_popup(page) -> tuple[bool, str]:
@@ -700,8 +713,12 @@ def check_stranded(page) -> tuple[bool, str]:
             saysAnswer: panel.includes(net.answer),
             saysPct: panel.includes(String(net.in_scope_pct_reaching_the_sea)),
             saysProvisional: /R-01 unbuilt/.test(panel),
-            /* The 30-record list must not print as a row of NaNs. */
-            noNaN: !/NaN/.test(panel),
+            /* NO FIELD MAY RENDER AS NONSENSE. Three kinds of value have reached
+               the page as gibberish rather than as a number: an array of records as
+               "NaN, NaN…", a nested object as "[object Object]", and undefined. Each
+               was found by reading the page, never by a check, so the check is here
+               now and it is about the whole panel rather than one layer's field. */
+            noNaN: !/NaN|\[object Object\]|undefined/.test(panel),
         };
     }""")
     if res.get("error"):
@@ -719,7 +736,7 @@ def check_stranded(page) -> tuple[bool, str]:
     if not res["saysProvisional"]:
         bad.append("the panel does not say the population is provisional on R-01")
     if not res["noNaN"]:
-        bad.append("a stamp field printed NaN")
+        bad.append("a stamp field rendered as nonsense (NaN, [object Object] or undefined)")
     if bad:
         return False, "; ".join(bad)
     return True, (f"{res['drawnDistinct']} of {res['listed']} stranded termini drawn and "

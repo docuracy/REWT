@@ -1458,6 +1458,34 @@ function checkGenerations() {
   el.append(p);
 }
 
+/* ONE VALUE OF A STAMP, RENDERED FOR READING. The file's properties are rewt-c7's to
+   shape and they have been three shapes today, so this handles the kinds rather than
+   the keys:
+
+   - AN ARRAY OF NUMBERS is a bounding box or a set of bands, and reads as numbers.
+   - AN ARRAY OF RECORDS is data. `fmt` on an object returns NaN, so the 30 stranded
+     termini printed as "NaN, NaN, NaN…" — a field that looks like a measurement and is
+     not one. Counted here, drawn on the map instead.
+   - AN OBJECT is the shape `coverage` and `rules` arrived in, and it printed as
+     "[object Object]" on the page for as long as it took to notice. Flattened to its
+     own pairs, which is what a reader wanted from it.
+
+   Each of those was a real field rendered as nonsense, and each was found by looking at
+   the page rather than by anything failing. */
+function stampValue(v) {
+  if (Array.isArray(v)) {
+    return v.every((n) => typeof n === 'number')
+      ? v.map((n) => fmt(n, 2)).join(', ')
+      : `${fmt(v.length)} listed \u2014 see the map`;
+  }
+  if (v && typeof v === 'object') {
+    return Object.entries(v)
+      .map(([k, x]) => `${k} ${typeof x === 'number' ? fmt(x) : stampValue(x)}`)
+      .join('; ');
+  }
+  return v;
+}
+
 function showStamp(o) {
   const st = stamps.get(o.id);
   const el = document.getElementById(`note-${o.id}`);
@@ -1480,16 +1508,11 @@ function showStamp(o) {
      the trim — which are different things and were quoted at me as one. */
   const shown = new Set(STAMP_SHOWN);
   const rows = [
-    ...STAMP_FIELDS.filter(([k]) => st[k] != null).map(([k, label]) => [label, st[k]]),
+    ...STAMP_FIELDS.filter(([k]) => st[k] != null)
+      .map(([k, label]) => [label, stampValue(st[k])]),
     ...Object.entries(st)
       .filter(([k, v]) => typeof v !== 'string' && !shown.has(k) && v != null)
-      /* AN ARRAY OF NUMBERS IS A BOUNDING BOX; AN ARRAY OF RECORDS IS DATA. `fmt` on
-         an object returns NaN, so `network_summary.json`'s 30 stranded termini would
-         have printed as "NaN, NaN, NaN…" — a field that looks like a measurement and
-         is not one. Records are counted here and drawn on the map instead. */
-      .map(([k, v]) => [k, !Array.isArray(v) ? v
-        : v.every((n) => typeof n === 'number') ? v.map((n) => fmt(n, 2)).join(', ')
-        : `${fmt(v.length)} listed — see the map`]),
+      .map(([k, v]) => [k, stampValue(v)]),
   ].map(([label, v]) => `<dt>${esc(label)}</dt><dd>${esc(label === 'digest'
     ? String(v).slice(0, 12) + '…' : v)}</dd>`).join('');
   el.innerHTML = `${esc(o.note || '')}
