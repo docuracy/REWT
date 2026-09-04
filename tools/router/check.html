@@ -28,7 +28,8 @@
  .sw{width:13px;height:13px;border-radius:3px;flex:none;border:1px solid rgba(255,255,255,.25)}
  table{width:100%;border-collapse:collapse;font-size:11.5px} td{padding:1px 0;color:var(--dim)}
  td.v{text-align:right;color:var(--fg);font-variant-numeric:tabular-nums}
- .fade{display:flex;align-items:center;gap:8px}
+ select{background:#0d1117;color:#c9d1d9;border:1px solid #30363d;border-radius:4px;padding:3px 6px;font:inherit;font-size:12px;width:100%}
+  .fade{display:flex;align-items:center;gap:8px}
   .fade input{flex:1}
   #osmv{font-size:11px;color:#8b949e;width:30px;text-align:right}
   .cred{font-size:10px;color:#6e7681;margin-top:4px;line-height:1.4}
@@ -42,6 +43,9 @@
   <h1>Router — check</h1>
   <div class="sub">Local instrument, not published. Coastline is OS Boundary-Line (OGL);
     depths EMODnet DTM 2024 (CC BY 4.0). <b>Not for navigation.</b></div>
+  <h2>Resolution</h2>
+  <select id="res"></select>
+  <div class="cred" id="resnote"></div>
   <h2>Basemap</h2>
   <div class="fade"><input id="osm" type="range" min="0" max="100" step="5">
     <span id="osmv"></span></div>
@@ -76,7 +80,7 @@ const RES={3:'#f85149',4:'#f0883e',5:'#e3b341',6:'#3fb950',7:'#2ea043',8:'#58a6f
 // the network actually reaches" cannot be asked one stage at a time. Declaration order is
 // also PAINT order — cells beneath, joins on top.
 const LAYERS={
- cells:{label:'cells', src:['sl2', F+'sightline2_r6.geojson'],
+ cells:{label:'cells', src:()=>['sl2', srcUrl(0)],
    legend:[['governed by land &gt;800 m','#f85149'],['400-800 m','#f0883e'],
      ['200-400 m','#e3b341'],['80-200 m','#3fb950'],['under 80 m','#58a6ff'],
      ['closed short hop — blind','#d29922'],['sees none','#484f58']],
@@ -87,9 +91,9 @@ const LAYERS={
        ['>=',['get','gov_h_m'],800],'#f85149',['>=',['get','gov_h_m'],400],'#f0883e',
        ['>=',['get','gov_h_m'],200],'#e3b341',['>=',['get','gov_h_m'],80],'#3fb950',
        '#58a6ff']}})},
- net:{label:'sea network', src:['ed', F+'edges.geojson'],
+ net:{label:'sea network', src:()=>['ed', srcUrl(1)],
    legend:[['cell-centre link','#c9d1d9'],['crosses a resolution band','#f0883e']],
-   note:'The travelling surface: links between the centres of adjacent sea cells. AN EDGE IS AN ADJACENCY, NOT A TRACK — no vessel sailed the straight line between two hexagon centres. Aggregated to the resolution of the cells drawn beneath it, so these are not the centres a route uses either.',
+   note:'The travelling surface: links between the centres of adjacent sea cells. AN EDGE IS AN ADJACENCY, NOT A TRACK — no vessel sailed the straight line between two hexagon centres. Aggregated to the resolution of the cells drawn beneath it, so these are not the centres a route uses either. A link CROSSES A RESOLUTION BAND where the two routing cells behind it sit at different resolutions — which happens where an estuary was refined finer, and around the closed blind hops, which are binned coarser because nothing there sees land. A seam is a place the grid changes scale.',
    add:()=>{ map.addLayer({id:'x-net',type:'line',source:'ed',
        paint:{'line-width':['case',['get','crosses_band'],2.0,0.7],
               'line-color':['case',['get','crosses_band'],'#f0883e','#c9d1d9'],
@@ -148,6 +152,16 @@ window.zoomTo=a=>{ if(a==='all'){ const e=areas._extent||[-8,49.5,2,61];
   else map.fitBounds([[areas[a][0],areas[a][1]],[areas[a][2],areas[a][3]]],{padding:40}); };
 
 let detailNote='';
+// MAXIMUM RESOLUTION. The routing grid is res 7 nearly everywhere, res 8-9 in the refined
+// estuaries, and RES 6 WHERE SIGHT IS LOST — the closed blind hops are binned coarse, so a
+// band boundary is the edge of water you cannot see across. That is what the seams mean,
+// and it is why this selector exists: it was not visible at one resolution.
+// 6 is the finest offered for the whole extent (res 7 is 415,520 edges and 80 MB); the
+// detail toggle gives 7 and finer for a named area.
+const RES_SRC={6:[F+'sightline2_r6.geojson', F+'edges.geojson'],
+               5:[C+'cells-r5.geojson', C+'edges-r5.geojson'],
+               4:[C+'cells-r4.geojson', C+'edges-r4.geojson']};
+let maxRes=parseInt(hashGet('res')||'6');
 let osmO=parseFloat(hashGet('osm')??'0');
 // THE TWO BACKDROPS CROSS-FADE. The dark coastline fills are a stand-in for a basemap;
 // with a real one under them they would simply hide it, so they fade out as it comes up.
@@ -161,6 +175,8 @@ function areaAtCentre(){ const c=map.getCenter();
   for(const [k,b] of Object.entries(areas)){ if(k[0]==='_') continue;
     if(c.lng>=b[0]&&c.lng<=b[2]&&c.lat>=b[1]&&c.lat<=b[3]) return k; }
   return null; }
+
+function srcUrl(i){ return RES_SRC[maxRes][i]; }
 
 async function gj(u){ if(loaded[u])return loaded[u];
   const r=await fetch(u); if(!r.ok) return null; loaded[u]=await r.json(); return loaded[u]; }
@@ -184,7 +200,8 @@ async function draw(){
     if(!on.has(k)) continue;
     const L=LAYERS[k];
     if(L.src===null){ await L.add(); continue; }
-    if(await src(L.src[0], L.src[1])) await L.add();
+    const sp=typeof L.src==='function'?L.src():L.src;
+    if(await src(sp[0], sp[1])) await L.add();
   }
   const act=KEYS.filter(k=>on.has(k));
   // THE LEGEND IS THE CONTROL. A separate row of buttons said the same thing twice and
@@ -216,15 +233,17 @@ function figures(){
         t=summaries.trace_summary||{}, e=summaries.edge_summary||{},
         sl=summaries.sightline_summary||{};
   const per={
-    cells:[['sea cells',sl.sea_cells],['see land',sl.see_land],['reach bands',sl.bands],
+    cells:[['cells drawn',(loaded[srcUrl(0)]||{}).properties?.cells
+                          ??(loaded[srcUrl(0)]||{}).features?.length],
+           ['sea cells',sl.sea_cells],['see land',sl.see_land],['reach bands',sl.bands],
            ['max reach km',sl.max_reach_km],['tallest land m',sl.tallest_land_m]],
     // NOT e.edges: that is the res-7 graph, 415,520, and the layer draws 49,080 of them
     // aggregated. A figure beside a picture must count what is in the picture — the same
     // fault I warned visualisation about, committed here two hours later.
-    net:[['links drawn',(loaded[F+'edges.geojson']||{}).properties?.links],
-         ['res-7 edges behind them',
-          (loaded[F+'edges.geojson']||{}).properties?.routing_edges_behind_them],
-         ['seams drawn',(loaded[F+'edges.geojson']||{}).properties?.crossing_a_band],
+    net:[['links drawn',(loaded[srcUrl(1)]||{}).properties?.links],
+         ['seams drawn',(loaded[srcUrl(1)]||{}).properties?.crossing_a_band],
+         ['not drawn: over land',
+          (loaded[srcUrl(1)]||{}).properties?.links_over_land_not_drawn],
          ['components',e.components],['isolated',e.isolated],
          ['rejected: crossed land',e.links_rejected_crossing_land]],
     traces:[['attempted',t.attempted],['traced',t.traced],['failed',t.failed]],
@@ -256,6 +275,13 @@ map.on('load',async()=>{
     if(a==='all') window.zoomTo('all');
     else map.fitBounds([[areas[a][0],areas[a][1]],[areas[a][2],areas[a][3]]],{padding:40}); };
   // only frame the whole extent when the URL does not already say where to look
+  const rs=document.getElementById('res');
+  rs.innerHTML=Object.keys(RES_SRC).sort((a,b)=>b-a).map(r=>
+    `<option value="${r}"${+r===maxRes?' selected':''}>res ${r} and coarser</option>`).join('');
+  document.getElementById('resnote').textContent=
+    'Res 6 is the finest offered here. For res 7 and finer, switch on routing detail '
+    +'inside a named area.';
+  rs.onchange=async()=>{ maxRes=+rs.value; hashSet('res',maxRes); await draw(); };
   const sl=document.getElementById('osm');
   sl.value=Math.round(osmO*100);
   sl.oninput=()=>{ osmO=sl.value/100; hashSet('osm',osmO.toFixed(2)); applyFade(); };

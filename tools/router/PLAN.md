@@ -1295,3 +1295,47 @@ drawn**.
 
 A fadable OSM basemap sits under everything, attributed, development use only, and
 cross-fades with the synthetic coastline so the two backdrops do not fight.
+
+## 25. The land test was right; it was not looking often enough
+
+Stephen found three drawn links crossing the Uists. There was nothing wrong with the rule.
+
+`landtest.py` took a **fixed 12 samples** along every link. On a 6.2 km res-6 chord that is
+**517 m apart, against a 232 m mask pixel** — so the test stepped clean over any island
+narrower than its own stride, and the Uists are full of them. The three links Stephen saw
+crossed 3, 3 and 1 pixels of land respectively: real islands, invisible to a stride twice
+their width.
+
+Sampling every half pixel along the LINE caught those and left **78 links grazing a land
+pixel**, because half a pixel along a diagonal is less than half a pixel along either axis.
+The count is now taken from the **dominant axis in pixel units**, eight samples per pixel,
+which cannot skip a pixel the segment passes through.
+
+**The residual is 6 of 47,372, and it is asymptotic rather than a defect.** Each touches
+exactly ONE 232 m pixel, at a corner, out of 31–36 traversed. No finite point sampling
+closes that class — a line can always clip a corner between two samples — and what is left
+is smaller than the coastline this mask is able to describe. Eight per pixel costs about a
+minute on a full run. Near the Uists: 186 links drawn, none crossing land.
+
+## 26. What a resolution band is, and a selector to see it
+
+Stephen asked what "crosses a resolution band" means and whether there are other
+resolutions to illustrate. **There are, and the answer is more interesting than the legend
+was letting on.** The routing grid is res 7 nearly everywhere, res 8–9 in the refined
+estuaries, and **res 6 where sight is lost** — the closed blind hops of section 22 are
+binned coarse, so a band boundary is the edge of water you cannot see across. The grid
+changes scale exactly where the evidence changes.
+
+That could not be seen at one resolution, so /check now has a **maximum-resolution
+selector** driving cells and network together, from one matched pair of files per
+resolution so the two can never disagree:
+
+| max res | cells | links | not drawn: over land |
+|---|---:|---:|---:|
+| 4 | 550 | 864 | 362 |
+| 5 | 2,936 | 6,535 | 975 |
+| 6 | 17,590 | 47,372 | 1,699 |
+
+Res 7 is not offered for the whole extent — 416,635 edges, 80 MB. The routing-detail toggle
+gives 7 and finer for a named area. Aggregation follows `sightline2`'s own fold: **any**
+child that sees land makes the parent visible, and `gov_h_m` is the **maximum**.

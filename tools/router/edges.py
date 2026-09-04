@@ -38,7 +38,6 @@ from pyproj import Transformer
 CONFIG = {
     "grid": "tools/router/cache/grid2.npz",
     "masks": "tools/router/cache/sightline_masks.npz",
-    "land_samples": 12,          # points tested along each link
     "out": "tools/router/cache/edges_r9.npz",
     "summary": "docs/router/data/edge_summary.json",
     "start_resolution": 3,
@@ -66,7 +65,7 @@ def main(cfg: dict = CONFIG) -> None:
     # links, 0.43%. The predecessor tests this (`intersects_land` in its sea_graph.py)
     # and this did not — Stephen asking whether centre-to-centre was the right surface
     # is what surfaced it.
-    crosses_land = land_crossing_test(cfg["masks"], cfg["land_samples"])
+    crosses_land = land_crossing_test(cfg["masks"])
 
     pair_ids, crossings, rejected = build_pairs(res, crosses_land, R0, R)
     pairs = {(idx[a_], idx[b_]) if idx[a_] < idx[b_] else (idx[b_], idx[a_])
