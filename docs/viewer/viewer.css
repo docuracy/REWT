@@ -278,3 +278,83 @@ details.block[open] > summary::before { content: '▾ '; }
   gap: 1px 8px; font-size: 11px; }
 .note dl.stamp dt { color: var(--ink-dim); }
 .note dl.stamp dd { margin: 0; word-break: break-word; }
+
+/* ── Small screens ──────────────────────────────────────────────────────────
+   MEASURED BEFORE IT WAS WRITTEN, because "needs better mobile support" is not a
+   specification and guessing at one is how you fix the wrong thing. At four phone
+   viewports, with the panel at its fixed 360px and the map inset by it:
+
+     iPhone SE   399 px wide   map  15 px —  4% of the screen
+     iPhone 14   405 px        map  30 px —  7%
+     Pixel 7     416 px        map  52 px — 13%
+     iPad mini   744 px        map 384 px — 52%
+
+   The legend, at 230px, covered TWELVE TIMES the area of the map on an iPhone SE.
+   This is not a map with a cramped panel; it is a panel with a sliver of map beside
+   it, and no `@media` rule existed anywhere in this file except one for reduced
+   motion. The viewport meta was already correct, so nothing was scaled or overflowing
+   — the layout simply assumed a desktop and got one 400 px wide.
+
+   THE MAP TAKES THE WHOLE SCREEN AND THE PANEL BECOMES A DRAWER. A map you cannot see
+   is not a map, and everything in the panel is ABOUT the map: the figures describe it,
+   the layer switches change it, the basin list flies it somewhere. So the map is the
+   thing that must always be visible and the panel is the thing that may be summoned.
+
+   720px, not a device: it is where the panel stops leaving a usable map beside it.
+   Above it the desktop layout is untouched. */
+/* Hidden by default and revealed by the small-screen block, so the desktop layout is
+   untouched and the button cannot appear where there is no drawer to open. */
+#panel-toggle { display: none; }
+
+@media (max-width: 720px) {
+  /* NO DOCUMENT SCROLL. Everything here is absolutely positioned against the viewport,
+     so a scrollbar has nothing to scroll — but the gutter is still reserved, and it
+     showed as a dark strip down the right edge of a full-width map. A real phone
+     overlays its scrollbars and would not show it; a desktop browser at this width
+     does, which is where it was found. */
+  html, body { height: 100%; overflow: hidden; }
+
+  #map { inset: 0; }                       /* the whole screen, always */
+  #panel-toggle { display: block; }
+
+  #panel {
+    width: min(var(--panel-w), 88vw);
+    transform: translateX(-102%);          /* 102, so the border does not peek */
+    transition: transform .22s ease;
+    box-shadow: 0 0 24px rgba(0, 0, 0, .55);
+    z-index: 5;
+  }
+  #panel.open { transform: none; }
+  @media (prefers-reduced-motion: reduce) { #panel { transition: none; } }
+
+  /* The handle stays put when the drawer moves, so it is never off-screen with the
+     panel it opens. Sized for a thumb rather than a cursor: 44px is the smallest
+     target most touch guidance will defend, and this is the control everything else
+     on the page is reached through. */
+  #panel-toggle {
+    position: absolute; top: 10px; left: 10px; z-index: 6;
+    min-width: 44px; min-height: 44px; padding: 0 12px;
+    background: rgba(23, 28, 36, .93); color: var(--ink);
+    border: 1px solid var(--edge); border-radius: 6px;
+    font: 600 12px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em;
+  }
+  #panel.open ~ #panel-toggle { left: calc(min(var(--panel-w), 88vw) + 10px); }
+
+  /* The legend was covering the map twelve times over. It collapses to its heading,
+     opens on a tap, and never takes more than a third of the height — a key that
+     hides the thing it explains is worse than no key. */
+  #legend {
+    max-width: min(230px, 66vw); max-height: 34vh; font-size: 10.5px;
+    bottom: 8px; right: 8px;
+  }
+  #legend.shut > :not(b:first-child) { display: none; }
+  #legend b:first-child::after { content: ' ▾'; color: var(--ink-dim); }
+  #legend.shut b:first-child::after { content: ' ▸'; }
+
+  /* A 340px popup on a 375px screen leaves no map at all around what it points at. */
+  .maplibregl-popup-content { max-width: min(340px, 84vw); max-height: 46vh; }
+
+  /* MapLibre's own controls are 29px, which is under every touch target guideline
+     going, and this map is panned and zoomed by hand on a phone. */
+  .maplibregl-ctrl button { width: 36px; height: 36px; }
+}

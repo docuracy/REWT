@@ -264,6 +264,65 @@ def check_sightline(page) -> tuple[bool, str]:
                 f"{res['saysDerived']}; control over land found nothing")
 
 
+def check_mobile(page) -> tuple[bool, str]:
+    """Below the breakpoint the map gets the whole screen and the panel is a drawer.
+
+    Measured because "the UI needs better mobile support" is not a specification. Before
+    this existed, at 400 px the panel held its fixed 360 px and the map was inset by it:
+    15 px of map on an iPhone SE, 4% of the screen, with a legend covering twelve times
+    the map's area. There was no `@media` rule in the stylesheet except one for reduced
+    motion.
+
+    Against the CLIENT area, not `innerWidth` — the latter includes the scrollbar gutter
+    and reported a map that filled the page as 94%, which reads as a bug and is
+    arithmetic.
+    """
+    sizes = [("iPhone SE", 375, 667), ("Pixel 7", 412, 915)]
+    out, bad = [], []
+    for name, w, h in sizes:
+        page.set_viewport_size({"width": w, "height": h})
+        page.wait_for_timeout(1200)
+        m = page.evaluate("""() => {
+            const cw = document.documentElement.clientWidth;
+            const r = (s) => { const e = document.querySelector(s);
+                return e ? e.getBoundingClientRect() : null; };
+            const mp = r('#map'), lg = r('#legend');
+            const t = document.querySelector('#panel-toggle');
+            const tr = t ? t.getBoundingClientRect() : null;
+            return { share: mp ? Math.round(mp.width / cw * 100) : 0,
+                     legendShare: (lg && mp) ? Math.round(lg.width * lg.height
+                                                          / (mp.width * mp.height) * 100) : null,
+                     drawer: !!(t && !t.hidden && getComputedStyle(t).display !== 'none'),
+                     touch: tr ? Math.round(Math.min(tr.width, tr.height)) : 0 }; }""")
+        out.append(f"{name} {m['share']}% map, legend {m['legendShare']}%, "
+                   f"drawer={m['drawer']}, target {m['touch']}px")
+        if m["share"] < 95:
+            bad.append(f"{name}: the map is {m['share']}% of the screen")
+        if not m["drawer"]:
+            bad.append(f"{name}: no drawer handle")
+        if m["touch"] < 44:
+            bad.append(f"{name}: the handle is {m['touch']}px, under a 44px touch target")
+        if m["legendShare"] is not None and m["legendShare"] > 25:
+            bad.append(f"{name}: the legend covers {m['legendShare']}% of the map")
+
+    # CONTROL, same run: above the breakpoint the desktop layout must come back, or
+    # "the map fills the screen" would be true of a viewer that had lost its panel.
+    page.set_viewport_size({"width": 1400, "height": 900})
+    page.wait_for_timeout(1200)
+    wide = page.evaluate("""() => {
+        const cw = document.documentElement.clientWidth;
+        const mp = document.querySelector('#map').getBoundingClientRect();
+        const t = document.querySelector('#panel-toggle');
+        return { share: Math.round(mp.width / cw * 100),
+                 drawerHidden: !t || getComputedStyle(t).display === 'none' }; }""")
+    if wide["share"] > 90 or not wide["drawerHidden"]:
+        return False, (f"at 1400px the desktop layout did not return: map {wide['share']}% "
+                       f"of the screen, drawer hidden={wide['drawerHidden']}")
+    return not bad, ("; ".join(bad) if bad
+                     else " / ".join(out) + f"; at 1400px the panel is back "
+                                            f"({wide['share']}% map)")
+
+
 def check_stamp(page) -> tuple[bool, str]:
     """Every sentence the layer's file carries must reach the page.
 
@@ -373,7 +432,8 @@ def check_missing_layer(page) -> tuple[bool, str]:
 
 CHECKS = {"panel": check_panel, "layers": check_layers,
           "popup": check_popup, "sightline": check_sightline,
-          "stamp": check_stamp, "missing": check_missing_layer}
+          "stamp": check_stamp, "missing": check_missing_layer,
+          "mobile": check_mobile}
 
 
 def main() -> int:

@@ -124,6 +124,11 @@
 
 <div id="map"></div>
 <div id="legend"></div>
+<!-- The drawer handle. Present at every width and hidden by CSS above 720px,
+     rather than created in script: a control that only exists once JavaScript
+     has run is a control that is missing exactly when the page is struggling. -->
+<button id="panel-toggle" type="button" aria-controls="panel" aria-expanded="false"
+        hidden>Panel</button>
 
 <!-- The loading state. Painting 195,690 links takes long enough that a reader cannot
      tell a slow map from a broken one, and twenty seconds of a blank country is

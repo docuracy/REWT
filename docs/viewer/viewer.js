@@ -330,13 +330,28 @@ map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'top-right');
    gives the ⓘ button and starts collapsed. What is wanted is the button AND the text
    showing, which is the state MapLibre's own toggle produces, so it is set by adding
    the class its toggle adds rather than by faking the appearance. */
+/* One breakpoint, in the stylesheet, read here rather than restated — a width typed
+   in both places is two copies of one decision. */
+const NARROW = matchMedia('(max-width: 720px)');
+
 const attrib = new maplibregl.AttributionControl({ compact: true,
   customAttribution: (summary && summary.attribution) || '' });
 map.addControl(attrib, 'bottom-left');
-map.once('load', () => {
+/* OPEN ON A WIDE SCREEN, THE BUTTON ON A NARROW ONE. Forcing it open is right where
+   there is room — an attribution nobody can see is not an attribution — and wrong where
+   there is not: at 375 px the open control had no width to lay out in and rendered as a
+   vertical ribbon of single words down the left edge of the map, one per line, over the
+   country. Unreadable AND obscuring, which is the worst of both. The credit is still
+   present and one tap away as MapLibre's own ⓘ, which is what that button is for.
+   Re-evaluated on rotation rather than at boot, because a tablet turned sideways
+   crosses the breakpoint without reloading. Found in a screenshot: the measurements
+   said the map had gone from 15 px to 375 px and said nothing about what was on it. */
+const openAttribution = () => {
   const el = document.querySelector('.maplibregl-ctrl-attrib.maplibregl-compact');
-  if (el) el.classList.add('maplibregl-compact-show');
-});
+  if (el) el.classList.toggle('maplibregl-compact-show', !NARROW.matches);
+};
+map.once('load', openAttribution);
+NARROW.addEventListener('change', openAttribution);
 $('#backdrop-opacity').value = Math.round((b0.opacity ?? 0.5) * 100);
 
 /* ── Colouring ────────────────────────────────────────────────────────────── */
@@ -1807,6 +1822,74 @@ $('#copy-link').onclick = async () => {
   catch (e) { say('The browser refused clipboard access — copy the address bar instead.'); }
 };
 
+/* ── Small screens ──────────────────────────────────────────────────────────
+   Measured before it was designed: at 400 px the map was 15 px wide, 4% of the
+   screen, because the panel is a fixed 360 px and the map was inset by it. The CSS
+   gives the map the whole viewport below 720 px and turns the panel into a drawer;
+   this is the behaviour that makes a drawer usable rather than merely present.
+
+   `matchMedia` rather than a width test, so the breakpoint lives in ONE place — the
+   stylesheet — and rotating a phone re-evaluates it without a reload. A number typed
+   here as well would be a second copy of a decision, which this file has spent two
+   days learning not to keep. */
+
+function wireDrawer() {
+  const panel = $('#panel');
+  const toggle = $('#panel-toggle');
+  const legend = $('#legend');
+  if (!panel || !toggle) return;
+  toggle.hidden = false;
+
+  const setOpen = (open) => {
+    panel.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.textContent = open ? 'Map' : 'Panel';
+  };
+  toggle.onclick = () => setOpen(!panel.classList.contains('open'));
+
+  /* THE DRAWER GETS OUT OF THE WAY WHEN THE MAP IS USED. A reader who taps a basin in
+     the list wants to SEE the place it flies to, and on a phone the drawer is over it.
+     Closing on the flight rather than on the tap means the list is still there if the
+     tap missed. `movestart` covers panning and zooming too, but only when the move came
+     from the reader — a programmatic flyTo carries no originalEvent, and closing on
+     those as well would shut the drawer during boot. */
+  map.on('movestart', (e) => {
+    if (NARROW.matches && e.originalEvent) setOpen(false);
+  });
+  /* DELEGATED, because `wireDrawer` runs during boot and the basin and finding lists
+     are built after it — binding per item here would bind to nothing, silently, and
+     the drawer would simply not close. One listener on the panel outlives every
+     re-render of the lists, including the basin filter rebuilding them on every
+     keystroke. */
+  panel.addEventListener('click', (e) => {
+    if (NARROW.matches && e.target.closest('#basin-list li, #finding-list li')) {
+      setOpen(false);
+    }
+  });
+
+  /* Leaving the narrow layout must not leave the drawer state behind: above the
+     breakpoint `.open` means nothing and the panel is always shown, but the toggle's
+     label and aria state would still be describing a drawer. */
+  /* CROSSING THE BREAKPOINT CHANGES THE MAP'S CONTAINER, not just the panel's. MapLibre
+     tracks its container with a ResizeObserver, but the drawer opening and closing does
+     NOT resize the container — the map is full width either way below 720 px — while a
+     rotation does. Asking for a resize on the media change is cheap and idempotent, and
+     the alternative is a strip down one edge where the backdrop was never fetched for a
+     width the map did not know it had. */
+  NARROW.addEventListener('change', () => { setOpen(false); map.resize(); });
+  setOpen(false);
+
+  /* The legend starts collapsed on a phone, where it was covering twelve times the
+     area of the map, and open everywhere else. Its heading is the control. */
+  if (legend) {
+    legend.classList.toggle('shut', NARROW.matches);
+    legend.addEventListener('click', (e) => {
+      if (NARROW.matches && e.target.closest('b')) legend.classList.toggle('shut');
+    });
+    NARROW.addEventListener('change', () => legend.classList.toggle('shut', NARROW.matches));
+  }
+}
+
 /* ── Boot ─────────────────────────────────────────────────────────────────── */
 
 /* Named `progress`, not `say`: there are already two local `say`s in this file — one
@@ -1829,6 +1912,7 @@ map.on('load', async () => {
   wireHighlight();
   wireMapClicks();
   wireTileErrors();
+  wireDrawer();
   buildLayerPanel();
   buildAbout();
   await applyBackdrop();
