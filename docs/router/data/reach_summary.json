@@ -1,4 +1,5 @@
 {
+ "generation": "20260904T085211Z",
  "criterion": "within a week's sailing of England and Wales, under typical conditions, measured as route distance THROUGH the water",
  "calibration": {
   "London -> Skagen (N Denmark)": 1271,
@@ -7,6 +8,7 @@
  "calibration_outside_data": [],
  "calibration_source": "eRutter, docuracy.github.io/Historical_Sea_Routing: London to the northern tip of Denmark, and Falmouth to Bordeaux, each about a week in July",
  "week_km": 1271,
+ "approximation": "eRutter is explicitly approximate and better for COMPARING routes than for definitive times (Stephen, 4 Sep 2026). So this calibrates an ORDER OF MAGNITUDE, not a threshold: both anchors are soft, both are 'about a week', and two approximate durations implying similar distances is not an independent test. The bound should be read as roughly a week, not as a measured limit.",
  "anchors_disagree": "the two attested week-long voyages imply different route distances. That is information, not noise: route distance is a poor proxy for time, and the difference is what wind and season would explain. The LARGER is taken so that both voyages fall inside the bound.",
  "measured_on": "the navigable surface (sight plus the blind-sailing buffer), not open water \u2014 a route may not use water the router cannot",
  "not_a_radius": "measured along the water, so Norway is as far as the route round the Skagerrak makes it, not as near as a straight line suggests",

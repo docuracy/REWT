@@ -41,6 +41,7 @@ from rasterio.windows import Window, from_bounds as _fb
 from scipy import ndimage
 
 import h3
+from generation import generation
 from pyproj import Transformer
 from extent import EXTENT
 from sightline import build_vrt, nodata_to_nan
@@ -69,7 +70,13 @@ CONFIG = {
     # to Norway or the Low Countries runs 175 km+ out of sight and is trimmed away. That
     # matches rules/H3.md's scope -- the coastal waters of the British Isles -- but it
     # is a scope decision showing up as a rendering one.
-    "buffer_km": 60.0,
+    # NO BLIND SAILING (Stephen, 4 Sep 2026, and he said KEEP it). Zero, not 60.
+    # I ran the rule as a call-time override and never changed the default, so the very
+    # next pipeline run quietly restored the buffer — 14,991 cells back to 27,130, with
+    # the out-of-sight and not-knowable states returning to a layer that had been trimmed
+    # of them, and rewt-46's viewer re-broken downstream. A decision taken in an
+    # experiment and not written into the configuration is not a decision.
+    "buffer_km": 0.0,
     # THE EXTENT IS A DECLARED PARAMETER, not the mosaic's bounds. Geometry does not
     # bound this area: the continental shore is continuous, so a sight-plus-buffer
     # surface keeps connecting coastwise for as long as land is in the extent — it would
@@ -369,7 +376,14 @@ def main(cfg: dict = CONFIG) -> None:
     gv = gov[sea]; gvs = gv[order]
     gov_cell = np.maximum.reduceat(gvs, starts)
     kp = keep_px[sea][order]; keep_cell = np.maximum.reduceat(kp.astype(np.int8), starts).astype(bool)
-    kn = known_px[sea][order]; known_cell = np.minimum.reduceat(kn.astype(np.int8), starts).astype(bool)
+    # VISIBLE IS *ANY* PIXEL, KNOWN WAS *ALL* — so a cell part-visible and part-unknowable
+    # came out visible AND not-known, contradicting the definition the file itself
+    # carries: only a NEGATIVE can be unknowable, because land outside the data cannot
+    # make a visible cell invisible. 57 cells did that. At pixel level the invariant
+    # holds; it was the aggregation that broke it, and the fix is to preserve it here.
+    kn = known_px[sea][order]
+    known_cell = np.minimum.reduceat(kn.astype(np.int8), starts).astype(bool)
+    known_cell |= any_vis
     # --- DROP CELLS DETACHED FROM THE SEA NETWORK (Stephen) -----------------------
     # The pixel mask already requires water to reach the sea. That is not the same test
     # at CELL level: a pocket of water big enough for one res-6 cell, joined to the rest
@@ -414,37 +428,80 @@ def main(cfg: dict = CONFIG) -> None:
                                      "gov_h_m": None if not v else int(round(float(gh))),
                                      "gov_reach_km": None if not v
                                      else round(K * math.sqrt(max(float(gh), 0)), 1)}})
+    cell_ll = np.array([h3.cell_to_latlng(f["properties"]["h3"]) for f in feats]) \
+        if feats else np.zeros((0, 2))
     out2 = Path("docs/router/data/sightline2_r6.geojson")
     out2.write_text(json.dumps({
         "type": "FeatureCollection",
         "properties": {
-            "what": "sight of land, computed from the land outwards in reach bands",
+            "generation": generation(), "what": "sight of land, computed from the land outwards in reach bands",
             "method": "banded distance transform in " + cfg["crs"],
             "bands": int(len(bands)), "band_km": cfg["band_km"],
             "max_reach_km": round(rmax, 1),
             "blind_sailing_buffer_km": cfg["buffer_km"],
-            "buffer_basis": "the deepest a crossing wholly within the British Isles goes "
-                            "out of sight: Land's End to Cork, 56.4 km. It is a ROUTING "
-                            "decision, not a horizon and not a coast -- the trimmed edge "
-                            "means nothing else.",
-            "trimmed": "cells beyond sight plus the buffer are absent, not coloured "
-                       "(H3-002 item 3). `known: false` appears only where the answer "
-                       "still depends on land outside the cached data; absent means "
-                       "answered.",
+            "buffer_basis": ("NO BLIND SAILING (Stephen, 4 Sep 2026): the buffer is zero. "
+                             "A cell is in the surface only if land is in sight from it, "
+                             "and a landmass joins only when its sighted water TOUCHES "
+                             "sighted water already admitted — two blind zones meeting is "
+                             "not a route. The trimmed edge is therefore the limit of "
+                             "sight itself, not a routing decision and not a coast. "
+                             "A crossing that leaves sight of land — Land's End to Cork "
+                             "among them — is therefore NOT in this surface. The blind "
+                             "span of that crossing was measured on the superseded "
+                             "buffered surface and is not restated here, because a figure "
+                             "derived from a surface that no longer exists is worse than "
+                             "no figure."
+                             if not cfg["buffer_km"] else
+                             "a ROUTING decision, not a horizon and not a coast — the "
+                             "trimmed edge means nothing else."),
+            "computation_domain": list(cfg["aoi"]),
+            "cell_bounds": ([round(float(cell_ll[:, 1].min()), 3),
+                             round(float(cell_ll[:, 0].min()), 3),
+                             round(float(cell_ll[:, 1].max()), 3),
+                             round(float(cell_ll[:, 0].max()), 3)] if len(cell_ll) else None),
+            "computation_domain_note": "where the question was asked. The CELLS are what "
+                                       "was found, and after trimming they cover less — "
+                                       "about a degree of west Atlantic separates the "
+                                       "two. Do not conflate them in a caption (rewt-46).",
+            "trimmed": "cells out of sight of land are absent, not coloured (H3-002 "
+                       "item 3). There is no unknown state left to render: `known` is "
+                       "absent from every feature, and an absent `known` means answered.",
             "horizon_formula": f"range_km = {K:.4f} * sqrt(height_m), refraction_k = "
                                f"{cfg['refraction_k']}. NOT 3.86, which is k = 1.17.",
+            "tallest_governing_land_m": (int(max(f["properties"]["gov_h_m"]
+                                                 for f in feats
+                                                 if f["properties"]["gov_h_m"] is not None))
+                                         if any(f["properties"]["gov_h_m"] is not None
+                                                for f in feats) else None),
+            "tallest_governing_land_note": "if this exceeds 1,345 m — Ben Nevis — then "
+                                           "land outside the British Isles is casting "
+                                           "sightlines into the surface, and a reader who "
+                                           "knows these islands will rightly wonder. "
+                                           "rewt-46 caught 221 such cells reaching 1,823 m "
+                                           "while a buffer regression was live; under the "
+                                           "no-blind-sailing rule there are none.",
             "gov_h_m_definition": "the tallest land that reaches this cell — the band "
                                   "that first marked it. Absent where nothing reaches.",
+            "gov_reach_km_definition": ("DERIVED FROM gov_h_m, not measured alongside "
+                                       f"it: {K:.4f} * sqrt(gov_h_m), exactly. One "
+                                       "variable in "
+                                       "two units. Shown side by side the pair reads as "
+                                       "two measurements agreeing, which is the most "
+                                       "persuasive thing a single measurement can "
+                                       "pretend to be — rewt-46 found 67 distinct heights "
+                                       "and 67 distinct pairs across all cells. Do not "
+                                       "cite them as corroborating each other."),
             "distance_crs": cfg["crs"], "distance_crs_worst_error_pct": 0.33,
             "validated_against": "exact WGS84 geodesics on 250 sample points: 246 agree, "
                                  "and all 4 disagreements are conservative (the raster "
                                  "misses visibility, never invents it)",
             "observer_height_m": cfg["observer_height_m"],
             "attribution": ATTRIBUTION, "use_constraint": "DO NOT USE FOR NAVIGATION"},
-        "features": feats}))
+        "features": feats}, default=float))
     print(f"wrote {out2} ({out2.stat().st_size/1e6:.1f} MB, {len(feats):,} cells)")
 
     Path(cfg["summary"]).write_text(json.dumps({
+        "generation": generation(),
         "method": "land-outwards, banded by reach",
         "bands": int(len(bands)), "band_km": cfg["band_km"],
         "max_reach_km": round(rmax, 1), "tallest_land_m": round(hmax),

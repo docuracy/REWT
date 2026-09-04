@@ -30,6 +30,7 @@ from rasterio.windows import from_bounds
 from scipy.spatial import cKDTree
 
 import h3
+from generation import generation
 from sightline import build_vrt, nodata_to_nan
 
 ATTRIBUTION = ("Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): "
@@ -38,7 +39,7 @@ ATTRIBUTION = ("Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium 
 CONFIG = {
     "windows": "data/raw/emodnet_bathymetry/*.tif",
     "vrt": "tools/router/cache/emodnet.vrt",
-    "grid": "tools/router/cache/grid_r9.npz",
+    "grid": "tools/router/cache/grid2.npz",
     "network": "published/rewt_stage1_network.gpkg",
     "joins": "docs/router/data/join_summary.json",
     "out": "docs/router/data/traces.geojson",
@@ -56,10 +57,41 @@ CONFIG = {
     # exists at the lowest tide is a median 143 m, a 95th of 624 m and a MAXIMUM of
     # 9,605 m anywhere in the country. A path crossing more drying ground than the widest
     # intertidal zone that exists is not crossing an intertidal zone.
-    "max_drying_m": 9605.0,
+    "max_drying_m": None,        # DERIVED at run time — see derive_drying_ceiling()
     "margin_px": 40,             # window padding around the straight line
     "earth_radius_m": 6371000.0,
 }
+
+
+def derive_drying_ceiling(src, t, cfg) -> float:
+    """The widest intertidal gap that actually exists, measured now.
+
+    This was a typed 9,605 — correct, and correct only because the number had not moved.
+    rewt-46 found three frozen figures of mine in their own file within twenty minutes
+    and the remedy each time was the same, and it is not care: compute it, print it from
+    the file, or do not state it. So it is computed. If the terminus set changes — and
+    R-01 will change it — the ceiling follows instead of quietly describing a population
+    that no longer exists.
+    """
+    R = cfg["earth_radius_m"]
+    worst = 0.0
+    for la, lo in zip(t.lat.values, t.lon.values):
+        for half in (0.03, 0.08, 0.20, 0.50):
+            w = from_bounds(lo - half, la - half, lo + half, la + half, src.transform)
+            a = nodata_to_nan(src.read(1, window=w, boundless=True,
+                                       fill_value=np.nan)).astype("float64")
+            wet = a < 0
+            if not wet.any():
+                continue
+            rr, cc = np.nonzero(wet)
+            x0, y0 = src.xy(int(w.row_off), int(w.col_off))
+            plon = x0 + cc * src.res[0]
+            plat = y0 - rr * src.res[1]
+            d = R * np.hypot(np.radians(plat - la),
+                             np.radians(plon - lo) * np.cos(np.radians(la)))
+            worst = max(worst, float(d.min()))
+            break
+    return worst
 
 
 def dijkstra(cost: np.ndarray, start: tuple[int, int], goal: np.ndarray):
@@ -122,8 +154,33 @@ def main(cfg: dict = CONFIG) -> None:
 
     tree = cKDTree(xyz(glat, glon))
     cellset = set(g["cell"].tolist())
-    todo = json.loads(Path(cfg["joins"]).read_text())["rule3"]
-    print(f"{len(todo):,} rule-3 termini to trace "
+    grid_res = sorted({int(r) for r in g["resolution"]}, reverse=True)
+    js = json.loads(Path(cfg["joins"]).read_text())
+    todo = js["rule3"]
+    if cfg["max_drying_m"] is None:
+        import geopandas as _gpd
+        _n = _gpd.read_file(cfg["network"], layer="node", ignore_geometry=True,
+                            columns=["node_id", "terminus", "in_scope",
+                                     "easting", "northing"])
+        _l = _gpd.read_file(cfg["network"], layer="link", ignore_geometry=True,
+                            columns=["from_node", "to_node", "retired"])
+        _live = _l[~_l.retired.astype(bool)]
+        _sinks = set(_live.to_node.dropna()) - set(_live.from_node.dropna())
+        _t = _n[_n.node_id.isin(_sinks) & (_n.terminus == "tidal")
+                & _n.in_scope.astype(bool)].copy()
+        _tr = Transformer.from_crs(27700, 4326, always_xy=True)
+        _t["lon"], _t["lat"] = _tr.transform(_t.easting.values, _t.northing.values)
+        cfg["max_drying_m"] = derive_drying_ceiling(src, _t, cfg)
+        print(f"  drying ceiling derived from the current in-scope termini: "
+              f"{cfg['max_drying_m']:.0f} m (the widest intertidal gap that exists)")
+    # NEAREST THE GRID FIRST, so the trunk of an estuary is traced before its branches
+    # and the branches have something to join. Traced in arbitrary order, several termini
+    # up one channel each cut their own path to the sea and the result is a bundle of
+    # near-parallel threads down the same water — which is what the Severn looked like.
+    todo.sort(key=lambda r: r["dist_m"])
+    reached: set[tuple[int, int]] = set()      # path pixels already traced, in RASTER coords
+    print(f"{len(todo):,} rule-3 termini to trace (in-scope only: the join "
+          f"stage applies the scope rule and this reads its output) "
           f"({sum(t['in_scope'] for t in todo):,} in scope)")
 
     feats, rows = [], []
@@ -146,12 +203,20 @@ def main(cfg: dict = CONFIG) -> None:
             c, r = ~tw * (lon, lat)
             return (int(np.clip(r, 0, a.shape[0]-1)), int(np.clip(c, 0, a.shape[1]-1)))
 
-        # the goal mask: any pixel lying in a cell the grid actually holds
+        # the goal is the network: the grid, PLUS everything already traced. A later
+        # trace stops the moment it meets an earlier one, so an estuary comes out as a
+        # tree with one trunk rather than as a bundle of parallel threads.
         goal = np.zeros(a.shape, bool)
         wet = np.isfinite(a) & (a < 0)
         for rr, cc in zip(*np.nonzero(wet)):
             x, y = tw * (cc + 0.5, rr + 0.5)
-            if h3.latlng_to_cell(float(y), float(x), 9) in cellset:
+            if any(h3.latlng_to_cell(float(y), float(x), rr) in cellset
+                   for rr in grid_res):
+                goal[rr, cc] = True
+        r_off, c_off = int(w.row_off), int(w.col_off)
+        for gr, gc in reached:
+            rr, cc = gr - r_off, gc - c_off
+            if 0 <= rr < a.shape[0] and 0 <= cc < a.shape[1]:
                 goal[rr, cc] = True
         s = rc(la, lo)
         if not np.isfinite(cost[s]):
@@ -164,6 +229,8 @@ def main(cfg: dict = CONFIG) -> None:
             rows.append({**t, "traced": False, "reason": "no passable route"})
             continue
 
+        for r_, c_ in path:
+            reached.add((r_ + r_off, c_ + c_off))
         pts = [(tw * (c + 0.5, r + 0.5)) for r, c in path]
         elev = np.array([a[r, c] for r, c in path])
         seg = np.array([np.hypot((pts[i+1][0]-pts[i][0]) * 111320 * np.cos(np.radians(la)),
@@ -191,6 +258,8 @@ def main(cfg: dict = CONFIG) -> None:
                                    "coordinates": [[round(x, 6), round(y, 6)] for x, y in pts]},
                       "properties": {k2: v for k2, v in rows[-1].items()}})
 
+    print(f"  {len(reached):,} distinct path pixels in the traced network "
+          f"(a bundle of independent threads would hold many more)")
     ok = [r for r in rows if r["traced"]]
     bad = [r for r in rows if not r["traced"]]
     print(f"\ntraced {len(ok):,}, failed {len(bad):,}")
@@ -214,7 +283,7 @@ def main(cfg: dict = CONFIG) -> None:
         print("    none — so check that impassable_above_m excludes something")
 
     Path(cfg["summary"]).write_text(json.dumps({
-        "attempted": len(rows), "traced": len(ok), "failed": len(bad),
+        "generation": generation(), "attempted": len(rows), "traced": len(ok), "failed": len(bad),
         "impassable_above_m": cfg["impassable_above_m"],
         "provisional": "R-01 is unbuilt. The implementer will land it in TWO passes — "
                        "retirement of wholly-seaward links, then truncation of crossers "

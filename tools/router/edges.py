@@ -30,9 +30,13 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.csgraph import connected_components
 
 import h3
+from generation import generation
+from pyproj import Transformer
 
 CONFIG = {
-    "grid": "tools/router/cache/grid_r9.npz",
+    "grid": "tools/router/cache/grid2.npz",
+    "masks": "tools/router/cache/sightline_masks.npz",
+    "land_samples": 12,          # points tested along each link
     "out": "tools/router/cache/edges_r9.npz",
     "summary": "docs/router/data/edge_summary.json",
     "start_resolution": 3,
@@ -54,6 +58,29 @@ def main(cfg: dict = CONFIG) -> None:
         """Does `child` share a boundary with `c`, which is at resolution r?"""
         return any(h3.cell_to_parent(y, r) == c for y in h3.grid_disk(child, 1))
 
+    # --- A LINK MAY NOT CROSS LAND -------------------------------------------------
+    # Two cells can both hold water while the straight line between their CENTRES runs
+    # over a spit or a peninsula. Measured on the current grid: 100 of 23,122 sampled
+    # links, 0.43%. The predecessor tests this (`intersects_land` in its sea_graph.py)
+    # and this did not — Stephen asking whether centre-to-centre was the right surface
+    # is what surfaced it.
+    mk = np.load(cfg["masks"], allow_pickle=True)
+    fine, ftr = mk["fine_sea"], mk["fine_transform"]
+    fwd = Transformer.from_crs(4326, str(mk["crs"][0]), always_xy=True)
+    fh, fw = fine.shape
+    NS = cfg["land_samples"]
+    fr = np.arange(1, NS) / NS
+
+    def crosses_land(a, b):
+        la = a[0] + (b[0] - a[0]) * fr
+        lo = a[1] + (b[1] - a[1]) * fr
+        x, y = fwd.transform(lo, la)
+        c = ((np.asarray(x) - ftr[2]) / ftr[0]).astype(int)
+        r = ((np.asarray(y) - ftr[5]) / ftr[4]).astype(int)
+        ok = (r >= 0) & (r < fh) & (c >= 0) & (c < fw)
+        return bool((~fine[np.clip(r, 0, fh - 1), np.clip(c, 0, fw - 1)] | ~ok).any())
+
+    rejected = 0
     pairs: set[tuple[int, int]] = set()
     crossings = Counter()
     for c in cells:
@@ -62,6 +89,9 @@ def main(cfg: dict = CONFIG) -> None:
             if n == c:
                 continue
             if n in idx:                                    # same resolution
+                if crosses_land(h3.cell_to_latlng(c), h3.cell_to_latlng(n)):
+                    rejected += 1
+                    continue
                 a, b = idx[c], idx[n]
                 pairs.add((a, b) if a < b else (b, a))
                 crossings[(r, r)] += 1
@@ -73,6 +103,9 @@ def main(cfg: dict = CONFIG) -> None:
                     up = p
                     break
             if up is not None:
+                if crosses_land(h3.cell_to_latlng(c), h3.cell_to_latlng(up)):
+                    rejected += 1
+                    continue
                 a, b = idx[c], idx[up]
                 pairs.add((a, b) if a < b else (b, a))
                 crossings[tuple(sorted((r, res[up])))] += 1
@@ -85,6 +118,9 @@ def main(cfg: dict = CONFIG) -> None:
                         if not touches(ch, c, r):
                             continue
                         if ch in idx:
+                            if crosses_land(h3.cell_to_latlng(c), h3.cell_to_latlng(ch)):
+                                rejected += 1
+                                continue
                             a, b = idx[c], idx[ch]
                             pairs.add((a, b) if a < b else (b, a))
                             crossings[tuple(sorted((r, rr)))] += 1
@@ -95,7 +131,8 @@ def main(cfg: dict = CONFIG) -> None:
                     break
 
     e = np.array(sorted(pairs), dtype=np.int32)
-    print(f"edges: {len(e):,} undirected")
+    print(f"edges: {len(e):,} undirected; {rejected:,} rejected for crossing land "
+          f"({100*rejected/max(rejected+len(e),1):.2f}%)")
 
     la, lo = np.radians(lat), np.radians(lon)
     xyz = np.column_stack([np.cos(la)*np.cos(lo), np.cos(la)*np.sin(lo), np.sin(la)])
@@ -137,13 +174,20 @@ def main(cfg: dict = CONFIG) -> None:
 
     np.savez_compressed(cfg["out"], edge=e, length_m=length.astype("float32"))
     Path(cfg["summary"]).write_text(json.dumps({
-        "cells": len(cells), "edges": int(len(e)),
+        "generation": generation(), "cells": len(cells), "edges": int(len(e)),
         "components": int(ncomp), "largest_component": big,
         "isolated": iso,
         "degree": {"min": int(deg.min()), "median": int(np.median(deg)),
                    "max": int(deg.max())},
         "edges_by_resolution_pair": {f"{a}-{b}": n for (a, b), n in sorted(crossings.items())},
         "cross_resolution_directed": cross,
+        "links_rejected_crossing_land": int(rejected),
+        "lattice_note": "centre-to-centre links on a hexagonal lattice, as eRutter uses. "
+                        "Six directions, so a bearing between two of them is walked as a "
+                        "zig-zag: about 5-6% longer than the geodesic on average and "
+                        "15.5% at worst. That is systematic and ONE-DIRECTIONAL — every "
+                        "route is longer, never shorter. A square grid would be 41.4% "
+                        "(4-connected) or 8.2% (8-connected), which is why hexagons.",
         "note": "Edge length is geometry, not a weight. Weights are deferred (PLAN.md 1).",
         "attribution": "Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium "
                        "(2024): EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0.",

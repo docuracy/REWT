@@ -34,6 +34,8 @@ from scipy import ndimage
 from scipy.sparse import coo_matrix
 from scipy.sparse.csgraph import dijkstra
 
+from generation import generation
+
 CONFIG = {
     "masks": "tools/router/cache/sightline_masks.npz",
     "out": "tools/router/cache/reach.npz",
@@ -164,7 +166,7 @@ def main(cfg: dict = CONFIG) -> None:
           f"({100*keep.sum()/n:.1f}%)")
     np.savez_compressed(cfg["out"], within_week=keep, km=np.float32(bound))
     Path(cfg["summary"]).write_text(json.dumps({
-        "criterion": "within a week's sailing of England and Wales, under typical "
+        "generation": generation(), "criterion": "within a week's sailing of England and Wales, under typical "
                      "conditions, measured as route distance THROUGH the water",
         "calibration": {n: (round(v) if np.isfinite(v) else None)
                         for (n, _, _), v in zip(cfg["calibration"], cal)},
@@ -173,6 +175,7 @@ def main(cfg: dict = CONFIG) -> None:
                               "to the northern tip of Denmark, and Falmouth to Bordeaux, "
                               "each about a week in July",
         "week_km": round(bound),
+        "approximation": "eRutter is explicitly approximate and better for COMPARING routes than for definitive times (Stephen, 4 Sep 2026). So this calibrates an ORDER OF MAGNITUDE, not a threshold: both anchors are soft, both are 'about a week', and two approximate durations implying similar distances is not an independent test. The bound should be read as roughly a week, not as a measured limit.",
         "anchors_disagree": "the two attested week-long voyages imply different route "
                             "distances. That is information, not noise: route distance is "
                             "a poor proxy for time, and the difference is what wind and "
@@ -210,9 +213,12 @@ def main(cfg: dict = CONFIG) -> None:
             "cells beyond a week's sailing of England and Wales are absent. The bound is "
             "route distance ON THE NAVIGABLE SURFACE, calibrated by two attested "
             f"week-long voyages: London-Skagen {cal[0]:.0f} km and Falmouth-Bordeaux "
-            f"{cal[1]:.0f} km. Under the no-blind-sailing rule those two agree to 6%; "
-            "on a buffered surface they differed by 48%, because the route was free to "
-            "cut across open water that was never sailed.")
+            f"{cal[1]:.0f} km. Both anchors are APPROXIMATE — eRutter says so, and is "
+            "better for comparing routes than for definitive times — so this is an order "
+            "of magnitude, not a threshold. That the two converge under the "
+            "no-blind-sailing rule (6%, against 48% on a buffered surface) is consistent "
+            "with the constraint being right; it is not independent evidence for it, "
+            "because two soft durations agreeing on soft distances tests little.")
         lay.write_text(json.dumps(gj))
         print(f"  trimmed the layer to a week's sailing: {before:,} -> {len(out):,} cells")
 

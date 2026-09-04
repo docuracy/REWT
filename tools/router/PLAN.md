@@ -951,16 +951,28 @@ This is the strongest evidence for it and it was not looked for.
 | Falmouth – Bordeaux | 633 km | **1,195 km** |
 | disagreement | **48%** | **6%** |
 
-Both are attested at about a week in July (eRutter). On a buffered surface the router was
+Both are given as about a week in July by eRutter. On a buffered surface the router was
 free to cut across open water that was never sailed, and the two voyages implied wildly
-different distances per day. Forced to keep land in sight, they converge. **Two
-independent measurements agreeing only under the constraint is the anchor outside the set
-that D-067 asks for.**
+different distances per day. Forced to keep land in sight, they converge.
+
+**I first called this the anchor outside the set that D-067 asks for. It is not, and
+Stephen corrected me.** eRutter is explicitly approximate and is better for comparing
+routes than for definitive times. Both anchors are soft, both are "about a week", and two
+approximate durations implying similar distances is not an independent test — the
+agreement is between two soft numbers.
+
+**What survives is narrower and still worth having.** The convergence is a real change in
+the geometry: the same two routes, measured on two surfaces, go from 48% apart to 6%
+apart. That is consistent with coastwise sailing being the right constraint. It is not
+evidence for it, and the distinction matters because a soft anchor dressed as a hard one
+is exactly the false corroboration this file keeps recording elsewhere.
 
 ### 14.2 A week's sailing, applied
 
 The bound is 1,271 km of route distance, taken as the larger anchor so both voyages fall
-inside, and measured ON THE NAVIGABLE SURFACE — an earlier version measured through open
+inside, and measured ON THE NAVIGABLE SURFACE. **It is an order of magnitude, not a
+threshold** — see 14.1 — and it should be described as "roughly a week" wherever it
+appears — an earlier version measured through open
 water and put Bergen nearer than the Denmark anchor, contradicting the model it was meant
 to bound.
 

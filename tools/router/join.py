@@ -30,9 +30,10 @@ from pyproj import Transformer
 from scipy.spatial import cKDTree
 
 import h3
+from generation import generation
 
 CONFIG = {
-    "grid": "tools/router/cache/grid_r9.npz",
+    "grid": "tools/router/cache/grid2.npz",
     "network": "published/rewt_stage1_network.gpkg",
     "out": "docs/router/data/joins.geojson",
     "summary": "docs/router/data/join_summary.json",
@@ -52,6 +53,7 @@ def main(cfg: dict = CONFIG) -> None:
     cells, cres = g["cell"], g["resolution"]
     glat, glon, gdep = g["lat"], g["lon"], g["depth_m"]
     cellset = set(cells.tolist())
+    grid_res = sorted({int(r) for r in cres}, reverse=True)   # ask the grid, do not assume
     print(f"grid: {len(cells):,} cells, res {cres.min()}-{cres.max()}")
 
     node = gpd.read_file(cfg["network"], layer="node", ignore_geometry=True,
@@ -61,6 +63,15 @@ def main(cfg: dict = CONFIG) -> None:
     live = link[~link.retired.astype(bool)]
     sinks = set(live.to_node.dropna()) - set(live.from_node.dropna())
     t = node[node.node_id.isin(sinks) & (node.terminus == "tidal")].copy()
+
+    # SCOPE: basins that intersect England or Wales, which is what this project is about
+    # (D-024, and Stephen 4 Sep 2026 — traces were being computed into northern Scotland).
+    # `in_scope` is the audit's own derivation; `basin_in_scope` is only half the rule and
+    # gives a different answer, so the implementer's instruction is to use `in_scope`.
+    before = len(t)
+    t = t[t.in_scope.astype(bool)].copy()
+    print(f"  scope: {len(t):,} of {before:,} tidal termini are in basins intersecting "
+          f"England or Wales")
     tr = Transformer.from_crs(27700, 4326, always_xy=True)
     t["lon"], t["lat"] = tr.transform(t.easting.values, t.northing.values)
     print(f"termini: {len(t):,} tidal sinks, {int(t.in_scope.astype(bool).sum()):,} in scope")
@@ -94,8 +105,17 @@ def main(cfg: dict = CONFIG) -> None:
         # and every rule-2 distance piled up against the 201 m edge like a wall. The
         # question rule 2 asks is whether the terminus sits in a cell NEXT DOOR to the
         # grid, which is a property of the tiling, not of a tuned radius.
-        own = h3.latlng_to_cell(float(la), float(lo), cfg["coastal_sea_resolution"])
-        nb = [c for c in h3.grid_disk(own, 1) if c in cellset]
+        # ADJACENCY AT WHATEVER RESOLUTIONS THE GRID ACTUALLY USES. This asked at res 9
+        # because the old distance-banded grid ended there; the state-banded one is
+        # mostly res 7, so every lookup missed and rule 2 collapsed into rule 3 — 724
+        # "needs a traced path" where there should have been about 140.
+        nb, own_res = [], None
+        for rr in grid_res:
+            own = h3.latlng_to_cell(float(la), float(lo), rr)
+            found = [c for c in h3.grid_disk(own, 1) if c in cellset]
+            if found:
+                nb, own_res = found, rr
+                break
         j = int(ni[i]); r = int(cres[j])
         if nb:                                      # rule 2: a grid cell is adjacent
             # the NEAREST adjacent cell, not whichever grid_disk happened to list first.
@@ -105,7 +125,7 @@ def main(cfg: dict = CONFIG) -> None:
                                    + ((p[1] - lo) * np.cos(np.radians(la))) ** 2)
                     (h3.cell_to_latlng(c)))
             rule[i] = 2; cell_of[i] = nb[0]
-            res_of[i] = cfg["coastal_sea_resolution"]; dist_of[i] = float(nd[i])
+            res_of[i] = own_res; dist_of[i] = float(nd[i])
         else:                                       # rule 3: needs a traced path
             rule[i] = 3; cell_of[i], res_of[i] = cells[j], r; dist_of[i] = float(nd[i])
 
@@ -138,7 +158,7 @@ def main(cfg: dict = CONFIG) -> None:
 
     Path(cfg["summary"]).parent.mkdir(parents=True, exist_ok=True)
     Path(cfg["summary"]).write_text(json.dumps({
-        "termini": len(t), "in_scope": int(t.in_scope.astype(bool).sum()),
+        "generation": generation(), "termini": len(t), "in_scope": int(t.in_scope.astype(bool).sum()),
         "by_rule": {str(k): int((t.rule == k).sum()) for k in (1, 2, 3)},
         "by_rule_in_scope": {str(k): int(((t.rule == k) & t.in_scope.astype(bool)).sum())
                              for k in (1, 2, 3)},

@@ -1,0 +1,61 @@
+{
+ "generation": "20260904T085211Z",
+ "what": "median height of the land that governs each cell in sight, by coast, and the range it implies",
+ "safe_to_publish": [
+  "median_governing_land_m",
+  "median_reach_km",
+  "tallest_governing_land_m",
+  "greatest_reach_km"
+ ],
+ "not_safe_to_publish": "any SHARE or PERCENTAGE derived from cells_in_sight. The surface is trimmed to a week's sailing of England and Wales, so it is defined outward from Britain and Britain's share of it is largely a property of that choice \u2014 it moves with the extent without anything about the world changing.",
+ "classification": "by the CELL's own position within a declared box, not by where the governing land lies. The medians are robust to this; the counts are not.",
+ "horizon_formula": "range_km = 3.7945 * sqrt(height_m), refraction_k = 1.13. NOT 3.86, which is k = 1.17.",
+ "observer_height_m": 0.0,
+ "observer_note": "every range is a FLOOR: an eye at sea level, which is the one value that assumes nothing.",
+ "attribution": "Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0.",
+ "use_constraint": "DO NOT USE FOR NAVIGATION",
+ "coasts": {
+  "British Isles": {
+   "box_lon_lat": [
+    -13.24,
+    49.0,
+    -1.0,
+    62.12
+   ],
+   "tallest_the_label_can_supply_m": 1345,
+   "cells_in_sight": 11141,
+   "median_governing_land_m": 840,
+   "median_reach_km": 110.0,
+   "tallest_governing_land_m": 1323,
+   "greatest_reach_km": 138.0
+  },
+  "north France and Brittany": {
+   "box_lon_lat": [
+    -6.0,
+    44.5,
+    2.0,
+    50.5
+   ],
+   "tallest_the_label_can_supply_m": 1200,
+   "cells_in_sight": 2480,
+   "median_governing_land_m": 234,
+   "median_reach_km": 58.0,
+   "tallest_governing_land_m": 614,
+   "greatest_reach_km": 94.0
+  },
+  "Low Countries, Germany and Denmark": {
+   "box_lon_lat": [
+    2.0,
+    50.5,
+    11.5,
+    58.0
+   ],
+   "tallest_the_label_can_supply_m": 1200,
+   "cells_in_sight": 960,
+   "median_governing_land_m": 47,
+   "median_reach_km": 26.0,
+   "tallest_governing_land_m": 218,
+   "greatest_reach_km": 56.0
+  }
+ }
+}

@@ -37,6 +37,7 @@ from pyproj import Transformer
 from scipy import ndimage
 
 import h3
+from generation import generation
 
 CONFIG = {
     "masks": "tools/router/cache/sightline_masks.npz",
@@ -118,6 +119,15 @@ def main(cfg: dict = CONFIG) -> None:
     live = link[~link.retired.astype(bool)]
     sinks = set(live.to_node.dropna()) - set(live.from_node.dropna())
     t = node[node.node_id.isin(sinks) & (node.terminus == "tidal")].copy()
+
+    # SCOPE: basins that intersect England or Wales, which is what this project is about
+    # (D-024, and Stephen 4 Sep 2026 — traces were being computed into northern Scotland).
+    # `in_scope` is the audit's own derivation; `basin_in_scope` is only half the rule and
+    # gives a different answer, so the implementer's instruction is to use `in_scope`.
+    before = len(t)
+    t = t[t.in_scope.astype(bool)].copy()
+    print(f"  scope: {len(t):,} of {before:,} tidal termini are in basins intersecting "
+          f"England or Wales")
     f4326 = Transformer.from_crs(27700, 4326, always_xy=True)
     t["lon"], t["lat"] = f4326.transform(t.easting.values, t.northing.values)
     print(f"  {len(t):,} tidal termini to serve")
@@ -240,11 +250,21 @@ def main(cfg: dict = CONFIG) -> None:
 
     ids = list(grid)
     ll = np.array([h3.cell_to_latlng(c) for c in ids])
+    # DEPTH AT EACH CELL CENTRE. The old grid carried it and join.py reads it; omitting it
+    # here made join.py die on its first use — and trace.py then ran on the STALE join
+    # summary and reported figures from the previous grid as though they were new. A
+    # stage that fails should not be silently absorbed by the next one.
+    cel = m["elev"]
+    ctr2 = m["transform"]
+    fx, fy = Transformer.from_crs(4326, crs, always_xy=True).transform(ll[:, 1], ll[:, 0])
+    cc2 = np.clip(((np.asarray(fx) - ctr2[2]) / ctr2[0]).astype(int), 0, cel.shape[1] - 1)
+    cr2 = np.clip(((np.asarray(fy) - ctr2[5]) / ctr2[4]).astype(int), 0, cel.shape[0] - 1)
+    depth = cel[cr2, cc2]
     np.savez_compressed(cfg["out"], cell=np.array(ids),
                         resolution=np.array([grid[c] for c in ids], "int8"),
-                        lat=ll[:, 0], lon=ll[:, 1])
+                        lat=ll[:, 0], lon=ll[:, 1], depth_m=depth)
     Path(cfg["summary"]).write_text(json.dumps({
-        "scheme": "banded by state, not by distance",
+        "generation": generation(), "scheme": "banded by state, not by distance",
         "states": {"blind buffer": cfg["res_blind"], "in sight": cfg["res_sight"],
                    "refined": cfg["res_refine"]},
         "refinement_rule": "a cell is subdivided only where it is adjacent to land AND "

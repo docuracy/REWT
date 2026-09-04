@@ -1,4 +1,5 @@
 {
+ "generation": "20260904T085211Z",
  "method": "land-outwards, banded by reach",
  "bands": 95,
  "band_km": 2.0,
@@ -10,11 +11,11 @@
  "observer_height_m": 0.0,
  "sea_cells": 59830,
  "see_land": 20727,
- "kept_after_trim": 32221,
- "detached_cells_dropped": 180,
+ "kept_after_trim": 15888,
+ "detached_cells_dropped": 0,
  "detached_note": "a pocket of water joined to the rest only through a channel narrower than a cell becomes an island of cells no route can reach. Dropped, and named in the run output \u2014 most are German and Norwegian inlets and Irish loughs severed by the 232 m mask, which is the Loch Etive limit in another place.",
- "blind_sailing_buffer_km": 60.0,
- "still_unknown": 1572,
+ "blind_sailing_buffer_km": 0.0,
+ "still_unknown": 0,
  "reach_bound_evidence": {
   "Ben Nevis GB": 139.2,
   "Kerry IRL": 120.9,
