@@ -59,6 +59,32 @@ rules:
   status: proposed
   stage: sea
   needs:
+  - 'MEASURED, AND THE RULE IS UNDER-SPECIFIED FOR A QUARTER OF ITS OWN CASES. `truncate at
+    the crossing` presumes there is one. Of 6,926 in-scope links that meet the line: 5,071
+    cross once; 1,274 (18.4%) yield MORE THAN ONE landward piece when clipped, up to eight,
+    weaving in and out along estuary edges; and 581 clip to ZERO landward length — they graze
+    the boundary rather than crossing it, so a classifier keyed on `crosses` is answering
+    a question they do not pose. A further 1,497 leave a landward remnant under one metre
+    and 2,423 are more than 99% landward, where a cut creates a node and a retirement and
+    changes nothing.'
+  - 'SO CLASSIFY BY THE CLIPPED LANDWARD FRACTION, not by a topological predicate. `contains_properly`
+    is false for a wholly-landward link that touches the boundary, and `intersects` is true
+    for one that merely grazes it; the fraction of a link''s length inside the land polygon
+    is the quantity the rule is actually about, and it handles the grazers, the weavers and
+    the sub-metre remnants uniformly. Two thresholds are then needed and neither is chosen
+    yet: below what fraction a link is treated as wholly seaward, and below what landward
+    length a cut is not worth making. Both belong in conf/params.yml.'
+  - 'MARK THEM OUT OF SCOPE, NOT RETIRED. An attempt to retire the wholly-seaward links failed
+    `test_nothing_was_deleted_to_correct_it` on 7,474 links naming nothing that superseded
+    them, and the guard was right: a retirement here means a correction replaced this, and
+    nothing replaces these. PLAN.md §4.1 already holds the mechanism — `Nothing is deleted.
+    Out-of-scope links are flagged, not dropped` — and a link below high water is not a corrected
+    link, it is a link that is not part of this network.'
+  - 'THE TWO HALVES ARE ONE CHANGE AND CANNOT BE LANDED SEPARATELY. Retiring the seaward reaches
+    without cutting the crossers removed the outlets the crawl seeds from and supplied no
+    replacements: `reaches neither` went from 3,894 km (3.7%) to 21,259 km (20.7%). Not a
+    broken network — a deleted sea. The truncation point IS the new terminus, so it must exist
+    before the old one is taken away.'
   - THE NAME IS NOT THE SAME NAME. OS calls this High Water Mark, the administrative coastline,
     not Mean High Water, a tidal datum. The products carrying MHW/MHWS as a named tidal feature
     are VectorMap District and MasterMap, neither registered. HWM is the right line and costs
