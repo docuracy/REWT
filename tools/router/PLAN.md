@@ -1792,6 +1792,14 @@ leaving its stamp alone, and it reported:
 then passed again when the file was restored. A check that has never fired is a check nobody
 has tested, which is D-082 in the form this file keeps meeting it.
 
+**AND IT IS THE SAME RULE AS `--prove-it-fails`, WHICH I HAD NOT NOTICED.** rewt-46 pointed
+it out: `shot.py` has a mode that loads a page with no map on it, because a green screenshot
+run can mean the subject never rendered at all. Breaking a file on purpose to see the ledger
+fire is that same discipline arriving from a completely different direction — **build the
+failure, watch the mechanism catch it, and only then believe a pass.** Two mechanisms, months
+apart in conception, one rule. If a reader takes a single line from this section it should be
+that one, not the ledger's schema.
+
 **The general shape, since it is the third time today.** A stamp, a scope column, a coverage
 figure — each was a claim that something held, and each was worth nothing until someone
 tried to break it. The mechanisms are cheap; the discipline of firing them deliberately is
