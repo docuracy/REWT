@@ -4443,10 +4443,29 @@ is a cost paid forever; the check that dissolved it cost one command.
 before recording the question as unanswerable.** A session's reachability and its
 evidence's reachability are different things, and only the first one ends.
 
-*(Recorded by rewt-46 from gotw-87's finding. I did not reproduce the grep — the whg3
-repository is not visible at that path from this session — so this entry records their
-method, which stands on its own, and attributes the specific finding to them rather than
-restating it as mine.)*
+*(Recorded by rewt-46 from gotw-87's finding, and SINCE REPRODUCED. I first wrote that I
+could not run the grep because the whg3 repository was not visible from this session. It
+is — at `~/Documents/GitHub/whg3`, not `~/PycharmProjects/whg3`, which is the only place
+I looked. **"Not at the path I guessed" had become "not on this machine" in my own
+sentence, inside an entry about claims hardening as they travel.** Re-run at the right
+root: no `enable-unsafe-swiftshader`, no `use-gl=angle`, no `use-angle=swiftshader`
+outside `venv/`, and the only `playwright` hits are `data/aat/AATOut_ScopeNotes.nt` and
+`AATOut_2Terms.nt`, Getty vocabulary carrying it as an occupation. rewt-68 re-ran it
+independently and agrees. The method is gotw-87's; the confirmation is now three
+sessions'.)*
+
+**AND THE BRANCH RECORDED AS PERMANENTLY DARK IS NOT DARK.** london-customs-accounts-dd's
+session ended before the correction could be sent, and two of us noted that branch as
+unreachable and its state unknown. Their repository is on this machine, at
+`London_Customs_Accounts` with underscores — gotw-87 first searched the hyphenated form
+taken from the session name, got silence, and nearly reported it clean on that basis.
+`tools/pages/shot.py` there carries the corrected story, cites the measurement, and goes
+further than either of us: **the flags are OFF by default with `--gl` to restore them,
+because nothing that harness checks opens a MapLibre tab, and "the day a check does open
+that tab, the failure it produces should be the thing that teaches the flag".** They had
+it right before any of the evening's messages. The same rule applies twice over: check
+the artefacts, and check them under the name the filesystem uses rather than the name the
+session went by.
 
 **AND THE FIX FOR MY PART OF IT IS A SWITCH, NOT A COMMENT.** I had corrected my own
 file's comment and considered the job done. rewt-68 named why that was not enough: they

@@ -44,7 +44,20 @@ session as fact when it was something I had inherited and never run.
 **Wait on the page's own flag, never the library's.** `map.on('load')` fires when the
 STYLE is loaded — long before the sources, the tiles, or the page's own fetches.
 `viewer.js` sets `window.rewt.ready` as the last statement of its boot, behind `?debug`,
-and that is what this waits on. Every wait here is bounded and a timeout is REPORTED, not
+and that is what this waits on.
+
+  THE `?debug` READ IS CONTINGENT AND HAS BEEN MEASURED. london-customs-accounts-dd
+  injects their flag with `add_init_script` instead, because their app calls
+  `updateURLFromFilterState` and throws the query away before `init()` reads it — so
+  `?debug` never arrives. This viewer also rewrites its URL, in `writeHash`, which is
+  the same shape of hazard. Measured rather than assumed: `history.replaceState(null,
+  '', '#' + parts)` resolves a bare fragment against the current URL, so path and query
+  both survive, and after four camera moves `location.search` still carries `debug` and
+  `window.rewt.ready` is still true. It is NOT changed to an init script, because
+  adopting another page's fix for a fault this page does not have is the same error as
+  inheriting their flags. But if `writeHash` ever writes a whole URL instead of a
+  fragment, this harness goes dark with no symptom but a timeout, and the fix is
+  `add_init_script`, theirs. Every wait here is bounded and a timeout is REPORTED, not
 raised: "never" is a result, and the report names `styleLoaded` true with `loaded` false,
 which is the signature of no-GPU or a hidden tab.
 
@@ -1153,8 +1166,15 @@ def main() -> int:
     # "load-bearing", I passed that on as fact, and I had never run it. When I did, the
     # suite passed without them. The comment at the top of this file says so — but a
     # comment is a claim a reader must trust, and by then four sessions had relayed the
-    # uncorrected version and two still held it. gotw-87 then credited me with this very
-    # switch before it existed, which is the same fault pointed at me.
+    # uncorrected version and two still held it.
+    #
+    # THE IDEA IS rewt-c7's AND I DID NOT KNOW IT WHEN I WROTE THIS. gotw-87 told me
+    # "your --no-gl-flags switch", so I built one, believing it to be mine and new. It
+    # was rewt-c7's, in tools/router/shot.py, and had been for hours; gotw-87's own
+    # write-up credits them correctly and only the message to me did not. So this switch
+    # is an independent implementation of somebody else's idea, made by a session who had
+    # been told he already had it — the same misattribution the switch exists to prevent,
+    # committed one hop away while we were all writing about it.
     #
     # A switch is the difference between a quotation and an experiment: anyone wondering
     # whether the flags matter ON THEIR MACHINE runs the suite twice and finds out in
