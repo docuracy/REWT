@@ -1,172 +1,414 @@
 {
- "generation": "20260904T204057Z",
- "question": "Do the sea grid, the joins, the traces and the Open Rivers inland network form ONE network today?",
- "answer": "Not yet.",
- "nodes": 342288,
- "edges": 614307,
- "components": 4103,
- "largest_component": 248631,
- "largest_component_pct": 72.64,
- "termini_attached_to_the_sea": 359,
- "termini_stranded": 30,
- "river_nodes_reaching_the_sea": 104752,
- "river_nodes_total": 198409,
- "in_scope_river_nodes_reaching_the_sea": 104736,
+ "generation": "20260905T141636Z",
+ "question": "Do the mesh, the skeleton, the joins and the inland river network form ONE network?",
+ "in_scope_pct_reaching_the_sea": 76.46,
+ "in_scope_river_nodes_reaching_the_sea": 98003,
  "in_scope_river_nodes_total": 128170,
- "in_scope_pct_reaching_the_sea": 81.72,
- "what_counts_as_a_connection": "A river link joins its two nodes; a sea edge joins its two cells; a join of rule 1 or 2 attaches a terminus to a cell. A rule-3 join attaches ONLY if its trace succeeded \u2014 the rule says a path must be worked out, so an untraced rule-3 terminus has no way to the sea, and counting it would assume the thing being measured.",
- "why_not_yet": "Two reasons, in order of size. Most in-scope river nodes that do not reach the sea are in river components that never reach an attached terminus at all \u2014 that is the inland network's own connectivity and R-01's territory, not the grid's. The rest is the stranded termini below: rule-3 joins whose trace across the drying ground failed.",
- "provisional": "R-01 unbuilt. The terminus population moves twice before this number is final, so treat it as a floor on the work remaining rather than a measurement of a finished thing.",
+ "components": 4172,
+ "nodes": 844196,
+ "edges": 1165906,
+ "termini_in_scope": 389,
+ "termini_joined": 290,
+ "termini_stranded": 99,
+ "skeleton_chains_linked_to_mesh": 29928,
+ "design": "The mesh is open water only, from 1 km offshore. The skeleton is the medial axis of enclosed water. A terminus joins the skeleton, the skeleton joins the mesh. No traced paths across drying ground: the centreline already goes up the estuary.",
  "stranded": [
   {
-   "node_id": "os:node/02BC7D25-A8E2-417A-BACD-FAA58F374929",
-   "rule": 3,
-   "dist_m": 14307
+   "node_id": "os:node/017CBD90-E26D-4E5F-97F0-9ECC1282FA64",
+   "nearest_skeleton_m": 3877
   },
   {
-   "node_id": "os:node/0460AB7B-065F-44B1-AA63-8555BAD5E3E2",
-   "rule": 3,
-   "dist_m": 14160
+   "node_id": "os:node/0483B73D-E35A-486A-A236-839D6643419C",
+   "nearest_skeleton_m": 2435
   },
   {
-   "node_id": "os:node/09D9A8E3-A557-46A5-A193-BDD33DD438C6",
-   "rule": 3,
-   "dist_m": 3589
+   "node_id": "os:node/056C0ACA-CF3B-4BDA-942C-BF138DF87204",
+   "nearest_skeleton_m": 803
   },
   {
-   "node_id": "os:node/128A361C-431A-41A8-8AF4-3F003BF35551",
-   "rule": 3,
-   "dist_m": 9650
+   "node_id": "os:node/07868237-0C51-4158-B56E-4CD0806159B6",
+   "nearest_skeleton_m": 5111
   },
   {
-   "node_id": "os:node/14C67628-B44D-420D-A8A3-18FED40950D8",
-   "rule": 3,
-   "dist_m": 1433
+   "node_id": "os:node/0F80C945-9E53-4D04-AEA9-6B970BDBDF63",
+   "nearest_skeleton_m": 768
+  },
+  {
+   "node_id": "os:node/175B0735-D8F4-4257-8035-4076B12E1896",
+   "nearest_skeleton_m": 5295
   },
   {
    "node_id": "os:node/19070834-08F2-468E-987E-93AEA565C6E2",
-   "rule": 3,
-   "dist_m": 1232
+   "nearest_skeleton_m": 2794
   },
   {
    "node_id": "os:node/1BEA641F-1988-4FD4-86F4-71F0266A7A00",
-   "rule": 3,
-   "dist_m": 44520
+   "nearest_skeleton_m": 1074
   },
   {
-   "node_id": "os:node/2810E885-207B-445B-86C8-B79B5F8F1062",
-   "rule": 3,
-   "dist_m": 8849
+   "node_id": "os:node/1E90C7DD-5150-4B0B-9805-510543F65071",
+   "nearest_skeleton_m": 633
   },
   {
-   "node_id": "os:node/3BD43F12-D056-44C6-8F47-FD4ADE36A900",
-   "rule": 3,
-   "dist_m": 45145
+   "node_id": "os:node/217FCCB6-514E-4330-BD7D-C4F053DBC2A6",
+   "nearest_skeleton_m": 7145
   },
   {
-   "node_id": "os:node/3C567E5E-D234-42A7-992E-C26CA30D7C4C",
-   "rule": 3,
-   "dist_m": 1962
+   "node_id": "os:node/289B434E-B91C-4523-9A17-74016254CF92",
+   "nearest_skeleton_m": 410
   },
   {
-   "node_id": "os:node/4889A77D-8AA9-4C7C-818A-58D45AE4A51A",
-   "rule": 3,
-   "dist_m": 21804
+   "node_id": "os:node/2BEE5F85-AB7C-4329-B7A9-5F65EBFE9592",
+   "nearest_skeleton_m": 6518
+  },
+  {
+   "node_id": "os:node/2C54A79C-8957-44C1-A450-19267E19B803",
+   "nearest_skeleton_m": 2841
+  },
+  {
+   "node_id": "os:node/2D0D0891-8C5A-42C6-ACEA-35D7CDE6BD82",
+   "nearest_skeleton_m": 1132
+  },
+  {
+   "node_id": "os:node/30457578-40CF-492C-9E83-BCA7FF2192C0",
+   "nearest_skeleton_m": 3947
+  },
+  {
+   "node_id": "os:node/3383381A-685F-4739-8525-BE13113D8A9F",
+   "nearest_skeleton_m": 7968
+  },
+  {
+   "node_id": "os:node/34D5DBED-D933-4D37-95CD-2E9A77D21BAB",
+   "nearest_skeleton_m": 2854
+  },
+  {
+   "node_id": "os:node/3FA080BB-0195-4DF8-95DF-1DFE22BA8642",
+   "nearest_skeleton_m": 968
+  },
+  {
+   "node_id": "os:node/4070A1FD-13FA-4007-8012-4750A97124D0",
+   "nearest_skeleton_m": 5554
+  },
+  {
+   "node_id": "os:node/44A5E1C1-24F8-4ED2-B0C1-3EFA69E16C49",
+   "nearest_skeleton_m": 2761
+  },
+  {
+   "node_id": "os:node/450D78B4-5CB2-4CE8-8610-24B33D74A411",
+   "nearest_skeleton_m": 425
+  },
+  {
+   "node_id": "os:node/47DB919E-6525-4FB9-8C47-85481E208E2B",
+   "nearest_skeleton_m": 2294
+  },
+  {
+   "node_id": "os:node/48FD1787-D4E0-4A90-B5DE-1FC5DEC74B95",
+   "nearest_skeleton_m": 2275
+  },
+  {
+   "node_id": "os:node/49F91F92-25BA-4083-A41D-DFB8B72896A2",
+   "nearest_skeleton_m": 1682
+  },
+  {
+   "node_id": "os:node/4AFCCB06-3191-4F29-8C9A-E2F3E727CAC7",
+   "nearest_skeleton_m": 3016
+  },
+  {
+   "node_id": "os:node/4E5B6B88-22F7-4121-A665-7FA1F5D5E529",
+   "nearest_skeleton_m": 404
+  },
+  {
+   "node_id": "os:node/538B4C09-FD31-4C6C-A898-B7D8DAE9D166",
+   "nearest_skeleton_m": 6668
   },
   {
    "node_id": "os:node/54EEBEB0-4181-4501-854E-3AE9DB9E9A69",
-   "rule": 3,
-   "dist_m": 13190
+   "nearest_skeleton_m": 4013
   },
   {
-   "node_id": "os:node/559FBCC0-0BE0-4123-88EB-C8394B44A876",
-   "rule": 3,
-   "dist_m": 6863
+   "node_id": "os:node/56A129C0-D88E-40A2-9CF5-35D64DD0429E",
+   "nearest_skeleton_m": 3578
+  },
+  {
+   "node_id": "os:node/5C9AF31E-053E-48C7-B445-287D9D71D3A6",
+   "nearest_skeleton_m": 610
+  },
+  {
+   "node_id": "os:node/64D3781B-9C43-44CD-9083-B4F8444A1641",
+   "nearest_skeleton_m": 6132
+  },
+  {
+   "node_id": "os:node/6700D355-C6E6-4983-9A34-9EA91E8C40C5",
+   "nearest_skeleton_m": 7059
+  },
+  {
+   "node_id": "os:node/68895338-1C42-4C1E-801D-1CF3AE3E3FE8",
+   "nearest_skeleton_m": 6250
   },
   {
    "node_id": "os:node/6A7E9C7D-2EFF-41DB-A6B5-09D3A55DEE99",
-   "rule": 3,
-   "dist_m": 11786
+   "nearest_skeleton_m": 2814
   },
   {
-   "node_id": "os:node/763501A3-53BF-4C4A-978E-D9C88CE3C2AE",
-   "rule": 3,
-   "dist_m": 31582
+   "node_id": "os:node/6AD18842-4143-4534-A4A6-E59397065D75",
+   "nearest_skeleton_m": 3710
+  },
+  {
+   "node_id": "os:node/6D0014D8-9432-4563-9BDF-C5EAF74C8AD3",
+   "nearest_skeleton_m": 1077
+  },
+  {
+   "node_id": "os:node/6E819044-FFEB-4C1E-A6CC-EDD995EDA14A",
+   "nearest_skeleton_m": 825
+  },
+  {
+   "node_id": "os:node/764E2E86-6DF0-4CB0-87C6-C3C077069C65",
+   "nearest_skeleton_m": 642
   },
   {
    "node_id": "os:node/769A3B81-56F8-4EA4-8D02-4331CFF7F6E2",
-   "rule": 3,
-   "dist_m": 44819
+   "nearest_skeleton_m": 1679
   },
   {
-   "node_id": "os:node/7C5F3315-2C63-4A80-83F1-36FFAC520259",
-   "rule": 3,
-   "dist_m": 3076
+   "node_id": "os:node/78160CB7-C549-407A-9371-393E5798BCB3",
+   "nearest_skeleton_m": 1688
   },
   {
-   "node_id": "os:node/82D8A8CE-5C7C-423B-AF12-685F5CCDFE00",
-   "rule": 3,
-   "dist_m": 7761
+   "node_id": "os:node/78A47D30-5DC8-43BB-9E69-961409B956CA",
+   "nearest_skeleton_m": 1292
+  },
+  {
+   "node_id": "os:node/7A7BA7EE-38FF-49FC-90DC-0755820D6E3D",
+   "nearest_skeleton_m": 1459
+  },
+  {
+   "node_id": "os:node/7AA0667A-D397-4FE8-ADD5-49AB2ACCA2B2",
+   "nearest_skeleton_m": 631
+  },
+  {
+   "node_id": "os:node/7ABC7F9E-6167-4CF2-952B-323577D29E51",
+   "nearest_skeleton_m": 7221
+  },
+  {
+   "node_id": "os:node/7E3F648C-2F64-4966-9B5A-A5B33BDF4046",
+   "nearest_skeleton_m": 980
   },
   {
    "node_id": "os:node/8362F195-2D4F-4E1F-85C2-D66831127CE7",
-   "rule": 3,
-   "dist_m": 3513
+   "nearest_skeleton_m": 2721
   },
   {
-   "node_id": "os:node/9DD06246-876A-4565-837C-975DF879BC07",
-   "rule": 3,
-   "dist_m": 9083
+   "node_id": "os:node/838B32D7-6C7F-4D1C-B559-8BCE9115988F",
+   "nearest_skeleton_m": 6834
   },
   {
-   "node_id": "os:node/9ED1ECA6-7838-447C-93DC-BC908FC23A6D",
-   "rule": 3,
-   "dist_m": 66660
+   "node_id": "os:node/85FA3A59-B04B-4DAB-967A-F542EA2F25E1",
+   "nearest_skeleton_m": 3077
   },
   {
-   "node_id": "os:node/9FEB3912-A6C8-4857-AE7F-256E24E2C3CE",
-   "rule": 3,
-   "dist_m": 11807
+   "node_id": "os:node/8696827D-5988-425C-A8F4-3831061A08DE",
+   "nearest_skeleton_m": 5308
+  },
+  {
+   "node_id": "os:node/892EAEB8-F625-48A7-A8DF-20C46A20C083",
+   "nearest_skeleton_m": 670
+  },
+  {
+   "node_id": "os:node/899EAD57-1E01-4A6E-AD7D-E2B1A5D0ECBB",
+   "nearest_skeleton_m": 7050
+  },
+  {
+   "node_id": "os:node/8BEB67B1-76B3-4912-999C-9B8E0BDCE402",
+   "nearest_skeleton_m": 7353
+  },
+  {
+   "node_id": "os:node/8D732EC3-7D21-4DFB-B79E-C6ACB3333892",
+   "nearest_skeleton_m": 7557
+  },
+  {
+   "node_id": "os:node/8D9EC89E-284B-4C82-B26F-7008293CD043",
+   "nearest_skeleton_m": 816
+  },
+  {
+   "node_id": "os:node/94051944-D435-497B-88C2-6273C523B752",
+   "nearest_skeleton_m": 2530
+  },
+  {
+   "node_id": "os:node/94D8CD41-3A44-4E13-AEDA-1B91EF4ABAC8",
+   "nearest_skeleton_m": 417
+  },
+  {
+   "node_id": "os:node/974807C0-F832-48F1-A609-4919FB045940",
+   "nearest_skeleton_m": 5627
+  },
+  {
+   "node_id": "os:node/97F6E5FD-ED29-4B54-B464-18E1407DE78B",
+   "nearest_skeleton_m": 3242
+  },
+  {
+   "node_id": "os:node/9E55C056-00A0-429A-8229-B2F47CBCF3A1",
+   "nearest_skeleton_m": 319
+  },
+  {
+   "node_id": "os:node/A0E2A3DA-ADB0-4F53-9B91-BF62E130EFE4",
+   "nearest_skeleton_m": 7271
+  },
+  {
+   "node_id": "os:node/A17A2A73-EFFF-4DBD-BB6E-362F62AF1552",
+   "nearest_skeleton_m": 2399
+  },
+  {
+   "node_id": "os:node/A2C3F8DF-2654-4205-86BD-186F40DE6F9F",
+   "nearest_skeleton_m": 631
+  },
+  {
+   "node_id": "os:node/A7274A91-0BF0-4948-A493-23CEA3D6E006",
+   "nearest_skeleton_m": 5161
+  },
+  {
+   "node_id": "os:node/A85276C9-951E-4C15-98C3-0D9D1D30A6F9",
+   "nearest_skeleton_m": 252
   },
   {
    "node_id": "os:node/AA9ADD8A-BDE2-47DB-B323-827F0FC3E3F2",
-   "rule": 3,
-   "dist_m": 27086
+   "nearest_skeleton_m": 864
+  },
+  {
+   "node_id": "os:node/AAF854F6-C84C-4101-8AA3-39AC6EFA67F9",
+   "nearest_skeleton_m": 7990
+  },
+  {
+   "node_id": "os:node/AEFC22C7-2510-4F17-BD7F-37BA40723B60",
+   "nearest_skeleton_m": 5201
+  },
+  {
+   "node_id": "os:node/B10AF79E-61FE-4813-A569-154670779022",
+   "nearest_skeleton_m": 286
   },
   {
    "node_id": "os:node/B2AC3BD7-1C05-4FEA-8091-EB389CDE7160",
-   "rule": 3,
-   "dist_m": 14657
+   "nearest_skeleton_m": 19605
+  },
+  {
+   "node_id": "os:node/B79C89F6-6916-4D62-B043-A262C7C597AE",
+   "nearest_skeleton_m": 1778
   },
   {
    "node_id": "os:node/B808C5AC-BD47-45E5-8603-ABEB5EB88B05",
-   "rule": 3,
-   "dist_m": 30117
+   "nearest_skeleton_m": 1223
+  },
+  {
+   "node_id": "os:node/B8F4A1B8-59D8-4427-BF49-476057B95C3D",
+   "nearest_skeleton_m": 1059
+  },
+  {
+   "node_id": "os:node/BB1D954C-FEE9-4325-BF2A-84BEBACDF9B1",
+   "nearest_skeleton_m": 3165
+  },
+  {
+   "node_id": "os:node/BD1D7B5F-70B5-4D28-8A7D-94DDEDCC9805",
+   "nearest_skeleton_m": 278
+  },
+  {
+   "node_id": "os:node/BE4AD0BA-B815-42F6-B6FE-62925063C4EB",
+   "nearest_skeleton_m": 4554
+  },
+  {
+   "node_id": "os:node/C5ED3C9C-BFF2-4F19-9D38-B33BF3BAD2A3",
+   "nearest_skeleton_m": 3345
+  },
+  {
+   "node_id": "os:node/C7D1FCB1-0353-48CC-8AFC-EA3AD0CB13D6",
+   "nearest_skeleton_m": 1431
+  },
+  {
+   "node_id": "os:node/C9ED9E0B-115B-4183-8567-29E225218ACB",
+   "nearest_skeleton_m": 1473
   },
   {
    "node_id": "os:node/DB19CA2F-D75C-4AAD-B50A-63B042B347DE",
-   "rule": 3,
-   "dist_m": 25557
+   "nearest_skeleton_m": 2766
+  },
+  {
+   "node_id": "os:node/DC15B96D-8E92-4396-8E83-8B71DD66B4AB",
+   "nearest_skeleton_m": 1278
+  },
+  {
+   "node_id": "os:node/DCD9887D-83C5-4027-A073-E13A6267803A",
+   "nearest_skeleton_m": 1822
+  },
+  {
+   "node_id": "os:node/DF171A43-EDB5-42E9-9D69-7F2AF2DDAD96",
+   "nearest_skeleton_m": 449
+  },
+  {
+   "node_id": "os:node/DFCE1CA7-CDE5-4A3A-AA19-446934F1FE12",
+   "nearest_skeleton_m": 1030
   },
   {
    "node_id": "os:node/DFE60851-BBB0-4DD7-8513-9C412D90982E",
-   "rule": 3,
-   "dist_m": 15839
+   "nearest_skeleton_m": 6176
   },
   {
-   "node_id": "os:node/E2CDD94A-E7C3-40FE-8F05-C4E70B1CABB0",
-   "rule": 3,
-   "dist_m": 2114
+   "node_id": "os:node/E26945DF-8BCD-4A9D-B866-7ECA6743D966",
+   "nearest_skeleton_m": 4430
+  },
+  {
+   "node_id": "os:node/E9EBE238-260C-4F12-A6A6-F7E2D22E3A08",
+   "nearest_skeleton_m": 784
   },
   {
    "node_id": "os:node/EAE621EF-4D66-49D1-AA8A-0FF48D9265C8",
-   "rule": 3,
-   "dist_m": 13694
+   "nearest_skeleton_m": 1002
+  },
+  {
+   "node_id": "os:node/F07119B4-CE8B-4471-A71A-2402865DBEA6",
+   "nearest_skeleton_m": 3958
+  },
+  {
+   "node_id": "os:node/F2AB7867-E050-4A0D-B33E-8D3B6D7E4CAC",
+   "nearest_skeleton_m": 1501
+  },
+  {
+   "node_id": "os:node/F2FC5406-8563-47CC-9F17-94CAD7EA60A7",
+   "nearest_skeleton_m": 6096
+  },
+  {
+   "node_id": "os:node/F4071873-11C8-441F-AD9B-161621F6EE64",
+   "nearest_skeleton_m": 5873
+  },
+  {
+   "node_id": "os:node/F704BA1E-C03B-4100-863F-41F67DE9CFEB",
+   "nearest_skeleton_m": 1128
+  },
+  {
+   "node_id": "os:node/F73B6AC7-30D7-4813-B881-6E9D1279A229",
+   "nearest_skeleton_m": 934
+  },
+  {
+   "node_id": "os:node/F7BA98A4-81CE-4052-A5D1-FBC4540F38C1",
+   "nearest_skeleton_m": 2646
+  },
+  {
+   "node_id": "os:node/F8D046FB-60C5-4CD0-A22F-975CD39BA6FF",
+   "nearest_skeleton_m": 1249
+  },
+  {
+   "node_id": "os:node/F8E258F7-D032-4FD4-86C3-A2E9D47F5514",
+   "nearest_skeleton_m": 859
+  },
+  {
+   "node_id": "os:node/F98ECFDD-0052-484C-9B06-A404AD1DDEFC",
+   "nearest_skeleton_m": 5904
+  },
+  {
+   "node_id": "os:node/FC27C90E-DF9E-4E9F-B5F7-F59A1370A4C0",
+   "nearest_skeleton_m": 764
   },
   {
    "node_id": "os:node/FFA51EBA-4667-459B-998B-A7CBE54381EC",
-   "rule": 3,
-   "dist_m": 2173
+   "nearest_skeleton_m": 2839
   }
- ]
+ ],
+ "use_constraint": "DO NOT USE FOR NAVIGATION"
 }

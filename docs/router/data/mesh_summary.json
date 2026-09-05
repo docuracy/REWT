@@ -1,0 +1,17 @@
+{
+ "generation": "20260905T140654Z",
+ "what": "The open-water mesh: one resolution, cells whose centres are in open water.",
+ "supersedes": "grid2.py's multi-resolution banding, which was 98.8% res 7 already. Estuaries are the skeleton's work now.",
+ "h3_resolution": 7,
+ "centre_to_centre_km": 2.44,
+ "min_clearance_km": 1.0,
+ "clearance_basis": "PLAN.md 51: medial-axis clearance is a median 290 m at Plymouth and 338 m at Sheppey against 1,633 m on the open coast, so 1 km is where the skeleton stops being about a channel.",
+ "cells": 138704,
+ "links": 402992,
+ "components": 1,
+ "isolated": 0,
+ "links_refused_crossing_land": 4,
+ "gb_only_skeleton_note": "The skeleton is GB-only, so cutting at 1 km everywhere leaves the near-shore strip of Ireland, France and Norway served by neither. Those coasts are outside the basins this project routes for.",
+ "attribution": "Contains EMODnet Bathymetry data, CC BY 4.0. Contains OS data (c) Crown copyright and database right, OGL v3.",
+ "use_constraint": "DO NOT USE FOR NAVIGATION"
+}

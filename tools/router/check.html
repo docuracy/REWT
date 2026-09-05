@@ -109,6 +109,21 @@ const LAYERS={
      if(await src('cste', F+'edges_r7_coast.geojson'))
        map.addLayer({id:'x-coast-e',type:'line',source:'cste',
          paint:{'line-width':0.6,'line-color':'#8b949e','line-opacity':.7}}); }},
+ mesh7:{label:'MESH — res 7, open water only', src:['mh', C+'mesh_cells.geojson'],
+   legend:[['open-water cell (>= 1 km from land)','#1f6feb'],['its links','#8b949e'],
+     ['terminus -> skeleton','#3fb950'],['skeleton -> mesh','#f0883e']],
+   note:'THE REBUILT MESH. One resolution (res 7, 2.44 km between centres) — the banding is gone, and it was 98.8% res 7 already. Every centre is in water AND at least 1 km from land, which is where PLAN.md 51 measured the skeleton stopping being about a channel. 138,704 cells, 402,992 links, ONE component, 0 isolated. Links are drawn only within 25 km of land: the open-sea interior is a uniform lattice and drawing all of it says nothing. Green joins a tidal terminus to the skeleton, orange joins a skeleton chain to a mesh cell.',
+   add:async()=>{ map.addLayer({id:'x-mesh7',type:'fill',source:'mh',
+       paint:{'fill-color':'#1f6feb','fill-opacity':.13,'fill-outline-color':'#388bfd'}});
+     if(await src('mhl', C+'mesh_links.geojson'))
+       map.addLayer({id:'x-mesh7-l',type:'line',source:'mhl',
+         paint:{'line-width':0.5,'line-color':'#8b949e','line-opacity':.55}});
+     if(await src('jn2', F+'joins.geojson'))
+       map.addLayer({id:'x-join2',type:'line',source:'jn2',
+         paint:{'line-width':1.8,'line-color':'#3fb950','line-opacity':.95}});
+     if(await src('sml', F+'skeleton_mesh_links.geojson'))
+       map.addLayer({id:'x-sml',type:'line',source:'sml',
+         paint:{'line-width':1.2,'line-color':'#f0883e','line-opacity':.8}}); }},
  skelgb:{label:'water skeleton — GB, 58 m', src:['skg', C+'water_skeleton_gb.geojson'],
    legend:[['centreline of navigable water','#7ee787']],
    note:'THE SAME MEDIAL AXIS AT 58 m, banks from OS high_water POLYGONISED into land — 5,229 rings, 230,034 km2, reproducing the implementer figures. Two bugs behind this layer: at 232 m a cell whose centre falls on land is land, which closes the Tamar; and os_land_polygons returned the coastline as LINES, so rasterising it drew a one-pixel line ACROSS every narrow channel and severed it. One Plymouth window went from 1 water component to 17. GB only, because OS is the source that exists.',

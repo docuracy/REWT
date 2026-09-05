@@ -2411,3 +2411,38 @@ other begins; the medial radius already says it, measured rather than declared.
 
 Not implemented: filtering the skeleton by clearance, and joining it to the mesh at the
 transition. Recorded first because it changes what the skeleton is for.
+
+## 52. The rebuild: one mesh, the skeleton for enclosed water, and where it stands
+
+Stephen's ruling: rebuild the mesh at a single resolution within the established visibility
+and reach, keeping cells whose centres are in open water, and rewrite the joins against the
+skeleton. `mesh.py` and `connect.py` supersede `grid2.py`, `join.py` and `trace.py`.
+
+**THE MESH IS CLEAN.** 138,704 cells at res 7, **one component, 0 isolated**, and only **4
+directed links refused for crossing land** — against 1,780 before, because a mesh that starts
+a kilometre offshore has almost nothing to cross. 558 cells dropped for a centre on land,
+4,735 inshore cells left to the skeleton, 647 dropped as unreachable.
+
+**Where open water starts is the skeleton's number**: PLAN.md 51 measured medial clearance at
+a median 290 m (Plymouth) and 338 m (Sheppey) against 1,633 m (Kimmeridge), so 1 km is the
+handover, applied as a distance field.
+
+**THE JOINS ARE NOT FINISHED, AND THE FIGURE IS CURRENTLY WORSE.**
+
+| | before (mesh joins + traced paths) | now (skeleton joins) |
+|---|---:|---:|
+| in-scope river nodes reaching the sea | **81.72%** | **76.46%** |
+| termini attached | 359 of 389 | 290 of 389 |
+
+Three bugs found and fixed on the way, each already recorded in this file before I made it
+again: **k too small** in the nearest-neighbour search, so the 24 nearest skeleton vertices
+were all on one chain and a single bad line failed the lot (third occurrence); **no
+chain-awareness**, so the search ground along one chain instead of trying the next; and the
+one that mattered — **157 of 188 stranded termini were INSIDE EMODnet land**, because a tidal
+terminus sits at the high water mark and EMODnet at 232 m calls that land, so every line from
+it started in land and was refused before going anywhere. The test now begins one pixel
+along, which is the honest question: does the route cross land BETWEEN the two points.
+
+**99 termini are still stranded and 76.46% is below where this started.** The remaining
+causes are not yet diagnosed. This is committed as a working state for Stephen to inspect,
+not as a result: the mesh is finished and the joins are half-built.
