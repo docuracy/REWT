@@ -275,7 +275,7 @@ def main(cfg: dict = CONFIG) -> None:
     feats = []
 
     def emit(path):
-        if len(path) < 3:
+        if len(path) < 2:   # a two-cell path is a real link (PLAN.md 50)
             return
         coords, dep = [], []
         for (y, x) in path:
