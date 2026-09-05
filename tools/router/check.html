@@ -109,6 +109,19 @@ const LAYERS={
      if(await src('cste', F+'edges_r7_coast.geojson'))
        map.addLayer({id:'x-coast-e',type:'line',source:'cste',
          paint:{'line-width':0.6,'line-color':'#8b949e','line-opacity':.7}}); }},
+ seabedfine:{label:'seabed channels — fine (232 m)', src:['sbf', C+'seabed_channels_fine.geojson'],
+   legend:[['drainage 20-250 km2','#3d6b7d'],['250-2000','#3fb0c9'],['over 2000 km2','#9ceaff']],
+   note:'THE SAME ANALYSIS AT 232 m, over a 30 km coastal band — which is where an estuary is more than two pixels wide and the network can actually enter it. Bounded landward by OS high water; within 8 km of land it includes water the 930 m visibility mask calls unseen, because an estuary can be LAND at 930 m. One polyline per channel, head to confluence, so a click selects a whole channel rather than one pixel of one. Offshore trunks are in the coarse layer, not this one.',
+   add:()=>map.addLayer({id:'x-seabedfine',type:'line',source:'sbf',
+     // THE RAMP MUST START AT THE THRESHOLD, NOT ABOVE IT. This began at 20 km2 while
+     // the inshore threshold is 3, so every estuary channel fell off the bottom of the
+     // ramp and drew at the minimum 0.5 px. The Thames looked empty and was not: 8.7%
+     // of its cells are above threshold. The layer was right and the paint was wrong.
+     paint:{'line-width':['interpolate',['linear'],['get','km2'],
+                          3,1.1, 20,1.5, 250,2.2, 2000,3.4, 20000,5],
+            'line-color':['interpolate',['linear'],['get','km2'],
+                          3,'#7fd4ea', 20,'#4fc3e8', 250,'#3fb0c9', 2000,'#dff6ff'],
+            'line-opacity':.95}})},
  seabed:{label:'seabed channels', src:['sbd', F+'seabed_channels.geojson'],
    legend:[['drainage 250-1000 km2','#4b7a8c'],['1000-5000','#3fb0c9'],
      ['over 5000 km2','#7ee0ff']],

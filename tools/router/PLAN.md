@@ -2083,6 +2083,37 @@ go.
 At 930 m over 699,458 px of sighted sea, the network at a 250 km² threshold is 24,056
 segments. The threshold is a display choice and the distribution is published beside it.
 
+**FINE MODE, for the estuaries.** At 930 m an estuary is two or three pixels wide and the
+network cannot enter it, so `--fine` re-runs the whole analysis at the mask's own **232 m**
+over a **30 km coastal band** — where the resolution buys something and where the offshore
+trunks are already had from the coarse run. Within 8 km of land it admits water the 930 m
+visibility mask calls unseen, because an estuary can be LAND at 930 m.
+
+Three things that mattered more than the resolution change:
+
+**Accumulation is smallest exactly where the detail is wanted, and that is structural.** This
+network's headwaters are AT THE COAST, so an estuary has almost nothing draining into it and
+a single threshold empties the estuaries first. The inshore threshold is therefore lower —
+3 km² within 10 km of land against 20 km² outside — stated as the display choice it is.
+
+**One polyline per channel, not one segment per cell.** Head to confluence, so every
+coordinate is stored once: **348,256 features and 55 MB became 13,814 channels and 5.3 MB**
+over a larger network.
+
+**And the layer looked empty when it was not.** The width ramp started at 20 km² while the
+inshore threshold was 3, so every estuary channel fell off the bottom of it and drew at the
+minimum 0.5 px. The Thames read as blank; **8.7% of its cells are above threshold.** The
+data was right and the paint was wrong — and I nearly reported a method failure on the
+strength of a screenshot.
+
+**WHERE IT IS GOOD AND WHERE IT IS NOT.** In relief it is excellent: the Channel palaeovalley
+is unmistakable. On a flat estuary floor it fragments into short parallel threads rather than
+one convergent thalweg, because after an epsilon fill D8 on a flat routes in the order the
+flood arrived rather than down a channel that the bathymetry does not resolve. The Thames,
+the Wash and the Bristol Channel all show this: median drainage 0.11-0.16 km², 99th
+percentile 83-276 km², **8.5-8.7% of cells above threshold in each** — a thin, broken network
+rather than a false one.
+
 **WHAT IT IS NOT.** No draught threshold, no weights, nothing joined to the river network,
 and no coverage comparison against the hex mesh. **And the bound it inherits is visible in
 the wide view**: in the southern North Sea the network hugs the coast, because the
