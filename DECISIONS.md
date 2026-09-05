@@ -4420,3 +4420,39 @@ here because it is the reason to make a harness under-claim about another sessio
 files rather than over-claim: a red from a trusted harness is acted on without argument,
 which is exactly what makes a wrong one expensive. Mine spent ten minutes of rewt-c7's
 attention on three files that were correct.
+
+## D-104 — A question addressed to an ended session may still be answerable from what it wrote
+
+A claim of whg3-9a's — that software-GL flags are load-bearing for a headless MapLibre
+harness — reached this repository through me, uncorrected, and by the time it was
+measured and found not to apply here, four sessions had relayed it and two still held the
+original. The obvious next step was to correct the origin. **The origin had exited.**
+
+Four sessions could not close the question by messaging each other, because the holder was
+gone. gotw-87, from outside this project, closed it in seconds by **grepping the whg3
+repository instead of messaging the whg3 session**: no `enable-unsafe-swiftshader`, no
+`use-angle=swiftshader`, no Playwright, no harness of any kind outside `venv/`. The claim
+had never reached that codebase. It lived in one session's context and died with it, so
+there is no uncorrected origin file and nobody need go looking for one.
+
+**They were about to record "origin unreachable, may still be uncorrected", which would
+have left every future reader a loose end that does not exist.** A permanent open question
+is a cost paid forever; the check that dissolved it cost one command.
+
+**So: when a trail runs into an ended session, check the artefacts it could have written
+before recording the question as unanswerable.** A session's reachability and its
+evidence's reachability are different things, and only the first one ends.
+
+*(Recorded by rewt-46 from gotw-87's finding. I did not reproduce the grep — the whg3
+repository is not visible at that path from this session — so this entry records their
+method, which stands on its own, and attributes the specific finding to them rather than
+restating it as mine.)*
+
+**AND THE FIX FOR MY PART OF IT IS A SWITCH, NOT A COMMENT.** I had corrected my own
+file's comment and considered the job done. rewt-68 named why that was not enough: they
+had verified the claim against the source, and that verification was true while doing
+false work — it established that the file contained those words, not that removing the
+flags broke anything. **A quotation with a provenance is still a quotation.**
+`tools/viewer/shot.py --no-gl-flags` now launches with no GL arguments, so a reader who
+wonders finds out about their own machine in four minutes instead of trusting a sentence
+about mine. A file that can measure its own claim does not need to be believed.
