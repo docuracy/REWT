@@ -103,21 +103,25 @@ const LAYERS={
      if(await src('fshn', C+'foreshore_nodes.geojson'))
        map.addLayer({id:'x-fshn',type:'circle',source:'fshn',
          paint:{'circle-radius':2.2,'circle-color':'#ffd479','circle-opacity':.9}}); }},
- mesh7:{label:'MESH — res 7, open water only', src:['mh', C+'mesh_cells.geojson'],
-   legend:[['open-water cell (>= 1 km from land)','#1f6feb'],['its links','#8b949e'],
-     ['terminus -> skeleton','#3fb950'],['skeleton -> mesh','#f0883e']],
-   note:'THE REBUILT MESH. One resolution (res 7, 2.44 km between centres) — the banding is gone, and it was 98.8% res 7 already. Every centre is in water AND at least 1 km from land, which is where PLAN.md 51 measured the skeleton stopping being about a channel. 138,704 cells, 402,992 links, ONE component, 0 isolated. THE SEA NETWORK IS EVERY LINK BETWEEN TWO ADJACENT CELLS — H3 grid distance 1, never a hop to a near neighbour — minus those whose straight line crosses land on the exact Shapely test, minus everything outside the majority connected set. Verified: 0 of 402,992 links join non-adjacent cells; lengths 1,897-2,521 m; one component, 0 isolated. Green joins a tidal terminus to the skeleton, orange joins a skeleton chain to a mesh cell.',
-   add:async()=>{ map.addLayer({id:'x-mesh7',type:'fill',source:'mh',
-       paint:{'fill-color':'#1f6feb','fill-opacity':.13,'fill-outline-color':'#388bfd'}});
-     if(await src('mhl', C+'mesh_network.geojson'))
-       map.addLayer({id:'x-mesh7-l',type:'line',source:'mhl',
-         paint:{'line-width':0.5,'line-color':'#8b949e','line-opacity':.55}});
-     if(await src('jn2', F+'joins.geojson'))
-       map.addLayer({id:'x-join2',type:'line',source:'jn2',
-         paint:{'line-width':1.8,'line-color':'#3fb950','line-opacity':.95}});
+ meshcells:{label:'mesh cells (res 7)', src:['mh', C+'mesh_cells.geojson'],
+   legend:[['open-water cell (>= 1 km from land)','#1f6feb']],
+   note:'THE REBUILT MESH, CELLS ONLY. One resolution — res 7, 2.44 km between centres — the banding is gone and it was 98.8% res 7 already. Every centre is in water AND at least 1 km from land, which is where PLAN.md 51 measured the medial axis ceasing to be about a channel. 138,704 cells. Verified: 0 centres on land, minimum clearance exactly 1.000 km.',
+   add:()=>map.addLayer({id:'x-meshcells',type:'fill',source:'mh',
+     paint:{'fill-color':'#1f6feb','fill-opacity':.13,'fill-outline-color':'#388bfd'}})},
+ meshnet:{label:'SEA NETWORK — adjacent-cell links', src:['mhl', C+'mesh_network.geojson'],
+   legend:[['link between adjoining cell centres','#7ee7ff']],
+   note:'EVERY LINK JOINS TWO ADJOINING CELL CENTRES — H3 grid distance 1, never a hop to a near neighbour, which the old banded grid could produce by walking to an ancestor or a descendant. Links whose straight line crosses land are refused on the exact Shapely test over both coastlines (4 directed refusals, against 1,780 for the old grid, because a mesh starting a kilometre out has almost nothing to cross), and everything outside the majority connected set is dropped. 402,992 links, lengths 1,897-2,521 m, ONE component, 0 isolated. Verified: 0 links join non-adjacent cells.',
+   add:()=>map.addLayer({id:'x-meshnet',type:'line',source:'mhl',
+     paint:{'line-width':['interpolate',['linear'],['zoom'],5,0.5, 8,1.1, 11,1.8, 14,2.6],
+            'line-color':'#7ee7ff','line-opacity':.85}})},
+ meshjoins:{label:'joins — terminus to skeleton to mesh', src:['jn2', F+'joins.geojson'],
+   legend:[['tidal terminus -> skeleton','#3fb950'],['skeleton -> mesh cell','#f0883e']],
+   note:'The two joins that make one network out of three. A tidal terminus attaches to the nearest medial-axis vertex; a skeleton chain attaches to the nearest open-water cell centre. Both are refused if the straight line crosses land, with the first 250 m ignored because a terminus sits at the high water mark and EMODnet at 232 m calls that land. INCOMPLETE: 290 of 389 termini joined, 99 stranded, and 76.46% of in-scope river nodes reach the sea against 81.72% under the old mesh-and-traces design.',
+   add:async()=>{ map.addLayer({id:'x-mjoin',type:'line',source:'jn2',
+       paint:{'line-width':2,'line-color':'#3fb950','line-opacity':.95}});
      if(await src('sml', F+'skeleton_mesh_links.geojson'))
-       map.addLayer({id:'x-sml',type:'line',source:'sml',
-         paint:{'line-width':1.2,'line-color':'#f0883e','line-opacity':.8}}); }},
+       map.addLayer({id:'x-msml',type:'line',source:'sml',
+         paint:{'line-width':1.4,'line-color':'#f0883e','line-opacity':.85}}); }},
  skelgb:{label:'water skeleton — GB, 58 m', src:['skg', C+'water_skeleton_gb.geojson'],
    legend:[['centreline of navigable water','#7ee787']],
    note:'THE SAME MEDIAL AXIS AT 58 m, banks from OS high_water POLYGONISED into land — 5,229 rings, 230,034 km2, reproducing the implementer figures. Two bugs behind this layer: at 232 m a cell whose centre falls on land is land, which closes the Tamar; and os_land_polygons returned the coastline as LINES, so rasterising it drew a one-pixel line ACROSS every narrow channel and severed it. One Plymouth window went from 1 water component to 17. GB only, because OS is the source that exists.',

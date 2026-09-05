@@ -2504,3 +2504,21 @@ the question needs, which is only which side of the coast a midpoint falls on.
 
 The first foreshore export was also 51.5 MB, because I simplified at 5 m for a layer nobody
 routes on. At 30 m it is 22.4 MB.
+
+## 55. One toggle was doing four jobs
+
+Stephen: the mesh links are barely visible, and the mesh would be better as a separate
+switchable layer. Both right, and the second explains the first — a single `mesh7` toggle
+was drawing the cells, the network, the terminus joins and the skeleton-to-mesh links at
+once, so the network had to be faint enough not to fight the fill it was drawn over.
+
+Three toggles now, each one thing:
+
+    mesh cells (res 7)                     the cells, fill only
+    SEA NETWORK — adjacent-cell links      the links, zoom-scaled 0.5 to 2.6 px
+    joins — terminus to skeleton to mesh   the two joins, green and orange
+
+The network is zoom-scaled rather than fixed: at 0.5 px it was invisible at any zoom, and a
+width that reads at zoom 14 turns the open sea into a solid sheet at zoom 5. This is the
+same lesson as the seabed layer whose ramp started above its own threshold — **a paint value
+chosen for one view is a wrong value for every other one.**
