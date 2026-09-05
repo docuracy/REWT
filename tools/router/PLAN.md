@@ -2648,3 +2648,49 @@ maximum 1 m, in every size band.
 `empties_at_m` — so the ordering reads off the geometry rather than off a marker beside it.
 The creeks colour from amber to red by bed depth, and purple where the sill traps water and
 the network never empties.
+
+## 60. Seeds, line of sight, and a sea_entry column that does not hold
+
+Stephen: the foreshore-network metadata does not help decide which nodes join the sea; the
+`seed_node` concept already answered it and nothing better has been found. The drain layer
+is off /check.
+
+**FIRST, THE FAILURE MODE HE FOUND, AND IT IS WORSE THAN THE EXAMPLE.**
+`os:node/57C6FD81…` is `terminus = inland`, not a seed, and its only link carries
+`reaches_sea = True` with `sea_entry_node` pointing at **the node itself** — an inland head
+declared a sea entry. Across the layer:
+
+    distinct sea_entry_node values     12,105
+      of which is_seed                  2,204
+      of which NOT is_seed              9,901
+      of which terminus = inland          576     an inland head as a sea entry
+    links whose sea entry is a non-seed  177,262 of 179,942
+
+**This is `rewt/`'s to fix, not mine** — it is the implementer's stage and their column. What
+is mine is not to build on it: everything below uses `is_seed`.
+
+**Also worth recording, from Stephen:** a node marked `terminus` can carry three links
+(`os:node/639D7487…` does). His definition — a true terminus has exactly one link — is the
+useful one, and `is_seed` already encodes it.
+
+**THE QUESTION: can a seed see water?** For each of 2,246 seeds, the first target reachable
+by a straight line that does not cross land, in his order of preference:
+
+| target | seeds | share |
+|---|---:|---:|
+| sea network node | 959 | 42.7% |
+| skeleton vertex | 882 | 39.3% |
+| skeleton edge | **0** | 0.0% |
+| nothing | 405 | 18.0% |
+
+**82.0% reach something; 84.6% of those in scope (401 of 474).**
+
+**The third tier is worth nothing and that is a finding, not a disappointment.** Skeleton
+vertices are 58 m apart, so a nearest-point-on-edge is never more than 29 m closer than the
+nearest vertex — the vertex test already catches everything the edge test could.
+
+**AND THE FAILURES ARE NOT FAR AWAY.** Of 405, exactly **one** is beyond the 8 km cap. The
+other **404 are a median 700 m from a skeleton vertex** and are refused because the straight
+line crosses land — a bend, a spit, the inside of a meander. **They do not need a longer
+reach, they need a path instead of a sight-line**, which is the object the skeleton already
+is. Following the water for those last few hundred metres is the obvious next move.
