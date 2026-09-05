@@ -1947,3 +1947,39 @@ the second half, which nobody had written down: **correcting your own copy is no
 as chasing the correction to the places it was copied to.** rewt-46 corrected their file and
 considered it done; the wrong version then travelled through me to a session on another
 project. I have chased mine to gotw-87 rather than fix my file and consider it done.
+
+## 42. A correction below its claim gets read past
+
+gotw-87 closed the GL trail and found the thing worth keeping in it. **rewt-68 read the
+CORRECTED file and relayed the superseded claim anyway** — not from a stale copy, but
+because the correction sat several paragraphs below the sentence it corrected. They believed
+they had checked, and in a sense they had.
+
+So I audited my own files for that shape: a claim stated near the top, corrected further
+down, where a reader who stops early gets the wrong version. Two flagged, and one was worse
+than the pattern being looked for.
+
+**`lights.py` opened with "STEPHEN'S RULING, 4 September 2026: use it" — and the pipeline
+has had the lights switched off all day.** `sightline2.py` sets `use_seamarks: False`,
+after Stephen's later ruling that the sightline should be daytime only: *"they help with
+night-time navigation but I cannot imagine that they are much use in day-time."* **The
+reversal was not buried in that file. It was absent from it entirely.** The module asserted
+the opposite of its own behaviour to anyone who read the first paragraph, for a day, in a
+repository that is public.
+
+The first sentence now carries the current state, both rulings are recorded in order, and
+the caveat the first ruling accepted is kept below where it belongs — it is the reason the
+dating work package exists.
+
+`grid2.py` was a false positive: its "correction" is explanatory prose about why state
+banding replaced distance banding, not a claim being withdrawn.
+
+**The rule this gives, which is cheaper than any audit: put the current state in the first
+sentence, and let the history follow it.** A document that opens with what was true and
+corrects itself later is not a corrected document — it is a document that is wrong to
+everyone who reads the top of it, which is most people.
+
+**And the head of the GL trail is unreachable.** `whg3-9a` is not in my peer list or
+gotw-87's, so nobody in today's exchange can grep the file the recipe came from, or say
+whether it was ever measured there or whether "load-bearing" was added downstream. That is
+recorded as an unverified head of trail rather than closed.

@@ -1,12 +1,33 @@
 """Seamarks as sightline sources: the NGA List of Lights, filtered to the extent.
 
+**NOT IN USE. `sightline2.py` sets `use_seamarks: False` and the sightline is cast from
+land alone.** This module is kept, fetched and parsed, because the decision to disable it
+is a judgement that could be revisited and the work of getting the data should not have to
+be done twice.
+
     python3 tools/router/lights.py
 
 Run from the repository root; paths are relative (AGENTS.md).
 
-STEPHEN'S RULING, 4 September 2026: use it, and queue the dating as a separate work
-package. What follows is the caveat that ruling knowingly accepts, written here so that
-nobody downstream has to reconstruct it.
+TWO RULINGS, IN ORDER, BECAUSE THE SECOND REVERSED THE FIRST.
+
+*4 September 2026, first:* use it, and queue the dating as a separate work package.
+
+*4 September 2026, later:* limit the sightline to DAYTIME. Stephen: "they help with
+night-time navigation but I cannot imagine that they are much use in day-time. We should
+limit to day-time, I think, when the land itself can be seen." So the lights are out, and
+what a sightline asserts is now narrower and better defined: land visible by day.
+
+THE HEADLINE STATES THE SECOND RULING BECAUSE A CORRECTION BELOW A CLAIM GETS READ PAST.
+This docstring opened with "STEPHEN'S RULING: use it" for a day while the pipeline had the
+lights switched off, and recorded the reversal nowhere at all — so the module asserted the
+opposite of its own behaviour to anyone who read the first paragraph. gotw-87 found the
+same shape elsewhere today: a session read the CORRECTED file and relayed the superseded
+claim anyway, because the correction sat several paragraphs below it. The fix is not a
+longer note further down; it is that the first sentence carries the current state.
+
+What follows is the caveat the first ruling knowingly accepted, kept because it is the
+reason the dating package exists and would have to be rebuilt from scratch otherwise.
 
 THE DATA HAS NO TEMPORAL INFORMATION. Its only date-like field is `noticeYear`, which is
 when the entry was last AMENDED — 2015 for Bishop Rock, which has stood since 1858. So
