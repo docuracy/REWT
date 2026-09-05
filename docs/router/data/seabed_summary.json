@@ -1,0 +1,12 @@
+{
+ "generation": "20260905T104649Z",
+ "what": "An INVERTED sub-sea stream network: D8 drainage run over the seabed. Flow goes to the deepest place, so these are the submarine valleys, and the network converges AWAY from the coast rather than toward it.",
+ "bounds": "Landward, the OS high_water polygons over GB. Seaward, the land-visibility cells of the sightline stage. Nothing outside both.",
+ "min_drainage_km2": 250.0,
+ "segments": 24056,
+ "resolution_m": 930.0,
+ "not_a_router": "This is a PICTURE, not a routing surface. No draught threshold, no weights, no connection to the river network, and no coverage comparison against the hex mesh. It exists so the shape can be judged before anything is built on it.",
+ "pits_note": "The seabed is full of closed hollows; without filling them flow stops in each one. Filling drains to the domain's own boundary \u2014 coast and seaward limit both \u2014 and the flow finds the seaward outlet by itself because the seabed deepens outward.",
+ "attribution": "Contains EMODnet Bathymetry data. EMODnet Bathymetry Consortium (2024): EMODnet Digital Bathymetry (DTM 2024), licensed CC BY 4.0. Contains OS data (c) Crown copyright and database right, OGL v3.",
+ "use_constraint": "DO NOT USE FOR NAVIGATION"
+}

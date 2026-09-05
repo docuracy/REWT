@@ -2047,3 +2047,45 @@ harness has a WebGL surface at all, and that is the rule rather than either defa
 Worth recording because it is the shape a copied convention usually takes: the same finding
 reaching two files that need opposite settings, and the loser being whichever one copies the
 other's default instead of its reasoning.
+
+## 44. An inverted sub-sea stream network — exploratory, Stephen's idea
+
+Stephen asked what a sea network would look like if it were built as a **drainage network on
+the seabed** rather than a hex tiling: treat the bathymetry as terrain, run the analysis a
+hydrologist runs on land, bound it landward by the OS high water line and seaward by the
+land-visibility cells. `tools/router/seabed.py` does that. **It is a picture, not a router.**
+
+"Inverted" is exact: a land stream network converges toward the sea, and this one converges
+**away from the coast**, its headwaters at the shore.
+
+**IT RECOVERS THE CHANNEL PALAEOVALLEY FROM BATHYMETRY ALONE.** In the western Channel the
+result is an unmistakable dendritic system draining into a single trunk running west along
+the Channel axis, with tributaries from Devon, Cornwall, Brittany and around the Channel
+Islands. That is the Northern Palaeovalley — the river that drained the Rhine, Thames, Seine
+and Somme at glacial lowstands. Nothing in the method knows any of that; it falls out of D8
+flow accumulation on EMODnet depths.
+
+**THE ONE TECHNICAL THING THAT MADE IT WORK.** Plain pit-filling turns every hollow into a
+FLAT, and D8 cannot leave a flat. The first run left **99,989 px — 14% of the domain — with
+nowhere lower to go, and a maximum drainage of 1,819 km²**: flow stalled in each filled
+hollow and never reached deep water. Priority-flood **with an epsilon**, so the filled
+surface descends strictly toward the outlet, fixed it:
+
+| | dead ends | max drainage |
+|---|---:|---:|
+| plain fill | 99,989 | 1,819 km² |
+| fill + 1 mm epsilon | **2,313** | **37,141 km²** |
+
+Outlets are the domain's own boundary — coast and seaward limit both — and **the flow finds
+the seaward one by itself** because the seabed deepens outward. It was not told which way to
+go.
+
+At 930 m over 699,458 px of sighted sea, the network at a 250 km² threshold is 24,056
+segments. The threshold is a display choice and the distribution is published beside it.
+
+**WHAT IT IS NOT.** No draught threshold, no weights, nothing joined to the river network,
+and no coverage comparison against the hex mesh. **And the bound it inherits is visible in
+the wide view**: in the southern North Sea the network hugs the coast, because the
+land-visibility zone there IS a coastal band — so this method inherits the sightline's shape
+exactly where the sea is widest and shallowest. Whether that is a feature or the thing that
+disqualifies it is Stephen's call, and it is why this was built to be looked at first.
