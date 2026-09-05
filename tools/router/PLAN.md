@@ -2253,3 +2253,44 @@ that a routing surface can carry.
 **What survives from it:** the drainage layer's recovery of the Channel palaeovalley, which
 is real and worth keeping as evidence about the seabed; and the confirmation that estuary
 detail needs a geometric method rather than a hydrological one.
+
+## 48. The medial axis of navigable water — the reliable method
+
+Stephen's brief after filing thalwegs: the mesh is for open water, and the first step is a
+**reliable** method for drawing routes out from the estuaries to meet it. `skeleton.py`
+skeletonises the non-land below high water.
+
+**WHY IT IS RELIABLE WHERE THALWEGS WERE NOT — and all three are properties, not hopes.**
+
+*It cannot leave the water*, because it is a **subset of the water mask** rather than a line
+fitted through it. Measured against both coastlines over 19,648 chains: **zero overlap with
+OS high_water land by any length at all**, and every EMODnet contact is **under one pixel** —
+a cell-centre line grazing a corner as it runs alongside a bank. The thalweg method put 306
+detected chains and 77 bridges across OS land.
+
+*It is connected wherever the water is*, because thinning preserves topology. **32 components
+for the whole coastal band**, against 190 for the joined thalweg network at a 15 km bridge
+cap — and those 32 are separate landmasses, not gaps.
+
+*It runs to the head of an estuary*, because an estuary is a long thin shape and that is what
+a medial axis describes well. In the Thames it is a continuous centreline past Gravesend,
+with branches up the Medway, the Swale, the Crouch and the Blackwater.
+
+**IT ASKS NOTHING OF THE BATHYMETRY.** The subject is a SHAPE. That is the whole reason it is
+reliable: the thalweg method depended on the seabed having a cross-section, and failed
+wherever it did not. Depth is carried as an attribute — `depth_min_m`, `depth_median_m` — so
+a draught test can be applied later without the centreline itself depending on it.
+
+**THE BANKS ARE OS high_water, NOT THE SIGN OF THE BATHYMETRY.** EMODnet at 232 m does not
+resolve the Uists or the Knapdale peninsulas, and using it as the bank is precisely what put
+thalwegs on dry land. **56,584 px that EMODnet calls sea and OS calls land are removed**
+before skeletonising. GB gets the better source; elsewhere EMODnet, the same asymmetry as the
+link test and stated for the same reason.
+
+At 232 m over a 30 km coastal band: water 8,519,857 px, skeleton 317,811 px (3.73% of the
+water), 278,295 after pruning twigs shorter than 12 cells, **19,648 chains**, median 1.63 km,
+longest 190.7 km.
+
+**WHAT IS NOT DONE.** It is not joined to the hex mesh, not pruned to a route, and has no
+draught test. Those are the next questions and they are now questions about a reliable
+object rather than about whether the object is reliable.

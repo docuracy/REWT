@@ -109,6 +109,13 @@ const LAYERS={
      if(await src('cste', F+'edges_r7_coast.geojson'))
        map.addLayer({id:'x-coast-e',type:'line',source:'cste',
          paint:{'line-width':0.6,'line-color':'#8b949e','line-opacity':.7}}); }},
+ skeleton:{label:'water skeleton (medial axis)', src:['skl', C+'water_skeleton.geojson'],
+   legend:[['centreline of navigable water','#7ee787'],['deeper than 10 m','#3fb950']],
+   note:'THE MEDIAL AXIS OF THE WATER BELOW HIGH WATER — the points equidistant from two or more banks, which is the middle of the channel by construction. It asks nothing of the bathymetry: the subject is a SHAPE. Banks are OS high_water over GB and EMODnet elsewhere, because EMODnet at 232 m does not resolve the Uists and using it as the bank is what put thalwegs on dry land. Measured: of 19,648 chains, ZERO overlap OS land by any length, and every EMODnet contact is under one pixel — a centre line grazing a corner alongside the bank. 32 components for the whole coastal band, against 190 for the joined thalwegs.',
+   add:()=>map.addLayer({id:'x-skeleton',type:'line',source:'skl',
+     paint:{'line-width':['interpolate',['linear'],['get','km'],0.5,0.8, 5,1.5, 50,2.6],
+            'line-color':['case',['>',['get','depth_median_m'],10],'#3fb950','#7ee787'],
+            'line-opacity':.95}})},
  thalnet:{label:'thalweg network — joined', src:['tnw', C+'thalweg_network.geojson'],
    legend:[['thalweg — DETECTED','#ffd479'],['bridge — INFERRED','#f85149']],
    note:'THE THALWEG CHAINS JOINED INTO A NETWORK. Each chain is a node, each short gap a candidate edge, and a minimum spanning forest picks the cheapest set that connects what it can. A bridge crossing land is refused on the 232 m mask; weight is length penalised by shallowness, so a short bridge over a bank loses to a longer one that stays in the channel. RED IS INFERENCE — a bridge is not a detected channel, it is a claim that two deep threads are usable together, and it is drawn differently so it cannot be mistaken for one. Largest component holds 68% of the chains; the rest is geography, not failure — the second largest is Norway.',
