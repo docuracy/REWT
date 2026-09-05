@@ -2166,3 +2166,53 @@ nothing joined to the river network or the hex grid. Both layers write to the gi
 check directory until the approach is judged.
 
 Installed `scikit-image` 0.25.2 into `.venv` for `skeletonize`.
+
+## 46. Joining the thalwegs, and where connectivity actually stops
+
+Section 45 ended with the thalweg method's weakness: 31,752 chains and no connectivity at
+all, where drainage gives a tree for free. `tools/router/thalweg_join.py` bridges them —
+each chain a node, each short gap a candidate edge, a minimum spanning forest picking the
+cheapest set that connects what it can. A bridge crossing land is refused on the 232 m mask,
+and weight is length **penalised by shallowness**, so a short bridge over a bank loses to a
+longer one that stays in the channel.
+
+**A BRIDGE IS FLAGGED AS INFERENCE AND DRAWN DIFFERENTLY.** `kind` is `thalweg` where the
+deepest line was detected and `bridge` where a connection was inferred; the layer draws
+bridges dashed and red. That is the same distinction the river joins draw between rule 1 and
+rule 3, and it must survive into the picture or the network claims more than it found.
+
+**TWO WRONG VERSIONS, and the second was worse than the first.**
+
+*Ends only.* Offering bridges only between chain ENDS meant two channels running 300 m apart
+could be joined only by a hop from one end to the other: **median bridge 4.89 km against a
+6 km cap**, 525 components, largest 42%. The tree was reaching across open water because the
+short connection was not on the menu.
+
+*Any vertex, but too few neighbours.* Letting a bridge land anywhere fixed the median to
+0.93 km and made connectivity **worse** — 2,717 components, largest 15%. At 232 m spacing a
+vertex has some 35 of its own chain within 4 km, so asking for the 10 nearest finds no other
+chain at all. **The candidate list was almost entirely self-links.** With 64 neighbours it
+recovers.
+
+**THE CONNECTIVITY CURVE, which is the real answer.** Sweeping the bridge cap over already
+validated candidates:
+
+| cap | bridges | components | largest |
+|---:|---:|---:|---:|
+| 2 km | 46,360 | 4,675 | 11.2% |
+| 4 km | 110,730 | 1,169 | 20.6% |
+| 6 km | 141,563 | 565 | 42.1% |
+| 10 km | 152,411 | 246 | 46.8% |
+| 15 km | 153,794 | 190 | **67.9%** |
+
+**It never converges, and the residue is geography rather than failure.** At 15 km the
+second-largest component holds 81,391 vertices — a quarter of the network — and it is
+centred on **58.44 N 8.02 E, southern Norway**. After it: west Ireland, the Scillies, Faroe,
+the far north of Scotland. A thalweg exists only where the seabed has a cross-section;
+between separate landmasses there is none to find, and no bridge length joins them because
+there is nothing on the other side to join to.
+
+Median bridge is 0.96 km, 90th 2.52 km. **So the network is short-hopped where it works and
+gives up where the seabed goes featureless** — which is the honest shape of the method and
+the thing to weigh against the hex mesh, whose connectivity is guaranteed by construction
+and whose fidelity to a channel is nil.

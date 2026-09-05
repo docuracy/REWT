@@ -109,6 +109,16 @@ const LAYERS={
      if(await src('cste', F+'edges_r7_coast.geojson'))
        map.addLayer({id:'x-coast-e',type:'line',source:'cste',
          paint:{'line-width':0.6,'line-color':'#8b949e','line-opacity':.7}}); }},
+ thalnet:{label:'thalweg network — joined', src:['tnw', C+'thalweg_network.geojson'],
+   legend:[['thalweg — DETECTED','#ffd479'],['bridge — INFERRED','#f85149']],
+   note:'THE THALWEG CHAINS JOINED INTO A NETWORK. Each chain is a node, each short gap a candidate edge, and a minimum spanning forest picks the cheapest set that connects what it can. A bridge crossing land is refused on the 232 m mask; weight is length penalised by shallowness, so a short bridge over a bank loses to a longer one that stays in the channel. RED IS INFERENCE — a bridge is not a detected channel, it is a claim that two deep threads are usable together, and it is drawn differently so it cannot be mistaken for one. Largest component holds 68% of the chains; the rest is geography, not failure — the second largest is Norway.',
+   add:()=>{ map.addLayer({id:'x-thalnet',type:'line',source:'tnw',
+       filter:['==',['get','kind'],'thalweg'],
+       paint:{'line-width':1.3,'line-color':'#ffd479','line-opacity':.95}});
+     map.addLayer({id:'x-thalnet-b',type:'line',source:'tnw',
+       filter:['==',['get','kind'],'bridge'],
+       paint:{'line-width':['interpolate',['linear'],['get','km'],0.2,0.9, 2,1.6, 8,2.6],
+              'line-color':'#f85149','line-opacity':.85,'line-dasharray':[2,1.5]}}); }},
  thalweg:{label:'estuary thalwegs (232 m)', src:['thl', C+'thalwegs.geojson'],
    legend:[['thalweg — locally deepest line','#ffd479'],['deeper than 20 m','#ff9d3d']],
    note:'THE SECOND METHOD, for the estuaries where drainage fragments. Not where water collects but WHERE THE GROOVE IS: a cell qualifies where it is the MINIMUM across its own cross-section and the seabed rises by at least 1.5 m on both sides, tested at four half-widths from 465 m to 3.7 km. That is what a thalweg is and what a pilot follows up an estuary. No connectivity guarantee, no draught test, nothing joined to anything — judge it against the drainage layer rather than on its own.',
