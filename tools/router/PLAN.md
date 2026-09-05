@@ -2589,3 +2589,31 @@ stranded termini inside EMODnet land two days ago. Read at 232 m with no mask, a
 a bed. **The failure was silent: 9 networks with plausible depths looked like an answer, not
 like a 99.6% miss.** The count was the only tell, and I nearly reported the six deepest of
 nine as though they were the six deepest of two thousand.
+
+## 58. I fixed the code, regenerated one layer, and left its sibling stale
+
+Stephen, at Stoke Ooze on the Medway: three green lines fail to join where they ought to.
+**He was on the `skeleton` layer — the whole-extent one — and it still carried the defect
+section 50 fixed.**
+
+    before   19,648 chains   shortest 3 cells   14,000 vector components, largest 0.3%
+    after    81,724 chains   shortest 2 cells        9 vector components, largest 98.6%
+
+At his point: 3 chains before, 6 after, with 3 shared endpoints where they now meet.
+
+**THE CODE WAS RIGHT AND THE ARTEFACT WAS NOT.** Section 50 found `emit()` discarding paths
+shorter than three cells, which cuts a skeleton apart because adjacent junctions are joined
+by exactly two. I fixed it, regenerated the **GB** layer, verified vector matched raster,
+and never re-ran the whole-extent one — whose file had been written by the old code an hour
+earlier and sat there looking finished.
+
+**This is the lesson from `claims-in-transit.md` committed against my own files: correcting
+the source is not the same as chasing the correction to everything built from it.** I wrote
+that note. Two days later there were two skeletons in this directory, one fixed and one not,
+and the only way to tell was to count components on each — which I did for one of them.
+
+**And I had the evidence in hand yesterday.** When Stephen asked whether the LOW-water
+skeleton was dropping short links, I grepped and reported "`96: len(path) < 2`,
+`278: len(path) < 3`" — I saw the second threshold, said it belonged to a layer that was not
+in question, fixed the line, and did not regenerate the file it governs. **Noticing a stale
+threshold and not acting on it is worse than not noticing.**
