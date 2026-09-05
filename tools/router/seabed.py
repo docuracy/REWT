@@ -35,7 +35,7 @@ from pyproj import Transformer
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from generation import generation                      # noqa: E402
-from landtest import os_land_polygons                  # noqa: E402
+from landtest import os_coastline                  # noqa: E402
 
 CONFIG = {
     "masks": "tools/router/cache/sightline_masks.npz",
@@ -136,7 +136,7 @@ def main(cfg: dict = CONFIG, fine: bool = False) -> None:
     X = tr[2] + (xs + 0.5) * tr[0]
     Y = tr[5] + (ys + 0.5) * tr[4]
     from shapely import STRtree, points
-    tree = STRtree(os_land_polygons(crs))
+    tree = STRtree(os_coastline(crs))
     inside = tree.query(points(np.column_stack([X, Y])), predicate="intersects")[0]
     if len(inside):
         dom[ys[inside], xs[inside]] = False

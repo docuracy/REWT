@@ -79,8 +79,17 @@ def _subdivide(polys, step: float):
     return out
 
 
-def os_land_polygons(crs: str, path: str = BOUNDARY_LINE):
-    """OS Boundary-Line high_water as land, GB only. OGL; see the note above.
+def os_coastline(crs: str, path: str = BOUNDARY_LINE):
+    """OS Boundary-Line high_water AS LINES, GB only. OGL; see the note above.
+
+    **THESE ARE LINESTRINGS, NOT FILLED LAND**, and the name used to say otherwise. For the
+    crossing test that is correct and even preferable — a link that enters land must cross
+    the coast, so intersecting the LINE catches it, and testing against 13,002 lines is
+    cheaper than against filled polygons. But the old name `os_coastline` invited
+    exactly one wrong use, and I made it: rasterising these to get a land MASK gives a
+    one-pixel coastline, so cutting it out of a water raster draws a line ACROSS every
+    narrow channel and severs it. One Plymouth window went from one water component to
+    seventeen. For an area, use `os_land_area` below.
 
     32,850 rows hold 13,002 distinct geometries — the same 2.53x duplication on
     Global_Link_ID recorded for this layer elsewhere in the project, so dedupe first or
@@ -89,6 +98,21 @@ def os_land_polygons(crs: str, path: str = BOUNDARY_LINE):
     import geopandas as gpd
     hw = gpd.read_file(path, layer="high_water").drop_duplicates("Global_Link_ID")
     return _subdivide(list(hw.to_crs(crs).geometry.values), TILE_OS_M)
+
+
+def os_land_area(crs: str, path: str = BOUNDARY_LINE):
+    """The land ITSELF: the high water lines polygonised into closed rings.
+
+    `rewt/stages/high_water.py` establishes that these lines close, and that polygonised
+    they give 5,229 rings enclosing 230,048 km2 with the largest being 218,304 km2 of
+    mainland Great Britain — "that polygon IS land above high water". Reproduced here
+    independently in EPSG:32630: **5,229 rings, 230,034 km2, largest 218,297** — the
+    0.006% difference is the projection the area is measured in.
+    """
+    import geopandas as gpd
+    hw = gpd.read_file(path, layer="high_water").drop_duplicates("Global_Link_ID")
+    merged = shapely.line_merge(shapely.union_all(hw.to_crs(crs).geometry.values))
+    return list(shapely.get_parts(shapely.polygonize([merged])))
 
 
 def land_polygons(masks_npz: str):
@@ -108,7 +132,7 @@ def land_crossing_test(masks_npz: str):
     """Return `crosses(a, b)` for (lat, lon) pairs. Off the mask counts as land."""
     pieces, crs = land_polygons(masks_npz)
     n_mask = len(pieces)
-    pieces = pieces + os_land_polygons(crs)
+    pieces = pieces + os_coastline(crs)
     tree = STRtree(pieces)
     print(f"  land test: {n_mask:,} mask pieces at 232 m + "
           f"{len(pieces)-n_mask:,} OS Boundary-Line pieces over GB")

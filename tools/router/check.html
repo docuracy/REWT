@@ -109,6 +109,12 @@ const LAYERS={
      if(await src('cste', F+'edges_r7_coast.geojson'))
        map.addLayer({id:'x-coast-e',type:'line',source:'cste',
          paint:{'line-width':0.6,'line-color':'#8b949e','line-opacity':.7}}); }},
+ skelgb:{label:'water skeleton — GB, 58 m', src:['skg', C+'water_skeleton_gb.geojson'],
+   legend:[['centreline of navigable water','#7ee787']],
+   note:'THE SAME MEDIAL AXIS AT 58 m, banks from OS high_water POLYGONISED into land — 5,229 rings, 230,034 km2, reproducing the implementer figures. Two bugs behind this layer: at 232 m a cell whose centre falls on land is land, which closes the Tamar; and os_land_polygons returned the coastline as LINES, so rasterising it drew a one-pixel line ACROSS every narrow channel and severed it. One Plymouth window went from 1 water component to 17. GB only, because OS is the source that exists.',
+   add:()=>map.addLayer({id:'x-skelgb',type:'line',source:'skg',
+     paint:{'line-width':['interpolate',['linear'],['get','km'],0.2,0.9, 5,1.6, 50,2.8],
+            'line-color':'#7ee787','line-opacity':.95}})},
  skeleton:{label:'water skeleton (medial axis)', src:['skl', C+'water_skeleton.geojson'],
    legend:[['centreline of navigable water','#7ee787'],['deeper than 10 m','#3fb950']],
    note:'THE MEDIAL AXIS OF THE WATER BELOW HIGH WATER — the points equidistant from two or more banks, which is the middle of the channel by construction. It asks nothing of the bathymetry: the subject is a SHAPE. Banks are OS high_water over GB and EMODnet elsewhere, because EMODnet at 232 m does not resolve the Uists and using it as the bank is what put thalwegs on dry land. Measured: of 19,648 chains, ZERO overlap OS land by any length, and every EMODnet contact is under one pixel — a centre line grazing a corner alongside the bank. 32 components for the whole coastal band, against 190 for the joined thalwegs.',

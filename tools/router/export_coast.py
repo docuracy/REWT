@@ -34,7 +34,7 @@ from shapely import STRtree, points
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from generation import generation                      # noqa: E402
-from landtest import land_polygons, os_land_polygons   # noqa: E402
+from landtest import land_polygons, os_coastline   # noqa: E402
 
 # EVERY FIGURE IN THIS FILE'S PROPERTIES IS COMPUTED HERE. They used to be typed: "32
 # connected components", "17.0% are ABSENT", "710 entries with 2,360 river mouths", "all
@@ -96,7 +96,7 @@ def main(cfg: dict = CONFIG) -> None:
     stamp = json.loads(Path(cfg["summary"]).read_text()).get("generation") or generation()
 
     mask, crs = land_polygons(cfg["masks"])
-    tree = STRtree(mask + os_land_polygons(crs))
+    tree = STRtree(mask + os_coastline(crs))
     fwd = Transformer.from_crs(4326, crs, always_xy=True)
     X, Y = fwd.transform(lon, lat)
     pts = points(np.column_stack([X, Y]))

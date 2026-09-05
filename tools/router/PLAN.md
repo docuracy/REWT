@@ -2294,3 +2294,41 @@ longest 190.7 km.
 **WHAT IS NOT DONE.** It is not joined to the hex mesh, not pruned to a route, and has no
 draught test. Those are the next questions and they are now questions about a reliable
 object rather than about whether the object is reliable.
+
+## 49. Two bugs behind one question: "is this visualisation or joining?"
+
+Stephen, on the skeleton at Plymouth: multiple green lines not connected — a problem with
+the visualisation or with the joining? **Neither. Both the water mask and the source were
+wrong, and the second was worse.**
+
+**FIRST: `os_land_polygons` RETURNED THE COASTLINE AS LINES, NOT LAND.** 11,426
+MultiLineStrings and 3,184 LineStrings, total area **zero**. For the crossing test that is
+correct and even preferable — a link entering land must cross the coast, so intersecting the
+line catches it. But the NAME invited one wrong use and I made it: rasterising those lines
+as a land mask gives a one-pixel coastline, and cutting a one-pixel line out of a water
+raster **draws a line across every narrow channel and severs it.** The GB run reported
+"land 567,972 px (0.2%)" — Great Britain rendered as 0.2% of its own bounding box — and I
+did not look at that number until Stephen asked the question.
+
+It is `os_coastline` now, and `os_land_area` polygonises the rings: **5,229 rings,
+230,034 km², largest 218,297 km²**, reproducing `rewt/stages/high_water.py`'s 5,229 /
+230,048 / 218,304 to 0.006%, the difference being the projection the area is measured in.
+
+**SECOND: 232 m closes an estuary anyway.** A cell whose centre falls on land is land, and
+above the Tamar Narrows every centre does. One Plymouth window measured **1 water component
+without the OS cut and 17 with it**. The banks are vector, so the resolution was a choice
+being made by accident — the GB run is at **58 m**, where a 200 m channel is three cells
+wide.
+
+| | land px | water px | skeleton | components | chains |
+|---|---:|---:|---:|---:|---:|
+| coastline-as-lines, 58 m | 567,972 | 65,240,700 | 2,014,513 | 8 | 77,789 |
+| **land as area, 58 m** | **68,381,362 (26.5%)** | 32,439,166 | 621,151 | **9** | 21,907 |
+
+The first run's numbers looked *better* — more water, more skeleton, fewer components —
+because it was skeletonising the sea AND most of the land. **A wrong mask flatters every
+figure that measures it.**
+
+Plymouth is now a continuous centreline from above Devonport, through the Narrows, past
+Torpoint into the Sound and out to sea, with the Lynher and the Plym as branches. GB only:
+OS is the source that exists.
