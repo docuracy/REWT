@@ -2368,3 +2368,46 @@ attachment at one end only.
 **NEXT, and not yet done: restrict the skeleton to the GB coast that intersects in-scope
 basins.** Stephen: there is no need to skeletonise Scotland beyond that. The whole-GB run is
 79,043 chains and 20.3 MB; the in-scope subset will be a fraction of it.
+
+## 51. Why the skeleton stands off an open coast — the band, not the resolution
+
+Stephen, at Kimmeridge: the skeleton does not come close to the coves. Resolution, or would
+it never? **Neither exactly. It is the band, and the answer has a design consequence.**
+
+**A MEDIAL AXIS IS EQUIDISTANT FROM TWO BANKS. On an open coast there is no second bank** —
+so the axis sits halfway between the shore and the outer edge of the 15 km band, which is a
+boundary I chose rather than anything in the world. Measured on a Kimmeridge window:
+
+| band | prune | median distance to shore |
+|---|---:|---:|
+| 15 km | 40 (production) | **2,799 m** |
+| 15 km | 0 | 1,633 m |
+| 5 km | 0 | 986 m |
+| 2 km | 0 | **661 m** |
+
+Narrowing the band pulls the axis in; the resolution never enters it. **Pruning costs another
+1.2 km of the median**, because the branches that do reach inshore are short and 40 cells is
+2.3 km.
+
+**IT DOES REACH THE COVES.** A third of the Kimmeridge axis lies within 500 m of the shore —
+those are the branches into the inlets. They are simply not what dominates the picture, and
+the 40-cell prune removes the smallest of them.
+
+**THE AXIS CARRIES ITS OWN RADIUS, AND THAT IS THE USEFUL FINDING.** Clearance to the nearest
+land, at each skeleton point:
+
+| | median | 25th | 75th |
+|---|---:|---:|---:|
+| Kimmeridge (open coast) | **1,633 m** | 290 | 5,141 |
+| Plymouth (enclosed) | **290 m** | 116 | 933 |
+| Sheppey (enclosed) | **338 m** | 116 | 862 |
+
+A 1,000 m clearance keeps 76% of Plymouth and 77% of Sheppey against 44% of Kimmeridge.
+
+**So the skeleton knows, from its own geometry, whether it is in a channel or in open water**
+— and that is exactly the handover Stephen described: the skeleton for enclosed water, the
+mesh for the open sea. It does not need a separate rule to decide where one ends and the
+other begins; the medial radius already says it, measured rather than declared.
+
+Not implemented: filtering the skeleton by clearance, and joining it to the mesh at the
+transition. Recorded first because it changes what the skeleton is for.
