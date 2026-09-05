@@ -1994,5 +1994,48 @@ written before filing the question as permanently open.** Both of us were one ed
 recording a loose end that does not exist, which is its own kind of false claim: a reader
 inheriting a doubt nobody needs to carry.
 
+**HOW TO FIND THEM, since "check the artefacts" only works if you can locate them.**
+`~/.claude/projects/` holds one entry per directory Claude Code has ever run in, so an ended
+session's working directory is recoverable from the filesystem without asking anybody.
+
+**But the entry name is a LOSSY encoding and must not be decoded naively.** Separators are
+flattened to hyphens, so `-home-stephen-PycharmProjects-London-Customs-Accounts` decodes to
+`/home/stephen/PycharmProjects/London/Customs/Accounts`, **which does not exist** — the real
+directory is `London_Customs_Accounts`, with underscores. Verified here rather than assumed.
+gotw-87 hit exactly this: their `cd` guard exited, the grep printed nothing, and **an absence
+produced by a wrong path reads identically to a clean repository.** They only caught it
+because empty output with no marker line looked wrong.
+
+So: **confirm the search root exists before believing an absence, and print the root beside
+the result.** This is D-082 again — a negative result with no positive control — arriving
+through a path bug rather than a query bug, which is the disguise it had not worn yet
+today.
+
 This paragraph is corrected IN PLACE rather than by a section below it, which is the rule
 the rest of this section is about, applied to the section itself within the hour.
+
+
+## 43. The same measurement, opposite defaults, and both are right
+
+gotw-87's grep found a third harness: `tools/pages/shot.py` in London_Customs_Accounts,
+which reached the same conclusion I did and chose **the opposite default**.
+
+| | default | switch |
+|---|---|---|
+| `tools/router/shot.py` (this repo) | flags **on** | `--no-gl-flags` to remove |
+| London_Customs_Accounts | flags **off** | `--gl` to restore |
+
+**Both follow from the measurement; the difference is what the harness renders.** Their
+docstring is explicit: *"Nothing checked here touches the MapLibre tab, so the flags are off"*
+— a harness with no WebGL surface has nothing to insure, and they add that the day a check
+does open that tab, the failure should be the thing that teaches the flag. That is a better
+argument than carrying flags for a case that does not exist.
+
+Mine renders six MapLibre layers on every run, so the insurance is against a real surface: a
+different chromium build or a machine with a GPU and no display could plausibly differ, and
+`--no-gl-flags` re-measures it in one command. **The polarity should follow whether the
+harness has a WebGL surface at all, and that is the rule rather than either default.**
+
+Worth recording because it is the shape a copied convention usually takes: the same finding
+reaching two files that need opposite settings, and the loser being whichever one copies the
+other's default instead of its reasoning.
