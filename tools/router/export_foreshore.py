@@ -21,7 +21,7 @@ import geopandas as gpd, numpy as np, shapely
 from shapely import STRtree
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from generation import generation           # noqa: E402
-from landtest import os_land_area           # noqa: E402
+from landtest import _subdivide, os_land_area   # noqa: E402
 
 OUT = Path("docs/router/check")
 OPM = "data/raw/os_open_map_local/extracted/Data/opmplc_gb.gpkg"
@@ -30,11 +30,36 @@ RIV = "data/raw/os_open_rivers/extracted/Data/oprvrs_gb.gpkg"
 
 def main() -> None:
     stamp = generation()
-    land = os_land_area("EPSG:27700")
-    tree = STRtree(land)
+    # SUBDIVIDE, as landtest.py does. Testing 193,040 midpoints against an unsubdivided
+    # mainland polygon of 218,000 km2 is the trap that made the exact land test take 133 s
+    # instead of 0.14 s: an STRtree is only selective if its members are small.
+    # RASTERISE, DO NOT SUBDIVIDE. Testing 193,040 midpoints against the mainland polygon
+    # is slow because the polygon is huge, and subdividing it into tiles is slow for the
+    # same reason: every tile must be intersected with it. A 100 m raster answers "is this
+    # point on land" in constant time and builds in seconds, and 100 m is far finer than
+    # the question needs — which side of the coast a midpoint falls on, not where the
+    # coast is to the metre.
+    import rasterio.features, rasterio.transform
+    land_poly = os_land_area("EPSG:27700")
+    b = shapely.total_bounds(land_poly)
+    PX = 100.0
+    W = int((b[2] - b[0]) / PX) + 2
+    H = int((b[3] - b[1]) / PX) + 2
+    ltr = rasterio.transform.from_origin(b[0], b[3], PX, PX)
+    LAND = rasterio.features.rasterize(((g_, 1) for g_ in land_poly), out_shape=(H, W),
+                                       transform=ltr, fill=0, dtype="uint8").astype(bool)
+    print(f"  land raster {W:,} x {H:,} at {PX:.0f} m, {100*LAND.mean():.1f}% land")
+
+    def on_land(pts):
+        x = np.array([q.x for q in pts]); y = np.array([q.y for q in pts])
+        c = ((x - b[0]) / PX).astype(int); r = ((b[3] - y) / PX).astype(int)
+        ok = (r >= 0) & (r < H) & (c >= 0) & (c < W)
+        out = np.zeros(len(pts), bool)
+        out[ok] = LAND[r[ok], c[ok]]
+        return out
 
     fs = gpd.read_file(OPM, layer="foreshore").to_crs(4326)
-    g = shapely.simplify(fs.geometry.values, 0.00005)     # ~5 m; this is context
+    g = shapely.simplify(fs.geometry.values, 0.0003)      # ~30 m; 5 m gave 51.5 MB
     fsf = [{"type": "Feature", "geometry": json.loads(shapely.to_geojson(x)),
             "properties": {}} for x in g if not x.is_empty]
     (OUT / "foreshore.geojson").write_text(json.dumps(
@@ -49,9 +74,7 @@ def main() -> None:
 
     lk = gpd.read_file(RIV, layer="watercourse_link")
     mid = shapely.centroid(lk.geometry.values)
-    hit = tree.query(mid, predicate="intersects")
-    landward = np.zeros(len(lk), bool)
-    landward[np.unique(hit[0])] = True
+    landward = on_land(mid)
     sea = lk[~landward].to_crs(4326)
     print(f"  {len(sea):,} of {len(lk):,} raw links lie seaward of high water")
     lf = [{"type": "Feature", "geometry": json.loads(shapely.to_geojson(x)),

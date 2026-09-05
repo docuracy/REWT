@@ -2477,3 +2477,30 @@ cross), and everything outside the majority connected set is dropped.
 
 The whole network is now drawn in /check rather than the 25 km subset — 402,992 links,
 49.6 MB, local only.
+
+## 54. The foreshore, and what the high water line took out
+
+Stephen asked for the OS foreshore and the links and nodes masked out by high water, on
+/check as context. `export_foreshore.py`:
+
+| layer | features |
+|---|---:|
+| OS Open Map Local `foreshore` | 35,677 polygons, 3,341 km² |
+| raw OS Open Rivers links seaward of high water | **7,440 of 193,040** |
+| hydro nodes on them | 9,066 |
+
+**None of it is routable and none of it is joined to anything.** It is context, so the
+intertidal can be seen against the mesh and the skeleton rather than inferred from their
+absence — the Medway and the Swale in particular show a dense seaward network that the
+published network simply does not contain.
+
+**AND IT COST TWO PERFORMANCE MISTAKES I HAD ALREADY MADE AND WRITTEN UP.** Testing 193,040
+midpoints against the unsubdivided land polygon ran for twenty minutes: **that is the same
+huge-polygon trap that made the exact land test take 133 s instead of 0.14 s.** Reaching for
+`_subdivide` was no better, because chopping a 218,000 km² polygon into 10 km tiles requires
+intersecting every tile with it. **A 100 m raster answers "is this point on land" in constant
+time and builds in seconds** — 6,503 × 12,151 cells, 29.1% land — and 100 m is far finer than
+the question needs, which is only which side of the coast a midpoint falls on.
+
+The first foreshore export was also 51.5 MB, because I simplified at 5 m for a layer nobody
+routes on. At 30 m it is 22.4 MB.

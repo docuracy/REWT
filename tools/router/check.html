@@ -91,6 +91,18 @@ const LAYERS={
        ['>=',['get','gov_h_m'],800],'#f85149',['>=',['get','gov_h_m'],400],'#f0883e',
        ['>=',['get','gov_h_m'],200],'#e3b341',['>=',['get','gov_h_m'],80],'#3fb950',
        '#58a6ff']}})},
+ foreshore:{label:'OS foreshore + links masked out by high water', src:['fsh', C+'foreshore.geojson'],
+   legend:[['OS foreshore (intertidal)','#8b6d3f'],['link seaward of high water','#f0883e'],
+     ['its nodes','#ffd479']],
+   note:'CONTEXT, NOT NETWORK. The high_water stage classifies every survey link as landward, crossing or seaward, and repair retires the seaward ones — so the published network stops at high water and everything below it is invisible. This puts it back: the OS Open Map Local foreshore (35,677 polygons, 3,341 km2), the 7,440 raw OS Open Rivers links of 193,040 whose midpoint lies SEAWARD of the OS High Water Mark, and the 9,066 hydro nodes on them. None of it is routable and none of it is joined to the mesh, the skeleton or the river network.',
+   add:async()=>{ map.addLayer({id:'x-fsh',type:'fill',source:'fsh',
+       paint:{'fill-color':'#8b6d3f','fill-opacity':.3,'fill-outline-color':'#b8935a'}});
+     if(await src('fshl', C+'foreshore_links.geojson'))
+       map.addLayer({id:'x-fshl',type:'line',source:'fshl',
+         paint:{'line-width':1.4,'line-color':'#f0883e','line-opacity':.95}});
+     if(await src('fshn', C+'foreshore_nodes.geojson'))
+       map.addLayer({id:'x-fshn',type:'circle',source:'fshn',
+         paint:{'circle-radius':2.2,'circle-color':'#ffd479','circle-opacity':.9}}); }},
  mesh7:{label:'MESH — res 7, open water only', src:['mh', C+'mesh_cells.geojson'],
    legend:[['open-water cell (>= 1 km from land)','#1f6feb'],['its links','#8b949e'],
      ['terminus -> skeleton','#3fb950'],['skeleton -> mesh','#f0883e']],
