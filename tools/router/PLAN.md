@@ -2446,3 +2446,34 @@ along, which is the honest question: does the route cross land BETWEEN the two p
 **99 termini are still stranded and 76.46% is below where this started.** The remaining
 causes are not yet diagnosed. This is committed as a working state for Stephen to inspect,
 not as a result: the mesh is finished and the joins are half-built.
+
+## 53. The cell on land was a superseded layer, and the network is adjacency-only
+
+**Stephen found `861959aa7ffffff` with its centre over land near Hayling Island. It is
+res 6, and it is not in the mesh** — the mesh is entirely res 7. It is in
+`sightline2_r6.geojson` and the old aggregated `edges.geojson`, both built on the superseded
+`grid2.py`, which I left switched on in /check after replacing them. **The layer that misled
+him was one I should have retired when I superseded it**, and a viewer cannot be expected to
+know which of two mesh-looking layers is current.
+
+`net`, `coast` and `detail` are gone from the page. The sightline layer stays — it is a
+visibility map and still meaningful — relabelled **"sightline zone (res 6) — NOT the mesh"**,
+because its cell centres are often on land and that is correct for what it is.
+
+**The new mesh, verified rather than asserted:**
+
+    centres on land                     0
+    centres under 1 km clearance        0        minimum exactly 1.000 km
+    links between NON-adjacent cells    0        of 402,992
+    link length                         1,897 - 2,521 m
+    components / isolated               1 / 0
+
+**So the adjacency rule Stephen asked for is already how it is built.** Every link is between
+two cells at H3 grid distance 1 — never a hop to a near neighbour, which the earlier
+cross-resolution walk could produce when the grid was banded. Links whose straight line
+crosses land are refused on the exact Shapely test over both coastlines (4 directed refusals,
+against 1,780 for the old grid, because a mesh starting a kilometre out has almost nothing to
+cross), and everything outside the majority connected set is dropped.
+
+The whole network is now drawn in /check rather than the 25 km subset — 402,992 links,
+49.6 MB, local only.

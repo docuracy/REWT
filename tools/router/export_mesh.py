@@ -31,23 +31,28 @@ def main() -> None:
     print(f"  mesh_cells.geojson {len(cf):,} cells "
           f"({(OUT/'mesh_cells.geojson').stat().st_size/1e6:.1f} MB)")
 
-    # links only where the handover happens; the open-sea interior is a uniform lattice
-    near = cl <= 25.0
+    # THE WHOLE NETWORK. Stephen asked to see it, so the subset is gone: every link
+    # between two ADJACENT res-7 cells whose straight line does not cross land, after
+    # dropping everything outside the majority connected set. Verified: 0 of 402,992 join
+    # non-adjacent cells, lengths 1,897-2,521 m.
+    near = np.ones(len(cl), bool)
     lf = [{"type": "Feature",
            "geometry": {"type": "LineString", "coordinates": [
                [round(float(lon[a]), D), round(float(lat[a]), D)],
                [round(float(lon[b]), D), round(float(lat[b]), D)]]},
            "properties": {}} for a, b in e if near[a] or near[b]]
-    (OUT / "mesh_links.geojson").write_text(json.dumps(
+    (OUT / "mesh_network.geojson").write_text(json.dumps(
         {"type": "FeatureCollection",
          "properties": {"generation": stamp, "links": len(lf),
-                        "subset": "links with an end within 25 km of land — the handover "
-                                  "zone. The open-sea interior is a uniform lattice and "
-                                  "drawing all 402,992 of it says nothing extra.",
+                        "construction": "Every pair of ADJACENT res-7 cells (H3 grid distance 1), "
+                                        "minus links whose straight line crosses land on "
+                                        "the exact Shapely test over both coastlines, minus "
+                                        "everything outside the majority connected set. "
+                                        "Verified: 0 links join non-adjacent cells.",
                         "total_links": int(len(e))},
          "features": lf}, separators=(",", ":")))
-    print(f"  mesh_links.geojson {len(lf):,} of {len(e):,} links "
-          f"({(OUT/'mesh_links.geojson').stat().st_size/1e6:.1f} MB)")
+    print(f"  mesh_network.geojson {len(lf):,} of {len(e):,} links "
+          f"({(OUT/'mesh_network.geojson').stat().st_size/1e6:.1f} MB)")
 
 
 if __name__ == "__main__":

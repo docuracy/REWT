@@ -80,42 +80,24 @@ const RES={3:'#f85149',4:'#f0883e',5:'#e3b341',6:'#3fb950',7:'#2ea043',8:'#58a6f
 // the network actually reaches" cannot be asked one stage at a time. Declaration order is
 // also PAINT order — cells beneath, joins on top.
 const LAYERS={
- cells:{label:'cells', src:()=>['sl2', srcUrl(0)],
+ cells:{label:'sightline zone (res 6) — NOT the mesh', src:()=>['sl2', srcUrl(0)],
    legend:[['governed by land &gt;800 m','#f85149'],['400-800 m','#f0883e'],
      ['200-400 m','#e3b341'],['80-200 m','#3fb950'],['under 80 m','#58a6ff'],
      ['closed short hop — blind','#d29922'],['sees none','#484f58']],
-   note:'Sighted sea, computed from the land outwards in 2 km reach bands. Colour is the TALLEST land that reaches each cell. Amber cells see nothing at all: they are enclosed pockets of blind water within a 3-cell hop of sighted sea, kept because a short blind hop is not a blind passage. Red water is held by a mountain; blue by a low hill, and it hugs the coast.',
+   note:'THIS IS THE VISIBILITY ZONE, NOT THE ROUTING MESH — res 6, and its cell centres are often on land, which is fine for a visibility map and is why one of them read as a mesh cell over Hayling Island. The mesh is the layer below. Sighted sea, computed from the land outwards in 2 km reach bands. Colour is the TALLEST land that reaches each cell. Amber cells see nothing at all: they are enclosed pockets of blind water within a 3-cell hop of sighted sea, kept because a short blind hop is not a blind passage. Red water is held by a mountain; blue by a low hill, and it hugs the coast.',
    add:()=>map.addLayer({id:'x-cells',type:'fill',source:'sl2',paint:{'fill-opacity':.45,
      'fill-color':['case',['get','closed_hop'],'#d29922',
        ['!',['get','visible']],'#484f58',
        ['>=',['get','gov_h_m'],800],'#f85149',['>=',['get','gov_h_m'],400],'#f0883e',
        ['>=',['get','gov_h_m'],200],'#e3b341',['>=',['get','gov_h_m'],80],'#3fb950',
        '#58a6ff']}})},
- net:{label:'sea network', src:()=>['ed', srcUrl(1)],
-   legend:[['cell-centre link','#c9d1d9'],['drawn along its res-7 path','#3fb950'],
-     ['crosses a resolution band','#f0883e']],
-   note:'The travelling surface: links between the centres of adjacent sea cells. AN EDGE IS AN ADJACENCY, NOT A TRACK — no vessel sailed the straight line between two hexagon centres. Aggregated to the resolution of the cells drawn beneath it, so these are not the centres a route uses either. A link CROSSES A RESOLUTION BAND where the two routing cells behind it sit at different resolutions — which happens where an estuary was refined finer, and around the closed blind hops, which are binned coarser because nothing there sees land. A seam is a place the grid changes scale. GREEN links are drawn along their actual res-7 path rather than as a straight chord, because the water between the two cell centres is narrower than the cells are wide — the north Solent, the Exe. Dropping them made the picture claim a channel was impassable when the route goes through it.',
-   add:()=>{ map.addLayer({id:'x-net',type:'line',source:'ed',
-       paint:{'line-width':['case',['get','crosses_band'],2.0,
-                            ['==',['get','drawn_as'],'res-7 path'],1.4,0.7],
-              'line-color':['case',['get','crosses_band'],'#f0883e',
-                            ['==',['get','drawn_as'],'res-7 path'],'#3fb950','#c9d1d9'],
-              'line-opacity':['case',['get','crosses_band'],1,0.85]}}); }},
- coast:{label:'coastal surface (res 7)', src:['cst', F+'cells_r7_coast.geojson'],
-   legend:[['routing cell within 5 km of land','#1f6feb'],['its lattice','#8b949e']],
-   note:'The routing cells THEMSELVES over the coastal band, at res 7, published at their own extent — which deliberately does NOT match the cells layer. The main network is clipped to the sightline cells so this toggle lines up, and that clip hides coastal surface the graph actually has. Measured against the release: 32.6% of sea entries fall in a routing cell, 39.6% one ring away, and 17.0% are absent altogether — creek heads the lattice cannot represent. This band has 32 components because a band around separate landmasses IS separate; the graph behind it is one.',
-   add:async()=>{ map.addLayer({id:'x-coast-c',type:'fill',source:'cst',
-       paint:{'fill-color':'#1f6feb','fill-opacity':.18,'fill-outline-color':'#388bfd'}});
-     if(await src('cste', F+'edges_r7_coast.geojson'))
-       map.addLayer({id:'x-coast-e',type:'line',source:'cste',
-         paint:{'line-width':0.6,'line-color':'#8b949e','line-opacity':.7}}); }},
  mesh7:{label:'MESH — res 7, open water only', src:['mh', C+'mesh_cells.geojson'],
    legend:[['open-water cell (>= 1 km from land)','#1f6feb'],['its links','#8b949e'],
      ['terminus -> skeleton','#3fb950'],['skeleton -> mesh','#f0883e']],
-   note:'THE REBUILT MESH. One resolution (res 7, 2.44 km between centres) — the banding is gone, and it was 98.8% res 7 already. Every centre is in water AND at least 1 km from land, which is where PLAN.md 51 measured the skeleton stopping being about a channel. 138,704 cells, 402,992 links, ONE component, 0 isolated. Links are drawn only within 25 km of land: the open-sea interior is a uniform lattice and drawing all of it says nothing. Green joins a tidal terminus to the skeleton, orange joins a skeleton chain to a mesh cell.',
+   note:'THE REBUILT MESH. One resolution (res 7, 2.44 km between centres) — the banding is gone, and it was 98.8% res 7 already. Every centre is in water AND at least 1 km from land, which is where PLAN.md 51 measured the skeleton stopping being about a channel. 138,704 cells, 402,992 links, ONE component, 0 isolated. THE SEA NETWORK IS EVERY LINK BETWEEN TWO ADJACENT CELLS — H3 grid distance 1, never a hop to a near neighbour — minus those whose straight line crosses land on the exact Shapely test, minus everything outside the majority connected set. Verified: 0 of 402,992 links join non-adjacent cells; lengths 1,897-2,521 m; one component, 0 isolated. Green joins a tidal terminus to the skeleton, orange joins a skeleton chain to a mesh cell.',
    add:async()=>{ map.addLayer({id:'x-mesh7',type:'fill',source:'mh',
        paint:{'fill-color':'#1f6feb','fill-opacity':.13,'fill-outline-color':'#388bfd'}});
-     if(await src('mhl', C+'mesh_links.geojson'))
+     if(await src('mhl', C+'mesh_network.geojson'))
        map.addLayer({id:'x-mesh7-l',type:'line',source:'mhl',
          paint:{'line-width':0.5,'line-color':'#8b949e','line-opacity':.55}});
      if(await src('jn2', F+'joins.geojson'))
@@ -182,20 +164,6 @@ const LAYERS={
    note:'Least-cost paths across the drying ground for the stranded termini.',
    add:()=>map.addLayer({id:'x-traces',type:'line',source:'tr',
      paint:{'line-width':2,'line-color':'#a371f7'}})},
- detail:{label:'routing detail (res 7)', src:null,
-   legend:[['routing cell','#1f6feb'],['routing edge','#c9d1d9'],
-     ['crosses a resolution band','#f0883e']],
-   note:'THE LATTICE ITSELF, at the resolution it exists at, for whichever named area holds the centre of the view — zoom to one of the buttons above. Here cells and links are the same resolution, so a link DOES join two cell centres and nothing is a schematic. The layer above it is not: at res 6 the routing nodes are not the hexagon centres, whichever way the lines are drawn.',
-   add:async()=>{ const a=areaAtCentre(); if(!a){ detailNote='no named area holds the centre of this view'; return; }
-     detailNote='showing '+a;
-     if(await src('dc', C+'cells-'+a+'.geojson'))
-       map.addLayer({id:'x-detail-c',type:'fill',source:'dc',
-         paint:{'fill-color':'#1f6feb','fill-opacity':.22,'fill-outline-color':'#388bfd'}});
-     if(await src('de', C+'edges-'+a+'.geojson'))
-       map.addLayer({id:'x-detail-e',type:'line',source:'de',
-         paint:{'line-width':['case',['get','crosses_band'],2.2,0.9],
-                'line-color':['case',['get','crosses_band'],'#f0883e','#c9d1d9'],
-                'line-opacity':.9}}); }},
  joins:{label:'joins', src:['jn', F+'joins.geojson'],
    legend:[['rule 1 - in a cell','#3fb950'],['rule 2 - adjacent','#58a6ff'],
      ['rule 3 - needs a path (drawn as a dot)','#f85149']],
