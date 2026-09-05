@@ -2120,3 +2120,49 @@ the wide view**: in the southern North Sea the network hugs the coast, because t
 land-visibility zone there IS a coastal band — so this method inherits the sightline's shape
 exactly where the sea is widest and shallowest. Whether that is a feature or the thing that
 disqualifies it is Stephen's call, and it is why this was built to be looked at first.
+
+## 45. Thalwegs, where drainage could not go
+
+Section 44 ended with drainage fragmenting on flat estuary floors, and said the fix was a
+different extraction rather than a lower threshold. Stephen asked for it, so
+`tools/router/thalweg.py` asks the other question: **not where water collects, but where the
+GROOVE is** — which is what a thalweg is and what a pilot follows up an estuary.
+
+**THE TEST.** A cell qualifies where it is the **minimum across its own cross-section**
+within ±k along an axis, and the seabed rises by at least 1.5 m on **both** sides. Four axes,
+four half-widths — 465 m, 930 m, 1.9 km, 3.7 km — because an estuary channel is not one
+width and a single scale finds either the pixel noise or the whole basin.
+
+**TWO WRONG VERSIONS FIRST, both caught by measuring rather than by looking.**
+
+*The first marked the whole depression*, not its bottom: any cell whose flanks rose by the
+sill. **2,906,848 px, 35% of the domain** — a blob, which the chain walk could not trace
+because almost every cell had more than two neighbours. A thalweg is one cell wide by
+definition, hence the cross-section minimum.
+
+*The second lost 93% of what it found.* The detector marks a band a few cells wide where
+scales agree, and the walk only follows cells with exactly two neighbours, so it stopped at
+every thickening: **751,069 network cells produced 54,708 cells of output, median chain
+seven cells.** The Thames looked almost empty while the detector was finding 3,924 cells in
+it — 13% of that window. Skeletonising to one cell wide before tracing fixed it:
+**486,944 px, 31,752 chains, longest 478 cells.**
+
+**IT POPULATES THE ESTUARIES AND DRAINAGE DID NOT.** In the outer Thames the thalwegs run as
+continuous tracks along the deeps, with the >20 m line following the main channel out past
+the Kent shore. That is the thing section 44 said the method could not do.
+
+**HOW TO JUDGE THE TWO, because they are complementary rather than rival.**
+
+| | drainage (`seabed.py`) | thalweg (`thalweg.py`) |
+|---|---|---|
+| finds | where water would collect | where the seabed is locally deepest |
+| excellent in | relief — the Channel palaeovalley | estuaries and flats |
+| fails in | flat estuary floors | open water with no cross-section |
+| connected? | yes, by construction | **no** — chains, with no guarantee they meet |
+
+**The thalweg layer has no connectivity guarantee at all**, and that is its weakness against
+drainage, which produces a tree by construction. Nothing here is a router: no draught test,
+nothing joined to the river network or the hex grid. Both layers write to the gitignored
+check directory until the approach is judged.
+
+Installed `scikit-image` 0.25.2 into `.venv` for `skeletonize`.

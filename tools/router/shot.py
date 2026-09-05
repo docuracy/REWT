@@ -50,7 +50,7 @@ from pathlib import Path
 URL = "http://127.0.0.1:8021/router/check/"
 OUT = Path("docs/router/check/shots")
 GL = ["--enable-unsafe-swiftshader", "--use-gl=angle", "--use-angle=swiftshader"]
-LAYERS = ["cells", "net", "coast", "seabed", "seabedfine", "detail", "traces", "joins"]
+LAYERS = ["cells", "net", "coast", "seabed", "seabedfine", "thalweg", "detail", "traces", "joins"]
 # check.html turned its exclusive stages into four independent toggles, so a shot is
 # now of a SET of layers. Each named layer is still shot alone, because a layer that
 # draws nothing is invisible in a composite that another layer has filled.

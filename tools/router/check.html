@@ -109,6 +109,13 @@ const LAYERS={
      if(await src('cste', F+'edges_r7_coast.geojson'))
        map.addLayer({id:'x-coast-e',type:'line',source:'cste',
          paint:{'line-width':0.6,'line-color':'#8b949e','line-opacity':.7}}); }},
+ thalweg:{label:'estuary thalwegs (232 m)', src:['thl', C+'thalwegs.geojson'],
+   legend:[['thalweg — locally deepest line','#ffd479'],['deeper than 20 m','#ff9d3d']],
+   note:'THE SECOND METHOD, for the estuaries where drainage fragments. Not where water collects but WHERE THE GROOVE IS: a cell qualifies where it is the MINIMUM across its own cross-section and the seabed rises by at least 1.5 m on both sides, tested at four half-widths from 465 m to 3.7 km. That is what a thalweg is and what a pilot follows up an estuary. No connectivity guarantee, no draught test, nothing joined to anything — judge it against the drainage layer rather than on its own.',
+   add:()=>map.addLayer({id:'x-thalweg',type:'line',source:'thl',
+     paint:{'line-width':['interpolate',['linear'],['get','cells'],6,1.0, 40,1.8, 200,2.8],
+            'line-color':['case',['>',['get','depth_max_m'],20],'#ff9d3d','#ffd479'],
+            'line-opacity':.95}})},
  seabedfine:{label:'seabed channels — fine (232 m)', src:['sbf', C+'seabed_channels_fine.geojson'],
    legend:[['drainage 20-250 km2','#3d6b7d'],['250-2000','#3fb0c9'],['over 2000 km2','#9ceaff']],
    note:'THE SAME ANALYSIS AT 232 m, over a 30 km coastal band — which is where an estuary is more than two pixels wide and the network can actually enter it. Bounded landward by OS high water; within 8 km of land it includes water the 930 m visibility mask calls unseen, because an estuary can be LAND at 930 m. One polyline per channel, head to confluence, so a click selects a whole channel rather than one pixel of one. Offshore trunks are in the coarse layer, not this one.',
