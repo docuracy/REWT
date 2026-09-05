@@ -136,7 +136,18 @@ def main(cfg: dict = CONFIG) -> None:
             b = to43.transform(*tgt)
             f["geometry"] = {"type": "LineString", "coordinates": [
                 [round(a[0], D), round(a[1], D)], [round(b[0], D), round(b[1], D)]]}
+        # EVERY SEED GETS A POINT, not only the failures. Drawing just the sight-line
+        # left the seed itself invisible — Stephen could see lines leaving something he
+        # could not see. 2,246 seeds is roughly one per river mouth, four in the whole
+        # Medway and Swale, so a line with no origin marker is hard to read at any zoom.
         out.append(f)
+        if tgt is not None:
+            out.append({"type": "Feature",
+                        "geometry": {"type": "Point",
+                                     "coordinates": [round(a[0], D), round(a[1], D)]},
+                        "properties": {**f["properties"], "marker": "seed"}})
+        else:
+            f["properties"]["marker"] = "seed"
         if i % 250 == 0:
             print(f"    {i:,}/{len(seeds):,}", end="\r")
     print()
