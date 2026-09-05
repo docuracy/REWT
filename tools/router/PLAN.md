@@ -1979,7 +1979,20 @@ sentence, and let the history follow it.** A document that opens with what was t
 corrects itself later is not a corrected document — it is a document that is wrong to
 everyone who reads the top of it, which is most people.
 
-**And the head of the GL trail is unreachable.** `whg3-9a` is not in my peer list or
-gotw-87's, so nobody in today's exchange can grep the file the recipe came from, or say
-whether it was ever measured there or whether "load-bearing" was added downstream. That is
-recorded as an unverified head of trail rather than closed.
+**The head of the GL trail is CLOSED, and there was never anything there to fix.** I first
+wrote here that it was unreachable — `whg3-9a` is in nobody's peer list, the session having
+ended — and recorded it as an unverified loose end. gotw-87 then did the obvious thing
+neither of us had: **the session is gone, but its repository is on this machine.** They
+grepped it. No `enable-unsafe-swiftshader`, no `use-gl=angle`, no Playwright or Puppeteer of
+any kind, no harness. The claim never entered the codebase; it lived in that session's
+context and ended with it, so nobody downstream is copying from an uncorrected origin.
+
+**Their method is worth more than the answer.** Four sessions could not close this by
+messaging each other, because the holder had exited — and one grep of the filesystem settled
+it in seconds. **When a trail runs into an ended session, check the artefacts it could have
+written before filing the question as permanently open.** Both of us were one edit from
+recording a loose end that does not exist, which is its own kind of false claim: a reader
+inheriting a doubt nobody needs to carry.
+
+This paragraph is corrected IN PLACE rather than by a section below it, which is the rule
+the rest of this section is about, applied to the section itself within the hour.
