@@ -41,6 +41,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from generation import generation                      # noqa: E402
 from landtest import os_coastline, os_land_area    # noqa: E402
 
+OPMPLC = "data/raw/os_open_map_local/extracted/Data/opmplc_gb.gpkg"
+
 CONFIG = {
     "masks": "tools/router/cache/sightline_masks.npz",
     "cache": "tools/router/cache/seabed_fine.npz",
@@ -62,6 +64,7 @@ CONFIG = {
     "gb_band_km": 15.0,
     "gb_out": "docs/router/check/water_skeleton_gb.geojson",
     "gb_summary": "docs/router/check/water_skeleton_gb_summary.json",
+    "foreshore_is_land": False,   # see PLAN.md 56
     "gb_min_spur_cells": 40,     # ~2.3 km, the same twig length at four times the detail
 }
 
@@ -151,7 +154,23 @@ def gb_fine(cfg: dict) -> None:
     import geopandas as gpd
     import shapely
     px = cfg["gb_px"]
-    polys = os_land_area("EPSG:32630")   # polygonised rings, not the coastline
+    # LAND AT LOW WATER, NOT AT HIGH WATER. `os_land_area` polygonises the high_water
+    # rings, so its complement is everything BELOW high water — which includes 3,263 km2
+    # of OS foreshore, 97.6% of it. Skeletonising that puts the axis down the middle of
+    # the channel PLUS the intertidal flats, and Stephen saw it diverge from the OS river
+    # course, which follows the channel. The bank a vessel actually has is the low water
+    # line, so the foreshore joins the land.
+    polys = os_land_area("EPSG:32630")
+    # MEASURED AND REVERTED, see PLAN.md 56. Moving the foreshore to the land side is
+    # the obvious reading of "the skeleton should be on low water", and it makes the
+    # divergence from the OS course six to ten times WORSE. Left switchable rather than
+    # deleted, because the low-water body is the right subject for a draught question
+    # even though it is the wrong one for following a surveyed channel.
+    fs = gpd.read_file(OPMPLC, layer="foreshore").to_crs(32630) \
+        if cfg.get("foreshore_is_land") else None
+    print(f"  land above high water: {len(polys):,} rings"
+          + (f"; foreshore as land: {len(fs):,} polygons" if fs is not None else
+             "; foreshore left as WATER (the default; see PLAN.md 56)"))
     b = shapely.total_bounds(polys)
     pad = cfg["gb_band_km"] * 1000.0 + 2000.0
     x0, y0, x1, y1 = b[0] - pad, b[1] - pad, b[2] + pad, b[3] + pad
@@ -161,7 +180,14 @@ def gb_fine(cfg: dict) -> None:
 
     land = rasterio.features.rasterize(((p, 1) for p in polys), out_shape=(h, w),
                                        transform=tr, fill=0, dtype="uint8").astype(bool)
-    print(f"  land {int(land.sum()):,} px ({100*land.mean():.1f}%)")
+    hw_only = int(land.sum())
+    if fs is not None:
+        land |= rasterio.features.rasterize(((g_, 1) for g_ in fs.geometry.values),
+                                            out_shape=(h, w), transform=tr, fill=0,
+                                            dtype="uint8").astype(bool)
+    print(f"  land {int(land.sum()):,} px ({100*land.mean():.1f}%)"
+          + (f" — {int(land.sum())-hw_only:,} px of intertidal moved to the land side"
+             if fs is not None else ""))
 
     # the band, decided at 232 m and upsampled: 15 km does not need 58 m to be decided
     k = int(round(232.0 / px))

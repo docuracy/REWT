@@ -2522,3 +2522,40 @@ The network is zoom-scaled rather than fixed: at 0.5 px it was invisible at any 
 width that reads at zoom 14 turns the open sea into a solid sheet at zoom 5. This is the
 same lesson as the seabed layer whose ramp started above its own threshold — **a paint value
 chosen for one view is a wrong value for every other one.**
+
+## 56. Confirmed on high water — and correcting it made things worse
+
+Stephen: the skeleton diverges from the OS course, and it looks as though it was built on the
+high-water geometry instead of low water, which was a mistake. **The first half is confirmed.
+The second is not, and the measurement says the opposite.**
+
+**CONFIRMED.** `os_land_area` polygonises the `high_water` rings, so the skeleton's water was
+everything BELOW high water — including **3,263 km² of OS foreshore, 97.6% of it.** The axis
+was the centre of the channel PLUS the intertidal flats.
+
+**BUT MOVING THE FORESHORE TO THE LAND SIDE MAKES THE DIVERGENCE SIX TO TEN TIMES WORSE.**
+Distance from the OS geometry to the nearest skeleton vertex, in the Medway window Stephen
+was looking at:
+
+| | vs OS tidalRiver course | vs the masked-out seaward links |
+|---|---:|---:|
+| skeleton on **high** water | median **91 m**, 90th 747 m | median **83 m**, 90th 401 m |
+| skeleton on **low** water | median **578 m**, 90th 2,770 m | median **815 m**, 90th 2,483 m |
+
+It also fragments: 9 components become 37, because channels that dry at low water genuinely
+disconnect. So the layer stays on high water, and `foreshore_is_land` makes the alternative
+one config flag away — the low-water body is the right subject for a DRAUGHT question and
+the wrong one for following a surveyed channel.
+
+**WHAT THE DIVERGENCE ACTUALLY IS.** A medial axis is the geometric centre of a shape. Where
+an estuary is wide the navigable channel hugs one side and the centre does not follow it —
+median agreement is 83–91 m, but the 90th percentile is 400–750 m, and at zoom 12 that is a
+visible gap. **No choice of water body fixes that, because the axis is not looking at depth
+at all.** It is the same limit that made the thalweg method fail on flats, arriving from the
+other side.
+
+**THE BETTER ANSWER IS ALREADY ON THE MAP.** OS has surveyed those channels: the **7,440
+seaward links** added in section 54 are the courses themselves, below high water, from the
+survey rather than inferred from a shape. Using them where they exist beats deriving a
+centreline — and they were retired by the `high_water` stage, not absent from the world.
+That is a decision for Stephen rather than something to assume.
