@@ -1148,6 +1148,20 @@ def main() -> int:
     ap.add_argument("--serve", action="store_true",
                     help="start tools/viewer/serve.py on 8021 for the run and stop it after")
     ap.add_argument("--shot", action="store_true", help="also write a PNG per check")
+    # SO THAT THIS FILE RECORDS A MEASUREMENT OF ITS OWN PAGE RATHER THAN A CITATION OF
+    # SOMEBODY ELSE'S. The software-GL flags came to me from whg3-9a by way of rewt-e8 as
+    # "load-bearing", I passed that on as fact, and I had never run it. When I did, the
+    # suite passed without them. The comment at the top of this file says so — but a
+    # comment is a claim a reader must trust, and by then four sessions had relayed the
+    # uncorrected version and two still held it. gotw-87 then credited me with this very
+    # switch before it existed, which is the same fault pointed at me.
+    #
+    # A switch is the difference between a quotation and an experiment: anyone wondering
+    # whether the flags matter ON THEIR MACHINE runs the suite twice and finds out in
+    # four minutes, instead of believing me, or believing whg3-9a through me.
+    ap.add_argument("--no-gl-flags", action="store_true",
+                    help="launch with no software-GL flags, to find out whether this "
+                         "machine needs them rather than taking it on trust")
     ap.add_argument("--prove-it-fails", action="store_true",
                     help="point every check at a page with no map, and require each to fail")
     a = ap.parse_args()
@@ -1182,7 +1196,11 @@ def main() -> int:
     results, rc = [], 0
     try:
         with sync_playwright() as pw:
-            browser = pw.chromium.launch(args=GL)
+            launch_args = [] if a.no_gl_flags else GL
+            if a.no_gl_flags:
+                print("launching with NO software-GL flags; if the suite passes, this "
+                      "machine does not need them")
+            browser = pw.chromium.launch(args=launch_args)
             page = browser.new_page(viewport={"width": 1400, "height": 900})
             errors: list[str] = []
             page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
