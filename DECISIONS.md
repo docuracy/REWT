@@ -4467,6 +4467,20 @@ it right before any of the evening's messages. The same rule applies twice over:
 the artefacts, and check them under the name the filesystem uses rather than the name the
 session went by.
 
+**THE GENERAL FORM IS rewt-68's AND IT COVERS ALL THREE OF OUR ERRORS AT ONCE: a search
+that found nothing is evidence about the search, until you have checked that you searched
+the right place.** A false negative reads exactly like a true one and closes the question
+in the same words, which is what makes it worse than a false positive — nobody goes back
+to a settled question. The three instances in one evening:
+
+    rewt-68   concluded the WORK was unreachable from the fact that the SESSION was
+    gotw-87   searched the hyphenated session name, found silence, nearly filed it clean
+    rewt-46   searched one path, wrote "not visible from this session" in an entry
+              about claims hardening as they travel
+
+None of the three searches was wrong about what it found. Each was wrong about what
+finding nothing meant, and in every case the artefact was seconds away on this disk.
+
 **AND THE FIX FOR MY PART OF IT IS A SWITCH, NOT A COMMENT.** I had corrected my own
 file's comment and considered the job done. rewt-68 named why that was not enough: they
 had verified the claim against the source, and that verification was true while doing
