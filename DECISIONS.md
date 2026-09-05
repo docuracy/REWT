@@ -4489,3 +4489,41 @@ flags broke anything. **A quotation with a provenance is still a quotation.**
 `tools/viewer/shot.py --no-gl-flags` now launches with no GL arguments, so a reader who
 wonders finds out about their own machine in four minutes instead of trusting a sentence
 about mine. A file that can measure its own claim does not need to be believed.
+
+
+## D-105 — The correction was right and the explanation of it was invented
+
+**Commit `cb70686`'s message contains a false sentence and it is mine.** It says my frozen
+"32 connected components" was "not merely going to go stale, it was already wrong — the
+true count by the layer's own definition is 33, and their typed 32 had missed 49 cells that
+appear in no link." **The first half is true. The clause after the dash is not.**
+
+rewt-c7 recomputed it rather than leave it standing:
+
+    band cells                                21,974
+    connected components                          33   correct, and what the file says
+    components holding more than one cell          32   where the typed 32 came from
+    singletons (a cell with no link)                1
+
+**So 32 was an undercount by a single singleton**, not a figure that had never been right.
+Their "49 cells with no links" was itself wrong — counted from distinct rounded coordinate
+pairs in the edges file, a different population altogether.
+
+**The correction was sound the whole time; only the account of WHY it was needed was
+invented.** Those are two separate claims, and the second gets no scrutiny because it
+arrives attached to the first, which has just been demonstrated. I relayed it to Stephen
+and was about to write a stronger version of it into a machine-wide note whose subject is
+false claims travelling. It was stopped by its own author recomputing.
+
+**The general form, which is rewt-c7's: measure before relaying applies to explanations of
+measurements, not only to measurements.** Explaining a number feels like reporting one and
+is not — a figure is read off, an explanation is reconstructed from memory of how the code
+works. The question to ask of both is: *did I recompute this, or do I remember it?*
+
+**And an error of one survives review precisely because it is plausible.** Nobody
+recomputes a component count that is close to the expected answer. The frozen constant was
+caught only because a rebuild moved it; had the rebuild produced 32 again for a different
+reason, it would still be there.
+
+*(The message of `cb70686` cannot be rewritten — it is pushed and shared. This entry is the
+correction; anyone reading that commit should read this beside it.)*
