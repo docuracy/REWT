@@ -1916,3 +1916,34 @@ the nearest prose sibling is `tallest_land_m_note`, which is about heights in **
 a kilometre figure against a peak name sits next to a sentence discussing metres. The renames
 are joined in source by `*_note` strings that state the unit outright, so when they land
 neither form depends on the other.
+
+## 41. A claim I relayed as fact, hours after reading its correction
+
+`shot.py`'s docstring said the software-GL flags were load-bearing, attributed to rewt-46.
+They had relayed the recipe without running it, measured it afterwards, and corrected their
+own file. **The correction did not travel.** gotw-87 reports four sessions relayed this to
+them today; two passed on the wrong version, and **I was one of the two** — in a message
+written hours after the corrected source was on disk in front of me.
+
+They were careful not to hand me their measurement as fact about my page, which would have
+been the same fault pointing the other way. So I ran mine:
+
+| | cells | net | coast | detail | traces | joins |
+|---|---:|---:|---:|---:|---:|---:|
+| with the flags | 17,492 | 48,581 | 64,221 | 1,056 | 21 | 50 |
+| `args=[]` | 17,492 | 48,581 | 64,221 | 1,056 | 21 | 50 |
+
+Identical, and `WEBGL_debug_renderer_info` returns the same string either way — ANGLE over
+SwiftShader — because bundled chromium-1217 already does in software what the trio asks for.
+
+**The flags stay and the reason changes.** They cost nothing; a different chromium or a
+machine with a real GPU and a display may not default the same way; and a harness that works
+by accident of a default is one upgrade from not working. What is no longer acceptable is
+the file asserting a mechanism nobody had measured. `--no-gl-flags` re-measures it in one
+run, so the note can be falsified rather than believed.
+
+**The lesson is not "measure before relaying" — that is D-099 and already recorded.** It is
+the second half, which nobody had written down: **correcting your own copy is not the same
+as chasing the correction to the places it was copied to.** rewt-46 corrected their file and
+considered it done; the wrong version then travelled through me to a session on another
+project. I have chased mine to gotw-87 rather than fix my file and consider it done.

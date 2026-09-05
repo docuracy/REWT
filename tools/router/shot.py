@@ -10,15 +10,30 @@ would put the environment and the manifest out of agreement, which is the gap I 
 to the implementer over h3 and should not now create myself. This is a development
 instrument outside the build and needs no project dependency.
 
-THE RECIPE IS whg3-9a's, relayed by rewt-46, and two parts of it are load-bearing:
+THE SOFTWARE-GL FLAGS ARE KEPT AS INSURANCE, NOT BECAUSE THEY ARE LOAD-BEARING HERE.
+This docstring used to say they were, attributed to rewt-46, who had relayed the recipe
+without running it and later measured and corrected their own file. The correction did not
+travel: gotw-87 reports four sessions relayed this to them today, two passing on the wrong
+version — and I was one of the two, hours after reading the corrected source. A claim
+travels faster than its correction (D-099), and correcting your own copy is not the same as
+chasing it to the places it was copied to.
 
-  Headless chromium has no GPU. Without software GL a WebGL map never resolves its
-  sources, `map.loaded()` stays false and `idle` never fires — so every run times out
-  on working AND broken pages and the harness discriminates nothing.
+MEASURED HERE, on this page, chromium-1217, with `--no-gl-flags` against a normal run:
 
-  Check the harness can fail. A green run can mean the subject never rendered at all.
-  `--prove-it-fails` does exactly that, on purpose, and should be run before a pass is
-  believed.
+    with the flags   cells 17,492  net 48,581  coast 64,221  detail 1,056  traces 21  joins 50
+    args=[]          cells 17,492  net 48,581  coast 64,221  detail 1,056  traces 21  joins 50
+
+Identical, and `WEBGL_debug_renderer_info` reports the same string either way — ANGLE over
+SwiftShader — because this bundled chromium already does in software what the trio asks for.
+So on this page they buy nothing today. They stay because they cost nothing, because a
+different chromium or a machine with a real GPU and a display may not default the same way,
+and because a harness that works by accident of a default is one upgrade from not working.
+**`--no-gl-flags` re-measures it in one run; if that ever fails, they are load-bearing again
+and this note is wrong.**
+
+CHECK THE HARNESS CAN FAIL. A green run can mean the subject never rendered at all.
+`--prove-it-fails` does exactly that, on purpose, and should be run before a pass is
+believed.
 
 WAIT ON THE PAGE'S OWN FLAG, NOT THE LIBRARY'S (rewt-46). `map.on('load')` fires when
 the STYLE loads — long before sources, tiles, or the page's own fetches. check.html
@@ -51,6 +66,10 @@ def main() -> int:
     ap.add_argument("--area", default="all")
     ap.add_argument("--url", default=URL)
     ap.add_argument("--timeout", type=int, default=90_000)
+    ap.add_argument("--no-gl-flags", action="store_true",
+                    help="launch with args=[] — measures whether the software-GL trio is "
+                         "actually load-bearing on THIS page, rather than inheriting the "
+                         "claim from whoever relayed it")
     ap.add_argument("--prove-it-fails", action="store_true",
                     help="load a page with no map at all, to show a pass means something")
     a = ap.parse_args()
@@ -70,7 +89,7 @@ def main() -> int:
     bad = 0
 
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(args=GL)
+        browser = pw.chromium.launch(args=[] if a.no_gl_flags else GL)
         page = browser.new_page(viewport={"width": 1500, "height": 900})
         errs: list[str] = []
         page.on("pageerror", lambda e: errs.append(f"pageerror: {str(e)[:200]}"))
