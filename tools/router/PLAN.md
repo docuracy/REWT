@@ -2559,3 +2559,33 @@ seaward links** added in section 54 are the courses themselves, below high water
 survey rather than inferred from a shape. Using them where they exist beats deriving a
 centreline — and they were retired by the `high_water` stage, not absent from the world.
 That is a decision for Stephen rather than something to assume.
+
+## 57. The low-water skeleton, kept; and when each foreshore network would empty
+
+**THE LOW-WATER SKELETON IS ITS OWN LAYER NOW**, not a replacement. Stephen: *"I still want
+to see the low water skeleton because I have a plan which you have not anticipated."* I had
+reverted it on the strength of one test — agreement with the surveyed course — and that test
+answers one question, not every question a different water body might be for.
+`foreshore_is_land` selects it, `--lowwater` runs it, and the two files sit side by side:
+
+    water_skeleton_gb.geojson        79,043 chains,  9 components   high water
+    water_skeleton_gb_low.geojson   100,105 chains, 37 components   low water
+
+**WHEN WOULD EACH FORESHORE NETWORK EMPTY?** `drain_order.py`. The 7,440 seaward links form
+**2,118 mini-networks**, and two different things decide the answer:
+
+*The bed.* A network is dry once the sea falls below its lowest bed, so the **lowest bed
+empties last**. *The sill.* Water only leaves if it has a downhill path out — a priority
+flood seeded at the open boundary gives, for every cell, the lowest level at which water
+there can still escape. Where that sill stands **above** the bed, the difference never
+drains: the network becomes a lake. **Nine do.**
+
+The last to empty are Scottish sea lochs — Mull, the Clyde, Skye, Loch Linnhe — with beds to
+**−44.6 m**, which is the right answer for a survey whose links run into deep water.
+
+**AND THE FIRST RUN GOT A BED FOR 9 OF 2,118.** I required the 930 m sea mask, and a
+foreshore link sits on pixels EMODnet calls LAND at 930 m — the same coarseness that put 157
+stranded termini inside EMODnet land two days ago. Read at 232 m with no mask, all 2,118 have
+a bed. **The failure was silent: 9 networks with plausible depths looked like an answer, not
+like a 99.6% miss.** The count was the only tell, and I nearly reported the six deepest of
+nine as though they were the six deepest of two thousand.

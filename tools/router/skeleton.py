@@ -64,7 +64,12 @@ CONFIG = {
     "gb_band_km": 15.0,
     "gb_out": "docs/router/check/water_skeleton_gb.geojson",
     "gb_summary": "docs/router/check/water_skeleton_gb_summary.json",
-    "foreshore_is_land": False,   # see PLAN.md 56
+    # BOTH ARE WANTED. High water is the default because it tracks the surveyed course
+    # (PLAN.md 56); low water is a different object with its own uses, so it gets its own
+    # file rather than replacing the other. --lowwater selects it.
+    "foreshore_is_land": False,
+    "gb_out_low": "docs/router/check/water_skeleton_gb_low.geojson",
+    "gb_summary_low": "docs/router/check/water_skeleton_gb_low_summary.json",
     "gb_min_spur_cells": 40,     # ~2.3 km, the same twig length at four times the detail
 }
 
@@ -211,7 +216,10 @@ def gb_fine(cfg: dict) -> None:
     s_ &= ~np.isin(lab, np.nonzero(sizes < cfg["gb_min_spur_cells"])[0])
     ncomp = ndimage.label(s_, structure=np.ones((3, 3), int))[1]
     print(f"  after pruning: {int(s_.sum()):,} px, {ncomp:,} components")
-    _vectorise(cfg, s_, tr, "EPSG:32630", px, cfg["gb_out"], cfg["gb_summary"],
+    low = bool(cfg.get("foreshore_is_land"))
+    _vectorise(cfg, s_, tr, "EPSG:32630", px,
+               cfg["gb_out_low"] if low else cfg["gb_out"],
+               cfg["gb_summary_low"] if low else cfg["gb_summary"],
                ncomp, int(water.sum()), gb=True)
 
 
@@ -331,6 +339,9 @@ def main(cfg: dict = CONFIG) -> None:
 
 if __name__ == "__main__":
     if "--gb" in sys.argv:
-        gb_fine(CONFIG)
+        cfg = dict(CONFIG)
+        if "--lowwater" in sys.argv:
+            cfg["foreshore_is_land"] = True
+        gb_fine(cfg)
     else:
         main()
