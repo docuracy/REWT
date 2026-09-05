@@ -2332,3 +2332,39 @@ figure that measures it.**
 Plymouth is now a continuous centreline from above Devonport, through the Narrows, past
 Torpoint into the Sound and out to sea, with the Lynher and the Plym as branches. GB only:
 OS is the source that exists.
+
+## 50. My assertion was the wrong one — the vectoriser, not the picture
+
+Stephen, on discontinuities still visible at Plymouth: *"Which is incorrect, your assertion
+or the visualisation?"* **The assertion.** Tested rather than defended:
+
+    raster components   9
+    VECTOR components   14,499     largest holding 0.2%
+
+The skeleton was connected and the GeoJSON was not. **`emit()` dropped any path shorter than
+three cells.** Skeletonised junctions cluster, so adjacent junctions are joined by paths of
+exactly two cells, and discarding those cut the graph into fragments. A two-cell path is a
+real link. With `len(path) < 2` the vector matches the raster exactly: **9 components,
+largest 87.5%.**
+
+**I had printed "9 components" from the raster and reported it as a property of the file I
+published.** They were different objects and I never compared them — the same fault as
+measuring a trim's output and calling it its cause, and the second time in this file that a
+figure was true of one artefact and asserted of another.
+
+**THE TWO FOCUS AREAS**, added to the check page as `plymouth` and `sheppey`:
+
+| | chains | length | components | largest |
+|---|---:|---:|---:|---:|
+| Plymouth | 490 | 164 km | 6 | 82.4% |
+| Sheppey | 1,224 | 329 km | 3 | 94.7% |
+
+Plymouth is continuous down the Hamoaze past Torpoint with branches into Thanckes and Weston
+Mill. **Sheppey is continuous all the way round the island** — down the Swale from
+Queenborough past Iwade, along the south by Conyer, round Harty and back — which is the case
+that defeated the join rule in section 31, where a river running round an island got an
+attachment at one end only.
+
+**NEXT, and not yet done: restrict the skeleton to the GB coast that intersects in-scope
+basins.** Stephen: there is no need to skeletonise Scotland beyond that. The whole-GB run is
+79,043 chains and 20.3 MB; the in-scope subset will be a fraction of it.

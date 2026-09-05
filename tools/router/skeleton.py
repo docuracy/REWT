@@ -80,7 +80,12 @@ def _vectorise(cfg, s_, tr, crs, px, out, summ, ncomp, water_px, gb=False, z=Non
     a, bb, c_, d_, e_, f_ = tr.a, tr.b, tr.c, tr.d, tr.e, tr.f
 
     def emit(path):
-        if len(path) < 3:
+        # A TWO-CELL PATH IS A REAL LINK. Dropping them cost the network its connectivity:
+        # skeletonised junctions cluster, so adjacent junctions are joined by paths of
+        # exactly two cells, and discarding those cut the graph from 9 components to
+        # 14,499 — the raster was connected and the VECTOR was not. Stephen saw the gaps
+        # and asked whether my assertion or the picture was wrong. It was the assertion.
+        if len(path) < 2:
             return
         coords = []
         for (y, x) in path:

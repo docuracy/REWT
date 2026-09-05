@@ -50,6 +50,9 @@ AREAS = {
     # the closed mid-Channel hop of PLAN.md 22: coarse cells inside a fine
     # grid, so the seams that were hardest to see are all here
     "channel":    (-1.30, 49.60,  0.40, 50.60),
+    # Stephen's two focus areas for the skeleton: get these right before extending
+    "plymouth":   (-4.35, 50.28, -4.02, 50.48),
+    "sheppey":    ( 0.55, 51.31,  1.05, 51.50),
 }
 
 
