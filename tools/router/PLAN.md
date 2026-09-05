@@ -2216,3 +2216,40 @@ Median bridge is 0.96 km, 90th 2.52 km. **So the network is short-hopped where i
 gives up where the seabed goes featureless** — which is the honest shape of the method and
 the thing to weigh against the hex mesh, whose connectivity is guaranteed by construction
 and whose fidelity to a channel is nil.
+
+## 47. Thalwegs filed as not reliable enough — Stephen's ruling
+
+Stephen: *"I don't think thalwegs are going to be sufficiently reliable for our purposes,
+especially as many of the links you created are across dry land."* Filed, with the
+measurement, because the reason matters for what comes next.
+
+**MEASURED AGAINST BOTH COASTLINES:**
+
+| | features | cross EMODnet land | cross OS high_water land |
+|---|---:|---:|---:|
+| bridges | 31,543 | 45 | **77 (0.2%)** |
+| thalwegs | 31,752 | 321 | **306 (1.0%)** |
+
+**The detected thalwegs cross land more than the inferred bridges do**, which is the worse
+half: a detector firing on land is not a tuning problem.
+
+**AND THE CAUSE IS A REGRESSION OF MINE.** `landtest.py` exists — an exact Shapely test over
+both coastlines, built after Stephen found links crossing the Uists, proven to leave 0
+crossings on every published layer. For this experiment I wrote a **fresh sampling test**
+inside `thalweg_join.py`, checking whether sampled cells fall in the domain mask. That
+reintroduced exactly the fault the exact test was built to remove — and the domain mask is
+EMODnet-only, so it never consulted OS high_water at all.
+
+**Two separate mistakes in one function: sampling where an exact test existed, and a mask
+that was never the authority.** Both were already recorded in this file before I made them.
+
+**The structural limit is the more useful finding, though.** A thalweg exists only where the
+seabed has a cross-section. Between separate landmasses there is nothing to find, so the
+network stopped at 67.9% with the second component being Norway, and no bridge length closes
+that. Even with the land test fixed, the method would give a high-fidelity network of
+channels with no connectivity guarantee — the opposite failure to the hex mesh, and not one
+that a routing surface can carry.
+
+**What survives from it:** the drainage layer's recovery of the Channel palaeovalley, which
+is real and worth keeping as evidence about the seabed; and the confirmation that estuary
+detail needs a geometric method rather than a hydrological one.
