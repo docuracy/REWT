@@ -2617,3 +2617,34 @@ skeleton was dropping short links, I grepped and reported "`96: len(path) < 2`,
 `278: len(path) < 3`" — I saw the second threshold, said it belonged to a layer that was not
 in question, fixed the line, and did not regenerate the file it governs. **Noticing a stale
 threshold and not acting on it is worse than not noticing.**
+
+## 59. A centroid is not on the thing it describes
+
+Stephen: the foreshore networks are blobs nowhere near any of the OS links. **The links were
+right and the markers were not**, and the median hid it.
+
+I placed each mini-network's point at the **mean of its vertices**. For the 1,422 networks of
+a single link that is on the link, so the overall median came out at 40 m and looked fine.
+For the ones that matter it did not:
+
+| links in network | count | marker off the network |
+|---|---:|---:|
+| 1 | 1,422 | median 30 m |
+| 2–4 | 397 | 50 m |
+| 5–19 | 224 | 100 m |
+| **20 and over** | **75** | **median 360 m, max 2,150 m** |
+
+**A centroid of a sinuous creek system is not on the creek** — it is in the middle of the
+land the creek winds around. And because the circle is sized by link count, the worst-placed
+markers are the largest ones, so they are exactly what the eye finds first. **Reporting the
+median over a population dominated by single-link cases hid a fault that was obvious in the
+picture** — the same shape as every aggregate that has misled anyone in this file.
+
+**The marker now sits on the LOWEST-BED VERTEX**, which is both guaranteed to be on the
+network and the meaningful place: it is where the water actually drains last. Median 0 m,
+maximum 1 m, in every size band.
+
+**And the links themselves now carry their network's figures** — `rank`, `min_bed_m`,
+`empties_at_m` — so the ordering reads off the geometry rather than off a marker beside it.
+The creeks colour from amber to red by bed depth, and purple where the sill traps water and
+the network never empties.

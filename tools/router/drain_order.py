@@ -44,6 +44,7 @@ CONFIG = {
     "rivers": "data/raw/os_open_rivers/extracted/Data/oprvrs_gb.gpkg",
     "links": "docs/router/check/foreshore_links.geojson",
     "out": "docs/router/check/foreshore_networks.geojson",
+    "out_links": "docs/router/check/foreshore_network_links.geojson",
     "summary": "docs/router/check/foreshore_networks_summary.json",
     "coord_dp": 6,
 }
@@ -134,18 +135,26 @@ def main(cfg: dict = CONFIG) -> None:
     stats: dict = {}
     for i, geom in enumerate(sel.geometry.values):
         c = comp_of[i]
+        # THE MARKER GOES ON THE LOWEST BED, NOT ON THE CENTROID. A centroid of a
+        # sinuous creek system is not on the creek: for the 75 networks of 20 links or
+        # more it landed a median 360 m off and up to 2.15 km, over land, and those are
+        # drawn largest so they are the ones the eye goes to. The lowest bed is also the
+        # meaningful place — it is where the water actually drains last.
         s = stats.setdefault(c, {"bed": [], "sill": [], "links": 0, "km": 0.0,
-                                 "lon": [], "lat": []})
+                                 "low": None, "low_at": None})
         s["links"] += 1
         for lo, la in geom.coords:
             X, Y = fwd.transform(lo, la)
             fc = int((X - ftr[2]) / ftr[0]); fr = int((Y - ftr[5]) / ftr[4])
             if 0 <= fr < fhh and 0 <= fc < fww and np.isfinite(fine[fr, fc]):
-                s["bed"].append(float(fine[fr, fc]))
+                v = float(fine[fr, fc])
+                s["bed"].append(v)
+                if s["low"] is None or v < s["low"]:
+                    s["low"], s["low_at"] = v, (lo, la)
             col = int((X - tr[2]) / tr[0]); row = int((Y - tr[5]) / tr[4])
             if 0 <= row < h and 0 <= col < w and np.isfinite(filled[row, col]):
                 s["sill"].append(float(filled[row, col]))
-            s["lon"].append(lo); s["lat"].append(la)
+
 
     feats = []
     for c, s in stats.items():
@@ -158,8 +167,8 @@ def main(cfg: dict = CONFIG) -> None:
                       "min_bed_m": round(bed, 1), "sill_m": round(sill, 1),
                       "trapped_m": round(trapped, 1),
                       "empties_at_m": None if trapped > 0 else round(bed, 1),
-                      "lon": round(float(np.mean(s["lon"])), 5),
-                      "lat": round(float(np.mean(s["lat"])), 5)})
+                      "lon": round(float(s["low_at"][0]), 5),
+                      "lat": round(float(s["low_at"][1]), 5)})
     feats.sort(key=lambda f: (f["min_bed_m"]))
     for r, f in enumerate(feats, 1):
         f["rank"] = r
@@ -171,6 +180,29 @@ def main(cfg: dict = CONFIG) -> None:
         print(f"    rank {f['rank']:>3}  bed {f['min_bed_m']:>7.1f} m  sill "
               f"{f['sill_m']:>7.1f} m  trapped {f['trapped_m']:>5.1f} m  "
               f"{f['links']:>3} links at {f['lat']:.3f} N {f['lon']:.3f} E")
+
+    by_comp = {f["comp"]: f for f in feats}
+    lf = []
+    for i, geom in enumerate(sel.geometry.values):
+        f_ = by_comp.get(comp_of[i])
+        if f_ is None:
+            continue
+        lf.append({"type": "Feature",
+                   "geometry": {"type": "LineString",
+                                "coordinates": [[round(x, 6), round(y, 6)]
+                                                for x, y in geom.coords]},
+                   "properties": {"comp": f_["comp"], "rank": f_["rank"],
+                                  "min_bed_m": f_["min_bed_m"],
+                                  "empties_at_m": f_["empties_at_m"]}})
+    Path(cfg["out_links"]).write_text(json.dumps(
+        {"type": "FeatureCollection",
+         "properties": {"generation": generation(),
+                        "what": "The seaward links themselves, each carrying its "
+                                "mini-network's drain figures, so the ordering can be read "
+                                "off the geometry rather than off a marker beside it.",
+                        "features_": len(lf)},
+         "features": lf}, separators=(",", ":")))
+    print(f"  wrote {cfg['out_links']} ({len(lf):,} links carrying their network's rank)")
 
     gj = [{"type": "Feature",
            "geometry": {"type": "Point", "coordinates": [f["lon"], f["lat"]]},
